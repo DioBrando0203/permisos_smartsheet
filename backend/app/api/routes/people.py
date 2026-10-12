@@ -4,6 +4,7 @@ from fastapi import APIRouter
 
 from app.api.deps import ServicesDep
 from app.models.people import Contact, Group, PeopleResponse, PersonDetail
+from app.models.reports import AccountReview
 
 router = APIRouter()
 
@@ -39,3 +40,17 @@ async def list_contacts(services: ServicesDep, refresh: bool = False) -> list[Co
 @router.get("/groups")
 async def list_groups(services: ServicesDep, refresh: bool = False) -> list[Group]:
     return await services.people.groups(refresh=refresh)
+
+
+@router.get("/review", tags=["auditoría y comparación"])
+async def account_review(
+    services: ServicesDep,
+    q: str | None = None,
+    min_severity: Literal["high", "medium", "info"] = "medium",
+    refresh: bool = False,
+) -> AccountReview:
+    """Riesgos de toda la cuenta: hojas con alertas y personas que más se repiten.
+
+    Mismas reglas que la auditoría por hoja. La primera vez lee todas las hojas.
+    """
+    return await services.review.review(q, min_severity, refresh=refresh)

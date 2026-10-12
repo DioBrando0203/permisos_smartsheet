@@ -80,7 +80,7 @@ class ShareService:
         )
 
     async def create(self, sheet_id: str, request: ShareCreate) -> ShareCreateResult:
-        self._ensure_writable()
+        self.ensure_writable()
         _ensure_assignable(request.access_level)
         _ensure_unique(request)
         token_level = await self._fresh_token_level(sheet_id)
@@ -102,7 +102,7 @@ class ShareService:
         return ShareCreateResult(created=sort_shares(created), skipped=skipped)
 
     async def update(self, sheet_id: str, share_id: str, level: AccessLevel) -> Share:
-        self._ensure_writable()
+        self.ensure_writable()
         _ensure_assignable(level)
         share, token_level = await self._editable_share(sheet_id, share_id)
         if share.access_level is level:
@@ -113,7 +113,7 @@ class ShareService:
         return to_share(updated, token_level)
 
     async def delete(self, sheet_id: str, share_id: str) -> None:
-        self._ensure_writable()
+        self.ensure_writable()
         await self._editable_share(sheet_id, share_id)
         await _as_share_error(self._client.delete_sheet_share(sheet_id, share_id))
         self._invalidate(sheet_id)
@@ -128,7 +128,8 @@ class ShareService:
         sheet = await _as_sheet_error(self._client.get_sheet_access_level(sheet_id))
         return sheet.access_level
 
-    def _ensure_writable(self) -> None:
+    def ensure_writable(self) -> None:
+        """Lanza `READ_ONLY_MODE` si el panel está en modo solo lectura (ADR-B11)."""
         if self._read_only:
             raise AppError(
                 "READ_ONLY_MODE",

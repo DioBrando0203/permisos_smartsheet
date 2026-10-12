@@ -87,3 +87,11 @@ async def test_sheet_can_be_found_by_permalink_code(client, smartsheet) -> None:
     assert unknown.json()["detail"]["code"] == "SHEET_NOT_FOUND"
     shares_calls = [c for c in smartsheet.calls if c.request.url.path.endswith("/shares")]
     assert len(shares_calls) == 1
+
+
+async def test_dynamic_view_mark_comes_from_settings(make_client, smartsheet) -> None:
+    client = make_client(app_dynamic_view_sheets=f" {SHEET_ID} ,")
+    sheet = (await client.get(f"/api/sheets/{SHEET_ID}")).json()
+    assert sheet["has_dynamic_view"] is True
+    audit = (await client.get(f"/api/sheets/{SHEET_ID}/audit")).json()
+    assert audit["sheet"]["has_dynamic_view"] is True

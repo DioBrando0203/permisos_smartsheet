@@ -78,3 +78,17 @@ Fecha: 2026-10-12. Estado: vigente.
 Contexto: el token es de administrador y el usuario quiere revisar sin cambiar nada todavía, aunque con el CRUD listo.
 Decisión: `APP_READ_ONLY` (por defecto `true`) bloquea en `ShareService` toda escritura con 403 `READ_ONLY_MODE` antes de leer o escribir en Smartsheet. `GET /api/health` informa el modo para que el frontend oculte o deshabilite las acciones.
 Consecuencias: escribir exige editar `backend/.env` y reiniciar a propósito. Las pruebas de escritura usan `app_read_only=False` con Smartsheet simulado.
+
+## ADR-B12 Auditoría con tabla de reglas y dominios personales
+
+Fecha: 2026-10-12. Estado: vigente.
+Contexto: en el plan Crown Castle 2026, 17 de 30 accesos son correos @hotmail.com con edición y 3 externos pueden compartir. El usuario quiere ver esto sin revisar fila por fila.
+Decisión: `audit_rules.RULES` es una tabla de reglas puras con código, severidad y mensaje; `PERSONAL_DOMAINS` es una lista cerrada de dominios personales. "Externo" significa no estar en `GET /2.0/users`; si esa lista no se puede leer, no se emiten alertas de externos (`org_known=false`). El propietario nunca genera alertas.
+Consecuencias: una regla nueva es una entrada en la tabla. En esta cuenta casi todos son "externos" porque la organización tiene 4 usuarios con licencia: la alerta importante es `EXTERNAL_CAN_SHARE`, no el conteo de externos.
+
+## ADR-B13 Operaciones masivas con simulación por defecto
+
+Fecha: 2026-10-12. Estado: vigente.
+Contexto: copiar permisos o quitar a alguien de muchas hojas afecta a decenas de accesos de una vez y Smartsheet no permite deshacer.
+Decisión: `dry_run=true` por defecto; la simulación devuelve cada paso (`CREATE`, `UPGRADE`, `KEEP`, `SKIP`, `REMOVE`) y funciona en modo solo lectura. Ejecutar exige `dry_run=false` y `APP_READ_ONLY=false`, reutiliza `ShareService` paso a paso (mismas reglas e invalidación) y aísla los fallos. Copiar nunca baja ni quita; `OWNER` se copia como `ADMIN`.
+Consecuencias: el usuario ve exactamente qué pasaría antes de ejecutar. Ejecutar muchos pasos consume solicitudes de Smartsheet (límite de 300 por minuto); el cliente ya reintenta ante 429.

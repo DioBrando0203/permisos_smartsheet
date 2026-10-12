@@ -25,6 +25,13 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/users/{key}`: `PersonDetail`. `key` es el correo de la persona o `group-<id>`.
 - `GET /api/contacts?refresh=`: `Contact[]` (libreta del dueño del token).
 - `GET /api/groups?refresh=`: `Group[]`.
+- `GET /api/sheets/{sheet_id}/audit?refresh=`: `SheetAudit` (SPEC-B05).
+- `GET /api/sheets/compare?a=&b=`: `SheetComparison`; `a` y `b` id o código de permalink.
+- `GET /api/sheets/access-summary?q=&inactive_days=&refresh=`: `AccessSummary`.
+- `GET /api/review?q=&min_severity=&refresh=`: `AccountReview` (SPEC-B07); `min_severity` `high`, `medium` (defecto) o `info`.
+- `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
+- `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.
+- Ejemplos en Swagger: plan 2026 `1842596423880580` (permalink `QMFVM7v3V23HqwgmCwHg5wF8XHFr5GCG4WJjXJF1`) y plan 2025 `5750050894335876`.
 - `sheet_id`: id numérico o código del permalink (letras y dígitos, hasta 64); `share_id`: `[A-Za-z0-9_-]`. Otro valor responde 422 sin llamar a Smartsheet.
 
 ## Modelos
@@ -35,7 +42,7 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 ### SheetSummary
 
-- `id`, `name`, `access_level` (del token), `can_manage_shares`, `permalink`, `modified_at`.
+- `id`, `name`, `access_level` (del token), `can_manage_shares`, `permalink`, `modified_at`, `has_dynamic_view` (marca manual de `APP_DYNAMIC_VIEW_SHEETS`).
 
 ### SheetList
 
@@ -100,6 +107,34 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 - `id`, `name`, `description`, `member_count` o `null`.
 
+### SheetAudit
+
+- `sheet`, `total`, `by_level`, `by_scope`, `by_domain` (`domain`, `count`, `is_personal`), `org_known`, `external_count` (`null` si no se conoce la organización), `unnamed_count`, `not_in_contacts_count`.
+- `alerts`: `[{code, severity, message, count, people: [{key, type, name, email, access_level}]}]`. Códigos: `EXTERNAL_CAN_SHARE` (high), `PERSONAL_EMAIL_CAN_EDIT` (medium), `UNNAMED` (info), `NOT_IN_CONTACTS` (info).
+
+### SheetComparison
+
+- `a`, `b` (`SheetSummary`), `only_in_a`, `only_in_b`, `level_differences` (`[{key, type, name, email, level_a, level_b}]`, nivel efectivo), `same_count`.
+
+### AccessSummary
+
+- `sheets`: `[{sheet_id, sheet_name, modified_at, share_count, editors_count, external_count, personal_email_count, is_inactive}]` (sin contar al propietario), `failed_sheets`.
+
+### AccountReview
+
+- `min_severity`, `totals` (`sheets_reviewed`, `sheets_with_alerts`, `people_by_code`), `sheets` (`[{sheet_id, sheet_name, has_dynamic_view, max_severity, alerts: {código: personas}}]`), `people` (`[{key, type, name, email, codes, sheet_count}]`), `failed_sheets`.
+
+### CopyRequest y RevokeRequest
+
+- `CopyRequest`: `source_sheet_id`, `upgrade_levels` (false), `include_inherited` (false), `dry_run` (true).
+- `RevokeRequest`: `sheet_ids` (`null` = todas), `dry_run` (true).
+
+### CopyPlan y RevokePlan
+
+- `CopyPlan`: `source`, `target`, `dry_run`, `counts` por acción, `steps`.
+- `RevokePlan`: `person`, `dry_run`, `counts`, `steps`.
+- `BulkStep`: `action` (`CREATE`, `UPGRADE`, `KEEP`, `SKIP`, `REMOVE`), `status` (`planned`, `done`, `failed`, `not_applicable`), `key`, `type`, `name`, `email`, `sheet_id`, `sheet_name`, `share_id`, `current_level`, `new_level`, `reason` (`OWNER`, `INHERITED`, `NO_PERMISSION`, `SAME_OR_HIGHER`, `LOWER_LEVEL_KEPT`), `error_code`.
+
 ## Códigos de error
 
 - 400: Host fuera de `APP_ALLOWED_HOSTS` (`TrustedHostMiddleware`).
@@ -110,6 +145,7 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - 404 `SHEET_NOT_FOUND`, `SHARE_NOT_FOUND`, `PERSON_NOT_FOUND`.
 - 409 `OWNER_LOCKED`: cambiar o quitar al propietario.
 - 409 `SHARE_INHERITED`: cambiar o quitar un permiso heredado del workspace.
+- 422 `SAME_SHEET`: comparar o copiar una hoja consigo misma.
 - 422 `OWNER_NOT_ASSIGNABLE`: pedir el nivel `OWNER`.
 - 422 `DUPLICATE_RECIPIENTS`: el mismo correo o grupo dos veces.
 - 422 `SMARTSHEET_REJECTED`: Smartsheet rechazó los datos (`upstream_message` explica).

@@ -21,7 +21,7 @@ Dependencias permitidas, siempre hacia abajo:
 - Servicios de dominio importan `smartsheet`, `permissions`, `cache`, `models` y `core`.
 - `smartsheet` importa sólo `core` y sus propios dataclasses. No conoce FastAPI ni `models`.
 - `permissions` es puro: sólo la biblioteca estándar y sus tipos. Sin E/S.
-- `models` y `core` no importan servicios.
+- `models` y `core` no importan servicios con E/S; `models` sí usa los enums puros de `permissions` y `bulk_plans.StepAction`.
 - Prohibido el import circular; si aparece, extraer lo común a un módulo inferior.
 
 ## Paquetes y módulos
@@ -33,13 +33,17 @@ app/
   api/router.py                  agrupa rutas bajo /api
   api/routes/health.py           GET /health (con read_only), GET /me
   api/routes/sheets.py           GET /sheets, GET /sheets/{id}; GET, POST /sheets/{id}/shares; PATCH, DELETE /sheets/{id}/shares/{share_id}
-  api/routes/people.py           GET /users, GET /users/{key}, GET /contacts, GET /groups
+  api/routes/people.py           GET /users, GET /users/{key}, GET /contacts, GET /groups, GET /review
+  api/routes/reports.py          GET /sheets/compare, /sheets/access-summary, /sheets/{id}/audit (registrada antes que sheets)
+  api/routes/bulk.py             POST /sheets/{id}/shares/copy, POST /users/{key}/revoke (simulación por defecto)
   core/config.py                 Settings (pydantic-settings) con token SecretStr, read_only, Host y Origin
   core/errors.py                 AppError(code, message, status) y manejador único
   core/middleware.py             OriginMiddleware: Origin permitido en escrituras
   models/sheets.py               SheetSummary, SheetList
   models/shares.py               Share, ShareList, Recipient, ShareCreate, ShareUpdate, ShareCreateResult
   models/people.py               Me, Person, PeopleResponse, PersonDetail, PersonSheetAccess, Group, Contact
+  models/reports.py              SheetAudit, SheetComparison, AccessSummary
+  models/bulk.py                 CopyRequest, RevokeRequest, BulkStep, CopyPlan, RevokePlan
   services/smartsheet/
     __init__.py                  API: SmartsheetClient y dataclasses
     client.py                    _request: auth, semáforo, reintentos, paginación (lastKey y page)
@@ -55,7 +59,12 @@ app/
   services/sheets.py             SheetService
   services/shares.py             ShareService: CRUD con modo solo lectura y reglas
   services/directory.py          build_directory: agregación pura de contactos, organización y permisos
-  services/people.py             PeopleService: directorio, detalle, contactos, grupos, me
+  services/people.py             PeopleService: directorio, detalle, contactos, organización, grupos, me
+  services/audit_rules.py        reglas puras de auditoría (tabla RULES) y dominios personales
+  services/reports.py            ReportService: auditoría, comparación y resumen de acceso
+  services/account_review.py     AccountReviewService: reglas de auditoría sobre toda la cuenta
+  services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
+  services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService
 ```
 
 ## Flujo de lectura de permisos de una hoja

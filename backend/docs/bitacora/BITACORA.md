@@ -32,3 +32,17 @@ Estado: terminada
 Cambios: `{sheet_id}` acepta el id numérico o el código del permalink (`SheetService.resolve_id`, dependencia `SheetId` en `api/deps.py`); ejemplos de Swagger con una hoja real (SPEC-B01 7 y 8, CA-07; API.md).
 Evidencia: 54 pruebas aprobadas; ruff limpio. Contra la cuenta real, el permalink `QMFVM7v3…` y el id `1842596423880580` devuelven la misma hoja con 30 permisos (28 editables).
 Notas: el usuario intentó usar el código del permalink como id; ahora funciona.
+
+## 2026-10-12 14:10 -05:00 Auditoría, comparación, resumen de acceso y operaciones masivas
+
+Estado: terminada (ejecución real de operaciones masivas pendiente de PEN-07)
+Cambios: SPEC-B05 y SPEC-B06; ADR-B12 y ADR-B13; `services/audit_rules.py`, `reports.py`, `bulk_plans.py`, `bulk.py`; `models/reports.py`, `bulk.py`; rutas `reports.py` y `bulk.py`; `PeopleService` expone contactos, organización y permisos por hoja con caché; `ShareService.ensure_writable` público. Ejemplos de Swagger: planes Crown Castle 2026 y 2025 (pedido del usuario).
+Evidencia: `calidad/RESULTADOS.md` (71 pruebas, lecturas y simulaciones reales).
+Notas: los planes antiguos se siguen modificando, por eso el resumen no infiere inactividad sólo por fecha.
+
+## 2026-10-12 14:45 -05:00 Marca de Dynamic View y revisión de riesgos de la cuenta
+
+Estado: terminada
+Cambios: `APP_DYNAMIC_VIEW_SHEETS` y `has_dynamic_view` (PEN-17, B-07); SPEC-B07 con `GET /api/review` (`services/account_review.py`); `audit_rules.build_facts` compartido con la auditoría por hoja; PEN-18 a PEN-20 nuevos; trazabilidad y OAuth anotados en PEN-08.
+Evidencia: `calidad/RESULTADOS.md` (75 pruebas; revisión real de 100 hojas).
+Notas: el usuario preguntó por replicar Dynamic View en el servicio; se desaconsejó (trazabilidad a nombre del token, seguridad, términos de Smartsheet, límite de 300 por minuto) y se propusieron mejoras de gobierno de permisos.

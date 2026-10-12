@@ -11,9 +11,15 @@ SHEETS_KEY = "sheets"
 
 
 class SheetService:
-    def __init__(self, client: SmartsheetClient, cache: TtlCache) -> None:
+    def __init__(
+        self,
+        client: SmartsheetClient,
+        cache: TtlCache,
+        dynamic_view_sheets: frozenset[str] = frozenset(),
+    ) -> None:
         self._client = client
         self._cache = cache
+        self._dynamic_view_sheets = dynamic_view_sheets
 
     async def raw_sheets(self, *, refresh: bool = False) -> list[RawSheet]:
         sheets = await self._cache.get_or_load(
@@ -23,7 +29,7 @@ class SheetService:
 
     async def list(self, query: str | None, *, refresh: bool = False) -> SheetList:
         sheets = await self.raw_sheets(refresh=refresh)
-        found = [to_summary(sheet) for sheet in sheets if matches(query, sheet.name)]
+        found = [self.summary(sheet) for sheet in sheets if matches(query, sheet.name)]
         return SheetList(
             sheets=found, total=len(sheets), loaded_at=self._cache.loaded_at(SHEETS_KEY)
         )
@@ -45,10 +51,13 @@ class SheetService:
         sheet = await self.find(sheet_id)
         if sheet is None:
             raise sheet_not_found()
-        return to_summary(sheet)
+        return self.summary(sheet)
+
+    def summary(self, sheet: RawSheet) -> SheetSummary:
+        return to_summary(sheet, has_dynamic_view=sheet.id in self._dynamic_view_sheets)
 
 
-def to_summary(sheet: RawSheet) -> SheetSummary:
+def to_summary(sheet: RawSheet, *, has_dynamic_view: bool = False) -> SheetSummary:
     return SheetSummary(
         id=sheet.id,
         name=sheet.name,
@@ -56,6 +65,7 @@ def to_summary(sheet: RawSheet) -> SheetSummary:
         can_manage_shares=can_manage_shares(sheet.access_level),
         permalink=sheet.permalink,
         modified_at=sheet.modified_at,
+        has_dynamic_view=has_dynamic_view,
     )
 
 

@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     # Activo por defecto: escribir en Smartsheet exige desactivarlo a propósito (ADR-B11).
     app_read_only: bool = True
     app_allowed_hosts: str = _DEFAULT_HOSTS
+    # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
+    app_dynamic_view_sheets: str = ""
     app_allowed_origins: str = _DEFAULT_ORIGINS
 
     @property
@@ -39,6 +41,10 @@ class Settings(BaseSettings):
     @property
     def allowed_hosts(self) -> tuple[str, ...]:
         return split_list(self.app_allowed_hosts) or split_list(_DEFAULT_HOSTS)
+
+    @property
+    def dynamic_view_sheets(self) -> frozenset[str]:
+        return frozenset(split_list(self.app_dynamic_view_sheets))
 
     @property
     def allowed_origins(self) -> tuple[str, ...]:

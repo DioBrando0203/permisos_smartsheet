@@ -10,6 +10,10 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_shares.py`: SPEC-B02 completa: bloqueos, solo lectura, propietario, heredado, duplicados, omitidos, sin correo por defecto, cuerpos y query enviados, no-op, invalidación de caché, ids inválidos.
 - `test_people.py`: SPEC-B03 y búsqueda de SPEC-B01.
 - `test_permissions.py`: reglas para todos los niveles y scopes, orden, duplicados, caché (vencimiento, single flight, invalidación).
+- `test_audit_rules.py`: reglas de auditoría (personales, externos, propietario, duplicados) y planes de copia (OWNER a ADMIN, sin bajadas, heredados, origen heredado).
+- `test_reports.py`: SPEC-B05: auditoría, comparación, misma hoja, resumen de acceso.
+- `test_bulk.py`: SPEC-B06: simulación, bloqueo en solo lectura, ejecución con fallo aislado y `sendEmail=false`, revocar simulado y ejecutado.
+- `test_review.py`: SPEC-B07: agregación por hoja y persona, filtro de severidad, hoja fallida.
 - `test_security.py`: Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
 
 ## Comandos

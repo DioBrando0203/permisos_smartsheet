@@ -42,3 +42,10 @@ Fecha: 2026-10-12. Estado: abierto (PEN-14).
 Síntoma: `GET /2.0/users/sheets?includeAll=true` devuelve 100 elementos con `totalPages=-1`, cuando con `pageSize=1000` hay 104.
 Causa: ese endpoint no informa el total y corta en 100 pese a `includeAll`.
 Prevención: para endpoints que respondan `totalPages=-1`, paginar por `page` hasta recibir menos de `pageSize`. Revisar `client._get_all` antes de usar `/users/sheets`. `/sheets`, `/contacts`, `/users` y `/groups` hoy devuelven totales coherentes.
+
+## B-07 Dynamic View invisible para la API
+
+Fecha: 2026-10-12. Estado: límite honesto (PEN-17).
+Situación: Dynamic View permite compartir sólo ciertas filas y columnas sin compartir la hoja. No tiene API pública según respuestas de la comunidad de Smartsheet (no confirmado en la referencia oficial).
+Consecuencia: el panel puede decir que una hoja tiene 10 personas con acceso y que alguien no tiene acceso, cuando además hay gente que la ve por una vista dinámica. Los administradores de una vista sí deben tener la hoja compartida como Propietario o Administrador, así que ellos sí aparecen.
+Prevención: no afirmar en la interfaz "nadie más ve esta hoja"; decir "personas con la hoja compartida". Corrige lo dicho antes en conversación ("Smartsheet no tiene permisos por fila o columna"): sí los tiene, mediante Dynamic View.

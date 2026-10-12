@@ -31,6 +31,9 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - RQ-13 Directorio: contactos, personas con acceso y usuarios de la organización en una lista, con su origen marcado y cantidad de hojas (0 si no tiene acceso), para dar acceso a cualquiera (SPEC-B03).
 - RQ-14 Modo solo lectura: con `APP_READ_ONLY=true` toda escritura responde 403 `READ_ONLY_MODE` sin llamar a Smartsheet (ADR-B11).
 - RQ-15 Puertos propios: backend 8710 y frontend 5710.
+- RQ-16 Auditoría y comparación: alertas por hoja, diferencias entre dos hojas y resumen de acceso por hoja, sin escribir (SPEC-B05).
+- RQ-18 Revisión de cuenta: alertas de todas las hojas agregadas por hoja y por persona (SPEC-B07).
+- RQ-17 Operaciones masivas: copiar permisos entre hojas y quitar a una persona de varias hojas, con simulación por defecto (SPEC-B06).
 
 ## Límites honestos
 
@@ -40,6 +43,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - Sin login propio en la primera versión: cualquiera que abra el panel actúa como el administrador dueño del token. Por eso es local por defecto (PEN-08).
 - No hay historial propio de cambios en la primera versión; Smartsheet conserva su propio registro de actividad (PEN-09).
 - Workspaces (4), carpetas, reportes (136) y dashboards (39) quedan fuera del alcance inicial (PEN-10); la API sí los expone.
+- Dynamic View (complemento de pago de Smartsheet) comparte filas y columnas filtradas de una hoja sin compartir la hoja. Según la comunidad de Smartsheet no tiene API pública: las personas que sólo acceden por una vista dinámica no aparecen en el panel. "Quién tiene acceso" en el panel significa "quién tiene la hoja compartida" (B-07).
 - La API de contactos de Smartsheet sólo permite leer (listar y ver uno): el panel no crea ni edita contactos. Dar acceso a un correo nuevo lo agrega como colaborador de esa hoja.
 
 ## Pendientes (backlog priorizado)
@@ -47,8 +51,8 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 Cada pendiente se cita por su ID. Al tomar uno: crear o actualizar la spec con sus criterios de aceptación y mover aquí su estado.
 
 Resumen al 2026-10-12:
-- Terminadas: PEN-00, PEN-01, PEN-02, PEN-03, PEN-05.
-- Parciales: PEN-04 (CRUD hecho y probado con Smartsheet simulado; escrituras reales bloqueadas por el modo solo lectura hasta PEN-07).
+- Terminadas: PEN-00, PEN-01, PEN-02, PEN-03, PEN-05, PEN-16 y la base de PEN-18 (SPEC-B07).
+- Parciales: PEN-04 y PEN-11 (hechos y probados con Smartsheet simulado; ejecución real bloqueada por el modo solo lectura hasta PEN-07).
 - Por hacer, en orden: PEN-06 (frontend), PEN-07 y PEN-13 cuando el usuario decida escribir; después PEN-08 a PEN-12.
 
 ### PEN-00 Documentación inicial
@@ -102,6 +106,7 @@ Hacer: el usuario designa una hoja de prueba y un correo de prueba; se crea, cam
 Prioridad: media. Alcance: backend y frontend. Estado: pendiente; requiere decisión.
 Situación: sin login, quien abra el panel actúa como administrador.
 Hacer: evaluar login con Smartsheet OAuth (cada persona actúa con sus propios permisos) o una contraseña compartida si sólo se usa en la red local. Exige ADR.
+Trazabilidad (explicado al usuario el 2026-10-12): con el token actual, Smartsheet registra todo cambio a nombre del dueño del token. Si otras personas van a escribir desde el servicio, OAuth es el camino: cada una entra con su cuenta de Smartsheet (también colaboradores gratuitos), sin crear usuarios nuevos, y el historial queda a su nombre. `Assume-User` sólo sirve con usuarios de la organización (4).
 
 ### PEN-09 Registro de cambios hechos desde el panel
 
@@ -115,7 +120,7 @@ Hacer: listar workspaces y administrar sus permisos (`assetType=workspace`), par
 
 ### PEN-11 Operaciones masivas
 
-Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.
+Prioridad: baja. Alcance: backend y frontend. Estado: parcial (2026-10-12): backend con simulación (SPEC-B06); falta ejecución real (PEN-07) y frontend.
 Hacer: quitar a una persona de todas sus hojas, copiar los permisos de una hoja a otras, cambiar el nivel de una persona en varias hojas. Con vista previa de cambios y confirmación; resultado por hoja (algunas pueden fallar).
 
 ### PEN-13 Crear usuario en la organización
@@ -134,6 +139,32 @@ Hacer: listar con `GET /2.0/users/sheets` paginando por `page` (B-06), marcar `i
 
 Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.
 Hacer: `GET /2.0/users?include=lastLogin` (verificado) para mostrar en el directorio cuándo entró por última vez cada usuario de la organización; útil para detectar accesos que sobran.
+
+### PEN-16 Auditoría y comparación de hojas
+
+Prioridad: alta. Alcance: backend. Estado: terminada (2026-10-12).
+Hecho: SPEC-B05 con la hoja de ejemplo del usuario (plan Crown Castle 2026): alertas, comparación con 2025 y resumen de los planes 2019 a 2026.
+
+### PEN-17 Accesos por Dynamic View
+
+Prioridad: media. Alcance: proyecto. Estado: parcial (2026-10-12): marca manual `APP_DYNAMIC_VIEW_SHEETS` y campo `has_dynamic_view`; falta que el usuario indique qué hojas la usan y el aviso en el frontend.
+Situación: el panel no ve vistas dinámicas (sin API pública, B-07). Quien sólo entra por una vista no figura en ninguna lista del panel.
+Hacer: confirmar con el usuario si la cuenta usa Dynamic View y en qué hojas; si sí, indicarlo en la interfaz (aviso por hoja marcada a mano) y revisar periódicamente si Smartsheet publica una API.
+
+### PEN-18 Alertas automáticas
+
+Prioridad: media. Alcance: backend. Estado: parcial (2026-10-12): la revisión de cuenta (SPEC-B07) está hecha; falta la tarea programada y el canal de aviso.
+Hacer: tarea periódica que ejecuta la revisión, la compara con la anterior y avisa sólo de lo nuevo (persona externa que ahora puede compartir, correo personal nuevo con edición). Decidir con el usuario el canal (correo, Slack u otro) y dónde guardar la revisión anterior (exige ADR: rompe "sin persistencia").
+
+### PEN-19 Accesos con vencimiento
+
+Prioridad: media. Alcance: backend y frontend. Estado: pendiente.
+Hacer: registrar "acceso hasta fecha" por persona y hoja y quitarlo automáticamente al vencer, con aviso previo. Exige persistencia (ADR) y escrituras reales (PEN-07).
+
+### PEN-20 Plantillas de equipo por cliente
+
+Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.
+Hacer: definir una vez un equipo con niveles por persona y aplicarlo a hojas nuevas con simulación (reutiliza SPEC-B06). Alternativa nativa: grupos de Smartsheet.
 
 ### PEN-12 Exportar
 

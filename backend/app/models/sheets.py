@@ -12,6 +12,8 @@ class SheetSummary(BaseModel):
     can_manage_shares: bool
     permalink: str | None = None
     modified_at: datetime | None = None
+    # Marcada a mano: hay gente que puede verla por Dynamic View sin figurar en sus permisos.
+    has_dynamic_view: bool = False
 
 
 class SheetList(BaseModel):

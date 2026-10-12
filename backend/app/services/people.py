@@ -92,7 +92,7 @@ class PeopleService:
         return PersonDetail(person=entry.to_person(directory.token_email), sheets=sheets)
 
     async def contacts(self, *, refresh: bool = False) -> list[Contact]:
-        raw = await self._cache.get_or_load("contacts", self._client.list_contacts, refresh=refresh)
+        raw = await self.raw_contacts(refresh=refresh)
         return [Contact(id=item.id, email=item.email, name=item.name) for item in raw]
 
     async def groups(self, *, refresh: bool = False) -> list[Group]:
@@ -108,29 +108,44 @@ class PeopleService:
 
         return await self._cache.get_or_load(PEOPLE_KEY, load, refresh=refresh)
 
-    async def _build(self, refresh: bool) -> Directory:
-        sheets = await self._sheets.raw_sheets(refresh=refresh)
-        results = await asyncio.gather(*(self._sheet_shares(sheet, refresh) for sheet in sheets))
-        loaded = [item for item in results if isinstance(item, SheetShares)]
-        failed = [item for item in results if isinstance(item, FailedSheet)]
-        contacts = await self._optional(self._client.list_contacts)
-        org_users = await self._optional(self._client.list_users)
-        me = await self.me()
-        entries = build_directory(loaded, contacts, org_users)
-        return Directory(entries=entries, failed=failed, token_email=me.email)
+    async def raw_contacts(self, *, refresh: bool = False) -> list[RawContact]:
+        async def load() -> list[RawContact]:
+            return await self._optional(self._client.list_contacts) or []
 
-    async def _sheet_shares(self, sheet: RawSheet, refresh: bool) -> SheetShares | FailedSheet:
+        return await self._cache.get_or_load("contacts", load, refresh=refresh)
+
+    async def raw_org_users(self, *, refresh: bool = False) -> list[RawUser] | None:
+        """Usuarios de la organización, o `None` si Smartsheet no deja leerlos."""
+        return await self._cache.get_or_load(
+            "org_users", lambda: self._optional(self._client.list_users), refresh=refresh
+        )
+
+    async def sheet_shares(
+        self, sheet: RawSheet, refresh: bool = False
+    ) -> SheetShares | FailedSheet:
+        """Permisos de una hoja o su fallo, sin detener a quien recorre muchas (Bulkhead)."""
         try:
             shares = await self._shares.raw_shares(sheet.id, refresh=refresh)
         except AppError as error:
             return FailedSheet(sheet_id=sheet.id, sheet_name=sheet.name, code=error.code)
         return SheetShares(sheet=sheet, shares=shares)
 
-    async def _optional(self, loader) -> list[RawContact] | list[RawUser]:
-        """Contactos y usuarios enriquecen el directorio; si Smartsheet los niega, se omiten."""
+    async def _build(self, refresh: bool) -> Directory:
+        sheets = await self._sheets.raw_sheets(refresh=refresh)
+        results = await asyncio.gather(*(self.sheet_shares(sheet, refresh) for sheet in sheets))
+        loaded = [item for item in results if isinstance(item, SheetShares)]
+        failed = [item for item in results if isinstance(item, FailedSheet)]
+        contacts = await self.raw_contacts(refresh=refresh)
+        org_users = await self.raw_org_users(refresh=refresh) or []
+        me = await self.me()
+        entries = build_directory(loaded, contacts, org_users)
+        return Directory(entries=entries, failed=failed, token_email=me.email)
+
+    async def _optional(self, loader) -> list | None:
+        """Contactos y usuarios enriquecen; si Smartsheet los niega, `None` y se omiten."""
         try:
             return await loader()
         except AppError as error:
             if error.code in {"SMARTSHEET_FORBIDDEN", "NOT_FOUND"}:
-                return []
+                return None
             raise

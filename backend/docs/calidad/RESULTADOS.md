@@ -36,3 +36,22 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - `GET /2.0/shares?assetType=sheet&assetId=…` de esas 4 hojas: 200; el administrador puede leer sus permisos.
 - `GET /2.0/users?include=lastLogin`: agrega `lastLogin` y ya trae `sheetCount`.
 - `GET /2.0/workspaces`: 4. `GET /2.0/reports`: 136. `GET /2.0/sights` (dashboards): 39.
+
+## 2026-10-12 14:10 -05:00 Auditoría, comparación y operaciones masivas
+
+- `pytest`: 71 pruebas aprobadas en 1,20 s. `ruff check` y `ruff format --check`: sin observaciones.
+- Cuenta real, `APP_READ_ONLY=true`:
+  - Auditoría del plan 2026 (por código de permalink): 30 accesos, 26 externos, 13 sin nombre, 3 fuera de contactos. Alertas: `EXTERNAL_CAN_SHARE` 3, `PERSONAL_EMAIL_CAN_EDIT` 16, `UNNAMED` 13, `NOT_IN_CONTACTS` 1.
+  - Comparar 2025 con 2026: 3 sólo en 2025, 5 sólo en 2026, 2 con distinto nivel (`EDITOR_SHARE` a `EDITOR`, `EDITOR` a `ADMIN`), 22 iguales.
+  - Resumen `q=crown castle`, `inactive_days=180`: 11 hojas; de 8 personas (2019, 2020) a 28 (2026), sin contar al propietario; sólo "Sprint 2019" marcada inactiva.
+  - Copiar 2025 a 2026 (simulación): 3 `CREATE`, 23 `KEEP`, 1 `SKIP`; con `upgrade_levels`: 1 `UPGRADE`.
+  - Revocar (simulación) a una persona que sólo está en 2025: 26 `REMOVE`.
+  - Ejecutar copia: 403 `READ_ONLY_MODE`. Log del servidor: 0 escrituras hacia Smartsheet.
+
+## 2026-10-12 14:45 -05:00 Revisión de riesgos de la cuenta
+
+- `pytest`: 75 aprobadas. `ruff check` y `ruff format --check`: sin observaciones.
+- Cuenta real, `GET /api/review`: 100 hojas en 4,6 s (primera lectura), 0 fallidas.
+  - `min_severity=medium`: 47 hojas con alertas; 20 personas con correo personal y edición; 9 externas que pueden compartir.
+  - `min_severity=high`: 18 hojas; las 9 externas que pueden compartir lo hacen en 10, 8, 6, 2, 2, 1, 1, 1 y 1 hojas. Hojas con más: planes 2026 de Lightpath, Blue Stream y Breezeline (4 cada una).
+  - Log: 0 escrituras hacia Smartsheet.
