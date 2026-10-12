@@ -1,0 +1,116 @@
+"""Traduce el JSON de Smartsheet a dataclasses propias (capa anticorrupción, SM-03).
+
+Único lugar que conoce los nombres camelCase y las rarezas de la API: ids numéricos o de
+texto, `name` ausente y fechas ISO con `Z`.
+"""
+
+from datetime import datetime
+from typing import Any
+
+from app.services.permissions import AccessLevel, ShareScope, ShareType
+from app.services.smartsheet.types import (
+    RawContact,
+    RawGroup,
+    RawMe,
+    RawShare,
+    RawSheet,
+    RawUser,
+)
+
+# JSON de una librería externa sin tipos: se acota a este módulo (PY-11).
+Json = dict[str, Any]
+
+
+def to_sheet(data: Json) -> RawSheet:
+    return RawSheet(
+        id=_id(data["id"]),
+        name=str(data.get("name") or ""),
+        access_level=AccessLevel(data["accessLevel"]),
+        permalink=data.get("permalink"),
+        modified_at=_date(data.get("modifiedAt")),
+    )
+
+
+def to_share(data: Json) -> RawShare:
+    return RawShare(
+        id=str(data["id"]),
+        type=ShareType(data.get("type", ShareType.USER)),
+        user_id=_optional_id(data.get("userId")),
+        group_id=_optional_id(data.get("groupId")),
+        email=_email(data.get("email")),
+        name=_text(data.get("name")),
+        access_level=AccessLevel(data["accessLevel"]),
+        scope=ShareScope(data.get("scope", ShareScope.ITEM)),
+    )
+
+
+def to_user(data: Json) -> RawUser:
+    full_name = _text(data.get("name")) or _join(data.get("firstName"), data.get("lastName"))
+    return RawUser(
+        id=_id(data["id"]),
+        email=_email(data.get("email")) or "",
+        name=full_name,
+        is_admin=bool(data.get("admin")),
+        status=data.get("status"),
+    )
+
+
+def to_group(data: Json) -> RawGroup:
+    members = data.get("members")
+    count = data.get("memberCount")
+    if count is None and isinstance(members, list):
+        count = len(members)
+    return RawGroup(
+        id=_id(data["id"]),
+        name=str(data.get("name") or ""),
+        description=_text(data.get("description")),
+        member_count=count,
+    )
+
+
+def to_contact(data: Json) -> RawContact:
+    return RawContact(
+        id=str(data["id"]), email=_email(data.get("email")) or "", name=_text(data.get("name"))
+    )
+
+
+def to_me(data: Json) -> RawMe:
+    account = data.get("account") or {}
+    return RawMe(
+        user_id=_id(data["id"]),
+        email=_email(data.get("email")) or "",
+        name=_join(data.get("firstName"), data.get("lastName")),
+        account_name=_text(account.get("name")),
+        is_system_admin=bool(data.get("admin")),
+    )
+
+
+def _id(value: Any) -> str:
+    return str(value)
+
+
+def _optional_id(value: Any) -> str | None:
+    return None if value is None else str(value)
+
+
+def _text(value: Any) -> str | None:
+    text = str(value).strip() if value is not None else ""
+    return text or None
+
+
+def _email(value: Any) -> str | None:
+    text = _text(value)
+    return text.lower() if text else None
+
+
+def _join(first: Any, last: Any) -> str | None:
+    return _text(" ".join(part for part in (_text(first), _text(last)) if part))
+
+
+def _date(value: Any) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
