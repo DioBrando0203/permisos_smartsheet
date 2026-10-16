@@ -174,6 +174,12 @@ Prioridad: media. Alcance: backend y frontend. Estado: parcial (2026-10-16): bac
 Situación: el plan no incluye Event Reporting (B-08). Disponible: última modificación por fila (`include=writerInfo`) e historial por celda.
 Hacer: `GET /api/sheets/{id}/activity` con las filas modificadas recientemente (quién y cuándo) y detalle por celda bajo demanda; resumen por hoja de quién editó en los últimos N días, cruzado con sus permisos (por ejemplo, editores que no editan desde hace meses). Complementa, no reemplaza, el registro propio de cambios del panel (PEN-09).
 
+### PEN-22 Registro de eventos (si se contrata Event Reporting)
+
+Prioridad: media. Alcance: backend y frontend. Estado: bloqueado por el plan (B-08).
+Situación: con el complemento, `GET /2.0/events` da hasta 6 meses de acciones de toda la organización: quién compartió o quitó accesos, borró filas, abrió hojas, inició sesión.
+Hacer: confirmar en el Admin Center o con Smartsheet si se contrata; si sí, leer `/events` paginando por `streamPosition`, filtrar por hoja y por persona, y usarlo como fuente principal de PEN-09, PEN-18 y PEN-21.
+
 ### PEN-12 Exportar
 
 Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.

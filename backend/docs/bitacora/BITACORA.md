@@ -79,3 +79,10 @@ Estado: terminada (backend)
 Cambios: SPEC-B08; `client.list_columns`, `list_rows_with_authors`, `get_row_filled_columns`, `get_cell_history`; `services/activity_rules.py`, `activity.py`; `models/activity.py`; `routes/activity.py`; aviso de cuenta dominante.
 Evidencia: `calidad/RESULTADOS.md`.
 Notas: el usuario creía que el registro de actividad de la web tenía API; se verificó que no (404) y que Event Reporting no está en el plan (403).
+
+## 2026-10-16 -05:00 Event Reporting y plan Enterprise
+
+Estado: terminada
+Cambios: B-08 precisado (complemento de pago aun en Enterprise); PEN-22.
+Evidencia: `/events` 403 1013 con tres variantes de parámetros; documentación y comunidad de Smartsheet.
+Notas: el usuario preguntó si siendo Enterprise sí tendría el registro.
