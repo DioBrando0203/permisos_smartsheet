@@ -46,3 +46,10 @@ Estado: terminada
 Cambios: `APP_DYNAMIC_VIEW_SHEETS` y `has_dynamic_view` (PEN-17, B-07); SPEC-B07 con `GET /api/review` (`services/account_review.py`); `audit_rules.build_facts` compartido con la auditoría por hoja; PEN-18 a PEN-20 nuevos; trazabilidad y OAuth anotados en PEN-08.
 Evidencia: `calidad/RESULTADOS.md` (75 pruebas; revisión real de 100 hojas).
 Notas: el usuario preguntó por replicar Dynamic View en el servicio; se desaconsejó (trazabilidad a nombre del token, seguridad, términos de Smartsheet, límite de 300 por minuto) y se propusieron mejoras de gobierno de permisos.
+
+## 2026-10-16 -05:00 Arranque sin escribir el puerto
+
+Estado: terminada
+Cambios: `iniciar.py`, `backend/app/launcher.py`, `APP_PORT` en `Settings` (orígenes del puerto real), `tests/test_launcher.py`; README (sección Arranque), AGENTS, RQ-15, ADR-B14, arquitectura.
+Evidencia: `calidad/RESULTADOS.md`.
+Notas: pedido del usuario: un solo puerto y, si no está libre, uno al azar.

@@ -14,6 +14,7 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_reports.py`: SPEC-B05: auditoría, comparación, misma hoja, resumen de acceso.
 - `test_bulk.py`: SPEC-B06: simulación, bloqueo en solo lectura, ejecución con fallo aislado y `sendEmail=false`, revocar simulado y ejecutado.
 - `test_review.py`: SPEC-B07: agregación por hoja y persona, filtro de severidad, hoja fallida.
+- `test_launcher.py`: puerto preferido libre, respaldo a uno libre y orígenes del puerto real.
 - `test_security.py`: Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
 
 ## Comandos

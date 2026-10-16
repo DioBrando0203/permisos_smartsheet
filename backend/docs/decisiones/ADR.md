@@ -92,3 +92,10 @@ Fecha: 2026-10-12. Estado: vigente.
 Contexto: copiar permisos o quitar a alguien de muchas hojas afecta a decenas de accesos de una vez y Smartsheet no permite deshacer.
 Decisión: `dry_run=true` por defecto; la simulación devuelve cada paso (`CREATE`, `UPGRADE`, `KEEP`, `SKIP`, `REMOVE`) y funciona en modo solo lectura. Ejecutar exige `dry_run=false` y `APP_READ_ONLY=false`, reutiliza `ShareService` paso a paso (mismas reglas e invalidación) y aísla los fallos. Copiar nunca baja ni quita; `OWNER` se copia como `ADMIN`.
 Consecuencias: el usuario ve exactamente qué pasaría antes de ejecutar. Ejecutar muchos pasos consume solicitudes de Smartsheet (límite de 300 por minuto); el cliente ya reintenta ante 429.
+
+## ADR-B14 Arranque con un comando y puerto libre de respaldo
+
+Fecha: 2026-10-16. Estado: vigente. Amplía ADR-B08.
+Contexto: el usuario quiere levantar el backend sin escribir el puerto y que no choque con otros proyectos.
+Decisión: `iniciar.py` (raíz) ejecuta `app.launcher` con el Python de `backend/.venv`: usa 8710 si está libre y, si no, uno que asigna el sistema; lo imprime y lo pasa como `APP_PORT`. `Settings.allowed_origins` agrega `http://127.0.0.1:<puerto>` y `http://localhost:<puerto>` para que Swagger pueda escribir desde ese mismo origen.
+Consecuencias: con el puerto de respaldo cambia la dirección en cada arranque; el frontend (PEN-06) deberá leer el puerto real en vez de suponer 8710. Hay una ventana mínima entre comprobar el puerto y que Uvicorn lo ocupe; si otro proceso lo toma justo entonces, Uvicorn falla y basta con volver a iniciar.

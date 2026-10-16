@@ -23,7 +23,7 @@ AGENTS.md   guía breve para retomar el proyecto (personas o IA)
 
 ## Puertos
 
-- Backend: `http://127.0.0.1:8710` (API en `/api`, OpenAPI en `/docs`).
+- Backend: `http://127.0.0.1:8710` (API en `/api`, OpenAPI en `/docs`). Si el 8710 está ocupado, `iniciar.py` usa uno libre al azar y lo muestra al arrancar.
 - Frontend en desarrollo: `http://127.0.0.1:5710`.
 - Elegidos para no chocar con otros proyectos locales (8000 y 5173).
 
@@ -33,18 +33,24 @@ AGENTS.md   guía breve para retomar el proyecto (personas o IA)
 2. Si la cuenta es de Europa o Australia, cambiar `SMARTSHEET_BASE_URL`.
 3. `APP_READ_ONLY=true` (por defecto) bloquea dar, cambiar y quitar accesos: el panel sólo consulta. Poner `false` cuando se quiera escribir en Smartsheet.
 
-## Desarrollo (Linux)
+## Arranque
 
-Requiere Python 3.11+ y Node LTS.
+Primera vez (Python 3.11+):
 
 ```bash
 cd backend
 python3 -m venv .venv
-.venv/bin/python -m pip install -e '.[dev]'
-.venv/bin/python -m uvicorn app.main:app --env-file .env --host 127.0.0.1 --port 8710 --reload
+.venv/bin/python -m pip install -c requirements.lock -e '.[dev]'
+cd ..
 ```
 
-OpenAPI interactivo en `http://127.0.0.1:8710/docs` para probar el backend antes de tener interfaz. En Windows usar `.venv/Scripts/python.exe`.
+Cada vez, desde la raíz del proyecto (Windows: `py iniciar.py`):
+
+```bash
+python3 iniciar.py
+```
+
+Muestra la dirección, por ejemplo `Backend: http://127.0.0.1:8710/docs`. Recarga sola al cambiar el código; si se cambia `backend/.env`, detener con Ctrl+C y volver a iniciar.
 
 ## Verificación
 

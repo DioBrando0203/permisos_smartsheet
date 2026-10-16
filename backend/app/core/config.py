@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""
     app_allowed_origins: str = _DEFAULT_ORIGINS
+    # Puerto real en que arrancó (lo fija iniciar.py, que puede elegir uno libre al azar):
+    # sus orígenes se permiten para que Swagger pueda escribir desde ese mismo puerto.
+    app_port: int | None = None
 
     @property
     def has_token(self) -> bool:
@@ -48,7 +51,11 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins(self) -> tuple[str, ...]:
-        return split_list(self.app_allowed_origins) or split_list(_DEFAULT_ORIGINS)
+        origins = split_list(self.app_allowed_origins) or split_list(_DEFAULT_ORIGINS)
+        if self.app_port is None:
+            return origins
+        own = tuple(f"http://{host}:{self.app_port}" for host in ("127.0.0.1", "localhost"))
+        return origins + tuple(origin for origin in own if origin not in origins)
 
 
 def split_list(raw: str) -> tuple[str, ...]:

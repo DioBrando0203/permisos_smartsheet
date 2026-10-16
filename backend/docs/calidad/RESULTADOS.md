@@ -55,3 +55,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
   - `min_severity=medium`: 47 hojas con alertas; 20 personas con correo personal y edición; 9 externas que pueden compartir.
   - `min_severity=high`: 18 hojas; las 9 externas que pueden compartir lo hacen en 10, 8, 6, 2, 2, 1, 1, 1 y 1 hojas. Hojas con más: planes 2026 de Lightpath, Blue Stream y Breezeline (4 cada una).
   - Log: 0 escrituras hacia Smartsheet.
+
+## 2026-10-16 -05:00 Arranque con iniciar.py
+
+- `pytest`: 78 aprobadas (3 nuevas en `test_launcher.py`). `ruff check` limpio, incluido `iniciar.py`.
+- Real: con el 8710 ocupado por una instancia previa del usuario, `python3 iniciar.py` arrancó en 57743 y una segunda vez en 41281; `/api/health` respondió en ese puerto y un DELETE con `Origin` de ese puerto llegó a `READ_ONLY_MODE` (Origin aceptado). Instancias de prueba detenidas; la del usuario en 8710 no se tocó.
