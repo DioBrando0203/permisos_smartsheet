@@ -99,3 +99,10 @@ Fecha: 2026-10-16. Estado: vigente. Amplía ADR-B08.
 Contexto: el usuario quiere levantar el backend sin escribir el puerto y que no choque con otros proyectos.
 Decisión: desde `backend/` con el entorno activado, `python run.py` ejecuta `app.launcher`: usa 8710 si está libre y, si no, uno que asigna el sistema; lo imprime y lo pasa como `APP_PORT`. `Settings.allowed_origins` agrega `http://127.0.0.1:<puerto>` y `http://localhost:<puerto>` para que Swagger pueda escribir desde ese mismo origen.
 Consecuencias: con el puerto de respaldo cambia la dirección en cada arranque; el frontend (PEN-06) deberá leer el puerto real en vez de suponer 8710. Hay una ventana mínima entre comprobar el puerto y que Uvicorn lo ocupe; si otro proceso lo toma justo entonces, Uvicorn falla y basta con volver a iniciar.
+
+## ADR-B15 Complementar, nunca reemplazar
+
+Fecha: 2026-10-16. Estado: vigente. Decisión del usuario.
+Contexto: se evaluaron Jira y Salesforce por sus conectores de pago y la posibilidad de construir servicios propios.
+Decisión: el proyecto no reemplaza ninguna herramienta. Cada función nueva debe cumplir una de dos: (a) Smartsheet no la tiene (por ejemplo, auditoría de permisos, comparación de hojas, alertas, accesos con vencimiento), o (b) Smartsheet la tiene pero aquí es claramente mejor o más rápida (por ejemplo, quitar a alguien de muchas hojas, ver la actividad de una hoja). Y siempre: no entorpecer el trabajo actual; la gente sigue trabajando en Smartsheet, que es la fuente de verdad; nada se duplica ni obliga a migrar.
+Consecuencias: se descartan reemplazar Jira (tableros, flujos completos) y un CRM. Antes de cada PEN nuevo se anota en su descripción si es (a) o (b) y por qué no entorpece. PEN-24 se rige por esta decisión.

@@ -194,7 +194,7 @@ Opciones, de menor a mayor esfuerzo:
 - Bandeja personal por persona (sus filas asignadas en todas las hojas), con login OAuth para que cada cambio quede a su nombre. Cubre parte de Dynamic View y de la vista "mis tareas" de Jira.
 - Registro de cambios en vivo con webhooks (disponibles en el plan): cada cambio de fila o celda en las hojas elegidas, guardado por nuestro servicio. Suple en parte Event Reporting (no ve permisos ni accesos). Exige una URL pública HTTPS y persistencia.
 - Tiempo en cada estado y tareas atascadas (al estilo de Jira), calculado con ese registro.
-Fuera de alcance: reemplazar Jira (tableros, flujos, SLA completos) o un CRM.
+Fuera de alcance: reemplazar Jira (tableros, flujos, SLA completos) o un CRM (ADR-B15). Cada opción debe ser algo que Smartsheet no tiene, o que tiene pero aquí es mejor, sin entorpecer el trabajo actual.
 
 ### PEN-12 Exportar
 

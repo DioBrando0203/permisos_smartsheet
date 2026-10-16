@@ -13,6 +13,7 @@ Antes de modificar, leer este archivo y la guía del lado afectado (metodología
 ## Requisitos permanentes
 
 - Panel interno para administrar permisos (shares) de hojas de Smartsheet de una cuenta.
+- Principio de producto (ADR-B15): no reemplazamos ninguna herramienta (Smartsheet, Jira, Salesforce). Sólo hacemos lo que Smartsheet no tiene, o lo que ya tiene pero mejor, sin entorpecer cómo trabaja hoy la gente: nada obliga a cambiar de herramienta ni de hábito, y Smartsheet sigue siendo la fuente de verdad.
 - Smartsheet es la única fuente de verdad. Sin base de datos propia; sólo caché en memoria con vencimiento corto.
 - El token vive sólo en `backend/.env` (`SMARTSHEET_ACCESS_TOKEN`). Nunca llega al navegador, a logs, a respuestas, a docs ni a pruebas.
 - El token es de un administrador de la cuenta: cada escritura es real e inmediata. Nunca se cambia el propietario ni se tocan permisos heredados del workspace desde una hoja (ADR-B04, ADR-B05).
