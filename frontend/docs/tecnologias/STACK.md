@@ -84,4 +84,5 @@ export default defineConfig({
 ## Entorno
 
 - Node 24 (verificado en el equipo: 24.21.0, npm 11.19.0).
-- `VITE_BACKEND_URL` opcional (ADR-07); no hay más variables.
+- `frontend/.env`: copia local de `.env.example`, contiene `VITE_BACKEND_URL`. Vacío: Vite lee `backend/.port` y, si aún no existe, usa `http://127.0.0.1:8710`; es el modo local normal y sigue el puerto aleatorio de `run.py`.
+- Para forzar otro backend de desarrollo, asignar una URL en `VITE_BACKEND_URL`. Nunca poner tokens, correos ni otros datos privados: toda variable `VITE_*` es visible para el navegador.

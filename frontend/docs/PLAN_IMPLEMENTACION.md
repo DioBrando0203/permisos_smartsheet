@@ -2,7 +2,7 @@
 
 Orden para construir el frontend sobre el backend ya implementado. Cada fase termina con la definición de terminado de `GUIA_IA.md`, su entrada en la bitácora y un commit. Las specs de la fase pasan de "borrador" a "aprobada" antes de programarla y a "implementada" al cerrarla.
 
-Estado (2026-10-16): F0 del backend terminado (F0-B1 a F0-B4); sigue F0 del frontend (F0-F1 a F0-F5).
+Estado (2026-10-16): F0 terminada (F0-B1 a F0-B4 y F0-F1 a F0-F5). Sigue F1: estructura, hojas y permisos de lectura.
 
 ## F0 Preparación (backend y esqueleto)
 
@@ -13,11 +13,11 @@ Backend (terminadas el 2026-10-16, cada una con prueba):
 - F0-B4: `/api/review` aparece con dos etiquetas en Swagger (personas y auditoría): dejarle sólo "auditoría y comparación".
 
 Frontend:
-- F0-F1: proyecto Vite + React + TS con las versiones exactas de `tecnologias/STACK.md`; `vite.config.ts` de STACK; `tsconfig`, ESLint, Prettier y `src/test/setup.ts` copiados de la referencia.
-- F0-F2: `tokens.css` copiado de `extractor_metadata` y recortado a lo que usa este panel, más los tokens nuevos de `estilos/SISTEMA_VISUAL.md` (severidad, barras, densidad de tabla); `base.css` y `global.css`.
-- F0-F3: `components/ui` base reutilizando los de la referencia (Button, SearchBox, Avatar, StatusAlert, EmptyState, Spinner, Tabs) y nuevos (Badge, Skeleton, Toast, Dialog, ConfirmDialog, DataTable, StatTile, MeterBar, LoadingNotice, CopyText).
-- F0-F4: `lib/api.ts` con `ApiError` (K-03 a K-05), `lib/errorMessages.ts` con la tabla de `contrato/CONTRATO.md`, `lib/query/` (cliente, claves, invalidación), `lib/accessLevels.ts`, `lib/severity.ts`, `lib/search.ts`, `lib/formatters.ts`, `lib/routes.ts`.
-- F0-F5: MSW configurado con handlers vacíos y un fixture de `health`.
+- F0-F1: terminada. Proyecto Vite + React + TS con versiones exactas; `vite.config.ts` de STACK; `tsconfig`, ESLint, Prettier y `src/test/setup.ts` de la referencia.
+- F0-F2: terminada. `tokens.css` recortado de `extractor_metadata`, tokens propios del panel, `base.css` y `global.css`.
+- F0-F3: terminada. Componentes UI base de la referencia y los nuevos: Badge, Skeleton, Toast, Dialog, ConfirmDialog, DataTable, StatTile, MeterBar, LoadingNotice y CopyText.
+- F0-F4: terminada. `lib/api.ts`, `ApiError`, textos de error, Query, niveles de acceso, severidad, búsqueda, formato y rutas.
+- F0-F5: terminada. MSW, fixture sintético de salud y prueba de contrato inicial.
 
 Terminado cuando: `npm run build`, `lint`, `test` y `format:check` pasan; con el backend levantado, `npm run dev` muestra la pantalla vacía con la cuenta de `/api/me` y el banner de solo lectura.
 

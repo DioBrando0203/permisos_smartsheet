@@ -1,0 +1,35 @@
+.startup {
+  display: grid;
+  align-content: start;
+  min-height: 100%;
+}
+.startup__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-l);
+  min-height: var(--header-h);
+  padding: 0 var(--space-l);
+  background: var(--bg-1);
+  box-shadow: var(--shadow-2);
+}
+.startup__header h1 {
+  margin: 0;
+  font-size: var(--fs-400);
+  line-height: var(--lh-400);
+}
+.startup__header span {
+  overflow: hidden;
+  color: var(--fg-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.startup__banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  min-height: var(--control-lg);
+  padding: 0 var(--space-l);
+  border-bottom: 1px solid var(--info-border);
+  background: var(--info-bg);
+}

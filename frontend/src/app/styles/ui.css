@@ -1,0 +1,210 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-s);
+  min-height: var(--control-md);
+  padding: 0 var(--space-m);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: var(--fw-semibold);
+  transition: background-color var(--duration-faster) var(--curve-easy-ease);
+}
+.button--sm {
+  min-height: var(--control-sm);
+  padding: 0 var(--space-s);
+  font-size: var(--fs-200);
+}
+.button--icon {
+  width: var(--control-md);
+  padding: 0;
+}
+.button--primary {
+  color: var(--fg-on-brand);
+  background: var(--brand-80);
+}
+.button--primary:not(:disabled):hover {
+  background: var(--brand-70);
+}
+.button--secondary {
+  color: var(--fg-1);
+  border-color: var(--stroke-1);
+  background: var(--bg-1);
+}
+.button--subtle {
+  color: var(--fg-2);
+  background: transparent;
+}
+.button--danger {
+  color: var(--fg-on-brand);
+  background: var(--danger-fg);
+}
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: var(--control-md);
+  border-radius: var(--radius-md);
+  background: var(--brand-160);
+}
+.search-box__icon {
+  position: absolute;
+  left: var(--space-s);
+  color: var(--brand-80);
+  pointer-events: none;
+}
+.search-box input {
+  width: 100%;
+  height: 100%;
+  padding: 0 var(--space-xxxl);
+  border: 0;
+  border-radius: inherit;
+  color: var(--fg-1);
+  background: transparent;
+  font: inherit;
+}
+.search-box__clear {
+  position: absolute;
+  right: var(--space-xs);
+  display: grid;
+  place-items: center;
+  width: var(--control-sm);
+  height: var(--control-sm);
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--fg-3);
+  background: transparent;
+}
+.spinner {
+  display: inline-block;
+  border: 2px solid var(--brand-160);
+  border-top-color: var(--brand-80);
+  border-radius: var(--radius-circular);
+}
+.spinner--sm {
+  width: 16px;
+  height: 16px;
+}
+.spinner--md {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+.spinner--lg {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+.status-alert {
+  display: flex;
+  gap: var(--space-s);
+  padding: var(--space-s) var(--space-m);
+  border: 1px solid;
+  border-radius: var(--radius-md);
+}
+.status-alert__icon {
+  flex: none;
+}
+.status-alert--error {
+  border-color: var(--danger-border);
+  background: var(--danger-bg);
+}
+.status-alert--warning {
+  border-color: var(--warning-border);
+  background: var(--warning-bg);
+}
+.status-alert--success {
+  border-color: var(--success-border);
+  background: var(--success-bg);
+}
+.status-alert--info {
+  border-color: var(--info-border);
+  background: var(--info-bg);
+}
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 520px;
+  margin: auto;
+  padding: var(--space-xxxl) var(--space-xxl);
+  text-align: center;
+}
+.empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-circular);
+  color: var(--brand-80);
+  background: var(--brand-160);
+}
+.empty-state__title {
+  font-size: var(--fs-500);
+}
+.empty-state__text,
+.empty-state__actions {
+  margin-top: var(--space-m);
+  color: var(--fg-2);
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-circular);
+  color: var(--avatar-1-fg);
+  background: var(--avatar-1-bg);
+  font-weight: var(--fw-semibold);
+}
+.avatar--sm {
+  width: 32px;
+  height: 32px;
+}
+.avatar--md {
+  width: 40px;
+  height: 40px;
+}
+.avatar--empty {
+  color: var(--fg-3);
+  background: var(--bg-4);
+}
+.avatar[data-tone='2'] {
+  color: var(--avatar-2-fg);
+  background: var(--avatar-2-bg);
+}
+.avatar[data-tone='3'] {
+  color: var(--avatar-3-fg);
+  background: var(--avatar-3-bg);
+}
+.avatar[data-tone='4'] {
+  color: var(--avatar-4-fg);
+  background: var(--avatar-4-bg);
+}
+.avatar[data-tone='5'] {
+  color: var(--avatar-5-fg);
+  background: var(--avatar-5-bg);
+}
+.avatar[data-tone='6'] {
+  color: var(--avatar-6-fg);
+  background: var(--avatar-6-bg);
+}
+.avatar[data-tone='7'] {
+  color: var(--avatar-7-fg);
+  background: var(--avatar-7-bg);
+}
+.avatar[data-tone='8'] {
+  color: var(--avatar-8-fg);
+  background: var(--avatar-8-bg);
+}
+.avatar[data-tone='9'] {
+  color: var(--avatar-9-fg);
+  background: var(--avatar-9-bg);
+}
+.avatar[data-tone='10'] {
+  color: var(--avatar-10-fg);
+  background: var(--avatar-10-bg);
+}

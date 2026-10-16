@@ -1,0 +1,36 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  color: var(--fg-1);
+  background: var(--bg-4);
+  font-family: var(--font-base);
+  font-size: var(--fs-300);
+  line-height: var(--lh-300);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-outer);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px var(--focus-inner);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
