@@ -17,9 +17,12 @@ from app.services.smartsheet import mappers
 from app.services.smartsheet.errors import token_missing, translate_error, unavailable
 from app.services.smartsheet.types import (
     NewShare,
+    RawCellChange,
+    RawColumn,
     RawContact,
     RawGroup,
     RawMe,
+    RawRow,
     RawShare,
     RawSheet,
     RawUser,
@@ -34,6 +37,8 @@ _READ_RETRY_STATUS = frozenset({429, 500, 502, 503, 504})
 _WRITE_RETRY_STATUS = frozenset({429, 503})
 _MAX_BACKOFF_SECONDS = 30.0
 _SHARING_INCLUDE = "ITEM,WORKSPACE"
+# Máximo de filas por página que admite Smartsheet al leer una hoja.
+_ROWS_PAGE = 500
 
 
 class SmartsheetClient:
@@ -78,6 +83,44 @@ class SmartsheetClient:
 
     async def list_contacts(self) -> list[RawContact]:
         return [mappers.to_contact(item) for item in await self._get_all("/contacts")]
+
+    async def list_columns(self, sheet_id: str) -> list[RawColumn]:
+        items = await self._get_all(f"/sheets/{sheet_id}/columns")
+        return [mappers.to_column(item) for item in items]
+
+    async def list_rows_with_authors(self, sheet_id: str, label_column_id: str) -> list[RawRow]:
+        """Todas las filas con quién las creó y modificó; sólo la columna de etiqueta."""
+        rows: list[RawRow] = []
+        page = 1
+        while True:
+            params = {
+                "include": "writerInfo",
+                "columnIds": label_column_id,
+                "pageSize": _ROWS_PAGE,
+                "page": page,
+            }
+            data = await self._request("GET", f"/sheets/{sheet_id}", params=params)
+            batch = data.get("rows", [])
+            rows.extend(mappers.to_row(item) for item in batch)
+            # Smartsheet repite la última página si se pide una mayor: cortar por total.
+            if len(batch) < _ROWS_PAGE or len(rows) >= int(data.get("totalRowCount") or 0):
+                return rows
+            page += 1
+
+    async def get_row_filled_columns(self, sheet_id: str, row_id: str) -> list[str]:
+        """Columnas con valor en una fila: las que tienen historial que mostrar."""
+        data = await self._request("GET", f"/sheets/{sheet_id}/rows/{row_id}")
+        return [
+            str(cell["columnId"])
+            for cell in data.get("cells", [])
+            if cell.get("value") is not None or cell.get("displayValue")
+        ]
+
+    async def get_cell_history(
+        self, sheet_id: str, row_id: str, column_id: str
+    ) -> list[RawCellChange]:
+        path = f"/sheets/{sheet_id}/rows/{row_id}/columns/{column_id}/history"
+        return [mappers.to_cell_change(item) for item in await self._get_all(path)]
 
     # Escrituras (bloqueadas antes de llegar aquí en modo solo lectura)
 

@@ -3,9 +3,13 @@
 from app.services.smartsheet.client import SmartsheetClient
 from app.services.smartsheet.types import (
     NewShare,
+    RawAuthor,
+    RawCellChange,
+    RawColumn,
     RawContact,
     RawGroup,
     RawMe,
+    RawRow,
     RawShare,
     RawSheet,
     RawUser,
@@ -14,9 +18,13 @@ from app.services.smartsheet.types import (
 
 __all__ = [
     "NewShare",
+    "RawAuthor",
+    "RawCellChange",
+    "RawColumn",
     "RawContact",
     "RawGroup",
     "RawMe",
+    "RawRow",
     "RawShare",
     "RawSheet",
     "RawUser",

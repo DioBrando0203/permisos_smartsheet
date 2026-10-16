@@ -15,6 +15,8 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_bulk.py`: SPEC-B06: simulación, bloqueo en solo lectura, ejecución con fallo aislado y `sendEmail=false`, revocar simulado y ejecutado.
 - `test_review.py`: SPEC-B07: agregación por hoja y persona, filtro de severidad, hoja fallida.
 - `test_launcher.py`: puerto preferido libre, respaldo a uno libre y orígenes del puerto real.
+- `test_activity.py`: SPEC-B08: período, editores con nivel actual, paginación de filas, historial de fila con columna fallida, columna inexistente.
+- `test_activity_rules.py`: período, editores sin cambios, conteo por editor y aviso de cuenta dominante.
 - `test_security.py`: Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
 
 ## Comandos

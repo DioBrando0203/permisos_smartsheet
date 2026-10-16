@@ -29,6 +29,8 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/sheets/compare?a=&b=`: `SheetComparison`; `a` y `b` id o código de permalink.
 - `GET /api/sheets/access-summary?q=&inactive_days=&refresh=`: `AccessSummary`.
 - `GET /api/review?q=&min_severity=&refresh=`: `AccountReview` (SPEC-B07); `min_severity` `high`, `medium` (defecto) o `info`.
+- `GET /api/sheets/{sheet_id}/activity?days=30&limit=100&refresh=`: `SheetActivity` (SPEC-B08).
+- `GET /api/sheets/{sheet_id}/rows/{row_id}/history?column_id=`: `RowHistory`.
 - `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
 - `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.
 - Ejemplos en Swagger: plan 2026 `1842596423880580` (permalink `QMFVM7v3V23HqwgmCwHg5wF8XHFr5GCG4WJjXJF1`) y plan 2025 `5750050894335876`.
@@ -124,6 +126,18 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 - `min_severity`, `totals` (`sheets_reviewed`, `sheets_with_alerts`, `people_by_code`), `sheets` (`[{sheet_id, sheet_name, has_dynamic_view, max_severity, alerts: {código: personas}}]`), `people` (`[{key, type, name, email, codes, sheet_count}]`), `failed_sheets`.
 
+### SheetActivity
+
+- `sheet`, `days`, `since`, `rows_total`, `changed_rows_total`.
+- `changed_rows`: `[{row_id, row_number, label, created_at, created_by, modified_at, modified_by}]` (`created_by` y `modified_by`: `{email, name}`).
+- `editors`: `[{email, name, rows_changed, last_change, access_level}]`; `access_level` `null` si ya no tiene la hoja compartida.
+- `idle_editors`: `[{key, email, name, access_level}]` con `EDITOR` o superior sin filas modificadas en el período.
+- `limitations`: textos; el primero avisa si una cuenta concentra más del 80 % de las filas.
+
+### RowHistory
+
+- `sheet_id`, `row_id`, `changes` (`[{column_id, column_title, value, modified_at, modified_by}]`, del más reciente), `columns_checked`, `failed_columns`.
+
 ### CopyRequest y RevokeRequest
 
 - `CopyRequest`: `source_sheet_id`, `upgrade_levels` (false), `include_inherited` (false), `dry_run` (true).
@@ -142,7 +156,7 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - 403 `READ_ONLY_MODE`: `APP_READ_ONLY=true`; ninguna escritura llega a Smartsheet (ADR-B11).
 - 403 `CANNOT_MANAGE_SHARES`: el token no es `ADMIN` ni `OWNER` de la hoja.
 - 403 `SMARTSHEET_FORBIDDEN`: Smartsheet negó la operación.
-- 404 `SHEET_NOT_FOUND`, `SHARE_NOT_FOUND`, `PERSON_NOT_FOUND`.
+- 404 `SHEET_NOT_FOUND`, `SHARE_NOT_FOUND`, `PERSON_NOT_FOUND`, `ROW_NOT_FOUND`, `COLUMN_NOT_FOUND`.
 - 409 `OWNER_LOCKED`: cambiar o quitar al propietario.
 - 409 `SHARE_INHERITED`: cambiar o quitar un permiso heredado del workspace.
 - 422 `SAME_SHEET`: comparar o copiar una hoja consigo misma.

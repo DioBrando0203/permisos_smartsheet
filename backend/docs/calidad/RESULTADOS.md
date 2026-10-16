@@ -66,3 +66,14 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - `GET /2.0/events` (Event Reporting): 403, `errorCode` 1013 "not supported by your plan". No hay registro de eventos de la cuenta (permisos, borrados, accesos) por API en este plan.
 - `GET /2.0/sheets/{id}/rows/{rowId}/columns/{columnId}/history`: 200; cada cambio con `value`, `displayValue`, `modifiedAt`, `modifiedBy`. Una solicitud por celda.
 - `GET /2.0/sheets/{id}?include=writerInfo`: 200; cada fila con `createdAt`, `createdBy`, `modifiedAt`, `modifiedBy` (plan 2026: 2050 filas, 500 por página).
+
+## 2026-10-16 -05:00 Actividad de una hoja (SPEC-B08)
+
+- `pytest`: 87 aprobadas. `ruff check` y `ruff format --check`: sin observaciones.
+- Rutas del "Registro de actividad": `/sheets/{id}/activity`, `/activityLog`, `/events` 404; `/events?assetType=sheet` 403 (plan). `/sheets/{id}/version`, `/updaterequests` y `/sentupdaterequests` 200 (no son registro de actividad).
+- Cuenta real, plan 2026 (por código de permalink), `run.py` en 8710:
+  - 30 días: 2052 filas, 2046 modificadas; últimos editores 1884, 160, 1 y 1 filas; 24 con edición sin ser último editor; 4,3 s (primera lectura, 5 páginas).
+  - Una cuenta tocó el 92 % de las filas: se agregó el aviso de cuenta dominante (CA-08).
+  - 7 días: 2042 modificadas, 3 editores. 365 días: 2052, 5 editores.
+  - Historial de una fila: 55 columnas con valor, 0 fallidas, 105 cambios, 10,9 s.
+  - Log: 0 escrituras hacia Smartsheet. Instancia de prueba detenida.

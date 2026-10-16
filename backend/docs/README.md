@@ -22,6 +22,7 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `specs/SPEC-B05-auditoria.md`: auditoría de una hoja, comparación de hojas y resumen de acceso.
 - `specs/SPEC-B06-operaciones-masivas.md`: copiar permisos y quitar accesos en bloque, con simulación.
 - `specs/SPEC-B07-revision-cuenta.md`: revisión de riesgos de toda la cuenta.
+- `specs/SPEC-B08-actividad.md`: actividad de una hoja e historial de filas, directo de Smartsheet.
 - `decisiones/ADR.md`: decisiones con contexto y consecuencias.
 - `reglas_programacion/REGLAS.md`: código limpio (PY-xx) y reglas de Smartsheet (SM-xx).
 - `patrones/PATRONES.md`: patrones de diseño en uso, cuándo aplicarlos y antipatrones.

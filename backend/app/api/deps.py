@@ -7,6 +7,7 @@ from fastapi import Depends, Path, Request
 
 from app.core.config import Settings
 from app.services.account_review import AccountReviewService
+from app.services.activity import ActivityService
 from app.services.bulk import BulkService
 from app.services.cache import TtlCache
 from app.services.people import PeopleService
@@ -51,6 +52,7 @@ class Services:
     reports: ReportService
     bulk: BulkService
     review: AccountReviewService
+    activity: ActivityService
 
 
 def build_services(settings: Settings, client: SmartsheetClient | None = None) -> Services:
@@ -62,7 +64,10 @@ def build_services(settings: Settings, client: SmartsheetClient | None = None) -
     reports = ReportService(sheets, shares, people)
     bulk = BulkService(sheets, shares, people)
     review = AccountReviewService(sheets, people, reports)
-    return Services(settings, client, cache, sheets, shares, people, reports, bulk, review)
+    activity = ActivityService(client, cache, sheets, shares)
+    return Services(
+        settings, client, cache, sheets, shares, people, reports, bulk, review, activity
+    )
 
 
 def get_services(request: Request) -> Services:

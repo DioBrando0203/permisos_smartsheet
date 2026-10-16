@@ -9,9 +9,13 @@ from typing import Any
 
 from app.services.permissions import AccessLevel, ShareScope, ShareType
 from app.services.smartsheet.types import (
+    RawAuthor,
+    RawCellChange,
+    RawColumn,
     RawContact,
     RawGroup,
     RawMe,
+    RawRow,
     RawShare,
     RawSheet,
     RawUser,
@@ -83,6 +87,49 @@ def to_me(data: Json) -> RawMe:
         account_name=_text(account.get("name")),
         is_system_admin=bool(data.get("admin")),
     )
+
+
+def to_column(data: Json) -> RawColumn:
+    return RawColumn(
+        id=_id(data["id"]),
+        title=str(data.get("title") or ""),
+        index=int(data.get("index") or 0),
+        primary=bool(data.get("primary")),
+    )
+
+
+def to_row(data: Json) -> RawRow:
+    cells = data.get("cells") or []
+    label = next((_cell_text(cell) for cell in cells if _cell_text(cell)), None)
+    return RawRow(
+        id=_id(data["id"]),
+        row_number=data.get("rowNumber"),
+        label=label,
+        created_at=_date(data.get("createdAt")),
+        created_by=_author(data.get("createdBy")),
+        modified_at=_date(data.get("modifiedAt")),
+        modified_by=_author(data.get("modifiedBy")),
+    )
+
+
+def to_cell_change(data: Json) -> RawCellChange:
+    return RawCellChange(
+        column_id=_id(data.get("columnId")),
+        value=_cell_text(data),
+        modified_at=_date(data.get("modifiedAt")),
+        modified_by=_author(data.get("modifiedBy")),
+    )
+
+
+def _cell_text(cell: Json) -> str | None:
+    """Lo que ve la persona en la celda: `displayValue` si existe, si no `value`."""
+    return _text(cell.get("displayValue", cell.get("value")))
+
+
+def _author(data: Any) -> RawAuthor | None:
+    if not isinstance(data, dict):
+        return None
+    return RawAuthor(email=_email(data.get("email")), name=_text(data.get("name")))
 
 
 def _id(value: Any) -> str:

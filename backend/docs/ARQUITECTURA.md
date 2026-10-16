@@ -36,6 +36,7 @@ app/
   api/routes/sheets.py           GET /sheets, GET /sheets/{id}; GET, POST /sheets/{id}/shares; PATCH, DELETE /sheets/{id}/shares/{share_id}
   api/routes/people.py           GET /users, GET /users/{key}, GET /contacts, GET /groups, GET /review
   api/routes/reports.py          GET /sheets/compare, /sheets/access-summary, /sheets/{id}/audit (registrada antes que sheets)
+  api/routes/activity.py         GET /sheets/{id}/activity, GET /sheets/{id}/rows/{row_id}/history
   api/routes/bulk.py             POST /sheets/{id}/shares/copy, POST /users/{key}/revoke (simulación por defecto)
   core/config.py                 Settings (pydantic-settings) con token SecretStr, read_only, Host y Origin
   core/errors.py                 AppError(code, message, status) y manejador único
@@ -64,6 +65,8 @@ app/
   services/audit_rules.py        reglas puras de auditoría (tabla RULES) y dominios personales
   services/reports.py            ReportService: auditoría, comparación y resumen de acceso
   services/account_review.py     AccountReviewService: reglas de auditoría sobre toda la cuenta
+  services/activity_rules.py     cálculos puros de actividad: período, editores, editores sin cambios, cuenta dominante
+  services/activity.py           ActivityService: filas con autoría e historial de celdas (caché rows: y columns:)
   services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
   services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService
 ```

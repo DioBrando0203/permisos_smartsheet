@@ -75,3 +75,38 @@ class ShareMessage:
 
     subject: str | None
     message: str | None
+
+
+@dataclass(frozen=True)
+class RawAuthor:
+    email: str | None
+    name: str | None
+
+
+@dataclass(frozen=True)
+class RawColumn:
+    id: str
+    title: str
+    index: int
+    primary: bool
+
+
+@dataclass(frozen=True)
+class RawRow:
+    """Fila con su autoría: sólo la última modificación, no el historial completo."""
+
+    id: str
+    row_number: int | None
+    label: str | None
+    created_at: datetime | None
+    created_by: RawAuthor | None
+    modified_at: datetime | None
+    modified_by: RawAuthor | None
+
+
+@dataclass(frozen=True)
+class RawCellChange:
+    column_id: str
+    value: str | None
+    modified_at: datetime | None
+    modified_by: RawAuthor | None

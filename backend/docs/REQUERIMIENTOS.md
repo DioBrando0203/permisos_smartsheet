@@ -32,6 +32,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - RQ-14 Modo solo lectura: con `APP_READ_ONLY=true` toda escritura responde 403 `READ_ONLY_MODE` sin llamar a Smartsheet (ADR-B11).
 - RQ-15 Puertos propios: backend 8710 y frontend 5710; `python run.py` (desde `backend`, con el entorno activado) arranca sin escribir el puerto y usa uno libre si el 8710 está ocupado (ADR-B14).
 - RQ-16 Auditoría y comparación: alertas por hoja, diferencias entre dos hojas y resumen de acceso por hoja, sin escribir (SPEC-B05).
+- RQ-19 Actividad: filas modificadas por período, quién edita, editores sin cambios e historial por fila o celda, directo de Smartsheet (SPEC-B08).
 - RQ-18 Revisión de cuenta: alertas de todas las hojas agregadas por hoja y por persona (SPEC-B07).
 - RQ-17 Operaciones masivas: copiar permisos entre hojas y quitar a una persona de varias hojas, con simulación por defecto (SPEC-B06).
 
@@ -42,6 +43,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - Los cambios hechos directamente en Smartsheet aparecen en el panel cuando vence la caché (`cache_ttl_seconds`) o al pulsar actualizar.
 - Sin login propio en la primera versión: cualquiera que abra el panel actúa como el administrador dueño del token. Por eso es local por defecto (PEN-08).
 - No hay historial propio de cambios en la primera versión; Smartsheet conserva su propio registro de actividad (PEN-09).
+- Actividad: el "Registro de actividad" de la web no tiene API (404) y Event Reporting no está en el plan (403); sólo se ve la última modificación de cada fila y el historial de cada celda. Una automatización que toca todas las filas tapa a los demás editores (SPEC-B08).
 - Workspaces (4), carpetas, reportes (136) y dashboards (39) quedan fuera del alcance inicial (PEN-10); la API sí los expone.
 - Dynamic View (complemento de pago de Smartsheet) comparte filas y columnas filtradas de una hoja sin compartir la hoja. Según la comunidad de Smartsheet no tiene API pública: las personas que sólo acceden por una vista dinámica no aparecen en el panel. "Quién tiene acceso" en el panel significa "quién tiene la hoja compartida" (B-07).
 - La API de contactos de Smartsheet sólo permite leer (listar y ver uno): el panel no crea ni edita contactos. Dar acceso a un correo nuevo lo agrega como colaborador de esa hoja.
@@ -168,7 +170,7 @@ Hacer: definir una vez un equipo con niveles por persona y aplicarlo a hojas nue
 
 ### PEN-21 Actividad de las hojas
 
-Prioridad: media. Alcance: backend y frontend. Estado: pendiente; requiere decisión del usuario.
+Prioridad: media. Alcance: backend y frontend. Estado: parcial (2026-10-16): backend hecho (SPEC-B08); falta frontend.
 Situación: el plan no incluye Event Reporting (B-08). Disponible: última modificación por fila (`include=writerInfo`) e historial por celda.
 Hacer: `GET /api/sheets/{id}/activity` con las filas modificadas recientemente (quién y cuándo) y detalle por celda bajo demanda; resumen por hoja de quién editó en los últimos N días, cruzado con sus permisos (por ejemplo, editores que no editan desde hace meses). Complementa, no reemplaza, el registro propio de cambios del panel (PEN-09).
 

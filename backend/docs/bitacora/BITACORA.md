@@ -72,3 +72,10 @@ Estado: terminada
 Cambios: `LEVANTAMIENTO.md` (Windows y Linux) enlazado desde README; B-08 y PEN-21; resultados de las pruebas de actividad.
 Evidencia: `calidad/RESULTADOS.md`.
 Notas: el usuario preguntó por logs de quién modifica qué; no existe endpoint propio (PEN-09 pendiente) y Event Reporting no está en el plan.
+
+## 2026-10-16 -05:00 Actividad de una hoja, directo de Smartsheet
+
+Estado: terminada (backend)
+Cambios: SPEC-B08; `client.list_columns`, `list_rows_with_authors`, `get_row_filled_columns`, `get_cell_history`; `services/activity_rules.py`, `activity.py`; `models/activity.py`; `routes/activity.py`; aviso de cuenta dominante.
+Evidencia: `calidad/RESULTADOS.md`.
+Notas: el usuario creía que el registro de actividad de la web tenía API; se verificó que no (404) y que Event Reporting no está en el plan (403).
