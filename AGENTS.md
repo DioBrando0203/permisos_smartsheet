@@ -4,11 +4,11 @@
 
 Si el usuario pregunta qué sigue, qué falta o qué podemos continuar: leer `backend/docs/REQUERIMIENTOS.md`, sección "Pendientes" (IDs PEN-xx), y responder con esa lista en orden de prioridad, con su estado y qué haría falta. No inventar pendientes fuera de esa lista; si aparece uno nuevo, agregarlo allí con su ID antes de trabajarlo. Al terminar uno, actualizar su estado y la bitácora.
 
-Estado: documentación inicial creada el 2026-10-12. Siguiente paso: implementar el backend (PEN-01 a PEN-05). El frontend no se empieza hasta que el backend esté probado con la cuenta real (decisión del usuario).
+Estado (2026-10-16): backend implementado y probado con la cuenta real en modo solo lectura (28 endpoints, specs SPEC-B01 a B12). Documentación del frontend lista; siguiente paso: frontend por fases empezando por F0 (`frontend/docs/PLAN_IMPLEMENTACION.md`), que incluye cuatro tareas pequeñas del backend.
 
 Antes de modificar, leer este archivo y la guía del lado afectado (metodología SDD: spec, plan, código, prueba, registro):
 - Backend: `backend/docs/README.md` y `backend/docs/GUIA_IA.md`; reglas `PY-xx`, `SM-xx` y `patrones/PATRONES.md`.
-- Frontend: `frontend/docs/README.md` y `frontend/docs/GUIA_IA.md`; reglas `P-xx`, `E-xx`, `UX-xx`, `C-xx` y `patrones/PATRONES.md`.
+- Frontend: `frontend/docs/README.md`, `frontend/docs/GUIA_IA.md`, `frontend/docs/PLAN_IMPLEMENTACION.md` y `frontend/docs/contrato/CONTRATO.md`; reglas `P-xx`, `E-xx`, `UX-xx`, `C-xx` y `patrones/PATRONES.md`.
 
 ## Requisitos permanentes
 

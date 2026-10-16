@@ -1,6 +1,6 @@
 # Sistema visual
 
-Base: Fluent 2 (repositorio `microsoft/fluentui`, licencia MIT), el mismo que usa el proyecto de referencia `extractor_metadata`. Valores reales irán en `src/app/styles/tokens.css`; este documento explica su uso. Si difieren, corregir en el mismo cambio.
+Base: Fluent 2 (repositorio `microsoft/fluentui`, licencia MIT), el mismo que usa el proyecto de referencia `extractor_metadata`. `tokens.css` se copia de `extractor_metadata/frontend/src/app/styles/tokens.css` (rampas de marca, neutros, estados, avatares, tipografía, espaciado, radios, sombras y movimiento ya verificados) y se recorta a lo que usa este panel; los tokens propios de este panel se agregan con el mismo formato. Este documento explica su uso; si difieren, corregir en el mismo cambio.
 
 ## Principios
 
@@ -44,6 +44,13 @@ Base: Fluent 2 (repositorio `microsoft/fluentui`, licencia MIT), el mismo que us
 - Insignia neutra (`--bg-2`, borde `--stroke-2`, texto `--fg-1`) con icono por nivel: Visor ojo, Comentarista globo de comentario, Editor lápiz, Editor que comparte lápiz con persona, Administrador escudo, Propietario corona (iconos de `@fluentui/react-icons`).
 - Heredado: insignia "Heredado" con icono de carpeta, texto en `--fg-2`.
 
+## Severidad, estados de automatización y fases
+
+- Severidad (`lib/severity.ts`): alta con `--danger-*` e icono de alerta; media con `--warning-*` e icono de advertencia; informativa con `--info-*` e icono de información. Siempre icono más texto (E-17).
+- Automatizaciones: "Funciona" `--success-fg` con check; "Con problemas" `--warning-fg`; "Apagada" `--fg-3` con icono de pausa.
+- Fases de "Project Status" en `MeterBar`: una rampa neutra de marca (`--brand-140` a `--brand-60`) para las fases 1 a 9 y `--bg-6` para "otra"; el número de cada tramo visible en la leyenda (ADR-09).
+- Insignias nuevas: "De otra persona", "Vista dinámica", "Organización", "Contacto", "Personal" (dominio), "Inactiva", "Sin acceso" (advertencia).
+
 ## Breakpoints
 
 - 1180 o menos: navegación compacta (sólo iconos con etiqueta accesible); lista 320.
@@ -61,3 +68,9 @@ Base: Fluent 2 (repositorio `microsoft/fluentui`, licencia MIT), el mismo que us
 - Badge: insignia de nivel u origen.
 - Avatar: iniciales o icono de grupo; decorativo.
 - Skeleton, Spinner, EmptyState.
+- Tabs: subrayado de marca de 3 px en la activa, 40 de alto, desplazable en móvil.
+- StatTile: cifra en rampa 600 (24/32) y etiqueta en 200 (12/16), fondo `--bg-1`, borde `--stroke-2`, `--radius-xl`; se agrupan en una fila que pasa a 2 columnas bajo 640 px.
+- MeterBar: barra horizontal de 8 px con tramos y leyenda con valores; sin tooltips como única fuente del número.
+- LoadingNotice: Spinner pequeño y texto `--fg-2`; aparece a los 3 s (UX-29).
+- CopyText: texto `--font-mono` 12/16 con botón "Copiar" (para `ref_id`).
+- ReadOnlyBanner: franja `--info-bg` con borde inferior `--info-border`, icono de candado y texto `--fg-1`, 40 de alto.

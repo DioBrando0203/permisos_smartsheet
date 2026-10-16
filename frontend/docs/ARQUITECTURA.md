@@ -1,67 +1,106 @@
 # Arquitectura del frontend
 
-Panel React con estética Fluent 2: cabecera, navegación lateral (Hojas, Personas), lista maestra y panel de detalle. Habla sólo con el backend. Decisiones en `decisiones/ADR.md`; patrones en `patrones/PATRONES.md`.
+Panel React con estética Fluent 2 sobre el backend de `backend/` (28 endpoints, ver `contrato/CONTRATO.md`). Habla sólo con ese backend. Decisiones en `decisiones/ADR.md`; patrones en `patrones/PATRONES.md`; orden de construcción en `PLAN_IMPLEMENTACION.md`.
 
-Estado: plano aprobado (2026-10-12). Ningún archivo existe todavía; se actualiza con el código.
+Estado: plano aprobado y alineado con el backend implementado (2026-10-16). Aún no hay código.
+
+## Mapa de navegación
+
+Cinco destinos en la navegación lateral, cada uno con URL propia (ADR-04):
+
+- Hojas `/hojas`: lista maestra (SPEC-02) y detalle `/hojas/:sheetId` con pestañas (SPEC-05): Permisos (por defecto, SPEC-03), Auditoría, Actividad, Automatizaciones, Calidad de datos.
+- Personas `/personas`: directorio (SPEC-04) y detalle `/personas/:key` con sus hojas y "Quitar de varias hojas".
+- Diseñadores `/disenadores`: carga y acceso (SPEC-08).
+- Revisión `/revision`: riesgos de la cuenta, resumen de acceso y automatizaciones de toda la cuenta (SPEC-06); referencias entre hojas (SPEC-09).
+- Comparar `/comparar?a=&b=`: dos hojas lado a lado y copiar permisos con simulación (SPEC-07).
+
+Además: `/` redirige a `/hojas`; ruta desconocida muestra "Esta página no existe" (SPEC-01).
 
 ## Estructura
 
 ```text
 src/
-  main.tsx                                 monta App, QueryClientProvider e importa global.css
-  app/App.tsx                              rutas y composición de pantalla
-  app/routes.tsx                           /hojas, /hojas/:sheetId, /personas, /personas/:key
-  app/styles/                              tokens.css, base.css, ui-*.css, layout.css, features-*.css, responsive.css
-  components/layout/AppLayout.tsx          cabecera, navegación, huecos list/detail/toolbar
-  components/ui/                           Button, IconButton, SearchBox, Select, Dialog, ConfirmDialog,
-                                           Toast, StatusAlert, EmptyState, Spinner, Skeleton, Badge, Avatar, DataTable
-  features/sheets/
-    components/SheetList.tsx               lista con búsqueda y conteo
-    components/SheetRow.tsx                fila: nombre, nivel del token, fecha
-    components/SheetHeader.tsx             cabecera del detalle: nombre, enlace a Smartsheet, actualizar
-    hooks/useSheets.ts                     consulta de hojas
-  features/shares/
-    components/ShareTable.tsx              personas con acceso: nombre, correo, nivel, origen, acciones
-    components/ShareRow.tsx                fila con selector de nivel y quitar
-    components/AccessLevelSelect.tsx       selector de nivel con descripciones
-    components/ShareDialog.tsx             dar acceso: destinatarios, nivel, aviso por correo
-    components/RecipientInput.tsx          chips de correos y grupos con autocompletado
-    components/RemoveShareDialog.tsx       confirmación de quitar acceso
-    components/LockedHint.tsx              motivo de bloqueo (propietario, heredado, sin permiso)
-    hooks/useShares.ts                     consulta y mutaciones con invalidación
-    lib/groupShares.ts                     agrupa propio y heredado de la misma persona
-    lib/recipients.ts                      validación de correos y duplicados
-  features/people/
-    components/PeopleList.tsx              personas y grupos con cantidad de hojas
-    components/PersonDetail.tsx            hojas de una persona con nivel y acciones
-    hooks/usePeople.ts
-  lib/api.ts                               único punto HTTP (fetch), errores a ApiError(code)
-  lib/types.ts                             contrato normalizado
-  lib/normalize.ts                         JSON del backend a tipos
-  lib/accessLevels.ts                      orden, etiqueta, descripción e icono de cada nivel
-  lib/errorMessages.ts                     código de error a texto y acción
-  lib/formatters.ts                        fechas relativas, plurales
-  lib/search.ts                            búsqueda sin tildes ni mayúsculas
-  lib/query/                               claves de consulta y cliente de TanStack Query
-e2e/                                       Playwright contra el backend con Smartsheet simulado
+  main.tsx                                 QueryClientProvider, RouterProvider, global.css
+  app/
+    router.tsx                             rutas de los cinco destinos y redirecciones
+    App.tsx                                AppLayout + banner de modo solo lectura + Outlet
+    styles/                                tokens.css, base.css, ui-*.css, layout.css, <feature>.css, responsive.css
+  components/
+    layout/AppLayout.tsx                   cabecera, navegación lateral, huecos (list, detail, toolbar)
+    layout/MasterDetail.tsx                lista + detalle con su propio scroll; apilado en móvil
+    ui/                                    Button, IconButton, SearchBox, Select, Tabs, Dialog, ConfirmDialog,
+                                           Toast, StatusAlert, EmptyState, Spinner, Skeleton, Badge, Avatar,
+                                           DataTable, StatTile, MeterBar, LoadingNotice, CopyText
+  features/
+    shell/                                 useHealth, useMe, ReadOnlyBanner, AccountBadge
+    sheets/                                SheetList, SheetRow, SheetHeader, SheetTabs, useSheets, useSheet
+    shares/                                ShareTable, ShareRow, AccessLevelSelect, ShareDialog, RecipientInput,
+                                           RemoveShareDialog, LockedHint, useShares, useShareMutations,
+                                           lib/groupShares.ts, lib/recipients.ts
+    people/                                PeopleList, PeopleFilters, PersonDetail, RevokeDialog, usePeople,
+                                           usePerson, useRevokePerson
+    audit/                                 SheetAuditPanel, AlertList, DomainList, useSheetAudit
+    activity/                              ActivityPanel, ChangedRowsTable, EditorsList, RowHistoryDialog,
+                                           useSheetActivity, useRowHistory
+    automations/                           AutomationsPanel, AutomationCard, AccountAutomations,
+                                           useSheetAutomations, useAccountAutomations
+    quality/                               QualityPanel, QualityForm, QualityResults, ReferencesPanel,
+                                           AccountReferences, useColumns, useSheetQuality, useReferences
+    review/                                ReviewPage, RiskSummary, RiskPeople, AccessSummaryTable,
+                                           useAccountReview, useAccessSummary
+    compare/                               ComparePage, SheetPicker, CompareResult, CopyPlanTable,
+                                           useCompare, useCopyShares
+    designers/                             DesignersPage, DesignerRow, DesignerDetail, PhaseBar, SheetGaps,
+                                           useDesigners
+  lib/
+    api.ts                                 único punto HTTP (fetch), ApiError, timeouts
+    types.ts                               contrato normalizado (espejo de backend/docs/estilos/API.md)
+    normalize.ts                           JSON del backend a tipos, por endpoint
+    accessLevels.ts                        orden, etiqueta, descripción e icono de cada nivel
+    errorMessages.ts                       código de error a texto y acción (CONTRATO.md)
+    severity.ts                            high/medium/info a etiqueta, icono y tono
+    formatters.ts                          fechas relativas, plurales, números
+    search.ts                              búsqueda sin tildes ni mayúsculas
+    routes.ts                              constructores de URL internas (/hojas/:id, /personas/:key)
+    query/keys.ts                          claves de consulta (CONTRATO.md)
+    query/client.ts                        QueryClient con staleTime y reintentos
+    query/invalidation.ts                  invalidateAfterShareWrite
+  test/
+    setup.ts                               jest-dom, cleanup, servidor MSW
+    handlers/                              handlers MSW por feature con datos sintéticos
+    fixtures/                              JSON sintético con la forma del contrato (@example.com)
+e2e/                                       Playwright contra backend real + Smartsheet falso (ADR-10)
 ```
 
 ## Dependencias permitidas
 
 - `app` importa todo.
-- `features/<x>` importa `components/ui`, `lib` y su propio contenido. No importa otra feature, salvo `people` que reutiliza `shares/components/AccessLevelSelect` y `RemoveShareDialog` (ADR-06).
+- `features/<x>` importa `components/ui`, `components/layout`, `lib` y su propio contenido. No importa otra feature, con dos excepciones vigentes:
+  - `people`, `compare` y `designers` reutilizan de `shares` el selector de nivel, el diálogo de quitar y `useShareMutations` (ADR-06).
+  - `sheets/SheetTabs` monta los paneles de `shares`, `audit`, `activity`, `automations` y `quality` (es el contenedor del detalle; ADR-11).
 - `components/ui` y `components/layout` no importan `features` ni `lib/api`.
 - `lib` no importa React salvo `lib/query`.
 
 ## Flujo de datos
 
-1. La URL decide la vista (`/hojas/:sheetId`), para poder compartir un enlace a una hoja y usar Atrás del navegador (ADR-04).
-2. Los hooks de feature leen con TanStack Query: caché por clave (`['sheets']`, `['shares', sheetId]`, `['people']`), reintento ante errores de red y estado de carga.
-3. Una mutación (dar, cambiar, quitar) espera la respuesta del backend; al confirmar, invalida `['shares', sheetId]`, `['sheets']` y `['people']` y muestra un aviso (Toast).
-4. Un error se traduce con `errorMessages` por su `code`, nunca mostrando el mensaje técnico como única información.
+1. La URL decide la vista y los filtros compartibles (`/hojas/:sheetId?tab=actividad`, `?q=`).
+2. Los hooks de cada feature leen con TanStack Query y las claves de `lib/query/keys.ts`.
+3. `staleTime` de 60 s (el backend ya cachea 120 s); "Actualizar" pide `refresh=true` y reemplaza la caché.
+4. Una escritura espera la respuesta; al confirmar, `invalidateAfterShareWrite` invalida lo afectado y un Toast dice qué cambió.
+5. Un error se traduce con `errorMessages` por su `code` (K-03).
 
 ## Estado
 
-- Servidor (permisos, hojas, personas): TanStack Query.
-- Vista (búsqueda, filtros, diálogo abierto): estado local del componente dueño o la URL (`?q=`).
-- Preferencias sin datos personales (orden de columnas): localStorage (ADR-05).
+- Servidor: TanStack Query, sólo en memoria (ADR-05).
+- Vista compartible (pestaña, búsqueda, filtros, hojas comparadas): la URL.
+- Vista local (diálogo abierto, fila expandida): estado del componente dueño.
+- Preferencias sin datos personales (densidad, columnas): localStorage.
+- Modo solo lectura: `useHealth().readOnly`, leído por los componentes que ofrecen escrituras (ADR-08).
+
+## Datos de la cuenta que condicionan la interfaz (verificados en el backend)
+
+- 114 hojas (110 del token y 4 de otra persona de sólo consulta), 49 personas en el directorio, 857 permisos aproximadamente.
+- Primeras cargas: directorio 3 a 5 s; revisión de cuenta 5 s; diseñadores 14 s; automatizaciones de la cuenta 17 s; historial de una fila hasta 11 s.
+- Un mismo `share.id` aparece en el permiso propio y en el heredado (B-05 del backend): la clave de fila es `id + scope`.
+- Algunos permisos llegan sin nombre: se muestra el correo.
+- Quien ve una hoja sólo por Dynamic View no aparece en sus permisos (B-07 del backend).

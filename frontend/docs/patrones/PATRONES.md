@@ -59,6 +59,31 @@ Qué: icono, frase que explica, y un botón con la siguiente acción (UX-17).
 Dónde: `SheetHeader`, cabecera de `PeopleList`.
 Qué: "Actualizado hace X" y botón Actualizar (UX-20).
 
+### Pestañas con carga diferida
+
+Dónde: `SheetTabs` (Permisos, Auditoría, Actividad, Automatizaciones, Calidad).
+Qué: la pestaña inicial es Permisos; cada otra pestaña monta su panel (y su consulta) sólo al abrirse; la elegida queda en `?tab=` (ADR-11).
+
+### Resumen con detalle (drill-down)
+
+Dónde: Revisión, Auditoría, Diseñadores.
+Qué: StatTiles arriba con las cifras; debajo, tablas cuyas filas enlazan a la persona, la hoja o la pestaña que explica la cifra (UX-34).
+
+### Simular y luego aplicar
+
+Dónde: Comparar (copiar permisos), Personas (quitar de varias hojas).
+Qué: "Ver qué pasaría" → tabla de pasos con conteos → "Aplicar N cambios" con confirmación → resultado por paso (UX-30). La simulación es una consulta más; la aplicación es una mutación pesimista.
+
+### Consulta larga con aviso
+
+Dónde: directorio, revisión, automatizaciones de la cuenta, diseñadores, historial de fila.
+Qué: `LoadingNotice` a los 3 s con qué se lee y cuánto suele tardar; la consulta sigue aunque se cambie de vista y su resultado queda en caché (UX-29).
+
+### Banner de estado global
+
+Dónde: `features/shell/ReadOnlyBanner`, avisos de backend caído o token.
+Qué: el estado del panel (solo lectura, sin conexión) se muestra una vez arriba y cada control de escritura lee `useHealth().readOnly` para deshabilitarse con el motivo (ADR-08).
+
 ## Patrones de código
 
 ### Layout con huecos (slots)
@@ -85,6 +110,11 @@ Qué: único punto HTTP; convierte errores en `ApiError` con `code`, `message` y
 
 Dónde: `lib/accessLevels.ts`, `lib/errorMessages.ts`, `features/shares/lib/lockedReasons.ts`.
 Qué: un dato (nivel, código de error, motivo de bloqueo) se traduce a etiqueta, descripción, icono y acción en un mapa, no en `if` repartidos.
+
+### Datos simulados con la forma del contrato
+
+Dónde: `src/test/fixtures/` y `src/test/handlers/<feature>.ts`.
+Qué: un fixture por respuesta del contrato con datos sintéticos (`@example.com`); los handlers MSW los devuelven y permiten variar casos (vacío, parcial, error, demora). Las pruebas de componente nunca arman JSON a mano.
 
 ### Funciones puras
 

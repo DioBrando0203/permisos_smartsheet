@@ -2,25 +2,34 @@
 
 Fuente de verdad del panel de permisos. Metodología: desarrollo guiado por especificaciones (SDD). Ningún cambio de comportamiento entra sin spec; ninguna spec queda sin pruebas que la verifiquen.
 
-Estado: reglas, patrones y sistema visual definidos (2026-10-12); specs en borrador. La implementación empieza cuando el backend esté probado (PEN-06 en `backend/docs/REQUERIMIENTOS.md`).
+Estado (2026-10-16): documentación lista para empezar. El backend está implementado y probado; el frontend se construye por fases desde F0 (`PLAN_IMPLEMENTACION.md`). Specs en borrador, se aprueban al empezar cada fase.
 
 ## Orden de lectura para una IA o persona nueva
 
 1. `GUIA_IA.md`: protocolo de trabajo, definición de terminado y prohibiciones. Obligatorio.
-2. `ARQUITECTURA.md`: módulos, dependencias permitidas, flujo de datos y estado.
-3. La spec del área afectada en `specs/`.
-4. Las reglas: `reglas_programacion/` (P-xx), `reglas_estilos/` (E-xx), `reglas_ux/` (UX-xx), `reglas_calidad/` (C-xx) y el catálogo `patrones/PATRONES.md`.
-5. `estilos/SISTEMA_VISUAL.md` si el cambio toca interfaz.
-6. `bloqueos/BLOQUEOS.md` antes de diagnosticar un fallo.
+2. `PLAN_IMPLEMENTACION.md`: en qué fase estamos y qué toca.
+3. `ARQUITECTURA.md`: navegación, módulos, dependencias permitidas, flujo de datos y estado.
+4. `contrato/CONTRATO.md`: endpoint, hook, caché, invalidación y textos de error.
+5. La spec del área afectada en `specs/`.
+6. Las reglas: `reglas_programacion/` (P-xx), `reglas_estilos/` (E-xx), `reglas_ux/` (UX-xx), `reglas_calidad/` (C-xx) y el catálogo `patrones/PATRONES.md`.
+7. `estilos/SISTEMA_VISUAL.md` si el cambio toca interfaz.
+8. `bloqueos/BLOQUEOS.md` antes de diagnosticar un fallo y al empezar cada fase.
 
 ## Mapa
 
 - `GUIA_IA.md`: protocolo para agentes IA.
-- `ARQUITECTURA.md`: estructura y límites entre módulos.
-- `specs/SPEC-01-layout.md`: estructura de pantalla, navegación y responsive.
-- `specs/SPEC-02-hojas.md`: lista de hojas y búsqueda.
+- `PLAN_IMPLEMENTACION.md`: fases F0 a F6 con su definición de terminado.
+- `ARQUITECTURA.md`: navegación, estructura y límites entre módulos.
+- `contrato/CONTRATO.md`: cómo consume el frontend cada endpoint del backend.
+- `specs/SPEC-01-layout.md`: estructura, navegación, modo solo lectura y errores globales.
+- `specs/SPEC-02-hojas.md`: lista de hojas de toda la organización, búsqueda y exportación.
 - `specs/SPEC-03-permisos.md`: permisos de una hoja: ver, dar, cambiar y quitar acceso.
-- `specs/SPEC-04-personas.md`: vista por persona.
+- `specs/SPEC-04-personas.md`: directorio, detalle de persona y quitar de varias hojas.
+- `specs/SPEC-05-detalle-hoja.md`: cabecera y pestañas Auditoría, Actividad y Automatizaciones.
+- `specs/SPEC-06-revision.md`: riesgos, acceso por hoja y automatizaciones de toda la cuenta.
+- `specs/SPEC-07-comparar.md`: comparar dos hojas y copiar permisos con simulación.
+- `specs/SPEC-08-disenadores.md`: carga y acceso de los diseñadores.
+- `specs/SPEC-09-calidad.md`: calidad de datos de una hoja y referencias entre hojas.
 - `specs/PLANTILLA.md`: plantilla para specs nuevas.
 - `decisiones/ADR.md`: decisiones de arquitectura y diseño.
 - `estilos/SISTEMA_VISUAL.md`: tokens de Fluent 2, escalas, componentes y breakpoints.

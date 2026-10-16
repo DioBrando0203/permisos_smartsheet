@@ -47,3 +47,12 @@ Obligatorias salvo que digan "preferir". Citar el ID en revisiones y en la bitá
 ## Dependencias
 
 - P-31: versiones exactas en `package.json`. Toda dependencia nueva se justifica en `tecnologias/STACK.md` y pasa `npm audit`.
+
+## Datos remotos (agregadas el 2026-10-16)
+
+- P-32: claves de consulta sólo desde `lib/query/keys.ts` y con los parámetros que cambian la respuesta (CONTRATO.md). `staleTime` 60 s por defecto; consultas lentas (diseñadores, automatizaciones de la cuenta) 5 min.
+- P-33: `fetch` con `AbortController` y plazo de 120 s (las cargas más largas verificadas rondan 17 s); al vencer, `ApiError` con `code = "BACKEND_UNREACHABLE"` y texto de demora.
+- P-34: una función de normalización por endpoint en `lib/normalize.ts`; los componentes nunca leen campos del JSON crudo.
+- P-35: URLs internas con `lib/routes.ts` (`sheetPath(id, tab)`, `personPath(key)`), nunca armadas a mano; `key` de persona siempre con `encodeURIComponent`.
+- P-36: claves de React estables y únicas: permisos con `id + scope` (B-05 del backend), personas con `key`, filas con `row_id`, pasos de simulación con `key + sheet_id`.
+

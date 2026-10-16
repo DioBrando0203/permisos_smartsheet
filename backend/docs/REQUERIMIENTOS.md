@@ -100,8 +100,8 @@ Terminado cuando: CA de SPEC-B03 con prueba; tiempo de la primera carga real ano
 
 ### PEN-06 Frontend
 
-Prioridad: alta. Alcance: frontend. Estado: pendiente (empieza después de PEN-01 a PEN-05).
-Hacer: specs SPEC-01 a SPEC-04 del frontend y su implementación con Fluent 2. El backend debe servir `frontend/dist` y devolver `index.html` en rutas que no sean `/api` ni `/assets` (ADR-04 del frontend).
+Prioridad: alta. Alcance: frontend y backend. Estado: listo para empezar (documentación completa el 2026-10-16).
+Hacer: fases F0 a F6 de `frontend/docs/PLAN_IMPLEMENTACION.md` con SPEC-01 a SPEC-09 del frontend. F0 incluye en el backend: servir `frontend/dist` con respaldo a `index.html` (ADR-04 del frontend), escribir `backend/.port` desde `run.py` (ADR-07), un Smartsheet falso para E2E (ADR-10) y dejar una sola etiqueta en `/api/review`.
 
 ### PEN-07 Verificación de escrituras reales
 
