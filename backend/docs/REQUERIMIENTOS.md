@@ -180,6 +180,22 @@ Prioridad: media. Alcance: backend y frontend. Estado: bloqueado por el plan (B-
 Situación: con el complemento, `GET /2.0/events` da hasta 6 meses de acciones de toda la organización: quién compartió o quitó accesos, borró filas, abrió hojas, inició sesión.
 Hacer: confirmar en el Admin Center o con Smartsheet si se contrata; si sí, leer `/events` paginando por `streamPosition`, filtrar por hoja y por persona, y usarlo como fuente principal de PEN-09, PEN-18 y PEN-21.
 
+### PEN-23 Paginación explícita en el cliente
+
+Prioridad: alta. Alcance: backend. Estado: pendiente.
+Hacer: `_get_all` con `page` y `pageSize` en vez de `includeAll` (B-09, B-06); pruebas con varias páginas y con `totalPages=-1`.
+
+### PEN-24 Servicios propios sobre Smartsheet (propuesta, requiere decisión)
+
+Prioridad: media. Alcance: proyecto. Estado: propuesta (2026-10-16); exige ADR y OAuth (PEN-08) antes de escribir.
+Contexto: el usuario evalúa Jira y Salesforce por sus conectores de pago. Smartsheet sigue como fuente de verdad; nuestro servicio sólo agrega lo que no da bien.
+Opciones, de menor a mayor esfuerzo:
+- Validación de datos: Record IDs duplicados o mal formados, filas sin diseñador, relaciones rotas entre hojas. Sólo lectura.
+- Bandeja personal por persona (sus filas asignadas en todas las hojas), con login OAuth para que cada cambio quede a su nombre. Cubre parte de Dynamic View y de la vista "mis tareas" de Jira.
+- Registro de cambios en vivo con webhooks (disponibles en el plan): cada cambio de fila o celda en las hojas elegidas, guardado por nuestro servicio. Suple en parte Event Reporting (no ve permisos ni accesos). Exige una URL pública HTTPS y persistencia.
+- Tiempo en cada estado y tareas atascadas (al estilo de Jira), calculado con ese registro.
+Fuera de alcance: reemplazar Jira (tableros, flujos, SLA completos) o un CRM.
+
 ### PEN-12 Exportar
 
 Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.

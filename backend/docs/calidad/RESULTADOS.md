@@ -77,3 +77,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
   - 7 días: 2042 modificadas, 3 editores. 365 días: 2052, 5 editores.
   - Historial de una fila: 55 columnas con valor, 0 fallidas, 105 cambios, 10,9 s.
   - Log: 0 escrituras hacia Smartsheet. Instancia de prueba detenida.
+
+## 2026-10-16 -05:00 Webhooks y Event Reporting
+
+- `/events` con `since`, `streamPosition` y `maxCount`: 403 1013 en las tres.
+- `/webhooks?includeAll=true`: 400 1018 (`includeAll` retirado, B-09). `/webhooks?pageSize=100&page=1`: 200; 1 webhook `ENABLED`, alcance `sheet`, de Data Uploader de Smartsheet (`attachment.created`). Los webhooks están disponibles en el plan.

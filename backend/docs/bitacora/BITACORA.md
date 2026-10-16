@@ -86,3 +86,10 @@ Estado: terminada
 Cambios: B-08 precisado (complemento de pago aun en Enterprise); PEN-22.
 Evidencia: `/events` 403 1013 con tres variantes de parámetros; documentación y comunidad de Smartsheet.
 Notas: el usuario preguntó si siendo Enterprise sí tendría el registro.
+
+## 2026-10-16 -05:00 Webhooks, includeAll retirado y propuesta de servicios propios
+
+Estado: terminada (investigación)
+Cambios: B-09, PEN-23, PEN-24; resultados de webhooks.
+Evidencia: `calidad/RESULTADOS.md`.
+Notas: el usuario preguntó si podemos cubrir lo que Smartsheet hace mal sin Jira ni Salesforce.

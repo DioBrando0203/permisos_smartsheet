@@ -57,3 +57,11 @@ Síntoma: `GET /2.0/events` responde 403 `errorCode` 1013.
 Causa: Event Reporting es un complemento de pago (premium add-on), aun en el plan Enterprise; según la documentación de Smartsheet sólo se ofrece en Enterprise y Advanced Work Management. El token es de un administrador del sistema (requisito cumplido), así que el 1013 indica que el complemento no está contratado. Verificado de nuevo el 2026-10-16 con `since`, `streamPosition` y `maxCount`: mismo 1013. La API no informa el plan de la cuenta.
 Consecuencia: el panel no puede saber quién compartió, quitó un acceso o borró una fila. Sí puede leer la última modificación de cada fila y el historial de cada celda.
 Prevención: no prometer un historial completo; si el plan cambia, `/events` sería la fuente principal (PEN-21).
+
+## B-09 `includeAll` retirado en algunos endpoints
+
+Fecha: 2026-10-16. Estado: abierto (riesgo).
+Síntoma: `GET /2.0/webhooks?includeAll=true` responde 400 `errorCode` 1018: "The 'includeAll' parameter has been deprecated… use pagination parameters".
+Causa: Smartsheet está retirando `includeAll` en favor de `page` y `pageSize`.
+Riesgo: `client._get_all` usa `includeAll=true` en `/sheets`, `/users`, `/contacts`, `/groups`, columnas e historial de celdas; hoy funcionan, pero pueden empezar a fallar igual. Junto con B-06 (corte en 100 sin avisar).
+Prevención: cambiar `_get_all` a paginación explícita (`pageSize` y `page` hasta recibir menos que `pageSize`) con prueba; prioridad alta antes del frontend.
