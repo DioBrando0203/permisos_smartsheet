@@ -29,3 +29,10 @@ Estado: terminada
 Cambios: agregado `frontend/.env` local con su plantilla `.env.example` y carga explícita de variables en Vite; vacío sigue automáticamente el puerto de `backend/.port` y permite forzar un backend con `VITE_BACKEND_URL`. Mejorada la base UI: diálogo con id accesible, foco inicial en Cancelar y devolución de foco; búsqueda limpia con Esc; los errores iniciales usan su código `ApiError`; las invalidaciones usan exclusivamente `queryKeys`. Los tipos crudos de salud y cuenta se centralizaron en `lib/types.ts` y se ampliaron las pruebas MSW para K-03, K-04 y K-05.
 Evidencia: `npm run build` pasó con `.env` y con `VITE_BACKEND_URL=http://127.0.0.1:8710`; `npm run lint`, `npm test` (4 pruebas) y `npm run format:check` pasaron a las 16:56 -05:00. `npm audit --omit=dev` y `npm audit`: 0 vulnerabilidades.
 Notas: no se adelantó F1 ni se llamó a Smartsheet.
+
+## 2026-10-16 17:17 -05:00 Corrección de advertencia E2E
+
+Estado: terminada
+Cambios: configurado Playwright con directorio exclusivo `e2e/`; antes tomaba erróneamente pruebas de Vitest desde `src/` y fallaba con un error interno. Agregados los dos casos F0 explícitamente omitidos para que los comandos E2E y visual sean ejecutables sin declarar resultados de flujos que aún no existen.
+Evidencia: `npm run build`, `npm run lint`, `npm test` (4 pruebas), `npm run test:e2e` (1 omitida), `npm run test:visual` (1 omitida) y `npm run format:check` pasaron a las 17:17 -05:00.
+Notas: las pruebas funcionales E2E empiezan en F1 y las visuales en F6, conforme a `PLAN_CALIDAD.md`.

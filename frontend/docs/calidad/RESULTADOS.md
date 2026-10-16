@@ -17,3 +17,9 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm test`: pasa. 1 archivo y 4 pruebas: éxito, error de backend, 422 y backend inaccesible con MSW.
 - `npm run format:check`: pasa.
 - `npm audit --omit=dev` y `npm audit`: pasan, 0 vulnerabilidades.
+
+## 2026-10-16 17:17 -05:00 Corrección de runners de prueba
+
+- `npm run build`, `npm run lint`, `npm test` (4 pruebas) y `npm run format:check`: pasan.
+- `npm run test:e2e`: pasa. 1 caso marcado omitido: F1 define el primer flujo funcional.
+- `npm run test:visual`: pasa. 1 caso marcado omitido: F6 define las primeras capturas.
