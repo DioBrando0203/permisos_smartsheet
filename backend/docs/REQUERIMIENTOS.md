@@ -37,6 +37,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - RQ-22 Toda la organización: hojas de otras personas visibles y de sólo consulta (PEN-14).
 - RQ-23 Automatizaciones: estado y problemas de alertas y flujos de Smartsheet por hoja y en toda la cuenta (SPEC-B10).
 - RQ-24 Referencias: valores de una columna que no están en una hoja catálogo, por hoja y en toda la cuenta (SPEC-B11).
+- RQ-25 Carga de diseñadores: trabajo abierto, en espera y cerrado por diseñador y fase, y si tiene acceso a sus hojas (SPEC-B12).
 - RQ-19 Actividad: filas modificadas por período, quién edita, editores sin cambios e historial por fila o celda, directo de Smartsheet (SPEC-B08).
 - RQ-18 Revisión de cuenta: alertas de todas las hojas agregadas por hoja y por persona (SPEC-B07).
 - RQ-17 Operaciones masivas: copiar permisos entre hojas y quitar a una persona de varias hojas, con simulación por defecto (SPEC-B06).
@@ -213,6 +214,12 @@ Hacer: `GET /api/automations` (toda la cuenta) y `GET /api/sheets/{id}/automatio
 
 Prioridad: media. Alcance: backend y frontend. Estado: propuesta; exige OAuth (PEN-08) y escrituras reales (PEN-07).
 Tipo (ADR-B15): Smartsheet ya asigna; el panel sólo vale si es mejor: asignar muchas filas a la vez con vista previa y ver la carga de cada diseñador antes de asignar. Escribe en la misma columna de Smartsheet, así sus automatizaciones siguen funcionando.
+
+### PEN-27 Estados cerrados confirmados por el usuario
+
+Prioridad: media. Alcance: configuración. Estado: pendiente; requiere decisión del usuario.
+Situación: `APP_CLOSED_STATUSES` usa una lista inicial supuesta. En la cuenta real la fase 4 (Permit) concentra el trabajo "abierto"; si estados como "4. Permit Approved" significan trabajo terminado para el diseñador, la carga está inflada.
+Hacer: que el usuario indique qué estados son cerrados para el diseñador; actualizar `.env` y RESULTADOS.
 
 ### PEN-12 Exportar
 

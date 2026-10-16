@@ -38,6 +38,7 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/sheets/{sheet_id}/automations?refresh=`: `SheetAutomations`.
 - `GET /api/sheets/{sheet_id}/references?column=&catalog_sheet=&catalog_column=&refresh=`: `SheetReferences` (SPEC-B11).
 - `GET /api/references?column=&catalog_sheet=&catalog_column=&q=&refresh=`: `AccountReferences`.
+- `GET /api/designers?q=&designer_columns=&status_column=&closed_status=&refresh=`: `DesignerWorkload` (SPEC-B12); valores por defecto desde `APP_DESIGNER_COLUMNS`, `APP_STATUS_COLUMN`, `APP_CLOSED_STATUSES`.
 - `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
 - `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.
 - Ejemplos en Swagger: plan 2026 `1842596423880580` (permalink `QMFVM7v3V23HqwgmCwHg5wF8XHFr5GCG4WJjXJF1`) y plan 2025 `5750050894335876`.
@@ -160,6 +161,12 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 - `SheetReferences`: `sheet`, `column`, `catalog_sheet`, `catalog_column`, `catalog_values_count`, `checked_rows` (con valor), `missing_count`, `missing` (`QualityIssue[]` por valor, hasta 200 filas), `truncated`.
 - `AccountReferences`: `column`, `catalog_sheet`, `catalog_column`, `catalog_values_count`, `sheets_checked`, `sheets_without_column`, `missing_total`, `by_value` (`[{value, sheets, rows}]`, el que falta en más hojas primero), `sheets` (`[{sheet_id, sheet_name, missing_count, missing_values}]`), `failed_sheets`.
+
+### DesignerWorkload
+
+- `designer_columns`, `status_column`, `closed_statuses`, `sheets_reviewed`, `sheets_with_designers`, `open_total`, `on_hold_total`, `closed_total`, `header_like_rows`, `failed_sheets`.
+- `designers`: `[{name, in_catalog, person: {key, email, name} | null, ambiguous, open, on_hold, closed, by_phase, sheets_without_access, sheets: [{sheet_id, sheet_name, open, on_hold, closed, has_access, access_level}]}]`, más trabajo abierto primero.
+- `sheet_gaps`: `[{sheet_id, sheet_name, open_without_designer, without_status}]`.
 
 ### CopyRequest y RevokeRequest
 

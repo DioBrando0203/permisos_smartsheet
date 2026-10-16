@@ -45,7 +45,7 @@ class ReferenceService:
         refresh: bool = False,
     ) -> SheetReferences:
         sheet = await self._sheets.get(sheet_id)
-        catalog = await self._catalog(catalog_sheet, catalog_column, refresh=refresh)
+        catalog = await self.catalog(catalog_sheet, catalog_column, refresh=refresh)
         target, rows = await self._column_rows(sheet_id, column, refresh=refresh)
         issues = quality_rules.missing_references(rows, target.id, catalog.values)
         shown, truncated = limit_issues(issues)
@@ -70,7 +70,7 @@ class ReferenceService:
         *,
         refresh: bool = False,
     ) -> AccountReferences:
-        catalog = await self._catalog(catalog_sheet, catalog_column, refresh=refresh)
+        catalog = await self.catalog(catalog_sheet, catalog_column, refresh=refresh)
         sheets = [
             sheet
             for sheet in await self._sheets.raw_sheets(refresh=refresh)
@@ -99,7 +99,8 @@ class ReferenceService:
             failed_sheets=failed,
         )
 
-    async def _catalog(self, sheet_ref: str, column: str, *, refresh: bool) -> Catalog:
+    async def catalog(self, sheet_ref: str, column: str, *, refresh: bool = False) -> Catalog:
+        """Valores válidos de la columna de una hoja catálogo, normalizados."""
         sheet_id = await self._sheets.resolve_id(sheet_ref)
         target, rows = await self._column_rows(sheet_id, column, refresh=refresh)
         return Catalog(sheet_id, target, quality_rules.normalized_values(rows, target.id))

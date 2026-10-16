@@ -25,6 +25,7 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `specs/SPEC-B08-actividad.md`: actividad de una hoja e historial de filas, directo de Smartsheet.
 - `specs/SPEC-B09-calidad-datos.md`: repetidos, vacíos y formato en columnas de una hoja.
 - `specs/SPEC-B10-automatizaciones.md`: salud de las alertas y flujos de Smartsheet.
+- `specs/SPEC-B12-carga-disenadores.md`: trabajo abierto de cada diseñador por fase y si tiene acceso a sus hojas.
 - `specs/SPEC-B11-referencias.md`: valores que no existen en una hoja catálogo (por ejemplo, diseñadores).
 - `decisiones/ADR.md`: decisiones con contexto y consecuencias.
 - `reglas_programacion/REGLAS.md`: código limpio (PY-xx) y reglas de Smartsheet (SM-xx).

@@ -120,3 +120,13 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
   - Toda la cuenta, `Designer1` (11,6 s): 14 hojas con la columna, 95 sin ella, 227 filas fuera del catálogo; el texto literal "Designer1" aparece como valor en 13 hojas (fila de encabezado copiada como dato).
   - Toda la cuenta, `Designer2` (2,8 s): 15 hojas, 705 filas fuera del catálogo; una persona concentra 557.
   - Log: 0 escrituras y 0 líneas de httpx con URL. Instancia detenida.
+
+## 2026-10-16 -05:00 Carga y acceso de diseñadores (SPEC-B12)
+
+- `pytest`: 117 aprobadas. `ruff check` y `ruff format --check`: sin observaciones.
+- Cuenta real, `GET /api/designers` (13,8 s, primera lectura): 110 hojas, 15 con columnas de diseñador, 0 fallidas; 1249 asignaciones abiertas, 12 en espera, 1789 cerradas (con la lista inicial de cerrados); 13 filas de encabezado copiadas excluidas.
+- 27 diseñadores: 18 identificados en el directorio por nombre, 0 ambiguos, 9 fuera del catálogo.
+- 17 diseñadores tienen trabajo abierto en hojas que no tienen compartidas (entre 2 y 6 hojas cada uno).
+- La fase 4 concentra la mayor parte del trabajo abierto: depende de qué estados se consideren cerrados (PEN-27).
+- Hojas con más filas abiertas sin diseñador: planes 2026 de Crown Castle (409) y Blue Stream (293) y sus copias.
+- Log: 0 escrituras. Instancia detenida.

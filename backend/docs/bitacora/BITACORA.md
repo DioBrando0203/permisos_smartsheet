@@ -114,3 +114,10 @@ Estado: terminada
 Cambios: SPEC-B11 (`services/references.py`, `routes/references.py`, `quality_rules.normalized_values` y `missing_references`; `QualityService.rows`, `find_column` y `limit_issues` públicos); B-10 (httpx en WARNING).
 Evidencia: `calidad/RESULTADOS.md`.
 Notas: el usuario aprobó seguir con la validación entre hojas; no hay hoja maestra de Record IDs, se usó el catálogo de diseñadores. Nombres reales sólo se mostraron al usuario en la conversación, no en docs.
+
+## 2026-10-16 -05:00 Carga y acceso de diseñadores (SPEC-B12)
+
+Estado: terminada
+Cambios: SPEC-B12; `services/workload_rules.py`, `designers.py`; `models/designers.py`; `routes/designers.py`; configuración `APP_DESIGNER_*`, `APP_STATUS_COLUMN`, `APP_CLOSED_STATUSES` (en `.env` y `.env.example`); `ReferenceService.catalog` público; PEN-27.
+Evidencia: `calidad/RESULTADOS.md`.
+Notas: el usuario pidió un servicio que Smartsheet no tenga y que combine los endpoints existentes (ADR-B15).

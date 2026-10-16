@@ -35,6 +35,15 @@ class Settings(BaseSettings):
     # Puerto real en que arrancó (lo fija run.py, que puede elegir uno libre al azar):
     # sus orígenes se permiten para que Swagger pueda escribir desde ese mismo puerto.
     app_port: int | None = None
+    # Carga de diseñadores (SPEC-B12): columnas, estado y qué estados cuentan como cerrados.
+    app_designer_columns: str = "Designer1,Designer2"
+    app_status_column: str = "Project Status"
+    app_closed_statuses: str = (
+        "CANCELLED,COMPLETE,8. Process completed,4. Permit Cancelled,4. Permit Closed,"
+        "4. No Permit Required,NO PERMIT REQUIRED"
+    )
+    app_designer_catalog_sheet: str = ""
+    app_designer_catalog_column: str = "Designer"
 
     @property
     def has_token(self) -> bool:

@@ -41,6 +41,7 @@ app/
   api/routes/references.py      GET /sheets/{id}/references, GET /references
   api/routes/export.py           GET /export/access.csv
   api/routes/automations.py      GET /automations, GET /sheets/{id}/automations
+  api/routes/designers.py        GET /designers
   api/routes/bulk.py             POST /sheets/{id}/shares/copy, POST /users/{key}/revoke (simulación por defecto)
   core/config.py                 Settings (pydantic-settings) con token SecretStr, read_only, Host y Origin
   core/errors.py                 AppError(code, message, status) y manejador único
@@ -78,6 +79,8 @@ app/
   services/export.py             CSV para Excel de permisos por hoja (sin guardar en el servidor)
   services/automation_rules.py   diagnóstico puro de una automatización (tabla PROBLEMS)
   services/automations.py        AutomationService: reglas cruzadas con columnas y permisos
+  services/workload_rules.py     reglas puras de carga: estado, fase, nombres por fila, persona por nombre
+  services/designers.py          DesignerService: carga y acceso de diseñadores entre hojas
   services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
   services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService
 ```
