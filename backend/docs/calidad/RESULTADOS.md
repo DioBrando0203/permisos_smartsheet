@@ -97,3 +97,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
   - Calidad del plan 2026 (2053 filas, 2,3 s): `Record ID` 98 filas repetidas en 16 valores (el más repetido es el texto "By email", no un identificador) y 351 no numéricas; `Design Ticket` 4 repetidas; `Permit #` 106 repetidas en 37 valores; `Designer1` vacío en 1391 filas; `Project Status` vacío en 12.
   - CSV `q=crown castle`: 163 filas, BOM presente, 0 hojas fallidas, nombre `accesos-smartsheet-2026-10-16.csv`.
   - Log: 0 escrituras hacia Smartsheet. Instancia detenida.
+
+## 2026-10-16 -05:00 Automatizaciones de Smartsheet (sólo lectura)
+
+- `GET /2.0/sheets/{id}/automationrules`: 200. Plan 2026: 2 reglas de notificación, ambas apagadas, 0 destinatarios; una desactivada por Smartsheet con `NO_POTENTIAL_RECIPIENTS`.
+- 110 hojas del token: 63 con automatizaciones, 80 reglas (79 notificaciones, 1 aprobación); 9 habilitadas y 71 apagadas; 15 apagadas por Smartsheet por `NO_POTENTIAL_RECIPIENTS`; 8 habilitadas sin destinatarios explícitos.
+- `Designer1` y `Designer2` son `PICKLIST` (texto), no `CONTACT_LIST`: una alerta "al contacto de la celda" no tiene a quién avisar. Causa probable de `NO_POTENTIAL_RECIPIENTS`; sin confirmar regla por regla.

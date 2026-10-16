@@ -200,6 +200,18 @@ Opciones, de menor a mayor esfuerzo:
 - Tiempo en cada estado y tareas atascadas (al estilo de Jira), calculado con ese registro.
 Fuera de alcance: reemplazar Jira (tableros, flujos, SLA completos) o un CRM (ADR-B15). Cada opción debe ser algo que Smartsheet no tiene, o que tiene pero aquí es mejor, sin entorpecer el trabajo actual.
 
+### PEN-25 Salud de las automatizaciones
+
+Prioridad: alta. Alcance: backend y frontend. Estado: pendiente.
+Tipo (ADR-B15): Smartsheet no avisa que sus alertas están apagadas o sin destinatarios; el panel sí. No cambia nada en las hojas.
+Situación: 80 reglas en 63 hojas; 71 apagadas, 15 por `NO_POTENTIAL_RECIPIENTS`.
+Hacer: `GET /api/automations` (toda la cuenta) y `GET /api/sheets/{id}/automations`: regla, estado, motivo, acción, destinatarios y columnas de responsable que no son de tipo contacto. Reactivar o corregir una regla sería una escritura (PEN-07).
+
+### PEN-26 Asignación desde el panel (propuesta)
+
+Prioridad: media. Alcance: backend y frontend. Estado: propuesta; exige OAuth (PEN-08) y escrituras reales (PEN-07).
+Tipo (ADR-B15): Smartsheet ya asigna; el panel sólo vale si es mejor: asignar muchas filas a la vez con vista previa y ver la carga de cada diseñador antes de asignar. Escribe en la misma columna de Smartsheet, así sus automatizaciones siguen funcionando.
+
 ### PEN-12 Exportar
 
 Prioridad: baja. Alcance: backend y frontend. Estado: terminada (2026-10-16): `GET /api/export/access.csv`.
