@@ -182,7 +182,8 @@ Hacer: confirmar en el Admin Center o con Smartsheet si se contrata; si sí, lee
 
 ### PEN-23 Paginación explícita en el cliente
 
-Prioridad: alta. Alcance: backend. Estado: pendiente.
+Prioridad: alta. Alcance: backend. Estado: terminada (2026-10-16).
+Tipo (ADR-B15): mejora interna; evita que el panel deje de funcionar cuando Smartsheet retire `includeAll`.
 Hacer: `_get_all` con `page` y `pageSize` en vez de `includeAll` (B-09, B-06); pruebas con varias páginas y con `totalPages=-1`.
 
 ### PEN-24 Servicios propios sobre Smartsheet (propuesta, requiere decisión)

@@ -16,7 +16,7 @@ Un único punto que habla con la API 2.0 de Smartsheet: autentica, reintenta, pa
 4. Las escrituras (POST, PATCH, DELETE) sólo se reintentan ante 429 o 503, donde Smartsheet no aplicó el cambio; ante 500 o error de red no se reintentan para no duplicar (SM-04).
 5. Paginación:
    - Endpoints `/shares`: seguir `lastKey` mientras venga.
-   - Endpoints clásicos (`/sheets`, `/users`, `/groups`): `includeAll=true`; si la respuesta trae `totalPages > 1`, pedir el resto por `page`.
+   - Endpoints clásicos (`/sheets`, `/users`, `/groups`, `/contacts`, columnas, historial): `page` y `pageSize=100`, sin `includeAll` (retirado en algunos endpoints, B-09). Corta con página incompleta, con `pageNumber` distinto del pedido (`/sheets` repite la última, `/users/sheets` responde 0) o al llegar a `totalPages` (puede ser -1, B-06). Tope de 1000 páginas.
 6. Traducción de errores (cuerpo de Smartsheet `{errorCode, message, refId}`):
    - 401 o `errorCode` 1002/1003: `SMARTSHEET_AUTH` (502 al cliente): token inválido o vencido.
    - 403 o 1004: `SMARTSHEET_FORBIDDEN` (403).
@@ -41,6 +41,7 @@ Un único punto que habla con la API 2.0 de Smartsheet: autentica, reintenta, pa
 - CA-02: 429 con `Retry-After` espera y reintenta; al agotar, `SMARTSHEET_RATE_LIMITED`. Prueba: `test_client.py::test_rate_limit_retries_then_fails`.
 - CA-03: GET con 500 se reintenta; POST con 500 no. Prueba: `test_client.py::test_writes_are_not_retried_on_500`.
 - CA-04: `lastKey` se sigue hasta el final. Prueba: `test_client.py::test_follows_last_key`.
+- CA-10: paginación explícita sin `includeAll`, total desconocido y última página repetida. Prueba: `test_client.py::test_pagination_without_include_all`, `::test_unknown_total_stops_on_empty_page_zero`, `::test_repeated_last_page_is_not_duplicated`.
 - CA-05: ids numéricos se mapean a texto. Prueba: `test_client.py::test_read_retries_on_500_then_succeeds` (id numérico a texto).
 - CA-06: 401 se traduce a `SMARTSHEET_AUTH` con `ref_id`. Prueba: `test_client.py::test_auth_error_is_translated`.
 - CA-07: dos lecturas simultáneas de la misma clave hacen una sola llamada. Prueba: `test_permissions.py::test_cache_single_flight_and_invalidation`.

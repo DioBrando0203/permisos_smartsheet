@@ -82,3 +82,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - `/events` con `since`, `streamPosition` y `maxCount`: 403 1013 en las tres.
 - `/webhooks?includeAll=true`: 400 1018 (`includeAll` retirado, B-09). `/webhooks?pageSize=100&page=1`: 200; 1 webhook `ENABLED`, alcance `sheet`, de Data Uploader de Smartsheet (`attachment.created`). Los webhooks están disponibles en el plan.
+
+## 2026-10-16 -05:00 Paginación explícita (PEN-23)
+
+- Comportamiento real: `/users/sheets` con `pageSize=100` da 100 + 14 y la página 3 vuelve con `pageNumber` 0 y vacía; `/sheets` con `pageSize=60` repite la página 2 al pedir la 3; `/contacts` acepta `pageSize=1000`. `/sheets` tiene ahora 110 hojas (10 creadas desde el 2026-10-12; `includeAll` también da 110).
+- `pytest`: 90 aprobadas (3 nuevas de paginación).

@@ -38,7 +38,7 @@ Prevención: el frontend no puede usar `id` sola como clave de fila; usar `id` +
 
 ## B-06 `includeAll=true` no siempre trae todo
 
-Fecha: 2026-10-12. Estado: abierto (PEN-14).
+Fecha: 2026-10-12. Estado: resuelto (2026-10-16, PEN-23).
 Síntoma: `GET /2.0/users/sheets?includeAll=true` devuelve 100 elementos con `totalPages=-1`, cuando con `pageSize=1000` hay 104.
 Causa: ese endpoint no informa el total y corta en 100 pese a `includeAll`.
 Prevención: para endpoints que respondan `totalPages=-1`, paginar por `page` hasta recibir menos de `pageSize`. Revisar `client._get_all` antes de usar `/users/sheets`. `/sheets`, `/contacts`, `/users` y `/groups` hoy devuelven totales coherentes.
@@ -60,7 +60,7 @@ Prevención: no prometer un historial completo; si el plan cambia, `/events` ser
 
 ## B-09 `includeAll` retirado en algunos endpoints
 
-Fecha: 2026-10-16. Estado: abierto (riesgo).
+Fecha: 2026-10-16. Estado: resuelto (2026-10-16, PEN-23): el cliente ya no usa `includeAll`.
 Síntoma: `GET /2.0/webhooks?includeAll=true` responde 400 `errorCode` 1018: "The 'includeAll' parameter has been deprecated… use pagination parameters".
 Causa: Smartsheet está retirando `includeAll` en favor de `page` y `pageSize`.
 Riesgo: `client._get_all` usa `includeAll=true` en `/sheets`, `/users`, `/contacts`, `/groups`, columnas e historial de celdas; hoy funcionan, pero pueden empezar a fallar igual. Junto con B-06 (corte en 100 sin avisar).

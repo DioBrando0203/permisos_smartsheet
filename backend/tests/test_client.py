@@ -94,3 +94,43 @@ async def test_missing_token_never_calls_smartsheet() -> None:
     assert error.value.code == "TOKEN_MISSING"
     assert router.calls.call_count == 0
     await client.aclose()
+
+
+def _page(number: int, ids: range, total_pages: int, size: int = 100) -> httpx.Response:
+    items = [{"id": n, "email": f"p{n}@example.com"} for n in ids]
+    body = {"pageNumber": number, "pageSize": size, "totalPages": total_pages, "data": items}
+    return httpx.Response(200, json=body)
+
+
+async def test_pagination_without_include_all(ss_client) -> None:
+    with respx.mock(base_url=BASE) as router:
+        route = router.get("/contacts").mock(
+            side_effect=[_page(1, range(100), 2), _page(2, range(100, 130), 2)]
+        )
+        contacts = await ss_client.list_contacts()
+    assert len(contacts) == 130
+    params = [call.request.url.params for call in route.calls]
+    assert [p["page"] for p in params] == ["1", "2"]
+    assert all("includeAll" not in p and p["pageSize"] == "100" for p in params)
+
+
+async def test_unknown_total_stops_on_empty_page_zero(ss_client) -> None:
+    with respx.mock(base_url=BASE) as router:
+        route = router.get("/users").mock(
+            side_effect=[
+                _page(1, range(100), -1),
+                _page(2, range(100, 200), -1),
+                _page(0, range(0), 0),
+            ]
+        )
+        users = await ss_client.list_users()
+    assert len(users) == 200 and route.call_count == 3
+
+
+async def test_repeated_last_page_is_not_duplicated(ss_client) -> None:
+    with respx.mock(base_url=BASE) as router:
+        route = router.get("/groups").mock(
+            side_effect=[_page(1, range(100), -1), _page(1, range(100), -1)]
+        )
+        groups = await ss_client.list_groups()
+    assert len(groups) == 100 and route.call_count == 2

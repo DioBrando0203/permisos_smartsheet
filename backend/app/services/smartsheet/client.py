@@ -39,6 +39,10 @@ _MAX_BACKOFF_SECONDS = 30.0
 _SHARING_INCLUDE = "ITEM,WORKSPACE"
 # Máximo de filas por página que admite Smartsheet al leer una hoja.
 _ROWS_PAGE = 500
+# Tamaño de página de los listados; 100 lo aceptan todos los endpoints verificados.
+_PAGE_SIZE = 100
+# Tope de seguridad: evita un ciclo infinito si Smartsheet repite páginas completas.
+_MAX_PAGES = 1000
 
 
 class SmartsheetClient:
@@ -140,13 +144,28 @@ class SmartsheetClient:
 
     # Transporte
 
-    async def _get_all(self, path: str) -> list[dict[str, Any]]:
-        """Endpoints clásicos: `includeAll=true` y, si aun así hay más páginas, por `page`."""
-        data = await self._request("GET", path, params={"includeAll": "true"})
-        items = list(data.get("data", []))
-        for page in range(2, int(data.get("totalPages") or 1) + 1):
-            more = await self._request("GET", path, params={"includeAll": "true", "page": page})
-            items.extend(more.get("data", []))
+    async def _get_all(
+        self, path: str, params: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
+        """Endpoints clásicos con paginación explícita (`page`, `pageSize`).
+
+        No usa `includeAll`: Smartsheet ya lo retiró en algunos endpoints (B-09). Corta cuando
+        llega una página incompleta, cuando Smartsheet devuelve otra página que la pedida
+        (`/sheets` repite la última, `/users/sheets` responde `pageNumber` 0) o al llegar a
+        `totalPages`, que puede venir como -1 (B-06).
+        """
+        items: list[dict[str, Any]] = []
+        for page in range(1, _MAX_PAGES + 1):
+            page_params = (params or {}) | {"pageSize": _PAGE_SIZE, "page": page}
+            data = await self._request("GET", path, params=page_params)
+            batch = data.get("data", [])
+            if int(data.get("pageNumber") or page) != page:
+                return items
+            items.extend(batch)
+            total_pages = int(data.get("totalPages") or 0)
+            if len(batch) < _PAGE_SIZE or 0 < total_pages <= page:
+                return items
+        logger.warning("smartsheet GET %s -> corte en %d páginas", path, _MAX_PAGES)
         return items
 
     async def _get_items(self, path: str, params: dict[str, Any]) -> list[dict[str, Any]]:
