@@ -37,6 +37,8 @@ app/
   api/routes/people.py           GET /users, GET /users/{key}, GET /contacts, GET /groups, GET /review
   api/routes/reports.py          GET /sheets/compare, /sheets/access-summary, /sheets/{id}/audit (registrada antes que sheets)
   api/routes/activity.py         GET /sheets/{id}/activity, GET /sheets/{id}/rows/{row_id}/history
+  api/routes/quality.py          GET /sheets/{id}/columns, GET /sheets/{id}/quality
+  api/routes/export.py           GET /export/access.csv
   api/routes/bulk.py             POST /sheets/{id}/shares/copy, POST /users/{key}/revoke (simulación por defecto)
   core/config.py                 Settings (pydantic-settings) con token SecretStr, read_only, Host y Origin
   core/errors.py                 AppError(code, message, status) y manejador único
@@ -58,7 +60,7 @@ app/
     rules.py                     lock_reason, is_assignable, find_duplicates, share_sort_key
   services/cache.py              TtlCache con single flight, invalidación y loaded_at
   services/search.py             búsqueda sin tildes ni mayúsculas
-  services/sheets.py             SheetService
+  services/sheets.py             SheetService: hojas del token y de la organización, columnas con caché
   services/shares.py             ShareService: CRUD con modo solo lectura y reglas
   services/directory.py          build_directory: agregación pura de contactos, organización y permisos
   services/people.py             PeopleService: directorio, detalle, contactos, organización, grupos, me
@@ -67,6 +69,9 @@ app/
   services/account_review.py     AccountReviewService: reglas de auditoría sobre toda la cuenta
   services/activity_rules.py     cálculos puros de actividad: período, editores, editores sin cambios, cuenta dominante
   services/activity.py           ActivityService: filas con autoría e historial de celdas (caché rows: y columns:)
+  services/quality_rules.py      revisiones puras: repetidos, vacíos y formato con límites
+  services/quality.py            QualityService: lee sólo las columnas revisadas (caché cells:)
+  services/export.py             CSV para Excel de permisos por hoja (sin guardar en el servidor)
   services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
   services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService
 ```

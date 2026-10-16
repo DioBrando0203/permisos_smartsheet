@@ -10,7 +10,9 @@ from app.services.account_review import AccountReviewService
 from app.services.activity import ActivityService
 from app.services.bulk import BulkService
 from app.services.cache import TtlCache
+from app.services.export import ExportService
 from app.services.people import PeopleService
+from app.services.quality import QualityService
 from app.services.reports import ReportService
 from app.services.shares import ShareService
 from app.services.sheets import SheetService
@@ -53,6 +55,8 @@ class Services:
     bulk: BulkService
     review: AccountReviewService
     activity: ActivityService
+    quality: QualityService
+    export: ExportService
 
 
 def build_services(settings: Settings, client: SmartsheetClient | None = None) -> Services:
@@ -65,8 +69,21 @@ def build_services(settings: Settings, client: SmartsheetClient | None = None) -
     bulk = BulkService(sheets, shares, people)
     review = AccountReviewService(sheets, people, reports)
     activity = ActivityService(client, cache, sheets, shares)
+    quality = QualityService(client, cache, sheets)
+    export = ExportService(sheets, people)
     return Services(
-        settings, client, cache, sheets, shares, people, reports, bulk, review, activity
+        settings,
+        client,
+        cache,
+        sheets,
+        shares,
+        people,
+        reports,
+        bulk,
+        review,
+        activity,
+        quality,
+        export,
     )
 
 

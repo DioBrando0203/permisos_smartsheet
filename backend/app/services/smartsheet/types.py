@@ -1,6 +1,6 @@
 """Datos internos ya mapeados desde Smartsheet. Ids siempre como texto (ADR-B07)."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 from app.services.permissions import AccessLevel, ShareScope, ShareType
@@ -10,9 +10,12 @@ from app.services.permissions import AccessLevel, ShareScope, ShareType
 class RawSheet:
     id: str
     name: str
-    access_level: AccessLevel
+    # None: hoja de otra persona de la organización, no compartida con el token (PEN-14).
+    access_level: AccessLevel | None
     permalink: str | None
     modified_at: datetime | None
+    owner_email: str | None = None
+    in_my_list: bool = True
 
 
 @dataclass(frozen=True)
@@ -34,6 +37,7 @@ class RawUser:
     name: str | None
     is_admin: bool
     status: str | None
+    last_login: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -89,6 +93,7 @@ class RawColumn:
     title: str
     index: int
     primary: bool
+    type: str | None = None
 
 
 @dataclass(frozen=True)
@@ -102,6 +107,8 @@ class RawRow:
     created_by: RawAuthor | None
     modified_at: datetime | None
     modified_by: RawAuthor | None
+    # Texto visible por id de columna, sólo de las columnas pedidas.
+    cells: dict[str, str | None] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

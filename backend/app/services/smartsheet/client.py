@@ -65,6 +65,10 @@ class SmartsheetClient:
     async def list_sheets(self) -> list[RawSheet]:
         return [mappers.to_sheet(item) for item in await self._get_all("/sheets")]
 
+    async def list_org_sheets(self) -> list[RawSheet]:
+        """Hojas de toda la organización (sólo administrador del sistema)."""
+        return [mappers.to_org_sheet(item) for item in await self._get_all("/users/sheets")]
+
     async def get_sheet_access_level(self, sheet_id: str) -> RawSheet:
         """Lee la hoja sin filas: sólo para conocer el nivel actual del token (SM-06)."""
         params = {"pageSize": 1, "page": 1, "exclude": "nonexistentCells"}
@@ -80,7 +84,8 @@ class SmartsheetClient:
         return mappers.to_share(data)
 
     async def list_users(self) -> list[RawUser]:
-        return [mappers.to_user(item) for item in await self._get_all("/users")]
+        items = await self._get_all("/users", {"include": "lastLogin"})
+        return [mappers.to_user(item) for item in items]
 
     async def list_groups(self) -> list[RawGroup]:
         return [mappers.to_group(item) for item in await self._get_all("/groups")]
@@ -92,20 +97,27 @@ class SmartsheetClient:
         items = await self._get_all(f"/sheets/{sheet_id}/columns")
         return [mappers.to_column(item) for item in items]
 
-    async def list_rows_with_authors(self, sheet_id: str, label_column_id: str) -> list[RawRow]:
-        """Todas las filas con quién las creó y modificó; sólo la columna de etiqueta."""
+    async def list_rows(
+        self, sheet_id: str, column_ids: list[str], *, with_authors: bool = False
+    ) -> list[RawRow]:
+        """Todas las filas, sólo con las columnas pedidas; la primera es la etiqueta.
+
+        Pedir pocas columnas mantiene liviana una hoja de miles de filas y 100+ columnas.
+        """
         rows: list[RawRow] = []
+        label = column_ids[0] if column_ids else None
         page = 1
         while True:
-            params = {
-                "include": "writerInfo",
-                "columnIds": label_column_id,
+            params: dict[str, Any] = {
+                "columnIds": ",".join(column_ids),
                 "pageSize": _ROWS_PAGE,
                 "page": page,
             }
+            if with_authors:
+                params["include"] = "writerInfo"
             data = await self._request("GET", f"/sheets/{sheet_id}", params=params)
             batch = data.get("rows", [])
-            rows.extend(mappers.to_row(item) for item in batch)
+            rows.extend(mappers.to_row(item, label) for item in batch)
             # Smartsheet repite la última página si se pide una mayor: cortar por total.
             if len(batch) < _ROWS_PAGE or len(rows) >= int(data.get("totalRowCount") or 0):
                 return rows

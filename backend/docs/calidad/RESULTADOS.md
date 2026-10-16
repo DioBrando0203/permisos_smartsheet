@@ -87,3 +87,13 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - Comportamiento real: `/users/sheets` con `pageSize=100` da 100 + 14 y la página 3 vuelve con `pageNumber` 0 y vacía; `/sheets` con `pageSize=60` repite la página 2 al pedir la 3; `/contacts` acepta `pageSize=1000`. `/sheets` tiene ahora 110 hojas (10 creadas desde el 2026-10-12; `includeAll` también da 110).
 - `pytest`: 90 aprobadas (3 nuevas de paginación).
+
+## 2026-10-16 -05:00 Organización, última conexión, calidad de datos y CSV
+
+- `pytest`: 103 aprobadas. `ruff check` y `ruff format --check`: sin observaciones. Sin caracteres de control ni invisibles en `app/`, `tests/` y `run.py`.
+- Cuenta real, `run.py` en 8710:
+  - `/api/sheets`: 114 (110 del token y 4 de otra persona); las 4 sin nivel; permisos de una ajena: 2, todos bloqueados.
+  - Directorio `only=org`: `last_login` de los 4 usuarios: 2 conectados hoy, 1 el 2026-05-11 y 1 el 2026-06-29.
+  - Calidad del plan 2026 (2053 filas, 2,3 s): `Record ID` 98 filas repetidas en 16 valores (el más repetido es el texto "By email", no un identificador) y 351 no numéricas; `Design Ticket` 4 repetidas; `Permit #` 106 repetidas en 37 valores; `Designer1` vacío en 1391 filas; `Project Status` vacío en 12.
+  - CSV `q=crown castle`: 163 filas, BOM presente, 0 hojas fallidas, nombre `accesos-smartsheet-2026-10-16.csv`.
+  - Log: 0 escrituras hacia Smartsheet. Instancia detenida.

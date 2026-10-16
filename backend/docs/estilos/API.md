@@ -15,7 +15,7 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 - `GET /api/health`: `{"status": "ok", "smartsheet": "configured" | "missing_token", "read_only": bool}`. No llama a Smartsheet.
 - `GET /api/me`: `Me` del dueño del token.
-- `GET /api/sheets?q=&refresh=`: `SheetList`.
+- `GET /api/sheets?q=&scope=&refresh=`: `SheetList`. `scope`: `all` (defecto: las del token y las de otras personas de la organización), `mine`, `org_only`.
 - `GET /api/sheets/{sheet_id}`: `SheetSummary`.
 - `GET /api/sheets/{sheet_id}/shares?refresh=`: `ShareList`.
 - `POST /api/sheets/{sheet_id}/shares`: cuerpo `ShareCreate`; 201 con `ShareCreateResult`.
@@ -31,6 +31,9 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/review?q=&min_severity=&refresh=`: `AccountReview` (SPEC-B07); `min_severity` `high`, `medium` (defecto) o `info`.
 - `GET /api/sheets/{sheet_id}/activity?days=30&limit=100&refresh=`: `SheetActivity` (SPEC-B08).
 - `GET /api/sheets/{sheet_id}/rows/{row_id}/history?column_id=`: `RowHistory`.
+- `GET /api/sheets/{sheet_id}/columns`: `ColumnInfo[]`.
+- `GET /api/sheets/{sheet_id}/quality?unique=&required=&pattern=&refresh=`: `SheetQuality` (SPEC-B09); parámetros repetibles.
+- `GET /api/export/access.csv?q=&scope=`: CSV para Excel (`;`, UTF-8 con BOM), una fila por permiso; cabecera `X-Failed-Sheets`; fórmulas neutralizadas con `'`.
 - `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
 - `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.
 - Ejemplos en Swagger: plan 2026 `1842596423880580` (permalink `QMFVM7v3V23HqwgmCwHg5wF8XHFr5GCG4WJjXJF1`) y plan 2025 `5750050894335876`.
@@ -44,11 +47,11 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 ### SheetSummary
 
-- `id`, `name`, `access_level` (del token), `can_manage_shares`, `permalink`, `modified_at`, `has_dynamic_view` (marca manual de `APP_DYNAMIC_VIEW_SHEETS`).
+- `id`, `name`, `access_level` (del token; `null` en hojas de otras personas no compartidas con el token), `can_manage_shares`, `permalink` y `modified_at` (`null` en esas hojas), `has_dynamic_view` (marca manual de `APP_DYNAMIC_VIEW_SHEETS`), `owner_email`, `in_my_list` (`false`: sólo consulta).
 
 ### SheetList
 
-- `sheets`: `SheetSummary[]` filtradas por `q`; `total`: cantidad sin filtrar; `loaded_at`: hora de la lectura en caché.
+- `sheets`: `SheetSummary[]` filtradas por `q` y `scope`; `total`: todas sin filtrar; `total_mine`: las del token; `loaded_at`: hora de la lectura en caché.
 
 ### ShareList
 
@@ -91,7 +94,7 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 ### Person
 
-- `key` (correo en minúsculas, `group-<id>` o `user-<id>` si falta el correo), `type`, `name`, `email`, `sheet_count` (0 si no tiene acceso), `highest_level` o `null`, `is_contact`, `is_org_member`, `is_token_owner`.
+- `key` (correo en minúsculas, `group-<id>` o `user-<id>` si falta el correo), `type`, `name`, `email`, `sheet_count` (0 si no tiene acceso), `highest_level` o `null`, `is_contact`, `is_org_member`, `is_token_owner`, `last_login` (sólo usuarios de la organización).
 
 ### PersonDetail
 
@@ -138,6 +141,11 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 - `sheet_id`, `row_id`, `changes` (`[{column_id, column_title, value, modified_at, modified_by}]`, del más reciente), `columns_checked`, `failed_columns`.
 
+### ColumnInfo y SheetQuality
+
+- `ColumnInfo`: `id`, `title`, `type`, `index`, `primary`.
+- `SheetQuality`: `sheet`, `rows_total`, `checks`: `[{column, column_id, check (unique|required|pattern), pattern, issues_count, issues: [{value, rows: [{row_id, row_number, label}]}], truncated}]`; hasta 200 filas por revisión en `issues`, `issues_count` siempre completo.
+
 ### CopyRequest y RevokeRequest
 
 - `CopyRequest`: `source_sheet_id`, `upgrade_levels` (false), `include_inherited` (false), `dry_run` (true).
@@ -154,11 +162,13 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - 400: Host fuera de `APP_ALLOWED_HOSTS` (`TrustedHostMiddleware`).
 - 403 `ORIGIN_NOT_ALLOWED`: escritura con Origin fuera de `APP_ALLOWED_ORIGINS`.
 - 403 `READ_ONLY_MODE`: `APP_READ_ONLY=true`; ninguna escritura llega a Smartsheet (ADR-B11).
+- 403 `NOT_SHARED_WITH_TOKEN`: escritura en una hoja de otra persona no compartida con el token (PEN-14).
 - 403 `CANNOT_MANAGE_SHARES`: el token no es `ADMIN` ni `OWNER` de la hoja.
 - 403 `SMARTSHEET_FORBIDDEN`: Smartsheet negó la operación.
 - 404 `SHEET_NOT_FOUND`, `SHARE_NOT_FOUND`, `PERSON_NOT_FOUND`, `ROW_NOT_FOUND`, `COLUMN_NOT_FOUND`.
 - 409 `OWNER_LOCKED`: cambiar o quitar al propietario.
 - 409 `SHARE_INHERITED`: cambiar o quitar un permiso heredado del workspace.
+- 422 `NO_CHECKS`, `TOO_MANY_COLUMNS`, `INVALID_PATTERN`: revisión de calidad mal pedida (SPEC-B09).
 - 422 `SAME_SHEET`: comparar o copiar una hoja consigo misma.
 - 422 `OWNER_NOT_ASSIGNABLE`: pedir el nivel `OWNER`.
 - 422 `DUPLICATE_RECIPIENTS`: el mismo correo o grupo dos veces.

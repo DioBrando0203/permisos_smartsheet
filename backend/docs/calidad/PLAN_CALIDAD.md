@@ -17,6 +17,9 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_launcher.py`: puerto preferido libre, respaldo a uno libre y orígenes del puerto real.
 - `test_activity.py`: SPEC-B08: período, editores con nivel actual, paginación de filas, historial de fila con columna fallida, columna inexistente.
 - `test_activity_rules.py`: período, editores sin cambios, conteo por editor y aviso de cuenta dominante.
+- `test_org_sheets.py`: hojas de la organización marcadas, sólo consulta y respaldo si se niega `/users/sheets`.
+- `test_quality_rules.py` y `test_quality.py`: repetidos, vacíos, formato, errores de columna y de expresión, columnas pedidas, listado de columnas.
+- `test_export.py`: CSV para Excel (BOM, `;`, fórmulas neutralizadas, columnas en español).
 - `test_security.py`: Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
 
 ## Comandos

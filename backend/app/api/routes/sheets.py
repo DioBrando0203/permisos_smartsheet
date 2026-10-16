@@ -3,16 +3,24 @@ from fastapi import APIRouter, Response, status
 from app.api.deps import ServicesDep, ShareId, SheetId
 from app.models.shares import Share, ShareCreate, ShareCreateResult, ShareList, ShareUpdate
 from app.models.sheets import SheetList, SheetSummary
+from app.services.sheets import SheetScope
 
 router = APIRouter()
 
 
 @router.get("")
 async def list_sheets(
-    services: ServicesDep, q: str | None = None, refresh: bool = False
+    services: ServicesDep,
+    q: str | None = None,
+    scope: SheetScope = "all",
+    refresh: bool = False,
 ) -> SheetList:
-    """Hojas accesibles por el token, por nombre; `q` filtra sin tildes ni mayúsculas."""
-    return await services.sheets.list(q, refresh=refresh)
+    """Hojas por nombre; `q` filtra sin tildes ni mayúsculas.
+
+    `scope`: `all` (las del token y las de otras personas de la organización), `mine` o
+    `org_only` (sólo las que no están compartidas con el token; sólo se consultan).
+    """
+    return await services.sheets.list(q, scope, refresh=refresh)
 
 
 @router.get("/{sheet_id}")

@@ -125,7 +125,19 @@ class ShareService:
         return share, token_level
 
     async def _fresh_token_level(self, sheet_id: str) -> AccessLevel:
+        listed = await self._sheets.find(sheet_id)
+        if listed is not None and not listed.in_my_list:
+            # Smartsheet responde 404 al abrirla: es de otra persona y no está compartida con
+            # el token. Se explica en vez de dejar un "no encontrada" confuso (PEN-14).
+            raise AppError(
+                "NOT_SHARED_WITH_TOKEN",
+                "La hoja es de otra persona de la organización y no está compartida con la "
+                "cuenta del token: sólo se puede consultar.",
+                403,
+            )
         sheet = await _as_sheet_error(self._client.get_sheet_access_level(sheet_id))
+        if sheet.access_level is None:
+            raise sheet_not_found()
         return sheet.access_level
 
     def ensure_writable(self) -> None:

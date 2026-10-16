@@ -93,3 +93,10 @@ Estado: terminada (investigación)
 Cambios: B-09, PEN-23, PEN-24; resultados de webhooks.
 Evidencia: `calidad/RESULTADOS.md`.
 Notas: el usuario preguntó si podemos cubrir lo que Smartsheet hace mal sin Jira ni Salesforce.
+
+## 2026-10-16 -05:00 Organización, última conexión, calidad de datos y exportación
+
+Estado: terminada
+Cambios: PEN-14 (`/users/sheets`, `in_my_list`, `owner_email`, `scope`, `NOT_SHARED_WITH_TOKEN`); PEN-15 (`last_login`); SPEC-B09 (`columns`, `quality`, `quality_rules`); PEN-12 (`export/access.csv`); lectura de filas generalizada (`client.list_rows`) y columnas con caché en `SheetService`; BOM con nombre explícito.
+Evidencia: `calidad/RESULTADOS.md`.
+Notas: el usuario pidió continuar con endpoints y servicios que mejoren lo que falta (ADR-B15).

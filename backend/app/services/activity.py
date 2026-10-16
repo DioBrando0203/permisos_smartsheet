@@ -62,7 +62,7 @@ class ActivityService:
 
     async def row_history(self, sheet_id: str, row_id: str, column_id: str | None) -> RowHistory:
         await self._sheets.get(sheet_id)
-        columns = {column.id: column for column in await self._columns(sheet_id)}
+        columns = {column.id: column for column in await self._sheets.columns(sheet_id)}
         if column_id is not None and column_id not in columns:
             raise AppError("COLUMN_NOT_FOUND", "La columna no existe en esta hoja.", 404)
         targets = [column_id] if column_id else await self._filled_columns(sheet_id, row_id)
@@ -88,19 +88,13 @@ class ActivityService:
 
     async def _rows(self, sheet_id: str, *, refresh: bool) -> list[RawRow]:
         async def load() -> list[RawRow]:
-            columns = await self._columns(sheet_id)
+            columns = await self._sheets.columns(sheet_id)
             label = next((c for c in columns if c.primary), columns[0] if columns else None)
             if label is None:
                 return []
-            return await self._client.list_rows_with_authors(sheet_id, label.id)
+            return await self._client.list_rows(sheet_id, [label.id], with_authors=True)
 
         return await self._cache.get_or_load(f"rows:{sheet_id}", load, refresh=refresh)
-
-    async def _columns(self, sheet_id: str) -> list[RawColumn]:
-        async def load() -> list[RawColumn]:
-            return await self._client.list_columns(sheet_id)
-
-        return await self._cache.get_or_load(f"columns:{sheet_id}", load)
 
     async def _filled_columns(self, sheet_id: str, row_id: str) -> list[str]:
         try:

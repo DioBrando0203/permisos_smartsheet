@@ -35,6 +35,19 @@ def to_sheet(data: Json) -> RawSheet:
     )
 
 
+def to_org_sheet(data: Json) -> RawSheet:
+    """Hoja de `/users/sheets`: sólo id, nombre y dueño; sin nivel, enlace ni fecha."""
+    return RawSheet(
+        id=_id(data["id"]),
+        name=str(data.get("name") or ""),
+        access_level=None,
+        permalink=None,
+        modified_at=None,
+        owner_email=_email(data.get("owner")),
+        in_my_list=False,
+    )
+
+
 def to_share(data: Json) -> RawShare:
     return RawShare(
         id=str(data["id"]),
@@ -56,6 +69,7 @@ def to_user(data: Json) -> RawUser:
         name=full_name,
         is_admin=bool(data.get("admin")),
         status=data.get("status"),
+        last_login=_date(data.get("lastLogin")),
     )
 
 
@@ -95,12 +109,15 @@ def to_column(data: Json) -> RawColumn:
         title=str(data.get("title") or ""),
         index=int(data.get("index") or 0),
         primary=bool(data.get("primary")),
+        type=data.get("type"),
     )
 
 
-def to_row(data: Json) -> RawRow:
-    cells = data.get("cells") or []
-    label = next((_cell_text(cell) for cell in cells if _cell_text(cell)), None)
+def to_row(data: Json, label_column_id: str | None = None) -> RawRow:
+    cells = {_id(cell.get("columnId")): _cell_text(cell) for cell in data.get("cells") or []}
+    label = cells.get(label_column_id) if label_column_id else None
+    if label is None and label_column_id is None:
+        label = next((text for text in cells.values() if text), None)
     return RawRow(
         id=_id(data["id"]),
         row_number=data.get("rowNumber"),
@@ -109,6 +126,7 @@ def to_row(data: Json) -> RawRow:
         created_by=_author(data.get("createdBy")),
         modified_at=_date(data.get("modifiedAt")),
         modified_by=_author(data.get("modifiedBy")),
+        cells=cells,
     )
 
 

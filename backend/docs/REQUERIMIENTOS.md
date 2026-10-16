@@ -32,6 +32,9 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - RQ-14 Modo solo lectura: con `APP_READ_ONLY=true` toda escritura responde 403 `READ_ONLY_MODE` sin llamar a Smartsheet (ADR-B11).
 - RQ-15 Puertos propios: backend 8710 y frontend 5710; `python run.py` (desde `backend`, con el entorno activado) arranca sin escribir el puerto y usa uno libre si el 8710 está ocupado (ADR-B14).
 - RQ-16 Auditoría y comparación: alertas por hoja, diferencias entre dos hojas y resumen de acceso por hoja, sin escribir (SPEC-B05).
+- RQ-20 Calidad de datos: repetidos, vacíos y formato en las columnas elegidas de una hoja (SPEC-B09).
+- RQ-21 Exportar: CSV para Excel de quién tiene acceso a qué hoja (PEN-12).
+- RQ-22 Toda la organización: hojas de otras personas visibles y de sólo consulta (PEN-14).
 - RQ-19 Actividad: filas modificadas por período, quién edita, editores sin cambios e historial por fila o celda, directo de Smartsheet (SPEC-B08).
 - RQ-18 Revisión de cuenta: alertas de todas las hojas agregadas por hoja y por persona (SPEC-B07).
 - RQ-17 Operaciones masivas: copiar permisos entre hojas y quitar a una persona de varias hojas, con simulación por defecto (SPEC-B06).
@@ -133,13 +136,13 @@ Hacer: spec y ADR propios; confirmación reforzada; probar sólo con un correo d
 
 ### PEN-14 Hojas de toda la organización
 
-Prioridad: alta. Alcance: backend y frontend. Estado: pendiente.
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-16).
 Situación: `/sheets` sólo lista las 100 hojas propias o compartidas con el token; la organización tiene 104. Las 4 restantes son de otros usuarios y sus permisos sí se pueden leer como administrador del sistema (verificado 2026-10-12).
 Hacer: listar con `GET /2.0/users/sheets` paginando por `page` (B-06), marcar `in_my_list` y el dueño, e incluirlas en el directorio. Escribir en ellas exige comprobar que Smartsheet lo permite al administrador (PEN-07).
 
 ### PEN-15 Última conexión de los usuarios
 
-Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.
+Prioridad: baja. Alcance: backend y frontend. Estado: terminada (2026-10-16).
 Hacer: `GET /2.0/users?include=lastLogin` (verificado) para mostrar en el directorio cuándo entró por última vez cada usuario de la organización; útil para detectar accesos que sobran.
 
 ### PEN-16 Auditoría y comparación de hojas
@@ -191,7 +194,7 @@ Hacer: `_get_all` con `page` y `pageSize` en vez de `includeAll` (B-09, B-06); p
 Prioridad: media. Alcance: proyecto. Estado: propuesta (2026-10-16); exige ADR y OAuth (PEN-08) antes de escribir.
 Contexto: el usuario evalúa Jira y Salesforce por sus conectores de pago. Smartsheet sigue como fuente de verdad; nuestro servicio sólo agrega lo que no da bien.
 Opciones, de menor a mayor esfuerzo:
-- Validación de datos: Record IDs duplicados o mal formados, filas sin diseñador, relaciones rotas entre hojas. Sólo lectura.
+- Validación de datos: hecha para una hoja (SPEC-B09, 2026-10-16): repetidos, vacíos y formato. Falta: relaciones entre hojas (un Record ID que debe existir en otra hoja).
 - Bandeja personal por persona (sus filas asignadas en todas las hojas), con login OAuth para que cada cambio quede a su nombre. Cubre parte de Dynamic View y de la vista "mis tareas" de Jira.
 - Registro de cambios en vivo con webhooks (disponibles en el plan): cada cambio de fila o celda en las hojas elegidas, guardado por nuestro servicio. Suple en parte Event Reporting (no ve permisos ni accesos). Exige una URL pública HTTPS y persistencia.
 - Tiempo en cada estado y tareas atascadas (al estilo de Jira), calculado con ese registro.
@@ -199,5 +202,5 @@ Fuera de alcance: reemplazar Jira (tableros, flujos, SLA completos) o un CRM (AD
 
 ### PEN-12 Exportar
 
-Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.
+Prioridad: baja. Alcance: backend y frontend. Estado: terminada (2026-10-16): `GET /api/export/access.csv`.
 Hacer: exportar a CSV la matriz persona por hoja con niveles. El archivo contiene correos reales: se genera bajo demanda y no se guarda en el servidor.

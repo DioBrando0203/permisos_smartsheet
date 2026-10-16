@@ -25,6 +25,8 @@ class Person(BaseModel):
     is_contact: bool
     is_org_member: bool
     is_token_owner: bool
+    # Sólo para usuarios de la organización: Smartsheet no lo da de colaboradores externos.
+    last_login: datetime | None = None
 
 
 class FailedSheet(BaseModel):

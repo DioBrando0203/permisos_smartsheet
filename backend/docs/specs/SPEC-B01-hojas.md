@@ -23,6 +23,7 @@ Listar las hojas a las que el token tiene acceso para elegir cuál revisar, y da
 6. Una hoja inexistente o sin acceso responde 404 `SHEET_NOT_FOUND`.
 7. Toda ruta con `{sheet_id}` acepta el id numérico (`1842596423880580`) o el código del permalink que se ve en el navegador (`QMFVM7v3V23HqwgmCwHg5wF8XHFr5GCG4WJjXJF1` de `https://app.smartsheet.com/sheets/<código>?view=grid`). El código se resuelve al id buscando el permalink en el listado en caché; las respuestas siempre devuelven el id numérico.
 8. `has_dynamic_view`: `true` si el id está en `APP_DYNAMIC_VIEW_SHEETS` (marca manual; la API no informa Dynamic View, B-07). También llega en la auditoría.
+10. Hojas de toda la organización (PEN-14): además de `/sheets`, `GET /2.0/users/sheets` (administrador del sistema; si se niega, se omite). Las que no están en la lista del token llegan con `in_my_list=false`, `access_level=null` y su dueño; sus permisos se leen, pero escribir responde 403 `NOT_SHARED_WITH_TOKEN` (Smartsheet responde 404 al abrirlas). `scope` filtra `all`, `mine`, `org_only`.
 9. Swagger muestra como ejemplo una hoja real de la cuenta (`1842596423880580`).
 
 ## Criterios de aceptación
@@ -34,6 +35,7 @@ Listar las hojas a las que el token tiene acceso para elegir cuál revisar, y da
 - CA-05: 404 de Smartsheet se traduce a `SHEET_NOT_FOUND`. Prueba: `test_people.py::test_failed_sheet_marks_incomplete` (traducción a `SHEET_NOT_FOUND`).
 - CA-07: el código del permalink se resuelve al id; uno desconocido responde `SHEET_NOT_FOUND` sin llamar a los permisos. Prueba: `test_people.py::test_sheet_can_be_found_by_permalink_code`.
 - CA-08: `has_dynamic_view` sale de la configuración. Prueba: `test_people.py::test_dynamic_view_mark_comes_from_settings`.
+- CA-09: hojas de la organización marcadas, de sólo consulta y con respaldo si `/users/sheets` se niega. Prueba: `test_org_sheets.py`.
 - CA-06: lectura real devuelve las 100 hojas. Prueba: manual, verificada el 2026-10-12 (RESULTADOS).
 
 ## Pendientes

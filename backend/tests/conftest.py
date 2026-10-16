@@ -32,6 +32,7 @@ def smartsheet() -> respx.MockRouter:
     with respx.mock(base_url=BASE, assert_all_called=False) as router:
         router.get("/users/me").respond(json=me_json())
         router.get("/sheets").respond(json=page([sheet_json()]))
+        router.get("/users/sheets").respond(json=page([]))
         router.get(f"/sheets/{SHEET_ID}").respond(json=sheet_json())
         router.get("/shares").respond(json={"items": default_shares()})
         router.get("/contacts").respond(json=page([]))

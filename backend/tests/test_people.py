@@ -95,3 +95,14 @@ async def test_dynamic_view_mark_comes_from_settings(make_client, smartsheet) ->
     assert sheet["has_dynamic_view"] is True
     audit = (await client.get(f"/api/sheets/{SHEET_ID}/audit")).json()
     assert audit["sheet"]["has_dynamic_view"] is True
+
+
+async def test_org_member_last_login(client, smartsheet) -> None:
+    route = smartsheet.get("/users").respond(
+        json=page([{"id": 7, "email": "ana@example.com", "lastLogin": "2026-09-01T10:00:00Z"}])
+    )
+    _two_sheets(smartsheet)
+    people = {p["key"]: p for p in (await client.get("/api/users")).json()["people"]}
+    assert people["ana@example.com"]["last_login"].startswith("2026-09-01")
+    assert people["sola@example.com"]["last_login"] is None
+    assert route.calls.last.request.url.params["include"] == "lastLogin"

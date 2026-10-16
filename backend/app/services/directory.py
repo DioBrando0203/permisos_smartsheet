@@ -4,6 +4,7 @@ Une por correo (usuarios) o por id (grupos). Sin E/S: recibe lo ya leído de Sma
 """
 
 from dataclasses import dataclass, field
+from datetime import datetime
 
 from app.models.people import Person, PersonSheetAccess
 from app.services.permissions import ShareType, highest, lock_reason
@@ -26,6 +27,7 @@ class DirectoryEntry:
     email: str | None = None
     is_contact: bool = False
     is_org_member: bool = False
+    last_login: datetime | None = None
     accesses: list[PersonSheetAccess] = field(default_factory=list)
 
     def to_person(self, token_email: str | None) -> Person:
@@ -40,6 +42,7 @@ class DirectoryEntry:
             is_contact=self.is_contact,
             is_org_member=self.is_org_member,
             is_token_owner=bool(self.email and self.email == token_email),
+            last_login=self.last_login,
         )
 
 
@@ -59,6 +62,7 @@ def build_directory(
     for user in org_users:
         entry = _entry(entries, ShareType.USER, user.email, user.id, user.name)
         entry.is_org_member = True
+        entry.last_login = user.last_login
     for item in sheet_shares:
         for share in item.shares:
             item_id = share.group_id if share.type is ShareType.GROUP else share.user_id

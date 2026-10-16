@@ -51,5 +51,5 @@ def highest(levels: list[AccessLevel]) -> AccessLevel | None:
     return max(levels, key=rank, default=None)
 
 
-def can_manage_shares(token_level: AccessLevel) -> bool:
+def can_manage_shares(token_level: AccessLevel | None) -> bool:
     return token_level in MANAGER_LEVELS

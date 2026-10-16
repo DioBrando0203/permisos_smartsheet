@@ -19,7 +19,7 @@ Responder "¿a qué hojas tiene acceso esta persona?" sin abrir cada hoja, y ofr
 
 1. `GET /api/users` arma el directorio (ADR-B10): cada contacto, cada usuario de la organización y cada persona o grupo con algún permiso, una sola vez.
 2. Clave (`key`): correo en minúsculas para usuarios; `group-<id>` para grupos; `user-<id>` si un permiso de usuario no trae correo.
-3. Cada `Person`: `key`, `type`, `name`, `email`, `sheet_count` (hojas distintas; 0 si no tiene acceso), `highest_level`, `is_contact`, `is_org_member`, `is_token_owner`.
+3. Cada `Person`: `key`, `type`, `name`, `email`, `sheet_count` (hojas distintas; 0 si no tiene acceso), `highest_level`, `is_contact`, `is_org_member`, `is_token_owner` y `last_login` (de `GET /2.0/users?include=lastLogin`; sólo usuarios de la organización, PEN-15).
 4. Orden: `sheet_count` descendente, luego nombre o correo.
 5. `q` filtra por nombre o correo sin tildes ni mayúsculas; `only` aplica un filtro rápido: `contacts`, `org`, `external`, `groups`, `with_access`, `without_access`.
 6. `GET /api/users/{key}` devuelve `PersonDetail`: la persona y sus hojas (`PersonSheetAccess`) por nombre de hoja; propio y heredado de la misma hoja aparecen por separado.
@@ -34,6 +34,7 @@ Responder "¿a qué hojas tiene acceso esta persona?" sin abrir cada hoja, y ofr
 - CA-03: una hoja que falla no impide el resultado y queda en `failed_sheets`. Prueba: `test_people.py::test_failed_sheet_marks_incomplete`.
 - CA-04: el detalle lista hojas propias y heredadas. Prueba: `test_people.py::test_person_detail_lists_sheets`.
 - CA-05: clave desconocida responde 404 `PERSON_NOT_FOUND`. Prueba: `test_people.py::test_unknown_person_is_404`.
+- CA-07: `last_login` de usuarios de la organización. Prueba: `test_people.py::test_org_member_last_login`.
 - CA-06: lectura real: 49 entradas (36 con acceso, 13 sin acceso), primera carga 3,3 s, desde caché 19 ms. Prueba: manual, 2026-10-12 (RESULTADOS).
 
 ## Pendientes
