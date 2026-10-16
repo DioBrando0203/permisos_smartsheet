@@ -49,3 +49,11 @@ Fecha: 2026-10-12. Estado: límite honesto (PEN-17).
 Situación: Dynamic View permite compartir sólo ciertas filas y columnas sin compartir la hoja. No tiene API pública según respuestas de la comunidad de Smartsheet (no confirmado en la referencia oficial).
 Consecuencia: el panel puede decir que una hoja tiene 10 personas con acceso y que alguien no tiene acceso, cuando además hay gente que la ve por una vista dinámica. Los administradores de una vista sí deben tener la hoja compartida como Propietario o Administrador, así que ellos sí aparecen.
 Prevención: no afirmar en la interfaz "nadie más ve esta hoja"; decir "personas con la hoja compartida". Corrige lo dicho antes en conversación ("Smartsheet no tiene permisos por fila o columna"): sí los tiene, mediante Dynamic View.
+
+## B-08 Sin registro de eventos de la cuenta en el plan
+
+Fecha: 2026-10-16. Estado: límite del plan.
+Síntoma: `GET /2.0/events` responde 403 `errorCode` 1013.
+Causa: Event Reporting es una función que el plan actual no incluye.
+Consecuencia: el panel no puede saber quién compartió, quitó un acceso o borró una fila. Sí puede leer la última modificación de cada fila y el historial de cada celda.
+Prevención: no prometer un historial completo; si el plan cambia, `/events` sería la fuente principal (PEN-21).

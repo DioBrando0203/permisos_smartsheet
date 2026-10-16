@@ -35,6 +35,8 @@ AGENTS.md   guía breve para retomar el proyecto (personas o IA)
 
 ## Arranque
 
+Guía completa para Windows y Linux: [LEVANTAMIENTO.md](LEVANTAMIENTO.md).
+
 Primera vez (Python 3.11+):
 
 ```bash

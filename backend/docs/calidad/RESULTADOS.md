@@ -60,3 +60,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - `pytest`: 78 aprobadas (3 nuevas en `test_launcher.py`). `ruff check` limpio, incluido `iniciar.py`.
 - Real: con el 8710 ocupado por una instancia previa del usuario, `python3 iniciar.py` arrancó en 57743 y una segunda vez en 41281; `/api/health` respondió en ese puerto y un DELETE con `Origin` de ese puerto llegó a `READ_ONLY_MODE` (Origin aceptado). Instancias de prueba detenidas; la del usuario en 8710 no se tocó.
+
+## 2026-10-16 -05:00 Fuentes de actividad (quién cambió qué, sólo lectura con curl)
+
+- `GET /2.0/events` (Event Reporting): 403, `errorCode` 1013 "not supported by your plan". No hay registro de eventos de la cuenta (permisos, borrados, accesos) por API en este plan.
+- `GET /2.0/sheets/{id}/rows/{rowId}/columns/{columnId}/history`: 200; cada cambio con `value`, `displayValue`, `modifiedAt`, `modifiedBy`. Una solicitud por celda.
+- `GET /2.0/sheets/{id}?include=writerInfo`: 200; cada fila con `createdAt`, `createdBy`, `modifiedAt`, `modifiedBy` (plan 2026: 2050 filas, 500 por página).

@@ -65,3 +65,10 @@ Notas: el usuario quiere `cd`, activar el entorno y un solo comando sin argument
 
 Estado: terminada
 Cambios: se quitó `iniciar.py` de la raíz por pedido del usuario; el arranque es sólo desde `backend` con `python run.py`. README, AGENTS, ADR-B14, RQ-15, arquitectura y docstrings actualizados. Las entradas anteriores de bitácora y resultados que mencionan `iniciar.py` se conservan como historial.
+
+## 2026-10-16 -05:00 Guía de levantamiento y fuentes de actividad
+
+Estado: terminada
+Cambios: `LEVANTAMIENTO.md` (Windows y Linux) enlazado desde README; B-08 y PEN-21; resultados de las pruebas de actividad.
+Evidencia: `calidad/RESULTADOS.md`.
+Notas: el usuario preguntó por logs de quién modifica qué; no existe endpoint propio (PEN-09 pendiente) y Event Reporting no está en el plan.

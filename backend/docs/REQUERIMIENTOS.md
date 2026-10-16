@@ -166,6 +166,12 @@ Hacer: registrar "acceso hasta fecha" por persona y hoja y quitarlo automáticam
 Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.
 Hacer: definir una vez un equipo con niveles por persona y aplicarlo a hojas nuevas con simulación (reutiliza SPEC-B06). Alternativa nativa: grupos de Smartsheet.
 
+### PEN-21 Actividad de las hojas
+
+Prioridad: media. Alcance: backend y frontend. Estado: pendiente; requiere decisión del usuario.
+Situación: el plan no incluye Event Reporting (B-08). Disponible: última modificación por fila (`include=writerInfo`) e historial por celda.
+Hacer: `GET /api/sheets/{id}/activity` con las filas modificadas recientemente (quién y cuándo) y detalle por celda bajo demanda; resumen por hoja de quién editó en los últimos N días, cruzado con sus permisos (por ejemplo, editores que no editan desde hace meses). Complementa, no reemplaza, el registro propio de cambios del panel (PEN-09).
+
 ### PEN-12 Exportar
 
 Prioridad: baja. Alcance: backend y frontend. Estado: pendiente.
