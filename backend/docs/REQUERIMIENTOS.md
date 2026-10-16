@@ -30,7 +30,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - RQ-12 Pruebas: sin llamadas reales a Smartsheet en la suite; datos sintéticos.
 - RQ-13 Directorio: contactos, personas con acceso y usuarios de la organización en una lista, con su origen marcado y cantidad de hojas (0 si no tiene acceso), para dar acceso a cualquiera (SPEC-B03).
 - RQ-14 Modo solo lectura: con `APP_READ_ONLY=true` toda escritura responde 403 `READ_ONLY_MODE` sin llamar a Smartsheet (ADR-B11).
-- RQ-15 Puertos propios: backend 8710 y frontend 5710; `iniciar.py` arranca sin escribir el puerto y usa uno libre si el 8710 está ocupado (ADR-B14).
+- RQ-15 Puertos propios: backend 8710 y frontend 5710; `python run.py` (desde `backend`, con el entorno activado) arranca sin escribir el puerto y usa uno libre si el 8710 está ocupado (ADR-B14).
 - RQ-16 Auditoría y comparación: alertas por hoja, diferencias entre dos hojas y resumen de acceso por hoja, sin escribir (SPEC-B05).
 - RQ-18 Revisión de cuenta: alertas de todas las hojas agregadas por hoja y por persona (SPEC-B07).
 - RQ-17 Operaciones masivas: copiar permisos entre hojas y quitar a una persona de varias hojas, con simulación por defecto (SPEC-B06).

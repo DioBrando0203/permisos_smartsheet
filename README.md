@@ -23,7 +23,7 @@ AGENTS.md   guía breve para retomar el proyecto (personas o IA)
 
 ## Puertos
 
-- Backend: `http://127.0.0.1:8710` (API en `/api`, OpenAPI en `/docs`). Si el 8710 está ocupado, `iniciar.py` usa uno libre al azar y lo muestra al arrancar.
+- Backend: `http://127.0.0.1:8710` (API en `/api`, OpenAPI en `/docs`). Si el 8710 está ocupado, `python run.py` usa uno libre al azar y lo muestra al arrancar.
 - Frontend en desarrollo: `http://127.0.0.1:5710`.
 - Elegidos para no chocar con otros proyectos locales (8000 y 5173).
 
@@ -51,8 +51,6 @@ cd backend
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
 python run.py
 ```
-
-O, sin activar el entorno, desde la raíz: `python3 iniciar.py` (Windows: `py iniciar.py`).
 
 Muestra la dirección, por ejemplo `Backend: http://127.0.0.1:8710/docs`. Recarga sola al cambiar el código; si se cambia `backend/.env`, detener con Ctrl+C y volver a iniciar.
 

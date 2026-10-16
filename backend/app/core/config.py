@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""
     app_allowed_origins: str = _DEFAULT_ORIGINS
-    # Puerto real en que arrancó (lo fija iniciar.py, que puede elegir uno libre al azar):
+    # Puerto real en que arrancó (lo fija run.py, que puede elegir uno libre al azar):
     # sus orígenes se permiten para que Swagger pueda escribir desde ese mismo puerto.
     app_port: int | None = None
 

@@ -1,7 +1,8 @@
 """Arranque del backend sin escribir el puerto: 8710 si está libre, si no uno libre al azar.
 
-Lo usa `iniciar.py` en la raíz. El puerto elegido se pasa a la app como `APP_PORT` para que
-sus orígenes se permitan (Swagger escribe desde ese mismo puerto, ADR-B08).
+Lo usa `run.py` (desde `backend/`, con el entorno activado). El puerto elegido se pasa a la
+app como `APP_PORT` para que sus orígenes se permitan (Swagger escribe desde ese mismo
+puerto, ADR-B08).
 """
 
 import os

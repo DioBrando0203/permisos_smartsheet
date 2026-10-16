@@ -97,5 +97,5 @@ Consecuencias: el usuario ve exactamente qué pasaría antes de ejecutar. Ejecut
 
 Fecha: 2026-10-16. Estado: vigente. Amplía ADR-B08.
 Contexto: el usuario quiere levantar el backend sin escribir el puerto y que no choque con otros proyectos.
-Decisión: `iniciar.py` (raíz) ejecuta `app.launcher` con el Python de `backend/.venv`: usa 8710 si está libre y, si no, uno que asigna el sistema; lo imprime y lo pasa como `APP_PORT`. `Settings.allowed_origins` agrega `http://127.0.0.1:<puerto>` y `http://localhost:<puerto>` para que Swagger pueda escribir desde ese mismo origen.
+Decisión: desde `backend/` con el entorno activado, `python run.py` ejecuta `app.launcher`: usa 8710 si está libre y, si no, uno que asigna el sistema; lo imprime y lo pasa como `APP_PORT`. `Settings.allowed_origins` agrega `http://127.0.0.1:<puerto>` y `http://localhost:<puerto>` para que Swagger pueda escribir desde ese mismo origen.
 Consecuencias: con el puerto de respaldo cambia la dirección en cada arranque; el frontend (PEN-06) deberá leer el puerto real en vez de suponer 8710. Hay una ventana mínima entre comprobar el puerto y que Uvicorn lo ocupe; si otro proceso lo toma justo entonces, Uvicorn falla y basta con volver a iniciar.

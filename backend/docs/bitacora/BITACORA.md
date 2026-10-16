@@ -60,3 +60,8 @@ Estado: terminada
 Cambios: `backend/run.py` (mismo lanzador); README y AGENTS.
 Evidencia: con el entorno activado, `python run.py` arrancó en 8710 y `/api/health` respondió; instancia de prueba detenida.
 Notas: el usuario quiere `cd`, activar el entorno y un solo comando sin argumentos.
+
+## 2026-10-16 -05:00 Un solo modo de arranque
+
+Estado: terminada
+Cambios: se quitó `iniciar.py` de la raíz por pedido del usuario; el arranque es sólo desde `backend` con `python run.py`. README, AGENTS, ADR-B14, RQ-15, arquitectura y docstrings actualizados. Las entradas anteriores de bitácora y resultados que mencionan `iniciar.py` se conservan como historial.
