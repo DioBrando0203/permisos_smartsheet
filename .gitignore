@@ -21,6 +21,8 @@ npm-debug.log*
 
 # Configuración local: contiene el token de Smartsheet
 .env
+# Puerto real del backend en desarrollo (lo escribe run.py)
+backend/.port
 .env.*
 !.env.example
 *.log

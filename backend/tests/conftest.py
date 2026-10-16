@@ -50,7 +50,7 @@ async def make_client() -> AsyncIterator[AppFactory]:
 
     def factory(**overrides: object) -> httpx.AsyncClient:
         settings = make_settings(**overrides)
-        app = create_app(settings, build_services(settings))
+        app = create_app(settings, build_services(settings), frontend_dist=None)
         client = httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app), base_url="http://localhost"
         )

@@ -1,8 +1,9 @@
-"""Aplicación FastAPI: middlewares, manejador de errores y ciclo de vida del cliente."""
+"""Aplicación FastAPI: middlewares, errores, ciclo de vida del cliente y build del panel."""
 
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,9 +14,14 @@ from app.api.router import api_router
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError, app_error_handler
 from app.core.middleware import OriginMiddleware
+from app.frontend import DEFAULT_DIST, mount_frontend
 
 
-def create_app(settings: Settings | None = None, services: Services | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    services: Services | None = None,
+    frontend_dist: Path | None = DEFAULT_DIST,
+) -> FastAPI:
     settings = settings or get_settings()
     services = services or build_services(settings)
 
@@ -37,6 +43,8 @@ def create_app(settings: Settings | None = None, services: Services | None = Non
     app.add_middleware(OriginMiddleware, allowed_origins=settings.allowed_origins)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(settings.allowed_hosts))
     app.include_router(api_router, prefix="/api")
+    # Al final: la ruta comodín del panel no debe tapar a la API ni a /docs.
+    mount_frontend(app, frontend_dist)
     return app
 
 

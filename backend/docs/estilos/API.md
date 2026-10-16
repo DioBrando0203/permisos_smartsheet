@@ -13,6 +13,8 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 ## Endpoints
 
+- Fuera de `/api`: si existe `frontend/dist`, `/` y cualquier ruta del panel (`/hojas/...`) devuelven `index.html` y `/assets/...` los estáticos; `/docs`, `/redoc` y `/openapi.json` no se tapan; `/api/<inexistente>` sigue en 404.
+
 - `GET /api/health`: `{"status": "ok", "smartsheet": "configured" | "missing_token", "read_only": bool}`. No llama a Smartsheet.
 - `GET /api/me`: `Me` del dueño del token.
 - `GET /api/sheets?q=&scope=&refresh=`: `SheetList`. `scope`: `all` (defecto: las del token y las de otras personas de la organización), `mine`, `org_only`.

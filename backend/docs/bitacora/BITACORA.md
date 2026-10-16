@@ -121,3 +121,10 @@ Estado: terminada
 Cambios: SPEC-B12; `services/workload_rules.py`, `designers.py`; `models/designers.py`; `routes/designers.py`; configuración `APP_DESIGNER_*`, `APP_STATUS_COLUMN`, `APP_CLOSED_STATUSES` (en `.env` y `.env.example`); `ReferenceService.catalog` público; PEN-27.
 Evidencia: `calidad/RESULTADOS.md`.
 Notas: el usuario pidió un servicio que Smartsheet no tenga y que combine los endpoints existentes (ADR-B15).
+
+## 2026-10-16 -05:00 F0 del backend: build del panel, `.port`, Smartsheet falso y Swagger
+
+Estado: terminada
+Cambios: `app/frontend.py` y `create_app(frontend_dist=...)` (F0-B1); `.port` en `launcher` con cierre ordenado y SIGTERM, `.gitignore` (F0-B2, B-11); `tests/fake_data.py`, `tests/fake_smartsheet.py`, `test_fake_smartsheet.py` (F0-B3); `routes/review.py` con un solo grupo y prueba de grupos únicos (F0-B4).
+Evidencia: `calidad/RESULTADOS.md`.
+Notas: el usuario pidió "arreglarlo" y qué es el Smartsheet falso; se explicó y se implementó.

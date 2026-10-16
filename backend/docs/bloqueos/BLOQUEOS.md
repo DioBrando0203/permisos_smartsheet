@@ -73,3 +73,10 @@ Síntoma: el log del servidor tenía líneas `HTTP Request: GET https://api.smar
 Causa: httpx registra cada solicitud en INFO; `logging.basicConfig(level=INFO)` lo dejaba pasar.
 Solución: `logging.getLogger("httpx").setLevel(WARNING)` en `main.py`; prueba `test_security.py::test_httpx_does_not_log_full_urls`.
 Revisión: en los logs de prueba anteriores no había correos ni token (sólo ids y parámetros técnicos).
+
+## B-11 Uvicorn huérfano y `.port` olvidado al cerrar por señal
+
+Fecha: 2026-10-16. Estado: resuelto.
+Síntoma: al detener `run.py` con una señal (`kill`, terminal cerrada) quedaba `backend/.port` y el puerto seguía ocupado.
+Causa: la señal terminaba Python sin pasar por `finally`; además, matar de golpe al proceso principal de Uvicorn con `--reload` deja huérfano al que atiende el puerto.
+Solución: `launcher.main` convierte SIGTERM en salida normal y `stop()` pide a Uvicorn que termine (y sólo si no responde en 10 s lo mata). Verificado: tras SIGTERM, sin `.port` y el 8710 libre.

@@ -130,3 +130,11 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - La fase 4 concentra la mayor parte del trabajo abierto: depende de qué estados se consideren cerrados (PEN-27).
 - Hojas con más filas abiertas sin diseñador: planes 2026 de Crown Castle (409) y Blue Stream (293) y sus copias.
 - Log: 0 escrituras. Instancia detenida.
+
+## 2026-10-16 -05:00 F0 del backend para el frontend
+
+- `pytest`: 128 aprobadas. `ruff check` y `ruff format --check`: sin observaciones.
+- Build servido: rutas del panel a `index.html`, API y `/docs` intactos (`test_frontend.py`).
+- Smartsheet falso: el backend completo funciona contra él (`test_fake_smartsheet.py`, 4 pruebas).
+- Manual: `python -m tests.fake_smartsheet --port 8791` y `run.py` con `SMARTSHEET_BASE_URL` del falso y `SMARTSHEET_ACCESS_TOKEN=fake-token`: `/api/me` devolvió la cuenta de prueba, un PATCH quedó registrado en `/_fake/writes`, 0 llamadas a `api.smartsheet.com`, `.port` con 8710. Las variables de entorno ganan al `.env` (comprobado con `Settings()`).
+- Cierre por SIGTERM: `.port` borrado y 8710 libre (tras la corrección de B-11).

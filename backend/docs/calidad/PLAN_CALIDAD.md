@@ -14,7 +14,7 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_reports.py`: SPEC-B05: auditoría, comparación, misma hoja, resumen de acceso.
 - `test_bulk.py`: SPEC-B06: simulación, bloqueo en solo lectura, ejecución con fallo aislado y `sendEmail=false`, revocar simulado y ejecutado.
 - `test_review.py`: SPEC-B07: agregación por hoja y persona, filtro de severidad, hoja fallida.
-- `test_launcher.py`: puerto preferido libre, respaldo a uno libre y orígenes del puerto real.
+- `test_launcher.py`: puerto preferido libre, respaldo a uno libre, orígenes del puerto real, `.port` sólo lo borra su dueño y cierre ordenado del proceso.
 - `test_activity.py`: SPEC-B08: período, editores con nivel actual, paginación de filas, historial de fila con columna fallida, columna inexistente.
 - `test_activity_rules.py`: período, editores sin cambios, conteo por editor y aviso de cuenta dominante.
 - `test_org_sheets.py`: hojas de la organización marcadas, sólo consulta y respaldo si se niega `/users/sheets`.
@@ -23,7 +23,10 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_automation_rules.py` y `test_automations.py`: cada problema de la tabla, regla sana, vista por hoja y de cuenta con hoja fallida.
 - `test_references.py`: referencias por hoja (catálogo por permalink) y de cuenta (sin catálogo, hojas sin la columna, faltantes por valor sin distinguir mayúsculas).
 - `test_workload_rules.py` y `test_designers.py`: estado y fase, mismo diseñador en dos columnas, encabezados copiados, persona por nombre, acceso por hoja y estados cerrados configurables.
-- `test_security.py`: httpx sin URLs en el log, Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
+- `test_frontend.py`: build servido, rutas del panel a `index.html`, API y `/docs` intactos, sin salir de `dist`, sin build no se monta nada.
+- `tests/fake_data.py` y `tests/fake_smartsheet.py`: Smartsheet falso con datos sintéticos que registra escrituras (ADR-10 del frontend); `python -m tests.fake_smartsheet --port 8791`.
+- `test_fake_smartsheet.py`: el backend completo contra el falso (lecturas, reportes, calidad, diseñadores, CSV y escrituras registradas); si falla, el falso dejó de parecerse a Smartsheet.
+- `test_security.py`: un solo grupo de Swagger por endpoint; httpx sin URLs en el log, Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
 
 ## Comandos
 

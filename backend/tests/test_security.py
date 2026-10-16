@@ -45,3 +45,12 @@ def test_httpx_does_not_log_full_urls() -> None:
     import app.main  # noqa: F401  configura los registros al importar
 
     assert logging.getLogger("httpx").getEffectiveLevel() >= logging.WARNING
+
+
+def test_every_endpoint_has_a_single_swagger_group() -> None:
+    from app.main import create_app
+
+    spec = create_app(make_settings(), frontend_dist=None).openapi()
+    tags = {path: op.get("tags") for path, ops in spec["paths"].items() for op in ops.values()}
+    assert all(len(group or []) == 1 for group in tags.values()), tags
+    assert tags["/api/review"] == ["auditoría y comparación"]

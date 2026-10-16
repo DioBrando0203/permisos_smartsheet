@@ -28,7 +28,8 @@ Dependencias permitidas, siempre hacia abajo:
 
 ```text
 app/
-  launcher.py                    arranque: puerto 8710 o uno libre, APP_PORT y Uvicorn (lo llama run.py)
+  launcher.py                    arranque: puerto 8710 o uno libre, APP_PORT, `.port`, Uvicorn y cierre ordenado (lo llama run.py)
+  frontend.py                    sirve `frontend/dist` si existe; rutas del panel devuelven index.html
   main.py                        create_app: CORS, Origin, Host, errores y cierre del cliente httpx
   api/deps.py                    build_services (cliente, caché, servicios) en app.state; SheetId, ShareId
   api/router.py                  agrupa rutas bajo /api

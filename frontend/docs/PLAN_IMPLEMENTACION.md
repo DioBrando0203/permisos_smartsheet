@@ -2,11 +2,11 @@
 
 Orden para construir el frontend sobre el backend ya implementado. Cada fase termina con la definición de terminado de `GUIA_IA.md`, su entrada en la bitácora y un commit. Las specs de la fase pasan de "borrador" a "aprobada" antes de programarla y a "implementada" al cerrarla.
 
-Estado: listo para empezar por F0 (2026-10-16).
+Estado (2026-10-16): F0 del backend terminado (F0-B1 a F0-B4); sigue F0 del frontend (F0-F1 a F0-F5).
 
 ## F0 Preparación (backend y esqueleto)
 
-Backend (pequeñas, cada una con prueba):
+Backend (terminadas el 2026-10-16, cada una con prueba):
 - F0-B1: servir `frontend/dist` si existe: `/assets` como estáticos y cualquier ruta que no sea `/api`, `/docs`, `/openapi.json` ni `/assets` devuelve `index.html` (ADR-04, ADR-07). Prueba: ruta `/hojas/123` responde el `index.html`; `/api/health` sigue igual.
 - F0-B2: `run.py` escribe el puerto elegido en `backend/.port` y lo borra al salir; `.port` en `.gitignore` (ADR-07).
 - F0-B3: `backend/tests/fake_smartsheet.py`: FastAPI que imita los endpoints de Smartsheet que usa el cliente, con datos sintéticos de `tests/factories.py`, y registra las escrituras recibidas (ADR-10).
