@@ -44,11 +44,15 @@ python3 -m venv .venv
 cd ..
 ```
 
-Cada vez, desde la raíz del proyecto (Windows: `py iniciar.py`):
+Cada vez:
 
 ```bash
-python3 iniciar.py
+cd backend
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
+python run.py
 ```
+
+O, sin activar el entorno, desde la raíz: `python3 iniciar.py` (Windows: `py iniciar.py`).
 
 Muestra la dirección, por ejemplo `Backend: http://127.0.0.1:8710/docs`. Recarga sola al cambiar el código; si se cambia `backend/.env`, detener con Ctrl+C y volver a iniciar.
 

@@ -53,3 +53,10 @@ Estado: terminada
 Cambios: `iniciar.py`, `backend/app/launcher.py`, `APP_PORT` en `Settings` (orígenes del puerto real), `tests/test_launcher.py`; README (sección Arranque), AGENTS, RQ-15, ADR-B14, arquitectura.
 Evidencia: `calidad/RESULTADOS.md`.
 Notas: pedido del usuario: un solo puerto y, si no está libre, uno al azar.
+
+## 2026-10-16 -05:00 Arranque con `python run.py`
+
+Estado: terminada
+Cambios: `backend/run.py` (mismo lanzador); README y AGENTS.
+Evidencia: con el entorno activado, `python run.py` arrancó en 8710 y `/api/health` respondió; instancia de prueba detenida.
+Notas: el usuario quiere `cd`, activar el entorno y un solo comando sin argumentos.
