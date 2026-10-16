@@ -47,6 +47,24 @@ def mismatches(rows: list[RawRow], column_id: str, pattern: re.Pattern[str]) -> 
     return sorted(issues, key=lambda issue: (-len(issue.rows), issue.value or ""))
 
 
+def normalized_values(rows: list[RawRow], column_id: str) -> set[str]:
+    """Valores no vacíos de una columna, sin espacios a los lados ni mayúsculas."""
+    return {value.casefold() for row in rows if (value := (row.cells.get(column_id) or "").strip())}
+
+
+def missing_references(rows: list[RawRow], column_id: str, catalog: set[str]) -> list[QualityIssue]:
+    """Valores no vacíos que no están en el catálogo, agrupados por valor."""
+    groups: dict[str, list[RawRow]] = defaultdict(list)
+    shown: dict[str, str] = {}
+    for row in rows:
+        value = (row.cells.get(column_id) or "").strip()
+        if value and value.casefold() not in catalog:
+            groups[value.casefold()].append(row)
+            shown.setdefault(value.casefold(), value)
+    issues = [QualityIssue(value=shown[k], rows=[_row(r) for r in g]) for k, g in groups.items()]
+    return sorted(issues, key=lambda issue: (-len(issue.rows), issue.value or ""))
+
+
 def compile_pattern(expression: str) -> re.Pattern[str] | None:
     """Expresión válida y acotada, o `None` si no se puede usar."""
     if not expression or len(expression) > MAX_PATTERN_LENGTH:

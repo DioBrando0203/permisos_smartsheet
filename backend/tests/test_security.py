@@ -37,3 +37,11 @@ def test_read_only_is_the_default() -> None:
 
 def test_lists_from_environment() -> None:
     assert split_list(" 192.168.1.20 , localhost,,") == ("192.168.1.20", "localhost")
+
+
+def test_httpx_does_not_log_full_urls() -> None:
+    import logging
+
+    import app.main  # noqa: F401  configura los registros al importar
+
+    assert logging.getLogger("httpx").getEffectiveLevel() >= logging.WARNING

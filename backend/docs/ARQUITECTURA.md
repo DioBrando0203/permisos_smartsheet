@@ -38,6 +38,7 @@ app/
   api/routes/reports.py          GET /sheets/compare, /sheets/access-summary, /sheets/{id}/audit (registrada antes que sheets)
   api/routes/activity.py         GET /sheets/{id}/activity, GET /sheets/{id}/rows/{row_id}/history
   api/routes/quality.py          GET /sheets/{id}/columns, GET /sheets/{id}/quality
+  api/routes/references.py      GET /sheets/{id}/references, GET /references
   api/routes/export.py           GET /export/access.csv
   api/routes/automations.py      GET /automations, GET /sheets/{id}/automations
   api/routes/bulk.py             POST /sheets/{id}/shares/copy, POST /users/{key}/revoke (simulación por defecto)
@@ -73,6 +74,7 @@ app/
   services/activity.py           ActivityService: filas con autoría e historial de celdas (caché rows: y columns:)
   services/quality_rules.py      revisiones puras: repetidos, vacíos y formato con límites
   services/quality.py            QualityService: lee sólo las columnas revisadas (caché cells:)
+  services/references.py         ReferenceService: valores de una columna que no están en un catálogo
   services/export.py             CSV para Excel de permisos por hoja (sin guardar en el servidor)
   services/automation_rules.py   diagnóstico puro de una automatización (tabla PROBLEMS)
   services/automations.py        AutomationService: reglas cruzadas con columnas y permisos

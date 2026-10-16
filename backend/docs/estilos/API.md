@@ -36,6 +36,8 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/export/access.csv?q=&scope=`: CSV para Excel (`;`, UTF-8 con BOM), una fila por permiso; cabecera `X-Failed-Sheets`; fórmulas neutralizadas con `'`.
 - `GET /api/automations?q=&only_problems=&refresh=`: `AccountAutomations` (SPEC-B10).
 - `GET /api/sheets/{sheet_id}/automations?refresh=`: `SheetAutomations`.
+- `GET /api/sheets/{sheet_id}/references?column=&catalog_sheet=&catalog_column=&refresh=`: `SheetReferences` (SPEC-B11).
+- `GET /api/references?column=&catalog_sheet=&catalog_column=&q=&refresh=`: `AccountReferences`.
 - `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
 - `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.
 - Ejemplos en Swagger: plan 2026 `1842596423880580` (permalink `QMFVM7v3V23HqwgmCwHg5wF8XHFr5GCG4WJjXJF1`) y plan 2025 `5750050894335876`.
@@ -153,6 +155,11 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `Automation`: `id`, `name`, `enabled`, `status` (`ok`, `with_problems`, `disabled`), `action_type`, `frequency`, `recipient_emails`, `recipient_columns` (`[{id, title, type, is_contact, exists}]`), `notify_all_shared`, `smartsheet_reason`, `problems` (`[{code, message}]`: `DISABLED_NO_RECIPIENTS`, `DISABLED`, `NO_RECIPIENTS`, `RECIPIENT_COLUMN_MISSING`, `RECIPIENT_COLUMN_NOT_CONTACT`, `RECIPIENT_NOT_SHARED`), `modified_at`, `modified_by`.
 - `SheetAutomations`: `sheet`, `counts` por estado, `automations`.
 - `AccountAutomations`: `sheets_reviewed`, `sheets_with_rules`, `rules_total`, `by_status`, `by_problem`, `sheets` (`[{sheet_id, sheet_name, counts, problems}]`), `failed_sheets`.
+
+### SheetReferences y AccountReferences
+
+- `SheetReferences`: `sheet`, `column`, `catalog_sheet`, `catalog_column`, `catalog_values_count`, `checked_rows` (con valor), `missing_count`, `missing` (`QualityIssue[]` por valor, hasta 200 filas), `truncated`.
+- `AccountReferences`: `column`, `catalog_sheet`, `catalog_column`, `catalog_values_count`, `sheets_checked`, `sheets_without_column`, `missing_total`, `by_value` (`[{value, sheets, rows}]`, el que falta en más hojas primero), `sheets` (`[{sheet_id, sheet_name, missing_count, missing_values}]`), `failed_sheets`.
 
 ### CopyRequest y RevokeRequest
 

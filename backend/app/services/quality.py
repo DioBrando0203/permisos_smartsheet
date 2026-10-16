@@ -52,12 +52,14 @@ class QualityService:
         planned = _plan(request, columns)
         label = next((c for c in columns if c.primary), columns[0])
         wanted = [label.id, *dict.fromkeys(p.column.id for p in planned if p.column.id != label.id)]
-        rows = await self._rows(sheet_id, wanted, refresh=refresh)
+        rows = await self.rows(sheet_id, wanted, refresh=refresh)
         return SheetQuality(
             sheet=sheet, rows_total=len(rows), checks=[_run(item, rows) for item in planned]
         )
 
-    async def _rows(self, sheet_id: str, column_ids: list[str], *, refresh: bool) -> list[RawRow]:
+    async def rows(self, sheet_id: str, column_ids: list[str], *, refresh: bool) -> list[RawRow]:
+        """Filas sólo con esas columnas (la primera es la etiqueta), con caché."""
+
         async def load() -> list[RawRow]:
             return await self._client.list_rows(sheet_id, column_ids)
 
@@ -66,8 +68,8 @@ class QualityService:
 
 
 def _plan(request: QualityRequest, columns: list[RawColumn]) -> list[_Planned]:
-    planned = [_Planned(_column(name, columns), "unique") for name in request.unique]
-    planned += [_Planned(_column(name, columns), "required") for name in request.required]
+    planned = [_Planned(find_column(name, columns), "unique") for name in request.unique]
+    planned += [_Planned(find_column(name, columns), "required") for name in request.required]
     planned += [_pattern_check(item, columns) for item in request.patterns]
     if not planned:
         raise AppError(
@@ -88,10 +90,10 @@ def _pattern_check(item: str, columns: list[RawColumn]) -> _Planned:
             f"regular válida de hasta {quality_rules.MAX_PATTERN_LENGTH} caracteres.",
             422,
         )
-    return _Planned(_column(name, columns), "pattern", compiled)
+    return _Planned(find_column(name, columns), "pattern", compiled)
 
 
-def _column(name: str, columns: list[RawColumn]) -> RawColumn:
+def find_column(name: str, columns: list[RawColumn]) -> RawColumn:
     """Columna por id o por título sin distinguir mayúsculas; si no, sugiere parecidas."""
     wanted = name.strip()
     for column in columns:
@@ -112,7 +114,7 @@ def _run(item: _Planned, rows: list[RawRow]) -> QualityCheck:
     else:
         assert item.pattern is not None
         issues = quality_rules.mismatches(rows, column_id, item.pattern)
-    shown, truncated = _limit(issues)
+    shown, truncated = limit_issues(issues)
     return QualityCheck(
         column=item.column.title,
         column_id=column_id,
@@ -124,7 +126,7 @@ def _run(item: _Planned, rows: list[RawRow]) -> QualityCheck:
     )
 
 
-def _limit(issues: list[QualityIssue]) -> tuple[list[QualityIssue], bool]:
+def limit_issues(issues: list[QualityIssue]) -> tuple[list[QualityIssue], bool]:
     """Hasta MAX_ISSUES filas en total en la respuesta; el conteo siempre es completo."""
     shown: list[QualityIssue] = []
     budget = quality_rules.MAX_ISSUES

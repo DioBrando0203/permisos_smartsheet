@@ -65,3 +65,11 @@ Síntoma: `GET /2.0/webhooks?includeAll=true` responde 400 `errorCode` 1018: "Th
 Causa: Smartsheet está retirando `includeAll` en favor de `page` y `pageSize`.
 Riesgo: `client._get_all` usa `includeAll=true` en `/sheets`, `/users`, `/contacts`, `/groups`, columnas e historial de celdas; hoy funcionan, pero pueden empezar a fallar igual. Junto con B-06 (corte en 100 sin avisar).
 Prevención: cambiar `_get_all` a paginación explícita (`pageSize` y `page` hasta recibir menos que `pageSize`) con prueba; prioridad alta antes del frontend.
+
+## B-10 httpx registraba URLs completas
+
+Fecha: 2026-10-16. Estado: resuelto.
+Síntoma: el log del servidor tenía líneas `HTTP Request: GET https://api.smartsheet.com/...?...` con la query completa.
+Causa: httpx registra cada solicitud en INFO; `logging.basicConfig(level=INFO)` lo dejaba pasar.
+Solución: `logging.getLogger("httpx").setLevel(WARNING)` en `main.py`; prueba `test_security.py::test_httpx_does_not_log_full_urls`.
+Revisión: en los logs de prueba anteriores no había correos ni token (sólo ids y parámetros técnicos).

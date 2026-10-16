@@ -36,6 +36,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - RQ-21 Exportar: CSV para Excel de quién tiene acceso a qué hoja (PEN-12).
 - RQ-22 Toda la organización: hojas de otras personas visibles y de sólo consulta (PEN-14).
 - RQ-23 Automatizaciones: estado y problemas de alertas y flujos de Smartsheet por hoja y en toda la cuenta (SPEC-B10).
+- RQ-24 Referencias: valores de una columna que no están en una hoja catálogo, por hoja y en toda la cuenta (SPEC-B11).
 - RQ-19 Actividad: filas modificadas por período, quién edita, editores sin cambios e historial por fila o celda, directo de Smartsheet (SPEC-B08).
 - RQ-18 Revisión de cuenta: alertas de todas las hojas agregadas por hoja y por persona (SPEC-B07).
 - RQ-17 Operaciones masivas: copiar permisos entre hojas y quitar a una persona de varias hojas, con simulación por defecto (SPEC-B06).
@@ -195,7 +196,7 @@ Hacer: `_get_all` con `page` y `pageSize` en vez de `includeAll` (B-09, B-06); p
 Prioridad: media. Alcance: proyecto. Estado: propuesta (2026-10-16); exige ADR y OAuth (PEN-08) antes de escribir.
 Contexto: el usuario evalúa Jira y Salesforce por sus conectores de pago. Smartsheet sigue como fuente de verdad; nuestro servicio sólo agrega lo que no da bien.
 Opciones, de menor a mayor esfuerzo:
-- Validación de datos: hecha para una hoja (SPEC-B09, 2026-10-16): repetidos, vacíos y formato. Falta: relaciones entre hojas (un Record ID que debe existir en otra hoja).
+- Validación de datos: hecha (SPEC-B09 y SPEC-B11, 2026-10-16): repetidos, vacíos, formato y referencias contra una hoja catálogo. No hay hoja maestra de Record IDs; el catálogo verificado es "Source Designers".
 - Bandeja personal por persona (sus filas asignadas en todas las hojas), con login OAuth para que cada cambio quede a su nombre. Cubre parte de Dynamic View y de la vista "mis tareas" de Jira.
 - Registro de cambios en vivo con webhooks (disponibles en el plan): cada cambio de fila o celda en las hojas elegidas, guardado por nuestro servicio. Suple en parte Event Reporting (no ve permisos ni accesos). Exige una URL pública HTTPS y persistencia.
 - Tiempo en cada estado y tareas atascadas (al estilo de Jira), calculado con ese registro.

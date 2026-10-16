@@ -2,6 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from app.models.people import FailedSheet
 from app.models.sheets import SheetSummary
 
 
@@ -39,3 +40,41 @@ class SheetQuality(BaseModel):
     sheet: SheetSummary
     rows_total: int
     checks: list[QualityCheck]
+
+
+class SheetReferences(BaseModel):
+    sheet: SheetSummary
+    column: str
+    catalog_sheet: SheetSummary
+    catalog_column: str
+    catalog_values_count: int
+    checked_rows: int
+    missing_count: int
+    missing: list[QualityIssue]
+    truncated: bool
+
+
+class ReferenceSheetRow(BaseModel):
+    sheet_id: str
+    sheet_name: str
+    missing_count: int
+    missing_values: list[str]
+
+
+class MissingValue(BaseModel):
+    value: str
+    sheets: int
+    rows: int
+
+
+class AccountReferences(BaseModel):
+    column: str
+    catalog_sheet: SheetSummary
+    catalog_column: str
+    catalog_values_count: int
+    sheets_checked: int
+    sheets_without_column: int
+    missing_total: int
+    by_value: list[MissingValue]
+    sheets: list[ReferenceSheetRow]
+    failed_sheets: list[FailedSheet]

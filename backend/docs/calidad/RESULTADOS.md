@@ -111,3 +111,12 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Columnas destinatarias: `Construction Manager` (contacto) 51, `Assigned To` 4, `Contacto responsable` 2, `Assignee` 1; de texto: `Current Assignee` 1 y `Construction Manager` 1. Ninguna regla usa `Designer1` ni `Designer2`: no hay alertas de asignación de diseñador.
 - Plan 2026: "Alertas" (a `Construction Manager`) apagada a mano; "alert" sin destinatarios y apagada por Smartsheet.
 - Log: 0 escrituras. Instancia detenida.
+
+## 2026-10-16 -05:00 Referencias entre hojas (SPEC-B11)
+
+- `pytest`: 112 aprobadas. `ruff check` y `ruff format --check`: sin observaciones.
+- Cuenta real, catálogo "Source Designers" (25 diseñadores, columna `Designer`):
+  - Plan 2026, `Designer1`: 662 filas con diseñador, 71 con un nombre que no está en el catálogo (4 personas y el texto "Designer1").
+  - Toda la cuenta, `Designer1` (11,6 s): 14 hojas con la columna, 95 sin ella, 227 filas fuera del catálogo; el texto literal "Designer1" aparece como valor en 13 hojas (fila de encabezado copiada como dato).
+  - Toda la cuenta, `Designer2` (2,8 s): 15 hojas, 705 filas fuera del catálogo; una persona concentra 557.
+  - Log: 0 escrituras y 0 líneas de httpx con URL. Instancia detenida.

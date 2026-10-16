@@ -21,7 +21,8 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_quality_rules.py` y `test_quality.py`: repetidos, vacíos, formato, errores de columna y de expresión, columnas pedidas, listado de columnas.
 - `test_export.py`: CSV para Excel (BOM, `;`, fórmulas neutralizadas, columnas en español).
 - `test_automation_rules.py` y `test_automations.py`: cada problema de la tabla, regla sana, vista por hoja y de cuenta con hoja fallida.
-- `test_security.py`: Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
+- `test_references.py`: referencias por hoja (catálogo por permalink) y de cuenta (sin catálogo, hojas sin la columna, faltantes por valor sin distinguir mayúsculas).
+- `test_security.py`: httpx sin URLs en el log, Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
 
 ## Comandos
 

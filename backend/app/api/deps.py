@@ -14,6 +14,7 @@ from app.services.cache import TtlCache
 from app.services.export import ExportService
 from app.services.people import PeopleService
 from app.services.quality import QualityService
+from app.services.references import ReferenceService
 from app.services.reports import ReportService
 from app.services.shares import ShareService
 from app.services.sheets import SheetService
@@ -59,6 +60,7 @@ class Services:
     quality: QualityService
     export: ExportService
     automations: AutomationService
+    references: ReferenceService
 
 
 def build_services(settings: Settings, client: SmartsheetClient | None = None) -> Services:
@@ -74,6 +76,7 @@ def build_services(settings: Settings, client: SmartsheetClient | None = None) -
     quality = QualityService(client, cache, sheets)
     export = ExportService(sheets, people)
     automations = AutomationService(client, cache, sheets, shares)
+    references = ReferenceService(sheets, quality)
     return Services(
         settings,
         client,
@@ -88,6 +91,7 @@ def build_services(settings: Settings, client: SmartsheetClient | None = None) -
         quality,
         export,
         automations,
+        references,
     )
 
 

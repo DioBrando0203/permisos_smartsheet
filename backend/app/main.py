@@ -41,4 +41,7 @@ def create_app(settings: Settings | None = None, services: Services | None = Non
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+# httpx registra en INFO la URL completa con su query (correos, búsquedas): sólo advertencias.
+# El registro propio de `transport.py` ya deja método, ruta sin query, estado y duración.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 app = create_app()
