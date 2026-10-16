@@ -101,5 +101,13 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 ## 2026-10-16 -05:00 Automatizaciones de Smartsheet (sólo lectura)
 
 - `GET /2.0/sheets/{id}/automationrules`: 200. Plan 2026: 2 reglas de notificación, ambas apagadas, 0 destinatarios; una desactivada por Smartsheet con `NO_POTENTIAL_RECIPIENTS`.
-- 110 hojas del token: 63 con automatizaciones, 80 reglas (79 notificaciones, 1 aprobación); 9 habilitadas y 71 apagadas; 15 apagadas por Smartsheet por `NO_POTENTIAL_RECIPIENTS`; 8 habilitadas sin destinatarios explícitos.
-- `Designer1` y `Designer2` son `PICKLIST` (texto), no `CONTACT_LIST`: una alerta "al contacto de la celda" no tiene a quién avisar. Causa probable de `NO_POTENTIAL_RECIPIENTS`; sin confirmar regla por regla.
+- 110 hojas del token: 63 con automatizaciones, 80 reglas (79 notificaciones, 1 aprobación); 9 habilitadas y 71 apagadas; 15 apagadas por Smartsheet por `NO_POTENTIAL_RECIPIENTS`. Las 8 habilitadas "sin destinatarios explícitos" avisan a una columna (`recipientColumnIds`): sí tienen destinatario.
+- Corregido el 2026-10-16 (ver la entrada de SPEC-B10): la hipótesis de que fallaban por `Designer1` (lista) era falsa; ninguna regla usa las columnas de diseñador.
+
+## 2026-10-16 -05:00 Salud de las automatizaciones (SPEC-B10)
+
+- `pytest`: 108 aprobadas. `ruff check` y `ruff format --check`: sin observaciones. `client.py` dividido en recursos (168 líneas) y `transport.py` (142) sin cambiar pruebas.
+- Cuenta real, `GET /api/automations` (17 s, primera lectura): 110 hojas, 63 con reglas, 80 reglas, 0 fallidas. Estado: 9 `ok`, 71 `disabled`. Problemas: `DISABLED` 56 (apagadas sin motivo de Smartsheet), `DISABLED_NO_RECIPIENTS` 15, `NO_RECIPIENTS` 16, `RECIPIENT_COLUMN_NOT_CONTACT` 2.
+- Columnas destinatarias: `Construction Manager` (contacto) 51, `Assigned To` 4, `Contacto responsable` 2, `Assignee` 1; de texto: `Current Assignee` 1 y `Construction Manager` 1. Ninguna regla usa `Designer1` ni `Designer2`: no hay alertas de asignación de diseñador.
+- Plan 2026: "Alertas" (a `Construction Manager`) apagada a mano; "alert" sin destinatarios y apagada por Smartsheet.
+- Log: 0 escrituras. Instancia detenida.

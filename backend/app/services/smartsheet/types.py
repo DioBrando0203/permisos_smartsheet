@@ -117,3 +117,19 @@ class RawCellChange:
     value: str | None
     modified_at: datetime | None
     modified_by: RawAuthor | None
+
+
+@dataclass(frozen=True)
+class RawAutomation:
+    id: str
+    name: str
+    enabled: bool
+    disabled_reason: str | None
+    disabled_reason_text: str | None
+    action_type: str | None
+    frequency: str | None
+    recipient_emails: list[str]
+    recipient_column_ids: list[str]
+    notify_all_shared: bool
+    modified_at: datetime | None
+    modified_by: RawAuthor | None

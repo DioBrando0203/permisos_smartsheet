@@ -35,6 +35,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - RQ-20 Calidad de datos: repetidos, vacíos y formato en las columnas elegidas de una hoja (SPEC-B09).
 - RQ-21 Exportar: CSV para Excel de quién tiene acceso a qué hoja (PEN-12).
 - RQ-22 Toda la organización: hojas de otras personas visibles y de sólo consulta (PEN-14).
+- RQ-23 Automatizaciones: estado y problemas de alertas y flujos de Smartsheet por hoja y en toda la cuenta (SPEC-B10).
 - RQ-19 Actividad: filas modificadas por período, quién edita, editores sin cambios e historial por fila o celda, directo de Smartsheet (SPEC-B08).
 - RQ-18 Revisión de cuenta: alertas de todas las hojas agregadas por hoja y por persona (SPEC-B07).
 - RQ-17 Operaciones masivas: copiar permisos entre hojas y quitar a una persona de varias hojas, con simulación por defecto (SPEC-B06).
@@ -202,9 +203,9 @@ Fuera de alcance: reemplazar Jira (tableros, flujos, SLA completos) o un CRM (AD
 
 ### PEN-25 Salud de las automatizaciones
 
-Prioridad: alta. Alcance: backend y frontend. Estado: pendiente.
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-16): SPEC-B10.
 Tipo (ADR-B15): Smartsheet no avisa que sus alertas están apagadas o sin destinatarios; el panel sí. No cambia nada en las hojas.
-Situación: 80 reglas en 63 hojas; 71 apagadas, 15 por `NO_POTENTIAL_RECIPIENTS`.
+Situación: 80 reglas en 63 hojas; sólo 9 funcionan; 56 apagadas a mano, 15 por Smartsheet, 16 sin destinatarios; ninguna avisa de asignaciones de diseñador.
 Hacer: `GET /api/automations` (toda la cuenta) y `GET /api/sheets/{id}/automations`: regla, estado, motivo, acción, destinatarios y columnas de responsable que no son de tipo contacto. Reactivar o corregir una regla sería una escritura (PEN-07).
 
 ### PEN-26 Asignación desde el panel (propuesta)

@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.routes.activity import router as activity_router
+from app.api.routes.automations import router as automations_router
 from app.api.routes.bulk import router as bulk_router
 from app.api.routes.export import router as export_router
 from app.api.routes.health import router as health_router
@@ -21,3 +22,4 @@ api_router.include_router(bulk_router, tags=["operaciones masivas (simulación p
 api_router.include_router(people_router, tags=["personas"])
 api_router.include_router(quality_router, prefix="/sheets", tags=["calidad de datos"])
 api_router.include_router(export_router, tags=["exportar"])
+api_router.include_router(automations_router, tags=["automatizaciones de Smartsheet"])

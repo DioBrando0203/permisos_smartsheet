@@ -34,6 +34,8 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/sheets/{sheet_id}/columns`: `ColumnInfo[]`.
 - `GET /api/sheets/{sheet_id}/quality?unique=&required=&pattern=&refresh=`: `SheetQuality` (SPEC-B09); parámetros repetibles.
 - `GET /api/export/access.csv?q=&scope=`: CSV para Excel (`;`, UTF-8 con BOM), una fila por permiso; cabecera `X-Failed-Sheets`; fórmulas neutralizadas con `'`.
+- `GET /api/automations?q=&only_problems=&refresh=`: `AccountAutomations` (SPEC-B10).
+- `GET /api/sheets/{sheet_id}/automations?refresh=`: `SheetAutomations`.
 - `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
 - `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.
 - Ejemplos en Swagger: plan 2026 `1842596423880580` (permalink `QMFVM7v3V23HqwgmCwHg5wF8XHFr5GCG4WJjXJF1`) y plan 2025 `5750050894335876`.
@@ -145,6 +147,12 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 
 - `ColumnInfo`: `id`, `title`, `type`, `index`, `primary`.
 - `SheetQuality`: `sheet`, `rows_total`, `checks`: `[{column, column_id, check (unique|required|pattern), pattern, issues_count, issues: [{value, rows: [{row_id, row_number, label}]}], truncated}]`; hasta 200 filas por revisión en `issues`, `issues_count` siempre completo.
+
+### SheetAutomations y AccountAutomations
+
+- `Automation`: `id`, `name`, `enabled`, `status` (`ok`, `with_problems`, `disabled`), `action_type`, `frequency`, `recipient_emails`, `recipient_columns` (`[{id, title, type, is_contact, exists}]`), `notify_all_shared`, `smartsheet_reason`, `problems` (`[{code, message}]`: `DISABLED_NO_RECIPIENTS`, `DISABLED`, `NO_RECIPIENTS`, `RECIPIENT_COLUMN_MISSING`, `RECIPIENT_COLUMN_NOT_CONTACT`, `RECIPIENT_NOT_SHARED`), `modified_at`, `modified_by`.
+- `SheetAutomations`: `sheet`, `counts` por estado, `automations`.
+- `AccountAutomations`: `sheets_reviewed`, `sheets_with_rules`, `rules_total`, `by_status`, `by_problem`, `sheets` (`[{sheet_id, sheet_name, counts, problems}]`), `failed_sheets`.
 
 ### CopyRequest y RevokeRequest
 

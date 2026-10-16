@@ -10,6 +10,7 @@ from typing import Any
 from app.services.permissions import AccessLevel, ShareScope, ShareType
 from app.services.smartsheet.types import (
     RawAuthor,
+    RawAutomation,
     RawCellChange,
     RawColumn,
     RawContact,
@@ -134,6 +135,25 @@ def to_cell_change(data: Json) -> RawCellChange:
     return RawCellChange(
         column_id=_id(data.get("columnId")),
         value=_cell_text(data),
+        modified_at=_date(data.get("modifiedAt")),
+        modified_by=_author(data.get("modifiedBy")),
+    )
+
+
+def to_automation(data: Json) -> RawAutomation:
+    action = data.get("action") or {}
+    emails = [_email(item.get("email")) for item in action.get("recipients") or []]
+    return RawAutomation(
+        id=_id(data["id"]),
+        name=str(data.get("name") or ""),
+        enabled=bool(data.get("enabled")),
+        disabled_reason=_text(data.get("disabledReason")),
+        disabled_reason_text=_text(data.get("disabledReasonText")),
+        action_type=_text(action.get("type")),
+        frequency=_text(action.get("frequency")),
+        recipient_emails=[email for email in emails if email],
+        recipient_column_ids=[_id(column) for column in action.get("recipientColumnIds") or []],
+        notify_all_shared=bool(action.get("notifyAllSharedUsers")),
         modified_at=_date(data.get("modifiedAt")),
         modified_by=_author(data.get("modifiedBy")),
     )

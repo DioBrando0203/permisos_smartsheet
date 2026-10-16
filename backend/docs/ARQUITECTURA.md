@@ -39,6 +39,7 @@ app/
   api/routes/activity.py         GET /sheets/{id}/activity, GET /sheets/{id}/rows/{row_id}/history
   api/routes/quality.py          GET /sheets/{id}/columns, GET /sheets/{id}/quality
   api/routes/export.py           GET /export/access.csv
+  api/routes/automations.py      GET /automations, GET /sheets/{id}/automations
   api/routes/bulk.py             POST /sheets/{id}/shares/copy, POST /users/{key}/revoke (simulación por defecto)
   core/config.py                 Settings (pydantic-settings) con token SecretStr, read_only, Host y Origin
   core/errors.py                 AppError(code, message, status) y manejador único
@@ -50,7 +51,8 @@ app/
   models/bulk.py                 CopyRequest, RevokeRequest, BulkStep, CopyPlan, RevokePlan
   services/smartsheet/
     __init__.py                  API: SmartsheetClient y dataclasses
-    client.py                    _request: auth, semáforo, reintentos, paginación (lastKey y page)
+    client.py                    recursos de Smartsheet (hojas, permisos, filas, columnas, automatizaciones)
+    transport.py                 auth, semáforo, reintentos, paginación (lastKey y page)
     errors.py                    respuesta de error de Smartsheet a AppError
     mappers.py                   JSON de Smartsheet a Raw*
     types.py                     RawSheet, RawShare, RawUser, RawGroup, RawContact, RawMe, NewShare, ShareMessage
@@ -72,6 +74,8 @@ app/
   services/quality_rules.py      revisiones puras: repetidos, vacíos y formato con límites
   services/quality.py            QualityService: lee sólo las columnas revisadas (caché cells:)
   services/export.py             CSV para Excel de permisos por hoja (sin guardar en el servidor)
+  services/automation_rules.py   diagnóstico puro de una automatización (tabla PROBLEMS)
+  services/automations.py        AutomationService: reglas cruzadas con columnas y permisos
   services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
   services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService
 ```

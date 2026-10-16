@@ -8,6 +8,7 @@ from fastapi import Depends, Path, Request
 from app.core.config import Settings
 from app.services.account_review import AccountReviewService
 from app.services.activity import ActivityService
+from app.services.automations import AutomationService
 from app.services.bulk import BulkService
 from app.services.cache import TtlCache
 from app.services.export import ExportService
@@ -57,6 +58,7 @@ class Services:
     activity: ActivityService
     quality: QualityService
     export: ExportService
+    automations: AutomationService
 
 
 def build_services(settings: Settings, client: SmartsheetClient | None = None) -> Services:
@@ -71,6 +73,7 @@ def build_services(settings: Settings, client: SmartsheetClient | None = None) -
     activity = ActivityService(client, cache, sheets, shares)
     quality = QualityService(client, cache, sheets)
     export = ExportService(sheets, people)
+    automations = AutomationService(client, cache, sheets, shares)
     return Services(
         settings,
         client,
@@ -84,6 +87,7 @@ def build_services(settings: Settings, client: SmartsheetClient | None = None) -
         activity,
         quality,
         export,
+        automations,
     )
 
 

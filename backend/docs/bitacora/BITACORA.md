@@ -100,3 +100,10 @@ Estado: terminada
 Cambios: PEN-14 (`/users/sheets`, `in_my_list`, `owner_email`, `scope`, `NOT_SHARED_WITH_TOKEN`); PEN-15 (`last_login`); SPEC-B09 (`columns`, `quality`, `quality_rules`); PEN-12 (`export/access.csv`); lectura de filas generalizada (`client.list_rows`) y columnas con caché en `SheetService`; BOM con nombre explícito.
 Evidencia: `calidad/RESULTADOS.md`.
 Notas: el usuario pidió continuar con endpoints y servicios que mejoren lo que falta (ADR-B15).
+
+## 2026-10-16 -05:00 Salud de las automatizaciones (PEN-25)
+
+Estado: terminada
+Cambios: SPEC-B10; `client.list_automation_rules`, `RawAutomation`, `mappers.to_automation`; `services/automation_rules.py`, `automations.py`; `models/automations.py`; `routes/automations.py`; `client.py` dividido en `client.py` y `transport.py` (PY-01).
+Evidencia: `calidad/RESULTADOS.md`.
+Notas: se corrigió la hipótesis previa (no fallan por `Designer1`: ninguna regla la usa). Se le dijo al usuario.
