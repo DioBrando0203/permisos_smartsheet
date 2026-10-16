@@ -12,6 +12,7 @@ Protocolo obligatorio para cualquier IA que modifique el frontend. Si contradice
 - El panel corre en modo solo lectura (`APP_READ_ONLY=true`) por decisión del usuario: la interfaz de escritura existe pero deshabilitada (ADR-08). No cambiarlo sin que el usuario lo pida.
 - Puertos: frontend de desarrollo 5710 estricto; backend 8710 o al azar (ADR-07). No usar 5173 ni 8000.
 - Idioma de la interfaz y de los docs: español. Identificadores de código: inglés.
+- Proyecto de referencia (sólo lectura, no modificarlo): `/home/brando/Documentos/Proyectos/extractor_metadata/frontend`. De ahí se copian `tsconfig.json`, `eslint.config.js`, `prettier.config.js`, `src/test/setup.ts`, `src/app/styles/tokens.css` y los componentes base de `src/components/ui/` (STACK.md, PLAN_IMPLEMENTACION.md F0).
 
 ## Flujo de trabajo (SDD)
 
