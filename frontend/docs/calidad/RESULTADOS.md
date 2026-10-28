@@ -29,3 +29,39 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm run build`, `npm run lint` y `npm run format:check`: pasan.
 - `npm test`: pasa. 4 archivos y 8 pruebas, incluidas búsqueda, permisos propio/heredado y vistas de hojas con MSW.
 - `npm run test:e2e`: pasa con el caso F0 omitido; el flujo E2E real de F1 sigue pendiente.
+
+## 2026-10-28 10:10 -05:00 F2 en curso
+
+- `npm run build`, `npm run lint` y `npm run format:check`: pasan.
+- `npm test`: pasa. 5 archivos y 10 pruebas, incluidas los filtros y orden del directorio de personas.
+- `npm run test:e2e`: pasa con el caso F0 omitido; los flujos funcionales siguen pendientes.
+
+## 2026-10-28 10:28 -05:00 Corrección de arranque
+
+- Comprobación en navegador de `http://127.0.0.1:5710/hojas`: pasa. Se renderiza la lista de hojas y no se registran errores de JavaScript.
+- Proxy de desarrollo `GET /api/health`: responde 200.
+- `npm run build`, `npm run lint`, `npm test` (5 archivos y 10 pruebas) y `npm run format:check`: pasan.
+
+## 2026-10-28 10:46 -05:00 F3 en curso
+
+- `npm run build`, `npm run lint`, `npm test` (6 archivos y 12 pruebas) y `npm run format:check`: pasan.
+- `npm run test:e2e`: pasa con el único caso F0 aún omitido.
+- Revisión visual de Auditoría en 320, 390, 1024, 1440 y 1920 px: sin desborde horizontal; las pestañas siguen presentes en todos los anchos.
+
+## 2026-10-28 12:27 -05:00 CRUD base de permisos
+
+- `npm run build`, `npm run lint`, `npm test` (7 archivos y 14 pruebas) y `npm run format:check`: pasan.
+- Las pruebas unitarias cubren la respuesta `204` de eliminación y el análisis de correos pegados, incluidos duplicados.
+- No se ejecutaron `POST`, `PATCH` ni `DELETE` contra el backend real ni Smartsheet; las mutaciones permanecen deshabilitadas con `APP_READ_ONLY=true`.
+
+## 2026-10-28 15:35 -05:00 Autocompletado de permisos
+
+- `npm run build`, `npm run lint`, `npm test` (7 archivos y 15 pruebas), `npm run test:e2e` (1 omitida) y `npm run format:check`: pasan.
+- Fixtures y normalizadores de contactos y grupos verificados sin acceder a la cuenta real.
+- `sheets.css` y el nuevo `shares.css` respetan el máximo de 250 líneas por archivo.
+
+## 2026-10-28 17:32 -05:00 Detalle y simulación de personas
+
+- `npm run build`, `npm run lint`, `npm test` (8 archivos y 16 pruebas), `npm run test:e2e` (1 omitida) y `npm run format:check`: pasan.
+- Revisión visual del detalle de persona a 320, 390, 1024, 1440 y 1920 px: sin desborde horizontal y el detalle permanece disponible.
+- La prueba de contrato verifica que el plan de revocación conserva sus hojas y motivos de omisión; no se ejecutó una revocación real.

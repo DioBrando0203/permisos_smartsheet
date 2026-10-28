@@ -1,0 +1,138 @@
+.insight-panel {
+  display: grid;
+  gap: var(--space-l);
+  padding: var(--space-l);
+}
+
+.insight-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-s);
+}
+
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-l);
+}
+
+.insight-section {
+  min-width: 0;
+}
+
+.insight-section h2,
+.automation-card h2 {
+  margin: 0 0 var(--space-s);
+  font-size: var(--fs-300);
+  line-height: var(--lh-300);
+}
+
+.insight-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.insight-section th,
+.insight-section td {
+  padding: var(--space-s);
+  border-bottom: 1px solid var(--stroke-2);
+  text-align: left;
+}
+
+.audit-alert {
+  display: grid;
+  gap: var(--space-s);
+  padding: var(--space-m);
+  border: 1px solid var(--stroke-2);
+  border-radius: var(--radius-lg);
+}
+
+.audit-alert + .audit-alert {
+  margin-top: var(--space-s);
+}
+
+.audit-alert header,
+.audit-alert li,
+.domain-list li,
+.editor-list li,
+.automation-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s);
+}
+
+.audit-alert ul,
+.domain-list,
+.editor-list,
+.automation-card ul {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.audit-alert li {
+  color: var(--fg-2);
+  font-size: var(--fs-200);
+}
+
+.insight-select {
+  display: grid;
+  width: fit-content;
+  gap: var(--space-xs);
+  color: var(--fg-2);
+  font-size: var(--fs-200);
+}
+
+.insight-select select {
+  height: var(--control-md);
+  border: 1px solid var(--stroke-1);
+  border-radius: var(--radius-md);
+  background: var(--bg-1);
+  color: var(--fg-1);
+  font: inherit;
+}
+
+.editor-list li {
+  padding: var(--space-s) 0;
+  border-bottom: 1px solid var(--stroke-2);
+}
+
+.editor-list li > span {
+  display: grid;
+  min-width: 0;
+}
+
+.editor-list small,
+.automation-card p,
+.automation-note {
+  color: var(--fg-2);
+  font-size: var(--fs-200);
+}
+
+.automation-note {
+  margin: 0;
+}
+
+.automation-list {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.automation-card {
+  display: grid;
+  gap: var(--space-s);
+  padding: var(--space-l);
+  border: 1px solid var(--stroke-2);
+  border-radius: var(--radius-lg);
+}
+
+.automation-card p {
+  margin: 0;
+}
+
+.automation-card .status-alert {
+  margin-top: var(--space-xs);
+}

@@ -36,4 +36,9 @@ describe('api', () => {
     server.use(http.get('/api/health', () => HttpResponse.error()))
     await expect(api('/api/health')).rejects.toMatchObject({ code: 'BACKEND_UNREACHABLE' })
   })
+
+  it('acepta una eliminación sin contenido', async () => {
+    server.use(http.delete('/api/sheets/100/shares/share-1', () => new HttpResponse(null, { status: 204 })))
+    await expect(api<void>('/api/sheets/100/shares/share-1', { method: 'DELETE' })).resolves.toBeUndefined()
+  })
 })

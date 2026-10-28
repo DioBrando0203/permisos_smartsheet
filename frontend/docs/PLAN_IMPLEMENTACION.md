@@ -2,7 +2,7 @@
 
 Orden para construir el frontend sobre el backend ya implementado. Cada fase termina con la definición de terminado de `GUIA_IA.md`, su entrada en la bitácora y un commit. Las specs de la fase pasan de "borrador" a "aprobada" antes de programarla y a "implementada" al cerrarla.
 
-Estado (2026-10-27): F0 terminada (F0-B1 a F0-B4 y F0-F1 a F0-F5). F1 en curso: estructura, hojas y permisos de lectura.
+Estado (2026-10-28): F0 terminada (F0-B1 a F0-B4 y F0-F1 a F0-F5). F1 a F3 en curso por solicitud explícita del usuario: vistas de lectura de hojas, permisos, personas, auditoría, actividad y automatizaciones.
 
 ## F0 Preparación (backend y esqueleto)
 

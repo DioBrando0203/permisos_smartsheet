@@ -48,4 +48,10 @@ describe('SheetsPage', () => {
     expect(screen.getByText('Persona Uno')).toBeInTheDocument()
     expect(screen.getAllByText(/Propio|Heredado del workspace/)).toHaveLength(2)
   })
+
+  it('carga las pestañas de auditoría, actividad y automatizaciones al abrirlas', async () => {
+    renderPage('/hojas/100?tab=auditoria')
+    expect(await screen.findByText('Una persona externa puede compartir')).toBeInTheDocument()
+    expect(screen.getByText('Por dominio')).toBeInTheDocument()
+  })
 })

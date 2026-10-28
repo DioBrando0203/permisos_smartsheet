@@ -1,6 +1,6 @@
 # SPEC-03 Permisos de una hoja
 
-Estado: aprobada (Ver en F1; escrituras construidas en F1 y habilitadas en F5)
+Estado: aprobada (Ver y CRUD base implementados; habilitación y E2E de escrituras en F5)
 Responsable del código: `features/shares/`
 Relacionadas: backend SPEC-B02, B-05, B-07; ADR-03, ADR-08; UX-05 a UX-15, UX-25 a UX-28, UX-32, UX-33
 
@@ -32,7 +32,7 @@ Ver quién tiene la hoja compartida y dar, cambiar o quitar ese acceso sin error
 ### Dar acceso
 
 1. "Compartir" (único `primary` de la vista) abre `ShareDialog`.
-2. Destinatarios en chips; autocompletado con el directorio (`/api/users`, que ya incluye contactos) y grupos (`/api/groups`); pegar varios correos (UX-13).
+2. Destinatarios en chips; autocompletado con contactos (`/api/contacts`) y grupos (`/api/groups`); pegar varios correos (UX-13). Estado actual: pegar correos, detección de duplicados y sugerencias de contactos/grupos están implementados; falta la prueba E2E completa antes de cerrar F5.
 3. Nivel por defecto Editor; sin Propietario. "Avisar por correo" desmarcado; al marcarlo, asunto y mensaje (UX-10).
 4. Botón "Dar acceso a N personas" (UX-14). Resultado con creados y omitidos (UX-11); con error, el diálogo queda abierto con StatusAlert.
 

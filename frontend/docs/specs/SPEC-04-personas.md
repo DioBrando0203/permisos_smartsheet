@@ -1,6 +1,6 @@
 # SPEC-04 Personas
 
-Estado: borrador (fase F2; ejecutar "Quitar de varias hojas" en F5)
+Estado: aprobada (F2: detalle y simulación de revocación implementados; ejecutar la revocación real en F5)
 Responsable del código: `features/people/`
 Relacionadas: backend SPEC-B03 y SPEC-B06; ADR-06, ADR-08, ADR-12; UX-19, UX-29, UX-30
 

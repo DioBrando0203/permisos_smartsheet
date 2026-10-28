@@ -90,3 +90,81 @@ export type ApiShare = {
 }
 
 export type ApiShareList = { sheet_id?: string; shares?: ApiShare[]; loaded_at?: string | null }
+
+export type Person = {
+  key: string
+  type: 'USER' | 'GROUP'
+  name: string | null
+  email: string | null
+  sheetCount: number
+  highestLevel: AccessLevel | null
+  isContact: boolean
+  isOrgMember: boolean
+  isTokenOwner: boolean
+  lastLogin: string | null
+}
+
+export type PersonSheetAccess = {
+  sheetId: string
+  sheetName: string
+  shareId: string
+  accessLevel: AccessLevel
+  scope: ShareScope
+  editable: boolean
+  lockedReason: LockedReason
+}
+
+export type PeopleResponse = {
+  people: Person[]
+  total: number
+  incomplete: boolean
+  failedSheets: { sheetId: string; sheetName: string; code: string }[]
+  loadedAt: string | null
+}
+
+export type PersonDetail = { person: Person; sheets: PersonSheetAccess[] }
+
+export type ApiPerson = {
+  key?: string
+  type?: 'USER' | 'GROUP'
+  name?: string | null
+  email?: string | null
+  sheet_count?: number
+  highest_level?: AccessLevel | null
+  is_contact?: boolean
+  is_org_member?: boolean
+  is_token_owner?: boolean
+  last_login?: string | null
+}
+
+export type ApiPeopleResponse = {
+  people?: ApiPerson[]
+  total?: number
+  incomplete?: boolean
+  failed_sheets?: { sheet_id?: string; sheet_name?: string; code?: string }[]
+  loaded_at?: string | null
+}
+
+export type ApiPersonDetail = {
+  person?: ApiPerson
+  sheets?: {
+    sheet_id?: string
+    sheet_name?: string
+    share_id?: string
+    access_level?: AccessLevel
+    scope?: ShareScope
+    editable?: boolean
+    locked_reason?: LockedReason
+  }[]
+}
+
+export type Contact = { id: string; email: string; name: string | null }
+export type Group = { id: string; name: string; description: string | null; memberCount: number | null }
+
+export type ApiContact = { id?: string; email?: string; name?: string | null }
+export type ApiGroup = {
+  id?: string
+  name?: string
+  description?: string | null
+  member_count?: number | null
+}

@@ -2,7 +2,7 @@
 
 Fuente de verdad del panel de permisos. Metodología: desarrollo guiado por especificaciones (SDD). Ningún cambio de comportamiento entra sin spec; ninguna spec queda sin pruebas que la verifiquen.
 
-Estado (2026-10-27): F0 terminada y F1 en curso. Ya se puede navegar, listar hojas y ver permisos en solo lectura; faltan completar los criterios restantes de F1. Las specs activas están aprobadas y se marcan implementadas al cerrar la fase.
+Estado (2026-10-28): F0 terminada; F1, F2 y F3 en curso por solicitud del usuario. Ya se puede navegar, listar hojas, ver permisos, consultar el directorio y abrir Auditoría, Actividad y Automatizaciones de cada hoja en solo lectura; faltan los criterios restantes de las fases. Las specs activas están aprobadas y se marcan implementadas al cerrar cada fase.
 
 ## Orden de lectura para una IA o persona nueva
 

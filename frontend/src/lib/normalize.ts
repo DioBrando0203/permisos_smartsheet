@@ -1,12 +1,23 @@
 import type {
   ApiHealth,
+  ApiContact,
+  ApiGroup,
   ApiMe,
+  ApiPeopleResponse,
+  ApiPerson,
+  ApiPersonDetail,
   ApiShare,
   ApiShareList,
   ApiSheet,
   ApiSheetList,
   Health,
+  Contact,
+  Group,
   Me,
+  PeopleResponse,
+  Person,
+  PersonDetail,
+  PersonSheetAccess,
   Share,
   ShareList,
   Sheet,
@@ -74,5 +85,62 @@ export function normalizeShareList(source: ApiShareList): ShareList {
     sheetId: source.sheet_id ?? '',
     shares: (source.shares ?? []).map(normalizeShare),
     loadedAt: source.loaded_at ?? null,
+  }
+}
+
+export function normalizePerson(source: ApiPerson): Person {
+  return {
+    key: source.key ?? '',
+    type: source.type ?? 'USER',
+    name: source.name ?? null,
+    email: source.email ?? null,
+    sheetCount: source.sheet_count ?? 0,
+    highestLevel: source.highest_level ?? null,
+    isContact: source.is_contact ?? false,
+    isOrgMember: source.is_org_member ?? false,
+    isTokenOwner: source.is_token_owner ?? false,
+    lastLogin: source.last_login ?? null,
+  }
+}
+
+export function normalizePeople(source: ApiPeopleResponse): PeopleResponse {
+  return {
+    people: (source.people ?? []).map(normalizePerson),
+    total: source.total ?? 0,
+    incomplete: source.incomplete ?? false,
+    failedSheets: (source.failed_sheets ?? []).map((sheet) => ({
+      sheetId: sheet.sheet_id ?? '',
+      sheetName: sheet.sheet_name ?? 'Hoja sin nombre',
+      code: sheet.code ?? 'UNKNOWN',
+    })),
+    loadedAt: source.loaded_at ?? null,
+  }
+}
+
+export function normalizePersonDetail(source: ApiPersonDetail): PersonDetail {
+  return {
+    person: normalizePerson(source.person ?? {}),
+    sheets: (source.sheets ?? []).map((sheet): PersonSheetAccess => ({
+      sheetId: sheet.sheet_id ?? '',
+      sheetName: sheet.sheet_name ?? 'Hoja sin nombre',
+      shareId: sheet.share_id ?? '',
+      accessLevel: sheet.access_level ?? 'VIEWER',
+      scope: sheet.scope ?? 'ITEM',
+      editable: sheet.editable ?? false,
+      lockedReason: sheet.locked_reason ?? null,
+    })),
+  }
+}
+
+export function normalizeContact(source: ApiContact): Contact {
+  return { id: source.id ?? '', email: source.email ?? '', name: source.name ?? null }
+}
+
+export function normalizeGroup(source: ApiGroup): Group {
+  return {
+    id: source.id ?? '',
+    name: source.name ?? 'Grupo sin nombre',
+    description: source.description ?? null,
+    memberCount: source.member_count ?? null,
   }
 }

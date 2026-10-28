@@ -37,12 +37,25 @@
   .sheets-page {
     grid-template-columns: minmax(0, 1fr);
   }
+  .people-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .sheets-page__list,
   .sheets-page__detail {
     border-radius: 0;
   }
   .sheets-page:has(.sheet-header) .sheets-page__list {
     display: none;
+  }
+  .people-page:has(.person-detail) .people-page__list {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .insight-stats,
+  .insight-grid {
+    grid-template-columns: 1fr;
   }
 }
 @media (max-width: 640px) {

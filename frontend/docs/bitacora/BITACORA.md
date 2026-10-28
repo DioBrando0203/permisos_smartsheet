@@ -43,3 +43,45 @@ Estado: en curso
 Cambios: aprobadas SPEC-01, SPEC-02, SPEC-03 y SPEC-05 para iniciar F1. Implementados AppLayout, rutas de los cinco destinos, banner de solo lectura, avisos globales, lista maestra de hojas con alcance, búsqueda, exportación y estados; detalle de hoja, pestañas y permisos agrupados en solo lectura. La búsqueda ignora tildes, mayúsculas y palabras de enlace; los permisos propio y heredado de una persona se agrupan sin claves duplicadas.
 Evidencia: `npm run build`, `npm run lint` y `npm run format:check` pasaron; `npm test` pasó con 4 archivos y 8 pruebas; `npm run test:e2e` pasó con 1 caso F0 omitido. No se llamó a Smartsheet ni se modificaron permisos reales.
 Notas: faltan los controles de escritura segura, E2E funcional y revisión visual para cerrar F1.
+
+## 2026-10-28 10:10 -05:00 F2: directorio y detalle de personas
+
+Estado: en curso
+Cambios: aprobada SPEC-04 por solicitud explícita de continuar las vistas antes de cerrar F1. Implementados directorio con conteo de hojas, nivel más alto, filtros, búsqueda, insignias y última conexión; detalle con sus hojas, nivel y origen. Los controles de quitar acceso se muestran deshabilitados y explicados por el modo solo lectura.
+Evidencia: `npm run build`, `npm run lint` y `npm run format:check` pasaron; `npm test` pasó con 5 archivos y 10 pruebas; `npm run test:e2e` pasó con 1 caso F0 omitido a las 10:10 -05:00.
+Notas: no se llamó a Smartsheet ni se realizaron escrituras. F1 y F2 siguen abiertas hasta completar sus criterios de aceptación y revisión visual.
+
+## 2026-10-28 10:28 -05:00 Corrección de arranque del frontend
+
+Estado: terminada
+Cambios: corregido el estado inicial de `App`: durante la consulta de salud ahora se muestra el indicador de conexión, en lugar de interpretar la ausencia temporal de datos como un fallo global. Formateado el archivo afectado.
+Evidencia: la instancia Vite existente en `127.0.0.1:5710` respondió 200; su proxy de salud respondió 200; una comprobación de navegador confirmó el render de la lista de hojas sin errores de JavaScript. `npm run build`, `npm run lint`, `npm test` (5 archivos, 10 pruebas) y `npm run format:check` pasaron a las 10:28 -05:00.
+Notas: el puerto 5710 ya estaba ocupado por esa misma instancia de Vite; no se inició un segundo servidor ni se realizaron escrituras.
+
+## 2026-10-28 10:46 -05:00 F3: auditoría, actividad y automatizaciones por hoja
+
+Estado: en curso
+Cambios: iniciada F3 por solicitud explícita de continuar las vistas. Agregadas las pestañas Auditoría, Actividad y Automatizaciones con consultas perezosas, normalizadores por endpoint, estados de carga, vacío y error, alertas de datos desconocidos o limitaciones, estadísticas y tarjetas de automatización. El selector de período de Actividad queda en la URL.
+Evidencia: `npm run build`, `npm run lint`, `npm test` (6 archivos, 12 pruebas), `npm run format:check` y `npm run test:e2e` (1 omitida) pasaron a las 10:46 -05:00. Revisión visual de Auditoría a 320, 390, 1024, 1440 y 1920 px sin desborde horizontal.
+Notas: faltan Historial de fila y Calidad de datos para cerrar F3. No se realizaron escrituras; las mutaciones siguen deshabilitadas por `APP_READ_ONLY=true`.
+
+## 2026-10-28 12:27 -05:00 CRUD base de permisos de hoja
+
+Estado: en curso
+Cambios: agregadas mutaciones pesimistas para crear, cambiar nivel y quitar permisos; la creación acepta correos pegados, descarta duplicados, permite aviso por correo y no permite Propietario. Cambiar a Administrador o bajar nivel pide confirmación; quitar también pide confirmación. `api.ts` admite correctamente el 204 de `DELETE` y las invalidaciones reutilizan `invalidateAfterShareWrite` tras confirmación del backend.
+Evidencia: `npm run build`, `npm run lint`, `npm test` (7 archivos, 14 pruebas) y `npm run format:check` pasaron a las 12:27 -05:00. Las pruebas nuevas cubren 204 y destinatarios duplicados.
+Notas: la UI mantiene todas las escrituras deshabilitadas con `APP_READ_ONLY=true`; no se llamó a los endpoints de escritura reales. Faltan autocompletado de contactos/grupos y E2E con Smartsheet falso para cerrar F5.
+
+## 2026-10-28 15:35 -05:00 Autocompletado de destinatarios
+
+Estado: terminada
+Cambios: el diálogo Compartir consulta contactos y grupos sólo cuando se abre, sugiere coincidencias y permite agregar o quitar grupos antes de enviar. Se añadieron tipos, normalizadores, fixtures y handlers MSW para ambos endpoints. Los estilos del diálogo se extrajeron a `shares.css` para cumplir E-05.
+Evidencia: `npm run build`, `npm run lint`, `npm test` (7 archivos, 15 pruebas), `npm run test:e2e` (1 omitida) y `npm run format:check` pasaron a las 15:35 -05:00.
+Notas: no se realizaron escrituras ni consultas a Smartsheet desde las pruebas. Sigue pendiente el E2E completo contra el Smartsheet falso para cerrar F5.
+
+## 2026-10-28 17:32 -05:00 Detalle de persona y simulación masiva
+
+Estado: en curso
+Cambios: ampliado el detalle de persona/contacto con organización, contacto, última conexión y acciones. Añadido el diálogo "Quitar de varias hojas": preselecciona sólo accesos editables, explica los bloqueados y permite pedir `dry_run=true`; el resultado muestra acciones, motivos y conteos. La ejecución real está definida en el hook pero no se ofrece activa con el modo solo lectura.
+Evidencia: `npm run build`, `npm run lint`, `npm test` (8 archivos, 16 pruebas), `npm run test:e2e` (1 omitida) y `npm run format:check` pasaron a las 17:32 -05:00. Revisión visual a 320, 390, 1024, 1440 y 1920 px sin desborde horizontal.
+Notas: no se ejecutó ninguna revocación real. F2 sigue abierta hasta completar las acciones por fila y el E2E especificado.

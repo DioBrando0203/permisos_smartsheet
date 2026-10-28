@@ -1,9 +1,13 @@
-import { LockClosed16Regular, PersonAdd20Regular } from '@fluentui/react-icons'
-import { Avatar, Badge, Button, EmptyState, Skeleton, StatusAlert } from '../../components/ui'
+import { PersonAdd20Regular } from '@fluentui/react-icons'
+import { useState } from 'react'
+import { Avatar, Badge, Button, EmptyState, Skeleton, StatusAlert, Toast } from '../../components/ui'
 import { accessLevels } from '../../lib/accessLevels'
 import { errorMessage } from '../../lib/errorMessages'
 import type { ShareList, Sheet } from '../../lib/types'
 import { displayName, groupShares } from './lib/groupShares'
+import { ShareDialog } from './ShareDialog'
+import { ShareActions } from './ShareActions'
+import { useShareMutations } from './mutations'
 
 type Props = {
   sheet: Sheet
@@ -17,6 +21,9 @@ type Props = {
 const readOnlyReason = 'Modo solo lectura: el panel no cambia nada en Smartsheet'
 
 export function ShareTable({ sheet, result, loading, error, tokenEmail, readOnly, onRetry }: Props) {
+  const [shareOpen, setShareOpen] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
+  const mutations = useShareMutations(sheet.id)
   if (loading) return <ShareTableSkeleton />
   if (error || !result)
     return (
@@ -40,7 +47,11 @@ export function ShareTable({ sheet, result, loading, error, tokenEmail, readOnly
         </div>
         {canShare && (
           <div className="share-table__write">
-            <Button disabled={readOnly} title={readOnly ? readOnlyReason : undefined}>
+            <Button
+              disabled={readOnly}
+              title={readOnly ? readOnlyReason : undefined}
+              onClick={() => setShareOpen(true)}
+            >
               <PersonAdd20Regular aria-hidden="true" />
               Compartir
             </Button>
@@ -89,7 +100,14 @@ export function ShareTable({ sheet, result, loading, error, tokenEmail, readOnly
                   ))}
                 </td>
                 <td data-label="Acciones">
-                  <LockedAction reason={share.lockedReason} disabled={readOnly || !share.editable} />
+                  <ShareActions
+                    share={share}
+                    sheetName={sheet.name}
+                    readOnly={readOnly}
+                    pending={mutations.update.isPending || mutations.remove.isPending}
+                    onUpdate={(shareId, accessLevel) => mutations.update.mutate({ shareId, accessLevel })}
+                    onRemove={(shareId) => mutations.remove.mutate(shareId)}
+                  />
                 </td>
               </tr>
             ))}
@@ -101,38 +119,34 @@ export function ShareTable({ sheet, result, loading, error, tokenEmail, readOnly
           title="Sólo la cuenta del panel tiene esta hoja compartida"
           actions={
             canShare ? (
-              <Button disabled={readOnly} title={readOnly ? readOnlyReason : undefined}>
+              <Button
+                disabled={readOnly}
+                title={readOnly ? readOnlyReason : undefined}
+                onClick={() => setShareOpen(true)}
+              >
                 Compartir
               </Button>
             ) : undefined
           }
         />
       )}
+      <ShareDialog
+        open={shareOpen}
+        sheetName={sheet.name}
+        pending={mutations.create.isPending}
+        error={mutations.create.error}
+        onClose={() => setShareOpen(false)}
+        onCreate={(input) =>
+          mutations.create.mutate(input, {
+            onSuccess: (result) => {
+              setShareOpen(false)
+              setToast(`Se dio acceso a ${result.created.length} personas en ${sheet.name}.`)
+            },
+          })
+        }
+      />
+      {toast && <Toast onClose={() => setToast(null)}>{toast}</Toast>}
     </section>
-  )
-}
-
-function LockedAction({ reason, disabled }: { reason: string | null; disabled: boolean }) {
-  const text =
-    reason === 'OWNER'
-      ? 'Propietario de la hoja'
-      : reason === 'INHERITED'
-        ? 'Heredado del workspace: cámbielo en el workspace'
-        : reason === 'NO_PERMISSION'
-          ? 'La cuenta del panel no puede administrar esta hoja'
-          : readOnlyReason
-  return (
-    <span className="locked-action">
-      <Button appearance="subtle" size="sm" disabled={disabled || Boolean(reason)} title={text}>
-        Cambiar nivel
-      </Button>
-      {(disabled || reason) && (
-        <span title={text}>
-          <LockClosed16Regular aria-hidden="true" />
-          {text}
-        </span>
-      )}
-    </span>
   )
 }
 

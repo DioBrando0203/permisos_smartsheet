@@ -166,6 +166,22 @@
   color: var(--fg-3);
   font-size: var(--fs-200);
 }
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.share-actions select {
+  min-height: var(--control-sm);
+  border: 1px solid var(--stroke-1);
+  border-radius: var(--radius-md);
+  background: var(--bg-1);
+  color: var(--fg-1);
+  font: inherit;
+}
 .share-table__skeleton {
   grid-template-columns: var(--control-lg) minmax(0, 1fr) 80px;
 }

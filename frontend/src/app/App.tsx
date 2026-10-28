@@ -13,6 +13,15 @@ export function App() {
     void me.refetch()
   }
   const error = health.error ?? me.error
+  if (health.isLoading) {
+    return (
+      <AppLayout me={null} readOnly={false}>
+        <div className="shell-loading">
+          <Spinner label="Conectando con el panel" />
+        </div>
+      </AppLayout>
+    )
+  }
   if (error || !health.data) return <GlobalError error={error} onRetry={retry} />
   if (health.data.smartsheet === 'missing_token') return <GlobalError code="TOKEN_MISSING" onRetry={retry} />
   return (
