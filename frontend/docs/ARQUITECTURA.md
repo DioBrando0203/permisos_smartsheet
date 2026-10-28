@@ -2,7 +2,7 @@
 
 Panel React con estética Fluent 2 sobre el backend de `backend/` (28 endpoints, ver `contrato/CONTRATO.md`). Habla sólo con ese backend. Decisiones en `decisiones/ADR.md`; patrones en `patrones/PATRONES.md`; orden de construcción en `PLAN_IMPLEMENTACION.md`.
 
-Estado: plano aprobado y alineado con el backend implementado (2026-10-16). Aún no hay código.
+Estado: F1 en curso (2026-10-27). Implementados el shell, las rutas, la lista maestra de hojas y el detalle de permisos en solo lectura; el mapa conserva los módulos previstos para las fases siguientes.
 
 ## Mapa de navegación
 

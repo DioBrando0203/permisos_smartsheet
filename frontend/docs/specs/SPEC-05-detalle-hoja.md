@@ -1,6 +1,6 @@
 # SPEC-05 Detalle de una hoja: cabecera y pestañas
 
-Estado: borrador (cabecera en F1; Auditoría, Actividad y Automatizaciones en F3)
+Estado: aprobada (cabecera en F1; Auditoría, Actividad y Automatizaciones en F3)
 Responsable del código: `features/sheets/SheetHeader.tsx`, `features/sheets/SheetTabs.tsx`, `features/audit/`, `features/activity/`, `features/automations/`
 Relacionadas: backend SPEC-B05, SPEC-B08, SPEC-B10; ADR-11; UX-01, UX-20, UX-24, UX-31, UX-34
 

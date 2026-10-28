@@ -23,3 +23,9 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm run build`, `npm run lint`, `npm test` (4 pruebas) y `npm run format:check`: pasan.
 - `npm run test:e2e`: pasa. 1 caso marcado omitido: F1 define el primer flujo funcional.
 - `npm run test:visual`: pasa. 1 caso marcado omitido: F6 define las primeras capturas.
+
+## 2026-10-27 16:17 -05:00 F1 en curso
+
+- `npm run build`, `npm run lint` y `npm run format:check`: pasan.
+- `npm test`: pasa. 4 archivos y 8 pruebas, incluidas búsqueda, permisos propio/heredado y vistas de hojas con MSW.
+- `npm run test:e2e`: pasa con el caso F0 omitido; el flujo E2E real de F1 sigue pendiente.

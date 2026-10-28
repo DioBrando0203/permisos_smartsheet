@@ -6,5 +6,9 @@ export function searchText(value: string): string {
 }
 
 export function includesSearch(value: string, query: string): boolean {
-  return searchText(value).includes(searchText(query).trim())
+  const terms = searchText(query)
+    .split(/\s+/)
+    .filter((term) => term.length > 1 && !['de', 'del', 'el', 'la', 'las', 'los', 'y'].includes(term))
+  const source = searchText(value)
+  return terms.every((term) => source.includes(term))
 }

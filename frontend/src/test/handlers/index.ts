@@ -1,3 +1,4 @@
 import { healthHandlers } from './health'
+import { sheetHandlers } from './sheets'
 
-export const handlers = [...healthHandlers]
+export const handlers = [...healthHandlers, ...sheetHandlers]

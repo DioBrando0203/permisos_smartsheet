@@ -1,5 +1,6 @@
-import { LockClosed16Regular } from '@fluentui/react-icons'
-import { EmptyState, Spinner, StatusAlert } from '../components/ui'
+import { Outlet } from 'react-router'
+import { AppLayout } from '../components/layout/AppLayout'
+import { Button, Spinner, StatusAlert } from '../components/ui'
 import { ApiError } from '../lib/api'
 import { errorMessage } from '../lib/errorMessages'
 import { useHealth, useMe } from '../features/shell/hooks'
@@ -7,43 +8,38 @@ import { useHealth, useMe } from '../features/shell/hooks'
 export function App() {
   const health = useHealth()
   const me = useMe()
-  if (health.isLoading || me.isLoading)
-    return (
-      <main className="startup">
-        <Spinner label="Cargando el panel" />
-      </main>
-    )
-  if (health.error || me.error || !health.data || !me.data) {
-    const failure = health.error ?? me.error
-    const text =
-      failure instanceof ApiError
-        ? errorMessage(failure.code, failure.message).text
-        : failure instanceof Error
-          ? errorMessage('BACKEND_UNREACHABLE', failure.message).text
-          : 'Algo salió mal.'
-    return (
-      <main className="startup">
-        <StatusAlert tone="error" title="No se pudo iniciar el panel">
-          {text}
-        </StatusAlert>
-      </main>
-    )
+  const retry = () => {
+    void health.refetch()
+    void me.refetch()
   }
+  const error = health.error ?? me.error
+  if (error || !health.data) return <GlobalError error={error} onRetry={retry} />
+  if (health.data.smartsheet === 'missing_token') return <GlobalError code="TOKEN_MISSING" onRetry={retry} />
   return (
-    <main className="startup">
-      <header className="startup__header">
-        <h1>Permisos de hojas</h1>
-        <span>{me.data.name || me.data.email}</span>
-      </header>
-      {health.data.readOnly && (
-        <div className="startup__banner">
-          <LockClosed16Regular aria-hidden="true" />
-          Modo solo lectura: el panel no cambia nada en Smartsheet
+    <AppLayout me={me.data ?? null} readOnly={health.data.readOnly}>
+      {me.isLoading ? (
+        <div className="shell-loading">
+          <Spinner label="Cargando la cuenta" />
         </div>
+      ) : (
+        <Outlet context={{ me: me.data ?? null, readOnly: health.data.readOnly }} />
       )}
-      <EmptyState icon={<LockClosed16Regular />} title="El panel está listo">
-        <p>Las vistas de hojas y permisos se incorporarán en la siguiente fase.</p>
-      </EmptyState>
+    </AppLayout>
+  )
+}
+
+function GlobalError({ error, code, onRetry }: { error?: Error | null; code?: string; onRetry: () => void }) {
+  const apiError = error instanceof ApiError ? error : null
+  const message = errorMessage(code ?? apiError?.code ?? 'BACKEND_UNREACHABLE', apiError?.message)
+  return (
+    <main className="global-error">
+      <StatusAlert tone="error" title="No se pudo iniciar el panel">
+        <p>{message.text}</p>
+        {message.action && <p>{message.action}</p>}
+        <Button appearance="secondary" onClick={onRetry}>
+          Reintentar
+        </Button>
+      </StatusAlert>
     </main>
   )
 }

@@ -2,7 +2,7 @@
 
 Fuente de verdad del panel de permisos. Metodología: desarrollo guiado por especificaciones (SDD). Ningún cambio de comportamiento entra sin spec; ninguna spec queda sin pruebas que la verifiquen.
 
-Estado (2026-10-16): F0 terminada y verificada. El frontend tiene su base Vite, componentes UI, cliente HTTP, caché y MSW; sigue F1 (`PLAN_IMPLEMENTACION.md`). Specs en borrador, se aprueban al empezar cada fase.
+Estado (2026-10-27): F0 terminada y F1 en curso. Ya se puede navegar, listar hojas y ver permisos en solo lectura; faltan completar los criterios restantes de F1. Las specs activas están aprobadas y se marcan implementadas al cerrar la fase.
 
 ## Orden de lectura para una IA o persona nueva
 

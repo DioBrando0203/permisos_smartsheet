@@ -1,6 +1,6 @@
 # SPEC-01 Estructura de pantalla, navegación y estado del panel
 
-Estado: borrador (fase F1)
+Estado: aprobada (fase F1 iniciada el 2026-10-27)
 Responsable del código: `components/layout/`, `app/router.tsx`, `app/App.tsx`, `features/shell/`
 Relacionadas: ADR-01, ADR-04, ADR-07, ADR-08, SISTEMA_VISUAL; backend `GET /api/health`, `GET /api/me`
 

@@ -1,6 +1,6 @@
 # SPEC-02 Lista de hojas
 
-Estado: borrador (fase F1)
+Estado: aprobada (fase F1 iniciada el 2026-10-27)
 Responsable del código: `features/sheets/`
 Relacionadas: backend SPEC-B01 (`GET /api/sheets`), PEN-14, ADR-12, UX-16, UX-17, UX-20, UX-21, UX-33
 

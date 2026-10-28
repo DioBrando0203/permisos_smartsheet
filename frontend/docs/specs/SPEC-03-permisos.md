@@ -1,6 +1,6 @@
 # SPEC-03 Permisos de una hoja
 
-Estado: borrador (Ver en F1; escrituras construidas en F1 y habilitadas en F5)
+Estado: aprobada (Ver en F1; escrituras construidas en F1 y habilitadas en F5)
 Responsable del código: `features/shares/`
 Relacionadas: backend SPEC-B02, B-05, B-07; ADR-03, ADR-08; UX-05 a UX-15, UX-25 a UX-28, UX-32, UX-33
 

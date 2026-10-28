@@ -36,3 +36,10 @@ Estado: terminada
 Cambios: configurado Playwright con directorio exclusivo `e2e/`; antes tomaba erróneamente pruebas de Vitest desde `src/` y fallaba con un error interno. Agregados los dos casos F0 explícitamente omitidos para que los comandos E2E y visual sean ejecutables sin declarar resultados de flujos que aún no existen.
 Evidencia: `npm run build`, `npm run lint`, `npm test` (4 pruebas), `npm run test:e2e` (1 omitida), `npm run test:visual` (1 omitida) y `npm run format:check` pasaron a las 17:17 -05:00.
 Notas: las pruebas funcionales E2E empiezan en F1 y las visuales en F6, conforme a `PLAN_CALIDAD.md`.
+
+## 2026-10-27 16:17 -05:00 F1: shell, hojas y permisos de lectura
+
+Estado: en curso
+Cambios: aprobadas SPEC-01, SPEC-02, SPEC-03 y SPEC-05 para iniciar F1. Implementados AppLayout, rutas de los cinco destinos, banner de solo lectura, avisos globales, lista maestra de hojas con alcance, búsqueda, exportación y estados; detalle de hoja, pestañas y permisos agrupados en solo lectura. La búsqueda ignora tildes, mayúsculas y palabras de enlace; los permisos propio y heredado de una persona se agrupan sin claves duplicadas.
+Evidencia: `npm run build`, `npm run lint` y `npm run format:check` pasaron; `npm test` pasó con 4 archivos y 8 pruebas; `npm run test:e2e` pasó con 1 caso F0 omitido. No se llamó a Smartsheet ni se modificaron permisos reales.
+Notas: faltan los controles de escritura segura, E2E funcional y revisión visual para cerrar F1.
