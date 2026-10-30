@@ -5,6 +5,8 @@ Investigaciones para posibles funciones futuras, fuera del alcance actual del pa
 ## Documentos
 
 - `OSP_MILEPOST.md`: One Stop Permitting (OSP) del FDOT; obtener County, State Road ID, Section Number y mileposts desde el paso 3 de una solicitud Utility Permit.
+- `GIS_PUBLICO_FLORIDA.md`: servicios GIS públicos del FDOT y de FDACS para obtener vía, milepost, calle, condado, ciudad, ZIP y parcela de un punto o tramo, sin OSP. Verificado contra la captura de OSP.
+- `MAPAS_JURISDICCION_PARCELAS.md`: mapas base gratuitos, de quién es cada calle (estatal, condado, ciudad, privada) y parcelas, con la base estatal recomendada para empezar y el detalle por condado (Broward, Palm Beach, Martin, Miami-Dade).
 - `JUSTFOIA_REGISTROS_PUBLICOS.md`: portal JustFOIA del FDOT para solicitudes de registros públicos; endpoints y por qué no se automatiza el envío.
 - `osp-milepost-paso3.png`: captura del paso 3 "Project Location" de OSP, que marca hasta dónde llega el alcance.
 
@@ -22,3 +24,6 @@ Investigaciones para posibles funciones futuras, fuera del alcance actual del pa
 ## Registro
 
 - 2026-10-30 10:55 (America/Lima): creada la carpeta. Análisis de JustFOIA y OSP con peticiones GET anónimas y lectura del JavaScript público de cada sitio; sin inicio de sesión y sin envíos. Estado: investigación, sin código. Evidencia: respuestas descritas en cada documento y captura `osp-milepost-paso3.png` aportada por el usuario.
+- 2026-10-30 11:49 (America/Lima): servicios GIS públicos del FDOT y de FDACS consultados sin sesión. El cálculo de milepost reproduce los valores de la captura de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839). Estado: investigación verificada, sin código en el repositorio. Evidencia: `GIS_PUBLICO_FLORIDA.md` (GIS-C02).
+- 2026-10-30 12:29 (America/Lima): decisión del usuario: por ahora sólo interesa el milepost, vía GIS público. Documentados los pasos para capturar un HAR de OSP (OSP-HAR-01 a OSP-HAR-12); el HAR y todo lo que exige sesión en OSP quedan en espera. Estado: documentado. Evidencia: `OSP_MILEPOST.md`.
+- 2026-10-30 12:56 (America/Lima): análisis de mapas base gratuitos, jurisdicción de calles y parcelas para Broward, Palm Beach y Martin, con consultas reales sin sesión a FDOT, FDACS, Palm Beach County y Broward County. Pruebas: una vía estatal y una de condado por condado, más calles locales en Fort Lauderdale. Estado: investigación parcial; pendientes MJ-PEN-01 a MJ-PEN-07. Evidencia: `MAPAS_JURISDICCION_PARCELAS.md` (MJ-F1-03, MJ-PB-02).

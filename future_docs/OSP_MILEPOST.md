@@ -2,6 +2,10 @@
 
 Estado (2026-10-30): investigación. Nada implementado. Reglas comunes WS-xx en `README.md`.
 
+Decisión (2026-10-30, usuario): por ahora sólo interesa el milepost, y se obtiene con el GIS público del FDOT (`GIS_PUBLICO_FLORIDA.md`), sin entrar a OSP. Todo lo que exige sesión en OSP, incluido el HAR (OSP-HAR), queda en espera hasta que se quiera operar dentro de OSP.
+
+OSP es One Stop Permitting, el portal de permisos del FDOT en `osp.fdot.gov`.
+
 ## Objetivo
 
 - OSP-OBJ-01: Obtener de un tramo de vía los datos que OSP calcula en el paso 3 "Project Location": County, State Road ID, Section Number, Beginning Milepost, Ending Milepost e Is Location on Turnpike.
@@ -73,7 +77,7 @@ No tocar (administración del FDOT):
 
 - OSP-ENF-01 (para empezar): Playwright con navegador visible y sesión iniciada por una persona. El script abre un borrador de prueba, dibuja el tramo o reutiliza uno, lee la fila de Work Location y se detiene. Dibujar en el mapa exige convertir coordenadas a píxeles y simular clics; frágil, pero no depende de detalles internos.
 - OSP-ENF-02: Llamar directo a OSP-E07 con el GeoJSON del tramo y el token de la sesión. Sería más estable y quizá no agregue filas al borrador. Antes hay que confirmar con un HAR los IDs, el formato de la respuesta y que la consulta no escribe.
-- OSP-ENF-03 (por verificar): Buscar un servicio GIS público del FDOT que dé el milepost de una geometría, para no pasar por OSP ni crear borradores. No verificado.
+- OSP-ENF-03 (recomendado, verificado el 2026-10-30): Calcular el milepost con los servicios GIS públicos del FDOT, sin pasar por OSP ni crear borradores. Detalle y prueba en `GIS_PUBLICO_FLORIDA.md`. Con esto, OSP-ENF-01 y OSP-ENF-02 sólo hacen falta si se quiere operar dentro de OSP.
 
 ## Reglas propias (OSP-R)
 
@@ -81,10 +85,27 @@ No tocar (administración del FDOT):
 - OSP-R02: Cada cambio en el mapa, en un campo o en una fila queda guardado en el servidor del FDOT: usar un borrador de prueba dedicado y no tocar solicitudes reales.
 - OSP-R03: No llamar a los endpoints de OSP-E16, aunque aparezcan en el código.
 
+## Captura de HAR (OSP-HAR)
+
+Sólo si se decide operar dentro de OSP. Pasos en Chrome, hechos por el usuario:
+
+- OSP-HAR-01: Entrar a `https://osp.fdot.gov` e iniciar sesión.
+- OSP-HAR-02: Abrir una solicitud de prueba o borrador que se pueda modificar, nunca una real, y llegar al paso 3 "Project Location". Al dibujar se agrega una fila en Work Location que OSP guarda sola (OSP-R02).
+- OSP-HAR-03: Pulsar F12 y abrir la pestaña Network.
+- OSP-HAR-04: Marcar "Keep log" (o "Preserve log") para no perder peticiones al recargar.
+- OSP-HAR-05: Pulsar el ícono Clear para empezar con la lista vacía.
+- OSP-HAR-06: Recargar con F5 sin salir del paso 3; así se graba `GET api/Process/{id}`.
+- OSP-HAR-07: Pulsar "Add Location", marcar un punto sobre una carretera estatal, dibujar una línea corta y terminar con doble clic.
+- OSP-HAR-08: Esperar a que aparezca la fila nueva en Work Location con County, State Road ID y mileposts.
+- OSP-HAR-09: Exportar con el ícono de flecha hacia abajo de la barra de Network ("Export HAR"); si hay opción, elegir "Export HAR (sanitized)". Guardar como `osp.har`.
+- OSP-HAR-10: Si Chrome corre en Windows y no en la máquina virtual, copiar el archivo a la VM (por ejemplo `~/Descargas/osp.har`) y pasar la ruta. No pegarlo en el chat: es grande y lleva el token.
+- OSP-HAR-11: Borrar la fila de prueba (Edit, luego Remove en Work Location) y cerrar sesión en OSP.
+- OSP-HAR-12: Antes de leerlo, sanearlo con un script: la versión "sanitized" quita cookies y la cabecera `Authorization`, pero no el `bearer_token` de las URL de SignalR (WS-05). De los datos de la solicitud sólo se mira la estructura (endpoints, nombres de campos, acciones), no los valores. El HAR nunca entra al repositorio.
+
 ## Pendientes (OSP-PEN)
 
-- OSP-PEN-01: HAR saneado (WS-05) de una sesión en el paso 3 mientras se dibuja un tramo, para confirmar qué llamada calcula el milepost, sus `datastoreId` y `queryId`, el formato de la respuesta y si escribe algo.
+- OSP-PEN-01: En espera (ver la decisión del inicio). HAR saneado (OSP-HAR) de una sesión en el paso 3 mientras se dibuja un tramo, para confirmar qué llamada calcula el milepost, sus `datastoreId` y `queryId`, el formato de la respuesta y si escribe algo.
 - OSP-PEN-02: Ver cómo se avanza entre pasos e identificar el `actionId` del envío, para bloquearlo.
 - OSP-PEN-03: Revisar los términos de uso de OSP sobre acceso automatizado.
-- OSP-PEN-04: Investigar OSP-ENF-03.
+- OSP-PEN-04: Investigar OSP-ENF-03. Hecho el 2026-10-30: ver `GIS_PUBLICO_FLORIDA.md`.
 - OSP-PEN-05: Confirmar el `grant_type` del inicio de sesión.
