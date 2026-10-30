@@ -221,11 +221,11 @@ Prioridad: media. Alcance: configuración. Estado: pendiente; requiere decisión
 Situación: `APP_CLOSED_STATUSES` usa una lista inicial supuesta. En la cuenta real la fase 4 (Permit) concentra el trabajo "abierto"; si estados como "4. Permit Approved" significan trabajo terminado para el diseñador, la carga está inflada.
 Hacer: que el usuario indique qué estados son cerrados para el diseñador; actualizar `.env` y RESULTADOS.
 
-### PEN-28 Reportes asociados a personas y contactos
+### PEN-28 Activos asociados a personas y contactos
 
 Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-28, solicitado por el usuario).
-Situación: Smartsheet expone 136 reportes, pero el backend actual no los lista ni obtiene sus permisos o sus hojas fuente; el detalle de persona sólo puede mostrar hojas con acceso. La relación solicitada necesita definición porque puede referirse a reportes compartidos directamente con la persona, reportes construidos sobre hojas a las que tiene acceso o reportes donde aparece asignada.
-Hecho: definidas SPEC-B13 y SPEC-10. Hacer: endpoint de sólo lectura correspondiente, con caché, fixtures sintéticos y pruebas; después la sección de frontend en el detalle de persona. No se debe inferir acceso a un reporte desde una hoja sin que la API lo confirme.
+Situación: el detalle de persona sólo muestra permisos de hojas. Smartsheet también expone reportes, dashboards, workspaces y carpetas; el backend aún no lista ni obtiene sus permisos o relaciones con hojas.
+Hecho: definidas SPEC-B13 y SPEC-10. Hacer: extenderlas a todos los activos, crear endpoint de sólo lectura con caché, fixtures sintéticos y pruebas; después la sección de frontend en el detalle de persona. No se debe inferir acceso a un activo desde una hoja sin que la API lo confirme.
 
 ### PEN-12 Exportar
 

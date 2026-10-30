@@ -1,25 +1,26 @@
-# SPEC-B13 Reportes asociados a personas y contactos
+# SPEC-B13 Activos asociados a personas y contactos
 
 Estado: aprobada (2026-10-28, solicitada por el usuario)
 Código: `api/routes/people.py`, `services/person_reports.py`, `services/smartsheet/`
 
 ## Objetivo
 
-Mostrar en el detalle de una persona o contacto todos los reportes que Smartsheet permite relacionar sin suponer acceso.
+Mostrar en el detalle de una persona o contacto todos los activos que Smartsheet permite relacionar sin suponer acceso: hojas, reportes, dashboards, workspaces y carpetas.
 
 ## Fuente y relaciones
 
 - `GET /2.0/reports`: lista todo reporte accesible; conserva id, nombre, nivel del token y si es reporte de resumen.
+- Los recursos de dashboards, workspaces y carpetas se listan y se relacionan sólo cuando sus permisos directos estén disponibles en la API.
 - `GET /2.0/reports/{id}?include=sourceSheets`: identifica sus hojas fuente.
 - `GET /2.0/shares?assetType=report&assetId={id}`: identifica permisos directos del reporte.
-- Directo: la persona o grupo figura en los permisos del reporte.
-- Por hoja fuente: tiene acceso a al menos una hoja fuente; no afirma que pueda abrir el reporte.
+- Directo: la persona o grupo figura en los permisos del activo.
+- Por hoja fuente: tiene acceso a al menos una hoja fuente de un reporte; no afirma que pueda abrir el reporte.
 - Sin relación: no se devuelve. Un reporte cuya API no permite leer permisos se devuelve con la limitación, no se deduce acceso.
 
 ## Contrato
 
-- `GET /api/users/{key}/reports?refresh=` devuelve persona, reportes y fallos parciales.
-- Cada reporte: id, nombre, tipo (`row` o `summary`), nivel del token, relaciones directas y hojas fuente coincidentes; `direct_access_known` y `limitations` hacen explícito lo desconocido.
+- `GET /api/users/{key}/assets?refresh=` devuelve persona, activos y fallos parciales.
+- Cada activo: id, nombre, tipo, nivel del token, relaciones directas y hojas fuente coincidentes; `direct_access_known` y `limitations` hacen explícito lo desconocido.
 
 ## Criterios de aceptación
 

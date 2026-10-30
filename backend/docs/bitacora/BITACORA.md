@@ -128,3 +128,10 @@ Estado: terminada
 Cambios: `app/frontend.py` y `create_app(frontend_dist=...)` (F0-B1); `.port` en `launcher` con cierre ordenado y SIGTERM, `.gitignore` (F0-B2, B-11); `tests/fake_data.py`, `tests/fake_smartsheet.py`, `test_fake_smartsheet.py` (F0-B3); `routes/review.py` con un solo grupo y prueba de grupos únicos (F0-B4).
 Evidencia: `calidad/RESULTADOS.md`.
 Notas: el usuario pidió "arreglarlo" y qué es el Smartsheet falso; se explicó y se implementó.
+
+## 2026-10-29 17:01 -05:00 Servidores de prueba con escrituras habilitadas
+
+Estado: en curso
+Cambios: por instrucción explícita del usuario, `backend/.env` usa `APP_READ_ONLY=false`; se inició backend en 8710 y frontend Vite en 5710.
+Evidencia: `GET /api/health` directo y mediante el proxy del frontend devolvieron 200 con `read_only:false` a las 17:01 -05:00.
+Notas: no se ejecutó ninguna escritura. La prueba manual de POST, PATCH o DELETE sigue requiriendo una hoja y un correo de prueba designados por el usuario (PEN-07).

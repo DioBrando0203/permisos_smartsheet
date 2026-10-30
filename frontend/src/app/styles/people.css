@@ -2,7 +2,8 @@
   display: grid;
   grid-template-columns: minmax(280px, var(--list-w)) minmax(0, 1fr);
   gap: var(--space-s);
-  min-height: calc(100vh - var(--header-h) - var(--control-lg) - var(--space-l));
+  height: calc(100vh - var(--header-h) - var(--control-lg) - var(--space-l));
+  min-height: 0;
 }
 .people-page__list,
 .people-page__detail {

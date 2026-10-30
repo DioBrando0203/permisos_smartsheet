@@ -36,9 +36,11 @@
   }
   .sheets-page {
     grid-template-columns: minmax(0, 1fr);
+    height: auto;
   }
   .people-page {
     grid-template-columns: minmax(0, 1fr);
+    height: auto;
   }
   .sheets-page__list,
   .sheets-page__detail {
