@@ -67,6 +67,19 @@ def slice_route(route: RouteGeometry, begin: float, end: float) -> list[list[flo
     return []
 
 
+def point_at_milepost(route: RouteGeometry, milepost: float) -> tuple[float, float] | None:
+    """Punto (lat, lon) de una medida M sobre la trayectoria LRS; None si queda fuera."""
+    for path in route.paths:
+        for first, second in zip(path, path[1:], strict=False):
+            if first[2] is None or second[2] is None:
+                continue
+            low, high = sorted((first[2], second[2]))
+            if low <= milepost <= high:
+                lon, lat, _ = _at_measure(first, second, milepost)
+                return round(lat, 6), round(lon, 6)
+    return None
+
+
 def jurisdiction(road: RoadMatch | None, location: MapLocation) -> Jurisdiction:
     """Tabla de prioridad documentada; las vías locales son una aproximación hasta M5."""
     if road is None:

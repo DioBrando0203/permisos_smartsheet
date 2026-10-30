@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     gis_fdacs_parcels_url: str = (
         "https://gis.fdacs.gov/mapping/rest/services/GIO_Parcels_for_OAWP_Optimized/FeatureServer/0"
     )
+    gis_census_geocoder_url: str = (
+        "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress"
+    )
     gis_timeout_seconds: float = 20.0
     gis_max_concurrency: int = 4
     gis_max_retries: int = 2

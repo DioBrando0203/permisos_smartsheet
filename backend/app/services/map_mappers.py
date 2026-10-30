@@ -16,39 +16,37 @@ def build_roads(
     data: dict[str, list[dict[str, Any]]], lat: float, lon: float
 ) -> tuple[list[RoadMatch], dict[str, RouteGeometry]]:
     lrs = {
-        _value(feature, "ROADWAY"): feature
+        feature_text(feature, "ROADWAY"): feature
         for feature in data.get("fdot_lrs", [])
-        if _value(feature, "ROADWAY")
+        if feature_text(feature, "ROADWAY")
     }
-    states = {_value(feature, "ROADWAY") for feature in data.get("fdot_state_roads", [])}
-    counties = {_value(feature, "ROADWAY") for feature in data.get("fdot_county_roads", [])}
-    names = {
-        _value(feature, "ROADWAY"): _value(feature, "NAME")
-        for feature in data.get("fdot_local_names", [])
-    }
+    states = {feature_text(feature, "ROADWAY") for feature in data.get("fdot_state_roads", [])}
+    counties = {feature_text(feature, "ROADWAY") for feature in data.get("fdot_county_roads", [])}
+    names: dict[str, list[dict[str, Any]]] = {}
+    for feature in data.get("fdot_local_names", []):
+        names.setdefault(feature_text(feature, "ROADWAY"), []).append(feature)
     roads: list[RoadMatch] = []
     routes: dict[str, RouteGeometry] = {}
     for roadway, feature in lrs.items():
-        route = _route(feature, roadway)
+        route = route_geometry(feature, roadway)
         if route:
             routes[roadway] = route
         attrs = _attributes(feature)
         kind = "state" if roadway in states else "county" if roadway in counties else "other"
+        milepost = milepost_at(lat, lon, route) if route else to_number(attrs.get("BEGIN_POST"))
         roads.append(
             RoadMatch(
                 roadway_id=roadway,
-                county_code_fdot=_value(feature, "COUNTY"),
-                section=_section(_value(feature, "SECTION")),
+                county_code_fdot=feature_text(feature, "COUNTY"),
+                section=_section(feature_text(feature, "SECTION")),
                 subsection=roadway[-3:] if len(roadway) >= 3 else None,
                 kind=kind,
                 route=_route_name(data, roadway),
-                local_name=names.get(roadway),
-                milepost=milepost_at(lat, lon, route)
-                if route
-                else _number(attrs.get("BEGIN_POST")),
+                local_name=_local_name(names.get(roadway, []), milepost),
+                milepost=milepost,
                 distance_m=_distance(attrs, route, lat, lon),
-                begin_post=_number(attrs.get("BEGIN_POST")),
-                end_post=_number(attrs.get("END_POST")),
+                begin_post=to_number(attrs.get("BEGIN_POST")),
+                end_post=to_number(attrs.get("END_POST")),
             )
         )
     roads.sort(key=lambda road: road.distance_m)
@@ -78,7 +76,8 @@ def build_parcel(features: list[dict[str, Any]]) -> tuple[Parcel | None, str | N
     use = DOR_USES.get(use_code or "")
     return Parcel(
         parcel_id=parcel_id,
-        county_code_dor=_string(attrs.get("CO_NO")),
+        # FDACS entrega CO_NO como número (23.0); el código del DOR es entero.
+        county_code_dor=_string(int(code) if (code := to_number(attrs.get("CO_NO"))) else None),
         use_code=use_code,
         use_label=use[0] if use else None,
         public_owner=use[1] if use else None,
@@ -99,15 +98,28 @@ def warnings(
     return result
 
 
+def _local_name(features: list[dict[str, Any]], milepost: float | None) -> str | None:
+    """Una vía cambia de nombre por tramos (SW 42 Ave, NW 42 Ave): gana el que contiene el MP."""
+    for feature in features:
+        attrs = _attributes(feature)
+        begin, end = to_number(attrs.get("BEGIN_POST")), to_number(attrs.get("END_POST"))
+        if milepost is not None and begin is not None and end is not None:
+            if begin <= milepost <= end:
+                return feature_text(feature, "NAME") or None
+    if not features:
+        return None
+    return feature_text(features[0], "NAME") or None
+
+
 def _route_name(data: dict[str, list[dict[str, Any]]], roadway: str) -> str | None:
     for source in ("fdot_state_roads", "fdot_county_roads"):
         for feature in data.get(source, []):
-            if _value(feature, "ROADWAY") == roadway:
+            if feature_text(feature, "ROADWAY") == roadway:
                 return normalize_route(_attributes(feature).get("ROUTE"))
     return None
 
 
-def _route(feature: dict[str, Any], roadway: str) -> RouteGeometry | None:
+def route_geometry(feature: dict[str, Any], roadway: str) -> RouteGeometry | None:
     paths = feature.get("geometry", {}).get("paths", [])
     converted = tuple(
         tuple(
@@ -128,7 +140,7 @@ def _attributes(feature: dict[str, Any] | None) -> dict[str, Any]:
     return feature.get("attributes", {}) if feature else {}
 
 
-def _value(feature: dict[str, Any], field: str) -> str:
+def feature_text(feature: dict[str, Any], field: str) -> str:
     return _string(_attributes(feature).get(field)) or ""
 
 
@@ -141,7 +153,7 @@ def _string(value: object) -> str | None:
     return text or None
 
 
-def _number(value: object) -> float | None:
+def to_number(value: object) -> float | None:
     try:
         return float(value) if value is not None else None
     except (TypeError, ValueError):
@@ -149,7 +161,7 @@ def _number(value: object) -> float | None:
 
 
 def _distance(attrs: dict[str, Any], route: RouteGeometry | None, lat: float, lon: float) -> float:
-    supplied = _number(attrs.get("distance"))
+    supplied = to_number(attrs.get("distance"))
     if supplied and supplied > 0:
         return round(supplied, 1)
     return distance_m_to_route(lat, lon, route) if route else 0.0

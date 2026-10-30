@@ -5,12 +5,19 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from app.api.deps import ServicesDep
-from app.models.map import MapPoint, MapSegment, MapSource
+from app.models.map import MapPoint, MapSearch, MapSegment, MapSource
 
 router = APIRouter()
 Latitude = Annotated[float, Query(ge=-90, le=90)]
 Longitude = Annotated[float, Query(ge=-180, le=180)]
 Radius = Annotated[float, Query(ge=1, le=200)]
+SearchText = Annotated[str, Query(min_length=3, max_length=120)]
+
+
+@router.get("/search")
+async def map_search(services: ServicesDep, q: SearchText, refresh: bool = False) -> MapSearch:
+    """Dirección, calle del FDOT, ruta con milepost (`SR 953 3.5`) o coordenadas."""
+    return await services.maps.search(q, refresh=refresh)
 
 
 @router.get("/point")

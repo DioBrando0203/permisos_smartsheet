@@ -4,6 +4,7 @@ from app.services.map_rules import (
     jurisdiction,
     milepost_at,
     pick_segment_road,
+    point_at_milepost,
     slice_route,
 )
 
@@ -34,3 +35,13 @@ def test_pick_segment_road_prefers_state_then_distance() -> None:
     state = road("state")
     county = RoadMatch(roadway_id="county", kind="county", distance_m=0)
     assert pick_segment_road([county, state], [county, state]) == state
+
+
+def test_point_at_milepost_interpolates_and_rejects_out_of_range() -> None:
+    route = RouteGeometry(
+        "87281000", (((-80.26361, 25.771778, 3.124), (-80.264005, 25.782147, 3.839)),)
+    )
+    assert point_at_milepost(route, 3.124) == (25.771778, -80.26361)
+    lat, lon = point_at_milepost(route, 3.5) or (0, 0)
+    assert 25.771778 < lat < 25.782147 and -80.264005 < lon < -80.26361
+    assert point_at_milepost(route, 9.0) is None

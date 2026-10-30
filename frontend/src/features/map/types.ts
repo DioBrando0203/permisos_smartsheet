@@ -118,3 +118,26 @@ export type ApiMapSegment = {
   jurisdiction?: ApiMapPoint['jurisdiction']
   warnings?: string[]
 }
+export type MapSearchResult = {
+  kind: 'coordinates' | 'address' | 'street' | 'milepost'
+  label: string
+  detail: string | null
+  lat: number
+  lon: number
+  roadwayId: string | null
+  milepost: number | null
+}
+export type MapSearch = { query: string; results: MapSearchResult[]; sources: MapPoint['sources'] }
+export type ApiMapSearch = {
+  query?: string
+  results?: {
+    kind?: MapSearchResult['kind']
+    label?: string
+    detail?: string | null
+    lat?: number
+    lon?: number
+    roadway_id?: string | null
+    milepost?: number | null
+  }[]
+  sources?: ApiMapPoint['sources']
+}

@@ -7,7 +7,7 @@ from typing import Any
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.models.map import MapPoint, MapSegment, MapSource, OspRow, SourceStatus
+from app.models.map import MapPoint, MapSearch, MapSegment, MapSource, OspRow, SourceStatus
 from app.services.cache import TtlCache
 from app.services.gis import GisClient
 from app.services.gis.layers import Layer, layers
@@ -21,6 +21,7 @@ from app.services.map_rules import (
     pick_segment_road,
     slice_route,
 )
+from app.services.map_search import MapSearchService
 
 
 @dataclass(frozen=True)
@@ -32,9 +33,14 @@ class _Resolution:
 class MapService:
     def __init__(self, settings: Settings, client: GisClient, cache: TtlCache) -> None:
         self._settings, self._client, self._cache = settings, client, cache
+        self._search = MapSearchService(settings, client, cache)
 
     async def aclose(self) -> None:
         await self._client.aclose()
+
+    async def search(self, text: str, *, refresh: bool) -> MapSearch:
+        self._ensure_enabled()
+        return await self._search.search(text, refresh=refresh)
 
     async def point(self, lat: float, lon: float, radius_m: float, *, refresh: bool) -> MapPoint:
         return (await self._resolve(lat, lon, radius_m, refresh=refresh)).point

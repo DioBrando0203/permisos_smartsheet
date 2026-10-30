@@ -28,4 +28,5 @@ export const queryKeys = {
   designersRoot: () => ['designers'] as const,
   mapPoint: (lat: number, lon: number) => ['map-point', lat, lon] as const,
   mapSegment: (a: string, b: string) => ['map-segment', a, b] as const,
+  mapSearch: (text: string) => ['map-search', text] as const,
 }

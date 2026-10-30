@@ -82,6 +82,22 @@ class MapSegment(BaseModel):
     warnings: list[str]
 
 
+class SearchResult(BaseModel):
+    kind: Literal["coordinates", "address", "street", "milepost"]
+    label: str
+    detail: str | None = None
+    lat: float
+    lon: float
+    roadway_id: str | None = None
+    milepost: float | None = None
+
+
+class MapSearch(BaseModel):
+    query: str
+    results: list[SearchResult]
+    sources: list[SourceStatus]
+
+
 class MapSource(BaseModel):
     id: str
     name: str

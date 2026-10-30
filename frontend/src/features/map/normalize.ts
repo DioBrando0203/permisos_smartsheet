@@ -1,4 +1,13 @@
-import type { ApiMapPoint, ApiMapSegment, ApiRoadMatch, MapPoint, MapSegment, RoadMatch } from './types'
+import type {
+  ApiMapPoint,
+  ApiMapSearch,
+  ApiMapSegment,
+  ApiRoadMatch,
+  MapPoint,
+  MapSearch,
+  MapSegment,
+  RoadMatch,
+} from './types'
 
 function road(source: ApiRoadMatch): RoadMatch {
   return {
@@ -73,5 +82,20 @@ export function normalizeMapSegment(source: ApiMapSegment): MapSegment {
       ? normalizeMapPoint({ jurisdiction: source.jurisdiction }).jurisdiction
       : start.jurisdiction,
     warnings: source.warnings ?? [],
+  }
+}
+export function normalizeMapSearch(source: ApiMapSearch): MapSearch {
+  return {
+    query: source.query ?? '',
+    results: (source.results ?? []).map((item) => ({
+      kind: item.kind ?? 'coordinates',
+      label: item.label ?? '',
+      detail: item.detail ?? null,
+      lat: item.lat ?? 0,
+      lon: item.lon ?? 0,
+      roadwayId: item.roadway_id ?? null,
+      milepost: item.milepost ?? null,
+    })),
+    sources: normalizeMapPoint({ sources: source.sources }).sources,
   }
 }

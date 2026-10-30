@@ -10,7 +10,13 @@ def _feature(attributes: dict, paths: list | None = None) -> dict:
     return value
 
 
-def _routes(router: respx.MockRouter, *, lrs: bool = True, failing: bool = False) -> None:
+def _routes(
+    router: respx.MockRouter,
+    *,
+    lrs: bool = True,
+    failing: bool = False,
+    names: list[dict] | None = None,
+) -> None:
     responses = {
         "/RCI_Layers/MapServer/8/query": [
             _feature(
@@ -28,7 +34,8 @@ def _routes(router: respx.MockRouter, *, lrs: bool = True, failing: bool = False
         else [],
         "/RCI_Layers/MapServer/15/query": [_feature({"ROADWAY": "87281000", "ROUTE": "SR  953"})],
         "/RCI_Layers/MapServer/2/query": [],
-        "/RCI_Layers/MapServer/13/query": [_feature({"ROADWAY": "87281000", "NAME": "LEJEUNE RD"})],
+        "/RCI_Layers/MapServer/13/query": names
+        or [_feature({"ROADWAY": "87281000", "NAME": "LEJEUNE RD"})],
         "/Admin_Boundaries/MapServer/6/query": [
             _feature({"COUNTY": "Miami-Dade", "CNTYNO": "87", "DISTRICT": "6"})
         ],
@@ -43,7 +50,7 @@ def _routes(router: respx.MockRouter, *, lrs: bool = True, failing: bool = False
             "features": [
                 _feature(
                     {
-                        "CO_NO": "13",
+                        "CO_NO": 13.0,
                         "PARCEL_ID": "synthetic-1",
                         "DOR_UC": "087",
                         "OWN_NAME": "OWNER SYNTHETIC",
@@ -112,3 +119,109 @@ async def test_gis_disabled(make_client, smartsheet) -> None:
     disabled = await client.get("/api/map/point", params={"lat": 25.771778, "lon": -80.26361})
     assert disabled.status_code == 503
     assert disabled.json()["detail"]["code"] == "GIS_DISABLED"
+
+
+async def test_only_line_layers_send_a_search_radius(client, smartsheet) -> None:
+    """FDOT y FDACS devuelven vacío en polígonos si reciben `distance=0` (verificado 2026-10-30)."""
+    _routes(smartsheet)
+    response = await client.get("/api/map/point", params={"lat": 25.771778, "lon": -80.26361})
+    sent = {
+        call.request.url.path: dict(call.request.url.params)
+        for call in smartsheet.calls
+        if call.request.url.host in {"gis.test", "parcels.test"}
+    }
+    assert float(sent["/arcgis/rest/services/RCI_Layers/MapServer/13/query"]["distance"]) == 25
+    for polygon in ("Admin_Boundaries/MapServer/6", "Admin_Boundaries/MapServer/8"):
+        assert "distance" not in sent[f"/arcgis/rest/services/{polygon}/query"]
+    assert "distance" not in sent["/0/query"]
+    assert response.json()["location"]["county"] == "Miami-Dade"
+
+
+async def test_local_name_is_the_one_whose_range_contains_the_milepost(client, smartsheet) -> None:
+    names = [
+        _feature(
+            {"ROADWAY": "87281000", "NAME": "NW 42 AVE", "BEGIN_POST": 3.117, "END_POST": 5.8}
+        ),
+        _feature({"ROADWAY": "87281000", "NAME": "SW 42 AVE", "BEGIN_POST": 0, "END_POST": 3.117}),
+    ]
+    _routes(smartsheet, names=names)
+    response = await client.get("/api/map/point", params={"lat": 25.771778, "lon": -80.26361})
+    assert response.json()["roads"][0]["local_name"] == "NW 42 AVE"
+
+
+async def test_search_route_and_milepost_returns_the_point_on_the_route(client, smartsheet) -> None:
+    state = _feature(
+        {
+            "ROADWAY": "87281000",
+            "ROUTE": "SR  953",
+            "COUNTY": "Miami-Dade",
+            "BEGIN_POST": 0,
+            "END_POST": 11.735,
+        }
+    )
+    lrs = _feature(
+        {"ROADWAY": "87281000"}, [[[-80.26361, 25.771778, 3.124], [-80.264005, 25.782147, 3.839]]]
+    )
+    smartsheet.get(f"{GIS}/RCI_Layers/MapServer/15/query").respond(json={"features": [state]})
+    smartsheet.get(f"{GIS}/RCI_Layers/MapServer/8/query").respond(json={"features": [lrs]})
+    response = await client.get("/api/map/search", params={"q": "SR 953 MP 3.5"})
+    result = response.json()["results"][0]
+    assert (result["kind"], result["label"]) == ("milepost", "SR 953 · MP 3.500")
+    assert result["roadway_id"] == "87281000" and 25.771778 < result["lat"] < 25.782147
+    wheres = [
+        call.request.url.params["where"]
+        for call in smartsheet.calls
+        if call.request.url.host == "gis.test"
+    ]
+    assert wheres == ["ROUTENUM = '953'", "ROADWAY IN ('87281000')"]
+
+
+async def test_search_street_normalizes_the_text_and_uses_the_middle_point(
+    client, smartsheet
+) -> None:
+    street = _feature(
+        {
+            "ROADWAY": "87281000",
+            "NAME": "LEJEUNE RD/NW 42 AVE",
+            "COUNTY": "Miami-Dade",
+            "BEGIN_POST": 3.117,
+            "END_POST": 5.822,
+        },
+        [[[-80.2636, 25.77], [-80.264, 25.79], [-80.2645, 25.8]]],
+    )
+    route = smartsheet.get(f"{GIS}/RCI_Layers/MapServer/13/query").respond(
+        json={"features": [street]}
+    )
+    body = (await client.get("/api/map/search", params={"q": "NW 42nd Avenue"})).json()
+    assert route.calls.last.request.url.params["where"] == "UPPER(NAME) LIKE '%NW 42 AVE%'"
+    result = body["results"][0]
+    assert (result["kind"], result["lat"], result["lon"]) == ("street", 25.79, -80.264)
+    assert result["detail"] == "Miami-Dade · vía 87281000 · MP 3.117 a 5.822"
+
+
+async def test_search_address_survives_a_failed_street_source(client, smartsheet) -> None:
+    match = {
+        "matchedAddress": "200 E LAS OLAS BLVD, FORT LAUDERDALE, FL, 33301",
+        "coordinates": {"x": -80.141826, "y": 26.119041},
+    }
+    geocoder = smartsheet.get("https://geocoder.test/onelineaddress").respond(
+        json={"result": {"addressMatches": [match]}}
+    )
+    smartsheet.get(f"{GIS}/RCI_Layers/MapServer/13/query").respond(500)
+    body = (await client.get("/api/map/search", params={"q": "200 E Las Olas Blvd"})).json()
+    assert [result["kind"] for result in body["results"]] == ["address"]
+    statuses = {source["id"]: source["status"] for source in body["sources"]}
+    assert statuses == {"census_geocoder": "ok", "fdot_streets": "error"}
+    assert geocoder.calls.last.request.url.params["address"] == "200 E Las Olas Blvd, FL"
+
+
+async def test_search_coordinates_answers_without_calling_gis(client, smartsheet) -> None:
+    body = (await client.get("/api/map/search", params={"q": "25.771778, -80.263610"})).json()
+    assert body["results"][0]["kind"] == "coordinates"
+    assert not any(call.request.url.host == "gis.test" for call in smartsheet.calls)
+
+
+async def test_parcel_county_code_is_an_integer_code(client, smartsheet) -> None:
+    _routes(smartsheet)
+    response = await client.get("/api/map/point", params={"lat": 25.771778, "lon": -80.26361})
+    assert response.json()["parcel"]["county_code_dor"] == "13"

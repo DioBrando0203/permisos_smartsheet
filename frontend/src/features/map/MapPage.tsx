@@ -1,14 +1,25 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { MapView } from '../../components/map/MapView'
+import { MapView, type MapFocus, type MapMarker } from '../../components/map/MapView'
 import { Button, StatusAlert } from '../../components/ui'
 import { useMapPoint, useMapSegment } from './hooks'
-import { parseCoordinates, type Coordinates } from './lib/coordinates'
+import type { Coordinates } from './lib/coordinates'
 import { readMapUrl, writeMapUrl } from './lib/mapUrl'
 import { PointResult, SegmentResult } from './MapResults'
+import { MapSearchBox } from './MapSearchBox'
 
-const initial = { lat: 26.1, lon: -80.25 }
 type Mode = 'point' | 'segment'
+type Basemap = 'streets' | 'satellite'
+const noLine: [number, number][] = []
+const closeZoom = 16
+
+function savedBasemap(): Basemap {
+  try {
+    return localStorage.getItem('map-basemap') === 'satellite' ? 'satellite' : 'streets'
+  } catch {
+    return 'streets'
+  }
+}
 
 export function MapPage() {
   const [params, setParams] = useSearchParams()
@@ -16,22 +27,26 @@ export function MapPage() {
   const [mode, setMode] = useState<Mode>(saved.a && saved.b ? 'segment' : 'point')
   const [a, setA] = useState<Coordinates | null>(saved.a ?? saved.point)
   const [b, setB] = useState<Coordinates | null>(saved.b)
-  const [field, setField] = useState('')
-  const [inputError, setInputError] = useState('')
-  const [basemap, setBasemap] = useState<'streets' | 'satellite'>(() =>
-    localStorage.getItem('map-basemap') === 'satellite' ? 'satellite' : 'streets',
-  )
+  const [focus, setFocus] = useState<MapFocus | null>(() => {
+    const first = saved.a ?? saved.point
+    return first ? { ...first, zoom: closeZoom } : null
+  })
+  const [basemap, setBasemap] = useState<Basemap>(savedBasemap)
   const point = useMapPoint(mode === 'point' ? a : null)
   const segment = useMapSegment(mode === 'segment' ? a : null, mode === 'segment' ? b : null)
   useEffect(() => {
     setParams(writeMapUrl(mode, a, mode === 'segment' ? b : null), { replace: true })
   }, [a, b, mode, setParams])
   useEffect(() => {
-    localStorage.setItem('map-basemap', basemap)
+    try {
+      localStorage.setItem('map-basemap', basemap)
+    } catch {
+      // Sin almacenamiento (modo privado): sólo se pierde la preferencia.
+    }
   }, [basemap])
   useEffect(() => {
     const escape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setB(null)
+      if (event.key === 'Escape' && !(event.target instanceof HTMLInputElement)) setB(null)
     }
     window.addEventListener('keydown', escape)
     return () => window.removeEventListener('keydown', escape)
@@ -43,38 +58,52 @@ export function MapPage() {
     } else if (!a) setA(next)
     else setB(next)
   }
-  const submit = () => {
-    const parsed = parseCoordinates(field)
-    if (!parsed) {
-      setInputError('Use latitud y longitud, por ejemplo 25.771778, -80.263610.')
-      return
-    }
-    setInputError('')
-    choose(parsed)
-  }
+  const markers = useMemo<MapMarker[]>(() => {
+    if (mode === 'point') return a ? [a] : []
+    const labeled: MapMarker[] = []
+    if (a) labeled.push({ ...a, label: 'A' })
+    if (b) labeled.push({ ...b, label: 'B' })
+    return labeled
+  }, [a, b, mode])
   const current = mode === 'point' ? point.data : segment.data?.start
-  const markers = [a, b].filter((value): value is Coordinates => Boolean(value))
   return (
     <section className="map-page">
       <div className="map-page__canvas">
-        <MapToolbar
-          mode={mode}
-          setMode={(value) => {
-            setMode(value)
-            setB(null)
-          }}
-          field={field}
-          setField={setField}
-          onSubmit={submit}
-          basemap={basemap}
-          setBasemap={setBasemap}
-          error={inputError}
-        />
+        <div className="map-toolbar">
+          <div className="map-toolbar__modes" role="group" aria-label="Modo de consulta">
+            {(['point', 'segment'] as const).map((value) => (
+              <Button
+                key={value}
+                appearance={mode === value ? 'primary' : 'secondary'}
+                aria-pressed={mode === value}
+                onClick={() => {
+                  setMode(value)
+                  setB(null)
+                }}
+              >
+                {value === 'point' ? 'Punto' : 'Tramo'}
+              </Button>
+            ))}
+          </div>
+          <MapSearchBox
+            onSelect={(next) => {
+              choose(next)
+              setFocus({ ...next, zoom: closeZoom })
+            }}
+          />
+          <label className="map-toolbar__base">
+            Mapa base
+            <select value={basemap} onChange={(event) => setBasemap(event.target.value as Basemap)}>
+              <option value="streets">Calles (USGS)</option>
+              <option value="satellite">Satélite (USGS)</option>
+            </select>
+          </label>
+          <p className="map-toolbar__hint">{hint(mode, a, b)}</p>
+        </div>
         <MapView
-          center={a ?? initial}
-          zoom={a ? 15 : 10}
+          focus={focus}
           markers={markers}
-          line={segment.data?.geometry.coordinates ?? []}
+          line={(mode === 'segment' && segment.data?.geometry.coordinates) || noLine}
           basemap={basemap}
           onMapClick={choose}
         />
@@ -106,60 +135,9 @@ export function MapPage() {
   )
 }
 
-function MapToolbar({
-  mode,
-  setMode,
-  field,
-  setField,
-  onSubmit,
-  basemap,
-  setBasemap,
-  error,
-}: {
-  mode: Mode
-  setMode: (value: Mode) => void
-  field: string
-  setField: (value: string) => void
-  onSubmit: () => void
-  basemap: 'streets' | 'satellite'
-  setBasemap: (value: 'streets' | 'satellite') => void
-  error: string
-}) {
-  return (
-    <div className="map-toolbar">
-      <div className="map-toolbar__modes" aria-label="Modo de consulta">
-        <Button appearance={mode === 'point' ? 'primary' : 'secondary'} onClick={() => setMode('point')}>
-          Punto
-        </Button>
-        <Button appearance={mode === 'segment' ? 'primary' : 'secondary'} onClick={() => setMode('segment')}>
-          Tramo
-        </Button>
-      </div>
-      <label className="map-toolbar__coordinates">
-        Coordenadas
-        <input
-          value={field}
-          onChange={(event) => setField(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') onSubmit()
-          }}
-          placeholder="25.771778, -80.263610"
-        />
-        {error && <span role="alert">{error}</span>}
-      </label>
-      <Button appearance="secondary" onClick={onSubmit}>
-        Consultar
-      </Button>
-      <label className="map-toolbar__base">
-        Mapa base
-        <select
-          value={basemap}
-          onChange={(event) => setBasemap(event.target.value as 'streets' | 'satellite')}
-        >
-          <option value="streets">Calles (USGS)</option>
-          <option value="satellite">Satélite (USGS)</option>
-        </select>
-      </label>
-    </div>
-  )
+function hint(mode: Mode, a: Coordinates | null, b: Coordinates | null): string {
+  if (mode === 'point') return 'Busca un lugar o haz clic sobre una calle.'
+  if (!a) return 'Marca el punto A: búscalo o haz clic sobre la vía.'
+  if (!b) return 'Ahora marca el punto B sobre la misma vía. Escape lo cancela.'
+  return 'Tramo listo. Un clic o una búsqueda empieza otro.'
 }
