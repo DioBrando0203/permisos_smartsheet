@@ -90,3 +90,15 @@ Fecha: 2026-10-16. Estado: vigente.
 Contexto: hay 114 hojas y 49 personas; el backend ya filtra por `q`, pero cada filtro sería otra solicitud.
 Decisión: `useSheets` y `usePeople` piden la lista completa una vez y filtran por texto y filtros rápidos en el navegador con `lib/search.ts` (misma regla sin tildes ni mayúsculas que el backend).
 Consecuencias: búsqueda instantánea; si la cuenta llegara a miles de hojas, volver a filtrar en el backend.
+
+## ADR-13 Mapa con Leaflet directo y teselas públicas
+
+Fecha: 2026-10-30. Estado: propuesta (PEN-29), pendiente de aprobación del usuario.
+Contexto: SPEC-11 necesita un mapa interactivo (clic, marcador, línea resaltada). ADR-09 evita librerías visuales, pero un mapa con teselas, zoom y arrastre no se hace razonablemente con CSS. Opciones revisadas el 2026-10-30 con `npm view`: `leaflet` 1.9.4 (BSD-2-Clause, publicada 2023-05-18), `react-leaflet` 5.0.0 (licencia Hippocratic 2.1, no estándar y con restricciones de uso) y MapLibre GL (más pesada, pensada para teselas vectoriales).
+Decisión:
+- `leaflet` 1.9.4 y `@types/leaflet` 1.9.22 (MIT, publicada 2026-08-01), versiones exactas (P-31). Sin `react-leaflet`, por su licencia: un componente propio `components/map/MapView.tsx` crea el mapa en un `ref`, lo destruye al desmontar y expone sólo lo que el panel usa (centro, zoom, marcadores, línea, clic).
+- Marcadores con `circleMarker` y líneas con `polyline` en colores de los tokens: sin imágenes de iconos de Leaflet, que se rompen al empaquetar.
+- Mapa base por defecto USGS The National Map (`USGSTopo`, alternativa `USGSImageryTopo`): dominio público, sin cuenta ni clave. Verificado: teselas hasta el zoom 16 en Miami (17 y 18 dan 404); se usa `maxNativeZoom: 16` y se amplía hasta 19.
+- Excepción a K-01: las teselas del mapa base las pide el navegador directo al proveedor, porque pasarlas por el backend no aporta nada y multiplicaría el tráfico. Todos los datos (vías, parcelas, jurisdicción) siguen saliendo sólo de `/api/map/...`.
+- Atribución visible del proveedor del mapa base, como piden sus términos.
+Consecuencias: una dependencia nueva de unos 40 KB comprimidos, cargada sólo en la ruta `/mapa` con importación diferida para no pesar en el resto del panel. Leaflet en jsdom es poco fiable: las pruebas de componente simulan `MapView` y el mapa real se prueba en E2E. OpenStreetMap queda sólo para pruebas locales (su política no admite uso comercial intenso) y Esri con clave para M6, con su propio ADR si se adopta.

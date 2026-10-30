@@ -30,6 +30,7 @@ Estado (2026-10-28): F0 terminada; F1, F2 y F3 en curso por solicitud del usuari
 - `specs/SPEC-07-comparar.md`: comparar dos hojas y copiar permisos con simulación.
 - `specs/SPEC-08-disenadores.md`: carga y acceso de los diseñadores.
 - `specs/SPEC-09-calidad.md`: calidad de datos de una hoja y referencias entre hojas.
+- `specs/SPEC-11-mapa.md`: mapa con vía, milepost, jurisdicción y parcela de un punto o tramo (borrador, PEN-29).
 - `specs/PLANTILLA.md`: plantilla para specs nuevas.
 - `decisiones/ADR.md`: decisiones de arquitectura y diseño.
 - `estilos/SISTEMA_VISUAL.md`: tokens de Fluent 2, escalas, componentes y breakpoints.

@@ -106,3 +106,31 @@ Fecha: 2026-10-16. Estado: vigente. Decisión del usuario.
 Contexto: se evaluaron Jira y Salesforce por sus conectores de pago y la posibilidad de construir servicios propios.
 Decisión: el proyecto no reemplaza ninguna herramienta. Cada función nueva debe cumplir una de dos: (a) Smartsheet no la tiene (por ejemplo, auditoría de permisos, comparación de hojas, alertas, accesos con vencimiento), o (b) Smartsheet la tiene pero aquí es claramente mejor o más rápida (por ejemplo, quitar a alguien de muchas hojas, ver la actividad de una hoja). Y siempre: no entorpecer el trabajo actual; la gente sigue trabajando en Smartsheet, que es la fuente de verdad; nada se duplica ni obliga a migrar.
 Consecuencias: se descartan reemplazar Jira (tableros, flujos completos) y un CRM. Antes de cada PEN nuevo se anota en su descripción si es (a) o (b) y por qué no entorpece. PEN-24 se rige por esta decisión.
+
+## ADR-B16 Mapa como módulo del mismo backend, en Python
+
+Fecha: 2026-10-30. Estado: propuesta (PEN-29), pendiente de aprobación del usuario.
+Contexto: el usuario quiere un mapa con vía, milepost, jurisdicción y parcela, consumido por el mismo frontend desde una entrada nueva de la navegación. Los datos salen de servicios GIS públicos (FDOT y FDACS) que aceptan CORS. Se evaluaron tres opciones: que el navegador llame directo a esos servicios, un servicio aparte o un módulo dentro de este backend.
+Decisión: módulo nuevo dentro de este backend FastAPI, en Python, aislado como `services/smartsheet/`: transporte y cliente propios en `services/gis/`, reglas puras en `services/map_rules.py`, caso de uso en `services/map.py` y ruta `api/routes/map.py` bajo `/api/map/...` (SPEC-B14). El módulo GIS no importa nada de Smartsheet ni al revés.
+Motivos:
+- Reutiliza lo que ya existe y está probado: arranque con `run.py` y puerto propio (ADR-B14), proxy del frontend (ADR-07 del frontend), `TtlCache`, errores con código, configuración, `respx` en pruebas y acceso local por defecto (ADR-B08).
+- El frontend sigue hablando sólo con su backend: un único contrato normalizado aunque cada condado publique sus datos con formato distinto.
+- El milepost y la jurisdicción son cálculos puros que se prueban con pytest sin red, igual que las reglas de permisos.
+- Un servicio aparte duplicaría arranque, puerto, CORS, configuración y pruebas para un volumen interno pequeño de sólo lectura.
+Condiciones:
+- Transporte HTTP propio, sin cabecera de autorización: el token de Smartsheet nunca viaja a un servicio GIS (SPEC-B14, CA-08).
+- Caché de una hora por defecto (`gis_cache_ttl_seconds`), excepción documentada a la caché corta de ADR-B06: los datos GIS públicos cambian una vez al año y no hay escrituras propias que invaliden.
+- Sólo lectura: `APP_READ_ONLY` no lo afecta y el mapa no escribe en Smartsheet.
+- `APP_GIS_ENABLED=false` lo apaga sin tocar el resto del panel.
+Consecuencias: un fallo de los servicios GIS degrada sólo el mapa (respuesta parcial o 502 `GIS_UNAVAILABLE`), no las vistas de permisos. Si algún día lo consumen otros sistemas o crece mucho el volumen, el módulo se puede extraer a un servicio propio porque no comparte código de dominio.
+
+## ADR-B17 Fuentes GIS públicas y datos de propietarios
+
+Fecha: 2026-10-30. Estado: propuesta (PEN-29), pendiente de aprobación del usuario.
+Contexto: no hay una sola fuente con todo. La base estatal (FDOT para vías, milepost y límites; FDACS para parcelas) cubre igual a todos los condados; los condados publican más detalle con formatos distintos (`future_docs/MAPAS_JURISDICCION_PARCELAS.md`). Las parcelas traen el nombre del propietario, que en Florida es registro público.
+Decisión:
+- Fase base: sólo FDOT y FDACS. Los adaptadores de condado (Palm Beach primero, por su campo `RESP_AUTH`) se agregan después, uno por uno, sin cambiar el contrato: sólo suben la confianza de la jurisdicción.
+- Sólo GET a URL públicas y documentadas, con pocas solicitudes, plazos y caché; nunca saltar un control de acceso ni un servicio que pida token.
+- `owner_name` se devuelve para mostrarlo, pero no se registra en logs ni mensajes de error, no se guarda en disco y en pruebas, fixtures y docs sólo hay nombres sintéticos (igual que los correos de Smartsheet).
+- Cada respuesta dice de qué fuente salió cada dato y si alguna falló, para que nadie tome una aproximación por un dato oficial.
+Consecuencias: la jurisdicción de calles locales es una aproximación con confianza baja hasta tener el adaptador de su condado. El mapa no sustituye la consulta oficial en OSP ni en el condado antes de pedir un permiso.

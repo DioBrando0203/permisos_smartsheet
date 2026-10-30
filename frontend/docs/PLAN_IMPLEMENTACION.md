@@ -53,3 +53,11 @@ Terminado cuando: `npm run build`, `lint`, `test` y `format:check` pasan; con el
 - E2E de los flujos principales y pruebas visuales `@visual` en los anchos de C-09.
 - Revisión de accesibilidad (teclado, foco, contraste) de todas las vistas.
 - Actualizar `README.md` de la raíz y `LEVANTAMIENTO.md` con `npm run build` y el uso diario.
+
+## F7 Mapa (PEN-29)
+
+- Requiere: aprobación del usuario de ADR-B16, ADR-B17 y ADR-13; backend M1 (punto) antes de M3 y M2 (tramo) antes de M4.
+- Specs: SPEC-11 (frontend) y SPEC-B14 (backend).
+- M3: destino "Mapa" en la navegación (SPEC-01 pasa a seis destinos), `MapView` con Leaflet diferido, modo Punto, coordenadas, panel y URL.
+- M4: modo Tramo, línea resaltada y "Copiar para OSP".
+- Terminado cuando: CA de SPEC-11 con prueba; con el backend levantado, el caso de control (`/mapa?a=25.771778,-80.263610&b=25.782147,-80.264005`) muestra SR 953, sección 281 y milepost 3.124 a 3.839; revisión visual a 320, 1024 y 1440 px.

@@ -1,6 +1,8 @@
 # future_docs
 
-Investigaciones para posibles funciones futuras, fuera del alcance actual del panel de permisos de Smartsheet. Nada de esto está implementado ni forma parte de los pendientes PEN-xx de `backend/docs/REQUERIMIENTOS.md`.
+Investigaciones para posibles funciones futuras del panel. Nada de esto está implementado.
+
+El mapa (milepost, jurisdicción de calles y parcelas) ya pasó al proyecto como PEN-29, con sus specs `backend/docs/specs/SPEC-B14-mapa.md` y `frontend/docs/specs/SPEC-11-mapa.md`; estos documentos quedan como la investigación de respaldo. OSP y JustFOIA siguen fuera de los pendientes.
 
 ## Documentos
 
@@ -27,3 +29,4 @@ Investigaciones para posibles funciones futuras, fuera del alcance actual del pa
 - 2026-10-30 11:49 (America/Lima): servicios GIS públicos del FDOT y de FDACS consultados sin sesión. El cálculo de milepost reproduce los valores de la captura de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839). Estado: investigación verificada, sin código en el repositorio. Evidencia: `GIS_PUBLICO_FLORIDA.md` (GIS-C02).
 - 2026-10-30 12:29 (America/Lima): decisión del usuario: por ahora sólo interesa el milepost, vía GIS público. Documentados los pasos para capturar un HAR de OSP (OSP-HAR-01 a OSP-HAR-12); el HAR y todo lo que exige sesión en OSP quedan en espera. Estado: documentado. Evidencia: `OSP_MILEPOST.md`.
 - 2026-10-30 12:56 (America/Lima): análisis de mapas base gratuitos, jurisdicción de calles y parcelas para Broward, Palm Beach y Martin, con consultas reales sin sesión a FDOT, FDACS, Palm Beach County y Broward County. Pruebas: una vía estatal y una de condado por condado, más calles locales en Fort Lauderdale. Estado: investigación parcial; pendientes MJ-PEN-01 a MJ-PEN-07. Evidencia: `MAPAS_JURISDICCION_PARCELAS.md` (MJ-F1-03, MJ-PB-02).
+- 2026-10-30 17:16 (America/Lima): el mapa pasa al proyecto como PEN-29 (SPEC-B14, SPEC-11, ADR-B16, ADR-B17 y ADR-13 del frontend, en propuesta). Estado: especificado, sin código. Evidencia: bitácoras del backend y del frontend de esa hora.

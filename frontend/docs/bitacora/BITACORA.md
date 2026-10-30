@@ -85,3 +85,10 @@ Estado: en curso
 Cambios: ampliado el detalle de persona/contacto con organización, contacto, última conexión y acciones. Añadido el diálogo "Quitar de varias hojas": preselecciona sólo accesos editables, explica los bloqueados y permite pedir `dry_run=true`; el resultado muestra acciones, motivos y conteos. La ejecución real está definida en el hook pero no se ofrece activa con el modo solo lectura.
 Evidencia: `npm run build`, `npm run lint`, `npm test` (8 archivos, 16 pruebas), `npm run test:e2e` (1 omitida) y `npm run format:check` pasaron a las 17:32 -05:00. Revisión visual a 320, 390, 1024, 1440 y 1920 px sin desborde horizontal.
 Notas: no se ejecutó ninguna revocación real. F2 sigue abierta hasta completar las acciones por fila y el E2E especificado.
+
+## 2026-10-30 17:16 -05:00 Especificación del mapa (PEN-29)
+
+Estado: terminada (sólo documentación; sin código)
+Cambios: nueva SPEC-11 (borrador), ADR-13 en propuesta (Leaflet 1.9.4 sin `react-leaflet`, mapa base USGS, teselas directas al proveedor como excepción a K-01), fase F7 en `PLAN_IMPLEMENTACION.md` e índice de `README.md`.
+Evidencia: `npm view` el 2026-10-30: `leaflet` 1.9.4 (BSD-2-Clause, 2023-05-18), `@types/leaflet` 1.9.22 (MIT, 2026-08-01), `react-leaflet` 5.0.0 (Hippocratic-2.1, descartada). Teselas USGS en Miami: 200 en zoom 16, 404 en 17 y 18. No se ejecutaron pruebas: no hubo cambios de código.
+Notas: SPEC-01 pasa a seis destinos al implementar M3; `ARQUITECTURA.md`, `STACK.md` y `CONTRATO.md` se actualizan en ese mismo cambio.

@@ -38,6 +38,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 - RQ-23 Automatizaciones: estado y problemas de alertas y flujos de Smartsheet por hoja y en toda la cuenta (SPEC-B10).
 - RQ-24 Referencias: valores de una columna que no están en una hoja catálogo, por hoja y en toda la cuenta (SPEC-B11).
 - RQ-25 Carga de diseñadores: trabajo abierto, en espera y cerrado por diseñador y fase, y si tiene acceso a sus hojas (SPEC-B12).
+- RQ-26 Mapa: de un punto, la vía con su milepost, de quién es la calle, ciudad, condado, ZIP y parcela; de un tramo, la vía con milepost inicial y final listos para OSP. Sólo lectura de servicios GIS públicos (SPEC-B14, PEN-29).
 - RQ-19 Actividad: filas modificadas por período, quién edita, editores sin cambios e historial por fila o celda, directo de Smartsheet (SPEC-B08).
 - RQ-18 Revisión de cuenta: alertas de todas las hojas agregadas por hoja y por persona (SPEC-B07).
 - RQ-17 Operaciones masivas: copiar permisos entre hojas y quitar a una persona de varias hojas, con simulación por defecto (SPEC-B06).
@@ -231,3 +232,18 @@ Hecho: definidas SPEC-B13 y SPEC-10. Hacer: extenderlas a todos los activos, cre
 
 Prioridad: baja. Alcance: backend y frontend. Estado: terminada (2026-10-16): `GET /api/export/access.csv`.
 Hacer: exportar a CSV la matriz persona por hoja con niveles. El archivo contiene correos reales: se genera bajo demanda y no se guarda en el servidor.
+
+### PEN-29 Mapa de vías, milepost, jurisdicción y parcelas
+
+Prioridad: media. Alcance: backend y frontend. Estado: especificada (2026-10-30, solicitada por el usuario); ADR-B16 y ADR-B17 en propuesta, pendientes de aprobación. Sin código.
+Tipo (ADR-B15): (a) ni Smartsheet ni OSP dicen el milepost, de quién es la calle y qué parcela hay en un punto sin dibujar una solicitud en OSP; el mapa sólo consulta y no cambia cómo se pide el permiso.
+Situación: verificado con GET reales que los servicios públicos del FDOT y de FDACS reproducen los valores de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839) y dan ciudad, condado, ZIP y parcela en Broward, Palm Beach, Martin y Miami-Dade. Investigación en `future_docs/`.
+Specs: SPEC-B14 (backend) y SPEC-11 (frontend); ADR-13 del frontend (Leaflet).
+Fases:
+- M1 backend punto: transporte GIS sin token, cliente, catálogo de capas, reglas puras (milepost, jurisdicción, usos DOR), `GET /api/map/point`, `GET /api/map/sources`, pruebas con `respx` y verificación manual.
+- M2 backend tramo: `GET /api/map/segment` con `osp_row` y geometría.
+- M3 frontend punto: destino "Mapa" en la navegación, `/mapa`, mapa base USGS, clic o coordenadas, panel con vía, jurisdicción, ubicación, parcela y fuentes.
+- M4 frontend tramo: dos clics, tramo resaltado y "Copiar para OSP".
+- M5 adaptadores de condado: Palm Beach (`RESP_AUTH`); Broward, Martin y Miami-Dade según MJ-PEN-01 a MJ-PEN-03.
+- M6 extras: capas de vías dibujadas, búsqueda por dirección, Turnpike (GIS-PEN-01) y mapa base de Esri con clave.
+Límites: la jurisdicción de calles locales es aproximada hasta M5; USGS sólo tiene teselas hasta el zoom 16 en Miami (verificado), por lo que el detalle de calle se ve ampliado y algo borroso hasta M6.

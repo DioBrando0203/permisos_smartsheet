@@ -135,3 +135,10 @@ Estado: en curso
 Cambios: por instrucción explícita del usuario, `backend/.env` usa `APP_READ_ONLY=false`; se inició backend en 8710 y frontend Vite en 5710.
 Evidencia: `GET /api/health` directo y mediante el proxy del frontend devolvieron 200 con `read_only:false` a las 17:01 -05:00.
 Notas: no se ejecutó ninguna escritura. La prueba manual de POST, PATCH o DELETE sigue requiriendo una hoja y un correo de prueba designados por el usuario (PEN-07).
+
+## 2026-10-30 17:16 -05:00 Especificación del mapa (PEN-29)
+
+Estado: terminada (sólo documentación; PEN-29 sigue sin código)
+Cambios: nuevos RQ-26, PEN-29 con fases M1 a M6, SPEC-B14 (borrador), ADR-B16 (módulo del mismo backend, en Python) y ADR-B17 (fuentes GIS públicas y datos de propietarios), ambos en propuesta; índice de `README.md` actualizado.
+Evidencia: consultas GET reales sin sesión a FDOT y FDACS el 2026-10-30, que reproducen el caso de control de OSP (vía 87281000, sección 281, milepost 3.124 a 3.839), detalladas en `future_docs/GIS_PUBLICO_FLORIDA.md` y `future_docs/MAPAS_JURISDICCION_PARCELAS.md`. No se ejecutaron pruebas automáticas: no hubo cambios de código.
+Notas: ADR-B16 y ADR-B17 requieren aprobación del usuario antes de M1. Sin dependencias nuevas previstas en el backend.
