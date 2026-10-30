@@ -138,3 +138,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Smartsheet falso: el backend completo funciona contra él (`test_fake_smartsheet.py`, 4 pruebas).
 - Manual: `python -m tests.fake_smartsheet --port 8791` y `run.py` con `SMARTSHEET_BASE_URL` del falso y `SMARTSHEET_ACCESS_TOKEN=fake-token`: `/api/me` devolvió la cuenta de prueba, un PATCH quedó registrado en `/_fake/writes`, 0 llamadas a `api.smartsheet.com`, `.port` con 8710. Las variables de entorno ganan al `.env` (comprobado con `Settings()`).
 - Cierre por SIGTERM: `.port` borrado y 8710 libre (tras la corrección de B-11).
+# 2026-10-30 Mapa GIS (PEN-29, M1-M2)
+
+- `pytest`: 137 pruebas aprobadas, incluidas 9 de mapa y reglas puras.
+- `ruff check app tests` y `ruff format --check app tests`: sin observaciones.
+- Verificación manual GET con backend en 8710: el tramo de control devuelve SR 953, vía `87281000`, sección `281`, mileposts `3.124` a `3.839` y las ocho fuentes en estado `ok`.
+- Sólo lecturas GIS públicas; no se escribió en Smartsheet ni se mostró ni registró nombre de propietario.

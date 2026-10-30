@@ -6,11 +6,12 @@ Versiones exactas, sin `^` ni `~` (P-31). Base: las versiones verificadas en `ex
 
 - react 19.3.0, react-dom 19.3.0.
 - typescript 5.9.3 estricto; `tsc --noEmit` dentro de `npm run build`. TypeScript 7 existe pero no está verificado en la referencia.
-- vite 8.3.2 con @vitejs/plugin-react 5.2.0.
+- vite 8.3.5 con @vitejs/plugin-react 5.2.0. Se actualizó desde 8.3.2 el 2026-10-30 para corregir avisos de seguridad de `npm audit` sin cambiar API.
 - @tailwindcss/vite 4.3.3 y tailwindcss 4.3.3: sólo el reset (preflight) y el empaquetado de `@import`, como en la referencia; sin utilidades en JSX (P-30).
 - @fluentui/react-icons 2.0.343: iconos importados por nombre (ADR-01).
 - @tanstack/react-query 5.104.0 (2026-09-26): datos del servidor (ADR-02).
 - react-router 8.4.0 (2026-09-15): rutas (ADR-04).
+- leaflet 1.9.4 y @types/leaflet 1.9.22: mapa diferido de `/mapa` (ADR-13); sin `react-leaflet`.
 
 ## Pruebas y herramientas
 

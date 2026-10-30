@@ -40,6 +40,8 @@ Formato: método y ruta | hook | clave de caché | spec.
 - `GET /api/automations?only_problems&q` | `useAccountAutomations` | `['automationsAccount']` | SPEC-06. Primera carga lenta (unos 17 s).
 - `GET /api/sheets/compare?a&b` | `useCompare` | `['compare', a, b]` | SPEC-07.
 - `GET /api/designers?q&closed_status` | `useDesigners` | `['designers', params]` | SPEC-08. Primera carga lenta (unos 14 s).
+- `GET /api/map/point?lat&lon` | `useMapPoint` | `['map-point', lat, lon]` | SPEC-11. `staleTime` 10 minutos.
+- `GET /api/map/segment?start_lat&start_lon&end_lat&end_lon` | `useMapSegment` | `['map-segment', a, b]` | SPEC-11. `staleTime` 10 minutos.
 - `GET /api/export/access.csv?q&scope` | enlace de descarga | sin caché | SPEC-02 y SPEC-04 (K-09).
 
 ## Escrituras

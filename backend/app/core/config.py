@@ -44,6 +44,17 @@ class Settings(BaseSettings):
     )
     app_designer_catalog_sheet: str = ""
     app_designer_catalog_column: str = "Designer"
+    # GIS público: se mantiene aislado del transporte de Smartsheet para no filtrar el token.
+    app_gis_enabled: bool = True
+    gis_fdot_base_url: str = "https://gis.fdot.gov/arcgis/rest/services"
+    gis_fdacs_parcels_url: str = (
+        "https://gis.fdacs.gov/mapping/rest/services/GIO_Parcels_for_OAWP_Optimized/FeatureServer/0"
+    )
+    gis_timeout_seconds: float = 20.0
+    gis_max_concurrency: int = 4
+    gis_max_retries: int = 2
+    gis_cache_ttl_seconds: float = 3600.0
+    gis_max_segment_miles: float = 20.0
 
     @property
     def has_token(self) -> bool:

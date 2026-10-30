@@ -92,3 +92,9 @@ Estado: terminada (sólo documentación; sin código)
 Cambios: nueva SPEC-11 (borrador), ADR-13 en propuesta (Leaflet 1.9.4 sin `react-leaflet`, mapa base USGS, teselas directas al proveedor como excepción a K-01), fase F7 en `PLAN_IMPLEMENTACION.md` e índice de `README.md`.
 Evidencia: `npm view` el 2026-10-30: `leaflet` 1.9.4 (BSD-2-Clause, 2023-05-18), `@types/leaflet` 1.9.22 (MIT, 2026-08-01), `react-leaflet` 5.0.0 (Hippocratic-2.1, descartada). Teselas USGS en Miami: 200 en zoom 16, 404 en 17 y 18. No se ejecutaron pruebas: no hubo cambios de código.
 Notas: SPEC-01 pasa a seis destinos al implementar M3; `ARQUITECTURA.md`, `STACK.md` y `CONTRATO.md` se actualizan en ese mismo cambio.
+## 2026-10-30 17:41 -05:00 F7 Mapa (M3-M4)
+
+Estado: en curso
+Cambios: sexto destino `/mapa`, Leaflet diferido, modos Punto y Tramo, coordenadas, URL compartible, mapa USGS, panel de vía/jurisdicción/ubicación/parcela/fuentes y copia de fila OSP.
+Evidencia: format, build, lint y 18 pruebas unitarias pasaron; Leaflet queda en chunk diferido. Audit sin vulnerabilidades con Vite 8.3.5.
+Notas: faltan prueba E2E funcional y revisión visual; M5/M6 no son parte de la fase base.

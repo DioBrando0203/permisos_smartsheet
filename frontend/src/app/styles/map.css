@@ -1,0 +1,99 @@
+.map-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--space-s);
+  height: calc(100vh - var(--header-h) - var(--space-l));
+  min-height: 0;
+}
+.map-page__canvas,
+.map-page__panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--stroke-2);
+  border-radius: var(--radius-lg);
+  background: var(--bg-1);
+}
+.map-page__canvas {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.map-view {
+  min-height: 420px;
+  background: var(--bg-2);
+}
+.map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-s);
+  padding: var(--space-s);
+  border-bottom: 1px solid var(--stroke-2);
+}
+.map-toolbar__modes {
+  display: flex;
+  gap: var(--space-xs);
+}
+.map-toolbar__coordinates,
+.map-toolbar__base {
+  display: grid;
+  gap: var(--space-xxs);
+  color: var(--fg-2);
+  font-size: var(--fs-200);
+}
+.map-toolbar__coordinates {
+  flex: 1 1 220px;
+}
+.map-toolbar input,
+.map-toolbar select {
+  min-height: var(--control-md);
+  padding: 0 var(--space-s);
+  border: 1px solid var(--stroke-1);
+  border-radius: var(--radius-sm);
+  color: var(--fg-1);
+  background: var(--bg-1);
+}
+.map-toolbar__coordinates span {
+  color: var(--danger-fg);
+}
+.map-page__panel {
+  padding: var(--space-m);
+}
+.map-result-section {
+  padding: var(--space-m) 0;
+  border-bottom: 1px solid var(--stroke-2);
+}
+.map-result-section h1,
+.map-result-section h2 {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  margin: 0 0 var(--space-xs);
+  font-size: var(--fs-400);
+}
+.map-result-section p {
+  margin: var(--space-xs) 0;
+  overflow-wrap: anywhere;
+}
+.map-result-section dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-xs);
+}
+.map-result-section dt {
+  color: var(--fg-2);
+}
+.map-result-section dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.map-result-section ul {
+  padding-left: var(--space-l);
+}
+.map-empty {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  color: var(--fg-2);
+  text-align: center;
+}

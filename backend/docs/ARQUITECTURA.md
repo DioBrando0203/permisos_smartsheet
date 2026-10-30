@@ -43,6 +43,7 @@ app/
   api/routes/export.py           GET /export/access.csv
   api/routes/automations.py      GET /automations, GET /sheets/{id}/automations
   api/routes/designers.py        GET /designers
+  api/routes/map.py              GET /map/{point,segment,sources}
   api/routes/bulk.py             POST /sheets/{id}/shares/copy, POST /users/{key}/revoke (simulación por defecto)
   core/config.py                 Settings (pydantic-settings) con token SecretStr, read_only, Host y Origin
   core/errors.py                 AppError(code, message, status) y manejador único
@@ -82,6 +83,9 @@ app/
   services/automations.py        AutomationService: reglas cruzadas con columnas y permisos
   services/workload_rules.py     reglas puras de carga: estado, fase, nombres por fila, persona por nombre
   services/designers.py          DesignerService: carga y acceso de diseñadores entre hojas
+  services/gis/                  transporte público sin token, capas y cliente ArcGIS
+  services/map.py                MapService: punto, tramo, caché GIS
+  services/map_rules.py          reglas puras de milepost y jurisdicción
   services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
   services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService
 ```

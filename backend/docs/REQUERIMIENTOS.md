@@ -235,7 +235,7 @@ Hacer: exportar a CSV la matriz persona por hoja con niveles. El archivo contien
 
 ### PEN-29 Mapa de vías, milepost, jurisdicción y parcelas
 
-Prioridad: media. Alcance: backend y frontend. Estado: especificada (2026-10-30, solicitada por el usuario); ADR-B16 y ADR-B17 en propuesta, pendientes de aprobación. Sin código.
+Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-30): M1 a M4 implementadas; M5 y M6 pendientes. ADR-B16 y ADR-B17 aprobadas por el usuario.
 Tipo (ADR-B15): (a) ni Smartsheet ni OSP dicen el milepost, de quién es la calle y qué parcela hay en un punto sin dibujar una solicitud en OSP; el mapa sólo consulta y no cambia cómo se pide el permiso.
 Situación: verificado con GET reales que los servicios públicos del FDOT y de FDACS reproducen los valores de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839) y dan ciudad, condado, ZIP y parcela en Broward, Palm Beach, Martin y Miami-Dade. Investigación en `future_docs/`.
 Specs: SPEC-B14 (backend) y SPEC-11 (frontend); ADR-13 del frontend (Leaflet).

@@ -26,4 +26,6 @@ export const queryKeys = {
   compareRoot: () => ['compare'] as const,
   designers: (params: object) => ['designers', params] as const,
   designersRoot: () => ['designers'] as const,
+  mapPoint: (lat: number, lon: number) => ['map-point', lat, lon] as const,
+  mapSegment: (a: string, b: string) => ['map-segment', a, b] as const,
 }

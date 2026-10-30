@@ -41,6 +41,9 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/sheets/{sheet_id}/references?column=&catalog_sheet=&catalog_column=&refresh=`: `SheetReferences` (SPEC-B11).
 - `GET /api/references?column=&catalog_sheet=&catalog_column=&q=&refresh=`: `AccountReferences`.
 - `GET /api/designers?q=&designer_columns=&status_column=&closed_status=&refresh=`: `DesignerWorkload` (SPEC-B12); valores por defecto desde `APP_DESIGNER_COLUMNS`, `APP_STATUS_COLUMN`, `APP_CLOSED_STATUSES`.
+- `GET /api/map/point?lat=&lon=&radius_m=25&refresh=`: `MapPoint` (SPEC-B14); sólo Florida, radio de 1 a 200 m.
+- `GET /api/map/segment?start_lat=&start_lon=&end_lat=&end_lon=&radius_m=25&refresh=`: `MapSegment` (SPEC-B14).
+- `GET /api/map/sources`: catálogo fijo `MapSource[]`; no consulta GIS.
 - `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
 - `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.
 - Ejemplos en Swagger: plan 2026 `1842596423880580` (permalink `QMFVM7v3V23HqwgmCwHg5wF8XHFr5GCG4WJjXJF1`) y plan 2025 `5750050894335876`.
@@ -196,8 +199,11 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - 422 `SAME_SHEET`: comparar o copiar una hoja consigo misma.
 - 422 `OWNER_NOT_ASSIGNABLE`: pedir el nivel `OWNER`.
 - 422 `DUPLICATE_RECIPIENTS`: el mismo correo o grupo dos veces.
+- 422 `COORDINATES_OUT_OF_FLORIDA`, `SEGMENT_ROADWAY_MISMATCH`, `SEGMENT_TOO_LONG`: consulta de mapa inválida.
 - 422 `SMARTSHEET_REJECTED`: Smartsheet rechazó los datos (`upstream_message` explica).
 - 502 `SMARTSHEET_AUTH`: token inválido, vencido o revocado.
 - 502 `SMARTSHEET_UNAVAILABLE`: Smartsheet no respondió tras los reintentos.
 - 503 `SMARTSHEET_RATE_LIMITED`: límite de solicitudes tras los reintentos.
 - 503 `TOKEN_MISSING`: falta `SMARTSHEET_ACCESS_TOKEN`.
+- 503 `GIS_DISABLED`: `APP_GIS_ENABLED=false`.
+- 502 `GIS_UNAVAILABLE`: ninguna fuente vial o de límites respondió.

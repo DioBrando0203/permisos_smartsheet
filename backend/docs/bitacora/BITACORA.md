@@ -142,3 +142,9 @@ Estado: terminada (sólo documentación; PEN-29 sigue sin código)
 Cambios: nuevos RQ-26, PEN-29 con fases M1 a M6, SPEC-B14 (borrador), ADR-B16 (módulo del mismo backend, en Python) y ADR-B17 (fuentes GIS públicas y datos de propietarios), ambos en propuesta; índice de `README.md` actualizado.
 Evidencia: consultas GET reales sin sesión a FDOT y FDACS el 2026-10-30, que reproducen el caso de control de OSP (vía 87281000, sección 281, milepost 3.124 a 3.839), detalladas en `future_docs/GIS_PUBLICO_FLORIDA.md` y `future_docs/MAPAS_JURISDICCION_PARCELAS.md`. No se ejecutaron pruebas automáticas: no hubo cambios de código.
 Notas: ADR-B16 y ADR-B17 requieren aprobación del usuario antes de M1. Sin dependencias nuevas previstas en el backend.
+## 2026-10-30 17:41 -05:00 Mapa GIS base (PEN-29, M1-M2)
+
+Estado: en curso
+Cambios: aprobadas ADR-B16 y ADR-B17; implementados transporte GIS sin token, reglas puras, caché de una hora, `GET /api/map/point`, `/segment` y `/sources`, contrato y pruebas simuladas.
+Evidencia: 137 pruebas, ruff limpio y GET manual del tramo de control: SR 953, `87281000`, sección `281`, mileposts 3.124 a 3.839; las ocho fuentes respondieron `ok`.
+Notas: no hubo escrituras en Smartsheet. Quedan M5/M6 y el E2E del mapa.

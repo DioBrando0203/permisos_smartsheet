@@ -1,6 +1,6 @@
 # SPEC-B14 Mapa: vía, milepost, jurisdicción y parcela de un punto o tramo
 
-Estado: borrador (2026-10-30)
+Estado: implementada M1-M2 (2026-10-30)
 Código previsto: `api/routes/map.py`, `models/map.py`, `services/map.py`, `services/map_rules.py`, `services/gis/`
 Relacionadas: PEN-29, RQ-26, ADR-B15, ADR-B16, ADR-B17, SPEC-11 del frontend; investigación en `future_docs/GIS_PUBLICO_FLORIDA.md` y `future_docs/MAPAS_JURISDICCION_PARCELAS.md`
 
@@ -119,7 +119,7 @@ Errores nuevos (formato de `estilos/API.md`):
 
 - M1: punto (CA-01 a CA-06, CA-08 a CA-11).
 - M2: tramo (CA-07).
-- M5: adaptadores de condado con su propia fuente de jurisdicción, empezando por Palm Beach (`ENG/CENTERLINE`, campo `RESP_AUTH`); cada uno con su spec o una sección nueva aquí.
+- M5: pendiente: adaptadores de condado con su propia fuente de jurisdicción, empezando por Palm Beach (`ENG/CENTERLINE`, campo `RESP_AUTH`); cada uno con su spec o una sección nueva aquí.
 
 ## Pendientes
 

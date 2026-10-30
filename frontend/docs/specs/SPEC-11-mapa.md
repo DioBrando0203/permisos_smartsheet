@@ -1,6 +1,6 @@
 # SPEC-11 Mapa: vía, milepost, jurisdicción y parcela
 
-Estado: borrador (2026-10-30)
+Estado: implementada M3-M4 (2026-10-30)
 Responsable del código (previsto): `features/map/`, `components/map/MapView.tsx`, `app/router.tsx`, `components/layout/AppLayout.tsx`
 Relacionadas: PEN-29, ADR-13, ADR-05, SPEC-01, K-01 a K-06; backend SPEC-B14, ADR-B16, ADR-B17
 

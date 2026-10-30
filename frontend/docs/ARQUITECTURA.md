@@ -2,17 +2,18 @@
 
 Panel React con estética Fluent 2 sobre el backend de `backend/` (28 endpoints, ver `contrato/CONTRATO.md`). Habla sólo con ese backend. Decisiones en `decisiones/ADR.md`; patrones en `patrones/PATRONES.md`; orden de construcción en `PLAN_IMPLEMENTACION.md`.
 
-Estado: F1 en curso (2026-10-27). Implementados el shell, las rutas, la lista maestra de hojas y el detalle de permisos en solo lectura; el mapa conserva los módulos previstos para las fases siguientes.
+Estado: F1-F3 y F7 en curso (2026-10-30). El mapa base M3-M4 está implementado; M5-M6 siguen pendientes.
 
 ## Mapa de navegación
 
-Cinco destinos en la navegación lateral, cada uno con URL propia (ADR-04):
+Seis destinos en la navegación lateral, cada uno con URL propia (ADR-04):
 
 - Hojas `/hojas`: lista maestra (SPEC-02) y detalle `/hojas/:sheetId` con pestañas (SPEC-05): Permisos (por defecto, SPEC-03), Auditoría, Actividad, Automatizaciones, Calidad de datos.
 - Personas `/personas`: directorio (SPEC-04) y detalle `/personas/:key` con sus hojas y "Quitar de varias hojas".
 - Diseñadores `/disenadores`: carga y acceso (SPEC-08).
 - Revisión `/revision`: riesgos de la cuenta, resumen de acceso y automatizaciones de toda la cuenta (SPEC-06); referencias entre hojas (SPEC-09).
 - Comparar `/comparar?a=&b=`: dos hojas lado a lado y copiar permisos con simulación (SPEC-07).
+- Mapa `/mapa`: punto o tramo, milepost, jurisdicción, parcela y fila para OSP (SPEC-11).
 
 Además: `/` redirige a `/hojas`; ruta desconocida muestra "Esta página no existe" (SPEC-01).
 
@@ -22,7 +23,7 @@ Además: `/` redirige a `/hojas`; ruta desconocida muestra "Esta página no exis
 src/
   main.tsx                                 QueryClientProvider, RouterProvider, global.css
   app/
-    router.tsx                             rutas de los cinco destinos y redirecciones
+    router.tsx                             rutas de los seis destinos y redirecciones
     App.tsx                                AppLayout + banner de modo solo lectura + Outlet
     styles/                                tokens.css, base.css, ui-*.css, layout.css, <feature>.css, responsive.css
   components/
@@ -52,6 +53,7 @@ src/
                                            useCompare, useCopyShares
     designers/                             DesignersPage, DesignerRow, DesignerDetail, PhaseBar, SheetGaps,
                                            useDesigners
+    map/                                   MapRoute, MapPage, hooks, parser de coordenadas y fila OSP
   lib/
     api.ts                                 único punto HTTP (fetch), ApiError, timeouts
     types.ts                               contrato normalizado (espejo de backend/docs/estilos/API.md)
@@ -65,6 +67,7 @@ src/
     query/keys.ts                          claves de consulta (CONTRATO.md)
     query/client.ts                        QueryClient con staleTime y reintentos
     query/invalidation.ts                  invalidateAfterShareWrite
+  components/map/MapView.tsx               Leaflet genérico, importado sólo en /mapa
   test/
     setup.ts                               jest-dom, cleanup, servidor MSW
     handlers/                              handlers MSW por feature con datos sintéticos

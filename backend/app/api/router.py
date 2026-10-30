@@ -6,6 +6,7 @@ from app.api.routes.bulk import router as bulk_router
 from app.api.routes.designers import router as designers_router
 from app.api.routes.export import router as export_router
 from app.api.routes.health import router as health_router
+from app.api.routes.map import router as map_router
 from app.api.routes.people import router as people_router
 from app.api.routes.quality import router as quality_router
 from app.api.routes.references import router as references_router
@@ -15,6 +16,7 @@ from app.api.routes.sheets import router as sheets_router
 
 api_router = APIRouter()
 api_router.include_router(health_router, tags=["estado"])
+api_router.include_router(map_router, prefix="/map", tags=["mapa"])
 # Reportes antes que hojas: "/sheets/compare" no debe tomarse como un código de permalink.
 api_router.include_router(reports_router, prefix="/sheets", tags=["auditoría y comparación"])
 api_router.include_router(review_router, tags=["auditoría y comparación"])

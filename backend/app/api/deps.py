@@ -13,6 +13,8 @@ from app.services.bulk import BulkService
 from app.services.cache import TtlCache
 from app.services.designers import DesignerService
 from app.services.export import ExportService
+from app.services.gis import GisClient
+from app.services.map import MapService
 from app.services.people import PeopleService
 from app.services.quality import QualityService
 from app.services.references import ReferenceService
@@ -63,6 +65,7 @@ class Services:
     automations: AutomationService
     references: ReferenceService
     designers: DesignerService
+    maps: MapService
 
 
 def build_services(settings: Settings, client: SmartsheetClient | None = None) -> Services:
@@ -80,6 +83,7 @@ def build_services(settings: Settings, client: SmartsheetClient | None = None) -
     automations = AutomationService(client, cache, sheets, shares)
     references = ReferenceService(sheets, quality)
     designers = DesignerService(settings, sheets, shares, people, quality, references)
+    maps = MapService(settings, GisClient(settings), TtlCache(settings.gis_cache_ttl_seconds))
     return Services(
         settings,
         client,
@@ -96,6 +100,7 @@ def build_services(settings: Settings, client: SmartsheetClient | None = None) -
         automations,
         references,
         designers,
+        maps,
     )
 
 

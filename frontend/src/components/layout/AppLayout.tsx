@@ -4,6 +4,7 @@ import {
   People24Regular,
   PersonStarburst24Regular,
   ScaleFill24Regular,
+  Map24Regular,
 } from '@fluentui/react-icons'
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router'
@@ -15,6 +16,7 @@ const destinations = [
   { to: '/disenadores', label: 'Diseñadores', icon: PersonStarburst24Regular },
   { to: '/revision', label: 'Revisión', icon: ClipboardTaskListLtr24Regular },
   { to: '/comparar', label: 'Comparar', icon: ScaleFill24Regular },
+  { to: '/mapa', label: 'Mapa', icon: Map24Regular },
 ]
 
 type Props = { me: Me | null; readOnly: boolean; children: ReactNode }

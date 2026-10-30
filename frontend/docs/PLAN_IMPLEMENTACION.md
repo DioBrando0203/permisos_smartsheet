@@ -56,7 +56,7 @@ Terminado cuando: `npm run build`, `lint`, `test` y `format:check` pasan; con el
 
 ## F7 Mapa (PEN-29)
 
-- Requiere: aprobación del usuario de ADR-B16, ADR-B17 y ADR-13; backend M1 (punto) antes de M3 y M2 (tramo) antes de M4.
+- Estado: en curso. M3 y M4 implementadas; faltan pruebas E2E reales, revisión visual y M5/M6 fuera de esta fase base.
 - Specs: SPEC-11 (frontend) y SPEC-B14 (backend).
 - M3: destino "Mapa" en la navegación (SPEC-01 pasa a seis destinos), `MapView` con Leaflet diferido, modo Punto, coordenadas, panel y URL.
 - M4: modo Tramo, línea resaltada y "Copiar para OSP".

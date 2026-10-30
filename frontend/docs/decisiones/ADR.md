@@ -93,7 +93,7 @@ Consecuencias: búsqueda instantánea; si la cuenta llegara a miles de hojas, vo
 
 ## ADR-13 Mapa con Leaflet directo y teselas públicas
 
-Fecha: 2026-10-30. Estado: propuesta (PEN-29), pendiente de aprobación del usuario.
+Fecha: 2026-10-30. Estado: vigente. Aprobada por el usuario al solicitar la implementación de PEN-29.
 Contexto: SPEC-11 necesita un mapa interactivo (clic, marcador, línea resaltada). ADR-09 evita librerías visuales, pero un mapa con teselas, zoom y arrastre no se hace razonablemente con CSS. Opciones revisadas el 2026-10-30 con `npm view`: `leaflet` 1.9.4 (BSD-2-Clause, publicada 2023-05-18), `react-leaflet` 5.0.0 (licencia Hippocratic 2.1, no estándar y con restricciones de uso) y MapLibre GL (más pesada, pensada para teselas vectoriales).
 Decisión:
 - `leaflet` 1.9.4 y `@types/leaflet` 1.9.22 (MIT, publicada 2026-08-01), versiones exactas (P-31). Sin `react-leaflet`, por su licencia: un componente propio `components/map/MapView.tsx` crea el mapa en un `ref`, lo destruye al desmontar y expone sólo lo que el panel usa (centro, zoom, marcadores, línea, clic).

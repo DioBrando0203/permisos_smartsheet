@@ -29,6 +29,7 @@ def create_app(
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         yield
         await services.client.aclose()
+        await services.maps.aclose()
 
     app = FastAPI(title=settings.app_name, version="0.1.0", docs_url="/docs", lifespan=lifespan)
     app.state.services = services

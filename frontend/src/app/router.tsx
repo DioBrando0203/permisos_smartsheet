@@ -4,6 +4,7 @@ import { SheetsPage } from '../features/sheets/SheetsPage'
 import { PlaceholderPage } from '../features/shell/PlaceholderPage'
 import { PeoplePage } from '../features/people/PeoplePage'
 import { NotFoundPage } from '../features/shell/NotFoundPage'
+import { MapRoute } from '../features/map/MapRoute'
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ export const router = createBrowserRouter([
       { path: '/disenadores', element: <PlaceholderPage title="Diseñadores" /> },
       { path: '/revision', element: <PlaceholderPage title="Revisión" /> },
       { path: '/comparar', element: <PlaceholderPage title="Comparar hojas" /> },
+      { path: '/mapa', element: <MapRoute /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

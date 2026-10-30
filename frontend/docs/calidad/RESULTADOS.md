@@ -65,3 +65,9 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm run build`, `npm run lint`, `npm test` (8 archivos y 16 pruebas), `npm run test:e2e` (1 omitida) y `npm run format:check`: pasan.
 - Revisión visual del detalle de persona a 320, 390, 1024, 1440 y 1920 px: sin desborde horizontal y el detalle permanece disponible.
 - La prueba de contrato verifica que el plan de revocación conserva sus hojas y motivos de omisión; no se ejecutó una revocación real.
+# 2026-10-30 Mapa GIS (F7, M3-M4)
+
+- `npm run format:check`, `npm run build`, `npm run lint` y `npm test`: pasaron; Vitest: 9 archivos y 18 pruebas.
+- `npm run test:e2e`: ejecutable, 1 caso F0 omitido; todavía no existe E2E funcional del mapa.
+- El build separa `MapPage` y `leaflet-src` del bundle principal; Leaflet sólo se carga en `/mapa`.
+- `npm audit --omit=dev` y `npm audit`: 0 vulnerabilidades tras actualizar Vite 8.3.5.

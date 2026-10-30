@@ -3,6 +3,20 @@ import type { ApiErrorCode } from './api'
 export type ErrorMessage = { text: string; action: string | null }
 
 const messages: Record<string, ErrorMessage> = {
+  COORDINATES_OUT_OF_FLORIDA: { text: 'El punto está fuera de Florida.', action: null },
+  SEGMENT_ROADWAY_MISMATCH: {
+    text: 'A y B no están sobre la misma vía.',
+    action: 'Elija dos puntos de la misma vía.',
+  },
+  SEGMENT_TOO_LONG: {
+    text: 'El tramo supera la longitud máxima permitida.',
+    action: 'Elija un tramo de menor longitud.',
+  },
+  GIS_UNAVAILABLE: {
+    text: 'Los servicios del FDOT no responden; intenta en unos minutos.',
+    action: 'Reintentar.',
+  },
+  GIS_DISABLED: { text: 'El mapa está deshabilitado en este servidor.', action: null },
   BACKEND_UNREACHABLE: {
     text: 'No se puede conectar con el backend del panel.',
     action: 'Inícielo con `python run.py` en `backend` y pulse Reintentar.',

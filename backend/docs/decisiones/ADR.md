@@ -109,7 +109,7 @@ Consecuencias: se descartan reemplazar Jira (tableros, flujos completos) y un CR
 
 ## ADR-B16 Mapa como módulo del mismo backend, en Python
 
-Fecha: 2026-10-30. Estado: propuesta (PEN-29), pendiente de aprobación del usuario.
+Fecha: 2026-10-30. Estado: vigente. Aprobada por el usuario al solicitar la implementación de PEN-29.
 Contexto: el usuario quiere un mapa con vía, milepost, jurisdicción y parcela, consumido por el mismo frontend desde una entrada nueva de la navegación. Los datos salen de servicios GIS públicos (FDOT y FDACS) que aceptan CORS. Se evaluaron tres opciones: que el navegador llame directo a esos servicios, un servicio aparte o un módulo dentro de este backend.
 Decisión: módulo nuevo dentro de este backend FastAPI, en Python, aislado como `services/smartsheet/`: transporte y cliente propios en `services/gis/`, reglas puras en `services/map_rules.py`, caso de uso en `services/map.py` y ruta `api/routes/map.py` bajo `/api/map/...` (SPEC-B14). El módulo GIS no importa nada de Smartsheet ni al revés.
 Motivos:
@@ -126,7 +126,7 @@ Consecuencias: un fallo de los servicios GIS degrada sólo el mapa (respuesta pa
 
 ## ADR-B17 Fuentes GIS públicas y datos de propietarios
 
-Fecha: 2026-10-30. Estado: propuesta (PEN-29), pendiente de aprobación del usuario.
+Fecha: 2026-10-30. Estado: vigente. Aprobada por el usuario al solicitar la implementación de PEN-29.
 Contexto: no hay una sola fuente con todo. La base estatal (FDOT para vías, milepost y límites; FDACS para parcelas) cubre igual a todos los condados; los condados publican más detalle con formatos distintos (`future_docs/MAPAS_JURISDICCION_PARCELAS.md`). Las parcelas traen el nombre del propietario, que en Florida es registro público.
 Decisión:
 - Fase base: sólo FDOT y FDACS. Los adaptadores de condado (Palm Beach primero, por su campo `RESP_AUTH`) se agregan después, uno por uno, sin cambiar el contrato: sólo suben la confianza de la jurisdicción.

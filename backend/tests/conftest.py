@@ -21,6 +21,9 @@ def make_settings(**overrides: object) -> Settings:
         "smartsheet_retry_base_seconds": 0.0,
         "smartsheet_max_retries": 2,
         "app_read_only": False,
+        "gis_fdot_base_url": "https://gis.test/arcgis/rest/services",
+        "gis_fdacs_parcels_url": "https://parcels.test/0",
+        "gis_max_retries": 0,
     }
     values.update(overrides)
     return Settings(_env_file=None, **values)
