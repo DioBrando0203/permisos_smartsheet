@@ -68,6 +68,9 @@ export function normalizeMapTrace(source: ApiMapTrace): MapTrace {
   return {
     inputLengthMi: source.input_length_mi ?? source.length_mi ?? 0,
     lengthMi: source.length_mi ?? 0,
+    adjustment: source.adjustment
+      ? { startM: source.adjustment.start_m ?? null, endM: source.adjustment.end_m ?? null }
+      : null,
     rows: (source.rows ?? []).map((row) => ({
       county: row.county ?? null,
       stateRoadId: row.state_road_id ?? row.roadway_id ?? '',

@@ -37,6 +37,16 @@ async def test_turnpike_district_marks_the_row(client, smartsheet) -> None:
     assert body["rows"][0]["state_road_id"] == "SR 953"
     assert body["length_mi"] == body["rows"][0]["length_mi"]
     assert body["input_length_mi"] == pytest.approx(body["length_mi"], abs=0.002)
+    assert body["adjustment"] == {"start_m": 0.0, "end_m": 0.0}
+
+
+async def test_trace_reports_how_far_fdot_adjusted_its_endpoints(client, smartsheet) -> None:
+    _routes(smartsheet)
+    path = "25.771778,-80.263550;25.782147,-80.263945"
+    body = (await client.get("/api/map/trace", params={"path": path})).json()
+    assert body["rows"][0]["state_road_id"] == "SR 953"
+    assert body["adjustment"]["start_m"] == pytest.approx(6, abs=1)
+    assert body["adjustment"]["end_m"] == pytest.approx(6, abs=1)
 
 
 @pytest.mark.parametrize(

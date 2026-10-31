@@ -102,12 +102,20 @@ class WorkLocation(BaseModel):
     geometry: dict[Literal["type", "coordinates"], str | list[list[float]]]
 
 
+class TraceAdjustment(BaseModel):
+    """Separación de los extremos marcados a las vías LRS elegidas, en metros (PEN-36)."""
+
+    start_m: float | None = None
+    end_m: float | None = None
+
+
 class MapTrace(BaseModel):
     path: list[list[float]]
     # Longitud de la polilínea de entrada, útil para explicar un ajuste de la LRS (PEN-35).
     input_length_mi: float
     # Longitud de las geometrías LRS oficiales de las filas, no de la polilínea de entrada.
     length_mi: float
+    adjustment: TraceAdjustment | None = None
     rows: list[WorkLocation]
     sources: list[SourceStatus]
     warnings: list[str]

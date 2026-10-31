@@ -11,7 +11,7 @@ from typing import Any
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.models.map import MapTrace, SourceStatus, WorkLocation
+from app.models.map import MapTrace, SourceStatus, TraceAdjustment, WorkLocation
 from app.services.cache import TtlCache
 from app.services.gis import GisClient
 from app.services.gis.layers import (
@@ -30,6 +30,7 @@ from app.services.gis.timing import run_source
 from app.services.map_mappers import feature_text, local_name_at, route_geometry, section_number
 from app.services.map_rules import (
     RouteGeometry,
+    distance_m_to_route,
     geometry_miles,
     in_florida,
     normalize_route,
@@ -95,6 +96,7 @@ class MapTraceService:
             path=[[round(lat, 6), round(lon, 6)] for lat, lon in path],
             input_length_mi=round(path_meters(path) / METERS_PER_MILE, 3),
             length_mi=round(sum(row.length_mi for row in rows), 3),
+            adjustment=_adjustment(path, found, routes),
             rows=rows,
             sources=sources,
             warnings=_warnings(rows, sources),
@@ -237,3 +239,15 @@ def _warnings(rows: list[WorkLocation], sources: list[SourceStatus]) -> list[str
     if any(row.kind != "state" for row in rows):
         result.append("NOT_STATE_ROAD")
     return result
+
+
+def _adjustment(
+    path: list[Point], found: list[Run], routes: dict[str, RouteGeometry]
+) -> TraceAdjustment | None:
+    """Hace visible el ajuste de los extremos sin convertir el trazo en un enrutador."""
+    if not found:
+        return None
+    first, last = routes[found[0].roadway_id], routes[found[-1].roadway_id]
+    start = distance_m_to_route(*path[0], first)
+    end = distance_m_to_route(*path[-1], last)
+    return TraceAdjustment(start_m=start, end_m=end)

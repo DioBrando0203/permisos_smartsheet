@@ -53,6 +53,7 @@ export const mapTraceFixture: ApiMapTrace = {
   ],
   input_length_mi: 0.92,
   length_mi: 0.917,
+  adjustment: { start_m: 5.5, end_m: 8.1 },
   rows: [
     {
       county: 'Miami-Dade',

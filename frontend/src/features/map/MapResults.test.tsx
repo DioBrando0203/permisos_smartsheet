@@ -52,6 +52,7 @@ describe('Resultados del mapa', () => {
     expect(second).toHaveTextContent('No estatal')
     expect(screen.getByText(/Resultado ajustado a la geometría oficial del FDOT/)).toBeInTheDocument()
     expect(screen.getByText('Línea marcada: 0.920 mi.')).toBeInTheDocument()
+    expect(screen.getByText('Ajuste de FDOT a la vía: inicio 5.5 m; final 8.1 m.')).toBeInTheDocument()
     expect(screen.getByText(/no es del Sistema Estatal/)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Copiar fila de SR 953' }))
     expect(await navigator.clipboard.readText()).toBe('Miami-Dade\tSR 953\t281\t3.124\t3.839\tNo')

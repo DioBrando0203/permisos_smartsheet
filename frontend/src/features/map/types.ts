@@ -62,6 +62,7 @@ export type MapTrace = {
   inputLengthMi: number
   /** Longitud de las geometrías oficiales que se dibujan al terminar. */
   lengthMi: number
+  adjustment: { startM: number | null; endM: number | null } | null
   rows: WorkLocation[]
   sources: MapPoint['sources']
   warnings: string[]
@@ -119,6 +120,7 @@ export type ApiMapTrace = {
   path?: [number, number][]
   input_length_mi?: number
   length_mi?: number
+  adjustment?: { start_m?: number | null; end_m?: number | null } | null
   rows?: {
     county?: string | null
     state_road_id?: string

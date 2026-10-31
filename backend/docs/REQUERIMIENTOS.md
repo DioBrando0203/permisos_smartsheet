@@ -284,6 +284,12 @@ Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-31).
 Situación: el trazo ya clasifica cada muestra contra la LRS del FDOT y las filas llevan una geometría oficial recortada, pero el mapa conserva encima la polilínea manual y reporta su longitud. Eso hace parecer que el resultado no se acomoda a la vía, aunque los mileposts sí se calculan sobre ella.
 Hacer: tras terminar, mostrar sólo las geometrías LRS de las filas como resultado; reservar la línea punteada para la edición. `length_mi` será la longitud de esas geometrías oficiales e `input_length_mi` conservará la longitud dibujada para explicar diferencias. Al cargar un enlace de trazo, encuadrar todas las geometrías devueltas. Probar la regla pura, contrato, componente y E2E. No se hace enrutamiento: un trazo que pase por otra vía o quede a más de 25 m sigue requiriendo que la persona lo corrija.
 
+### PEN-36 Evidencia del ajuste de extremos del trazo
+
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-31).
+Situación: el resultado ya dibuja la LRS oficial, pero la persona no puede comprobar en cifras cuánto se movieron los extremos elegidos hasta esa vía. Esto hacía parecer que el panel conservaba la línea manual.
+Hacer: `GET /api/map/trace` devuelve la distancia en metros desde el primer y último punto marcados a sus vías LRS elegidas. El panel la explica como ajuste de FDOT junto a la longitud oficial. Cero metros significa que el punto ya estaba sobre la geometría; no implica que se haya hecho enrutamiento.
+
 ### PEN-33 Límites de parcelas en el mapa
 
 Prioridad: media. Alcance: backend y frontend. Estado: terminada para Broward y Miami-Dade (2026-10-30): casilla "Límites de parcelas" a zoom 17 o más, `GET /api/map/parcels` por celda (SPEC-B14 CA-19, SPEC-11 CA-15). El resto del estado depende de FDACS.

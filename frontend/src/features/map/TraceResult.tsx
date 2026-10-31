@@ -73,10 +73,20 @@ function TraceBody({
       {Math.abs(result.inputLengthMi - result.lengthMi) >= 0.001 && (
         <p className="map-note">Línea marcada: {result.inputLengthMi.toFixed(3)} mi.</p>
       )}
+      {result.adjustment && <AdjustmentNote adjustment={result.adjustment} />}
       {result.warnings.includes('NOT_STATE_ROAD') && (
         <p className="map-note">"No estatal": la vía no es del Sistema Estatal y OSP no la acepta.</p>
       )}
       <SourcesSection sources={result.sources} />
     </>
+  )
+}
+
+function AdjustmentNote({ adjustment }: { adjustment: NonNullable<MapTrace['adjustment']> }) {
+  if (adjustment.startM === null || adjustment.endM === null) return null
+  return (
+    <p className="map-note">
+      Ajuste de FDOT a la vía: inicio {adjustment.startM.toFixed(1)} m; final {adjustment.endM.toFixed(1)} m.
+    </p>
   )
 }
