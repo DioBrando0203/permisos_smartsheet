@@ -8,8 +8,14 @@ import type { MapTrace } from './types'
 type Drawing = { vertices: Coordinates[]; drawing: boolean }
 
 /** Presentación derivada: los resultados incompletos conservan el dibujo como referencia. */
-export function useMapDrawing(mode: MapMode, point: Coordinates | null, trace: Drawing, result?: MapTrace) {
-  const review = Boolean(result && needsTraceReview(result))
+export function useMapDrawing(
+  mode: MapMode,
+  point: Coordinates | null,
+  trace: Drawing,
+  result?: MapTrace,
+  original = false,
+) {
+  const review = original || Boolean(result && needsTraceReview(result))
   const focus = useMemo<MapFocus | null>(() => {
     if (mode !== 'trace' || trace.drawing || !result) return null
     const bounds = officialBounds(result, review ? trace.vertices : [])
@@ -17,12 +23,26 @@ export function useMapDrawing(mode: MapMode, point: Coordinates | null, trace: D
   }, [mode, result, review, trace.drawing, trace.vertices])
   const markers = useMemo<MapMarker[]>(() => {
     if (mode === 'point') return point ? [point] : []
-    if (!trace.drawing && result && !review) return []
-    return trace.vertices.map((vertex, index) => ({
-      ...vertex,
-      small: true,
-      label: index ? undefined : 'Inicio',
-    }))
+    const adjusted =
+      !trace.drawing && result?.snappedPoints.length
+        ? [
+            { ...result.snappedPoints[0], label: 'Inicio ajustado', small: true },
+            {
+              ...result.snappedPoints[result.snappedPoints.length - 1],
+              label: 'Final ajustado',
+              small: true,
+            },
+          ]
+        : []
+    if (!trace.drawing && result && !review) return adjusted
+    return [
+      ...adjusted,
+      ...trace.vertices.map((vertex, index) => ({
+        ...vertex,
+        small: true,
+        label: index ? undefined : 'Inicio',
+      })),
+    ]
   }, [point, mode, result, review, trace.drawing, trace.vertices])
   const lines = useMemo<MapLine[]>(() => {
     if (mode !== 'trace') return []

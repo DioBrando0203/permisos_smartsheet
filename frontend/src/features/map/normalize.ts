@@ -66,6 +66,10 @@ export function normalizeMapPoint(source: ApiMapPoint): MapPoint {
 }
 export function normalizeMapTrace(source: ApiMapTrace): MapTrace {
   return {
+    alignment: source.alignment ?? 'strict',
+    radiusM: source.radius_m ?? 25,
+    coverageRadiusM: source.coverage_radius_m ?? 25,
+    snappedPoints: (source.snapped_points ?? []).map(([lat, lon]) => ({ lat, lon })),
     inputLengthMi: source.input_length_mi ?? source.length_mi ?? 0,
     lengthMi: source.length_mi ?? null,
     matchedPercent: source.matched_percent ?? null,

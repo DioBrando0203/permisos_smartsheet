@@ -11,7 +11,7 @@ from typing import Any
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.models.map import MapTrace, SourceStatus, TraceAdjustment, WorkLocation
+from app.models.map import MapTrace, SourceStatus, WorkLocation
 from app.services.cache import TtlCache
 from app.services.gis import GisClient
 from app.services.gis.layers import (
@@ -30,22 +30,21 @@ from app.services.gis.timing import run_source
 from app.services.map_mappers import feature_text, local_name_at, route_geometry, section_number
 from app.services.map_rules import (
     RouteGeometry,
-    distance_m_to_route,
     geometry_miles,
     in_florida,
     normalize_route,
     point_at_milepost,
     slice_route,
 )
+from app.services.map_trace_result import endpoint_adjustment, trace_response
+from app.services.trace_analysis import analyze_trace
+from app.services.trace_network import corridor_radius
 from app.services.trace_rules import (
     Point,
     Run,
-    densify,
     envelopes,
     parse_path,
     path_meters,
-    runs,
-    unmatched_meters,
 )
 
 METERS_PER_MILE = 1609.344
@@ -65,12 +64,14 @@ class MapTraceService:
     def __init__(self, settings: Settings, client: GisClient, cache: TtlCache) -> None:
         self._settings, self._client, self._cache = settings, client, cache
 
-    async def trace(self, text: str, radius_m: float, *, refresh: bool) -> MapTrace:
+    async def trace(
+        self, text: str, radius_m: float, *, refresh: bool, snap: bool = False
+    ) -> MapTrace:
         path = self._valid_path(text)
         points = ";".join(f"{lat:.6f},{lon:.6f}" for lat, lon in path)
         return await self._cache.get_or_load(
-            f"map:trace:{radius_m:.1f}:{points}",
-            lambda: self._load(path, radius_m),
+            f"map:trace:{snap}:{radius_m:.1f}:{points}",
+            lambda: self._load(path, radius_m, snap),
             refresh=refresh,
         )
 
@@ -86,15 +87,17 @@ class MapTraceService:
             raise AppError("SEGMENT_TOO_LONG", "El trazo supera la longitud máxima permitida.", 422)
         return path
 
-    async def _load(self, path: list[Point], radius_m: float) -> MapTrace:
-        (routes, attrs), lrs = await self._routes(path, radius_m)
+    async def _load(self, path: list[Point], radius_m: float, snap: bool) -> MapTrace:
+        corridor = corridor_radius(path, radius_m) if snap else radius_m
+        (routes, attrs), lrs = await self._routes(path, corridor)
         if lrs.status != "ok" and not routes:
             raise AppError("GIS_UNAVAILABLE", "Los servicios GIS no responden.", 502)
-        samples = densify(path)
-        found = runs(samples, routes, radius_m)
-        total_m = path_meters(path)
-        unmatched_m = unmatched_meters(samples, routes, radius_m)
-        lookups, statuses = await self._lookups(found, attrs)
+        lookups, statuses = await self._lookups(list(routes), attrs) if snap else (None, [])
+        preferred = frozenset(lookups.states) if lookups else frozenset()
+        analysis = analyze_trace(path, routes, radius_m, snap, preferred)
+        found = analysis.runs
+        if lookups is None:
+            lookups, statuses = await self._lookups([run.roadway_id for run in found], attrs)
         middles = [_middle(run, routes[run.roadway_id]) for run in found]
         turnpike = await asyncio.gather(
             *(run_source("fdot_turnpike", lambda p=p: self._on_turnpike(p), None) for p in middles)
@@ -104,19 +107,9 @@ class MapTraceService:
             for run, (flag, _) in zip(found, turnpike, strict=True)
         ]
         sources = [lrs, *statuses, *_worst([status for _, status in turnpike])]
-        return MapTrace(
-            path=[[round(lat, 6), round(lon, 6)] for lat, lon in path],
-            input_length_mi=round(total_m / METERS_PER_MILE, 3),
-            length_mi=_total_length(rows),
-            matched_percent=round(100 * max(0, total_m - unmatched_m) / total_m, 1)
-            if total_m
-            else 0,
-            unmatched_length_mi=round(unmatched_m / METERS_PER_MILE, 3),
-            adjustment=_adjustment(path, found, routes),
-            rows=rows,
-            sources=sources,
-            warnings=_warnings(rows, sources, unmatched_m),
-        )
+        result = trace_response(path, rows, sources, analysis, radius_m)
+        result.adjustment = endpoint_adjustment(path, analysis, routes)
+        return result
 
     async def _routes(
         self, path: list[Point], radius_m: float
@@ -134,10 +127,10 @@ class MapTraceService:
         return _merge_routes(features), status
 
     async def _lookups(
-        self, found: list[Run], attrs: dict[str, dict[str, str]]
+        self, roadways: list[str], attrs: dict[str, dict[str, str]]
     ) -> tuple[_Lookups, list[SourceStatus]]:
         # Los ID vienen del FDOT; aun así sólo dígitos entran en un filtro `where`.
-        ids = sorted({run.roadway_id for run in found if run.roadway_id.isdigit()})
+        ids = sorted({roadway for roadway in roadways if roadway.isdigit()})
         codes = sorted({attrs[r]["county"] for r in ids if attrs[r]["county"].isdigit()})
         name_fields = ("ROADWAY", "NAME", "BEGIN_POST", "END_POST")
         results = await asyncio.gather(
@@ -150,7 +143,7 @@ class MapTraceService:
         )
         (states, _), (county_roads, _), (names, _), (counties, _) = results
         lookups = _Lookups(states, county_roads, names, counties)
-        return lookups, [status for _, status in results] if found else []
+        return lookups, [status for _, status in results] if ids else []
 
     async def _by_roadway(
         self, layer: int, ids: list[str], fields: tuple[str, ...] = ("ROADWAY", "ROUTE")
@@ -246,36 +239,3 @@ def _worst(statuses: list[SourceStatus]) -> list[SourceStatus]:
         return []
     failed = [status for status in statuses if status.status != "ok"]
     return [failed[0] if failed else max(statuses, key=lambda status: status.ms)]
-
-
-def _total_length(rows: list[WorkLocation]) -> float | None:
-    if any(row.length_mi is None for row in rows):
-        return None
-    return round(sum(row.length_mi for row in rows if row.length_mi is not None), 3)
-
-
-def _warnings(
-    rows: list[WorkLocation], sources: list[SourceStatus], unmatched_m: float
-) -> list[str]:
-    result = ["SOURCE_FAILED"] if any(source.status != "ok" for source in sources) else []
-    if not rows:
-        result.append("NO_ROAD_NEARBY")
-    if any(row.kind != "state" for row in rows):
-        result.append("NOT_STATE_ROAD")
-    if unmatched_m > 0.1:
-        result.append("TRACE_PARTIAL")
-    if any(row.length_mi is None for row in rows):
-        result.append("TRACE_GEOMETRY_INCOMPLETE")
-    return result
-
-
-def _adjustment(
-    path: list[Point], found: list[Run], routes: dict[str, RouteGeometry]
-) -> TraceAdjustment | None:
-    """Hace visible el ajuste de los extremos sin convertir el trazo en un enrutador."""
-    if not found:
-        return None
-    first, last = routes[found[0].roadway_id], routes[found[-1].roadway_id]
-    start = distance_m_to_route(*path[0], first)
-    end = distance_m_to_route(*path[-1], last)
-    return TraceAdjustment(start_m=start, end_m=end)

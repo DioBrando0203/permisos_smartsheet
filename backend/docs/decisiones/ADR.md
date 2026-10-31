@@ -124,6 +124,12 @@ Condiciones:
 - `APP_GIS_ENABLED=false` lo apaga sin tocar el resto del panel.
 Consecuencias: un fallo de los servicios GIS degrada sólo el mapa (respuesta parcial o 502 `GIS_UNAVAILABLE`), no las vistas de permisos. Si algún día lo consumen otros sistemas o crece mucho el volumen, el módulo se puede extraer a un servicio propio porque no comparte código de dominio.
 
+## ADR-B18 Ajuste geométrico de trazos sobre LRS
+
+Fecha: 2026-10-31. Estado: vigente, autorizado por el pedido de ajuste automático (PEN-38).
+Decisión: grafo local puro y acotado, sin servicio de rutas ni dependencia nueva. Proyectar cada vértice y buscar una secuencia continua de aristas LRS; agrupar por vía y medida. El modo estricto existente es el respaldo explícito. Las conexiones entre vías se infieren en planta y se indican como tales: no equivalen a topología oficial ni instrucciones de conducción. No añadir accesos a OSP ni escrituras.
+Consecuencias: permite reconstruir curvas, desplazar el dibujo y obtener múltiples filas; todavía exige revisar cruces a desnivel o alternativas similares. Se prueba con redes sintéticas sin acceso externo.
+
 ## ADR-B17 Fuentes GIS públicas y datos de propietarios
 
 Fecha: 2026-10-30. Estado: vigente. Aprobada por el usuario al solicitar la implementación de PEN-29.

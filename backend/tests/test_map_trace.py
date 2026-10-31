@@ -93,6 +93,57 @@ async def test_refresh_trace_queries_gis_again(client, smartsheet) -> None:
     assert route.call_count > before
 
 
+async def test_automatic_alignment_reconstructs_a_curve_and_keeps_strict_cache_separate(
+    client, smartsheet
+) -> None:
+    curved = {
+        **LRS,
+        "geometry": {
+            "paths": [
+                [
+                    [-80.26361, 25.771778, 3.124],
+                    [-80.2628, 25.777, 3.48],
+                    [-80.264005, 25.782147, 3.839],
+                ]
+            ]
+        },
+    }
+    _routes(smartsheet, lrs=[curved])
+    strict = (await client.get("/api/map/trace", params={"path": CONTROL})).json()
+    automatic = (
+        await client.get(
+            "/api/map/trace", params={"path": CONTROL, "snap": "true", "radius_m": 100}
+        )
+    ).json()
+    assert strict["alignment"] == "strict"
+    assert "TRACE_PARTIAL" in strict["warnings"]
+    assert automatic["alignment"] == "adjusted"
+    assert automatic["radius_m"] == 100
+    assert len(automatic["rows"]) == 1
+    assert automatic["rows"][0]["geometry"]["coordinates"][1] == [-80.2628, 25.777]
+    assert automatic["length_mi"] > automatic["input_length_mi"]
+    assert "TRACE_PARTIAL" not in automatic["warnings"]
+    assert len(automatic["snapped_points"]) == 2
+
+
+async def test_unavailable_alignment_uses_strict_result_with_explicit_warning(
+    client, smartsheet
+) -> None:
+    _routes(smartsheet)
+    body = (
+        await client.get(
+            "/api/map/trace",
+            params={
+                "path": "25.771778,-80.263610;25.782147,-80.260",
+                "snap": "true",
+                "radius_m": 100,
+            },
+        )
+    ).json()
+    assert body["alignment"] == "unavailable"
+    assert "TRACE_ALIGNMENT_UNAVAILABLE" in body["warnings"]
+
+
 @pytest.mark.parametrize(
     ("path", "code"),
     [

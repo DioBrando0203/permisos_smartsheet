@@ -117,6 +117,10 @@ class MapTrace(BaseModel):
     length_mi: float | None
     matched_percent: float
     unmatched_length_mi: float
+    alignment: Literal["strict", "adjusted", "ambiguous", "unavailable"] = "strict"
+    radius_m: float = 25
+    coverage_radius_m: float = 25
+    snapped_points: list[list[float]] = []
     adjustment: TraceAdjustment | None = None
     rows: list[WorkLocation]
     sources: list[SourceStatus]

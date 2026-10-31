@@ -32,11 +32,11 @@ export function useMapPoint(point: Coordinates | null) {
 }
 
 /** Tabla Work Location del trazo terminado (PEN-32); `path` es null mientras se dibuja. */
-export function useMapTrace(path: Coordinates[] | null) {
+export function useMapTrace(path: Coordinates[] | null, snap = true) {
   const key = path ? pathKey(path) : ''
   return useMapReading<ApiMapTrace, ReturnType<typeof normalizeMapTrace>>(
-    queryKeys.mapTrace(key),
-    path ? `/api/map/trace?path=${encodeURIComponent(key)}` : null,
+    queryKeys.mapTrace(key, snap),
+    path ? `/api/map/trace?path=${encodeURIComponent(key)}&snap=${snap}&radius_m=${snap ? 100 : 25}` : null,
     normalizeMapTrace,
   )
 }

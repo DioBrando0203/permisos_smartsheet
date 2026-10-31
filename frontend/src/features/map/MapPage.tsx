@@ -11,6 +11,7 @@ import { readChoice, readText, saveChoice } from './lib/preferences'
 import { PointResult } from './MapResults'
 import { MapToolbar, type MapLayers } from './MapToolbar'
 import { TraceResult } from './TraceResult'
+import { TraceOptions } from './TraceOptions'
 import { useParcelLayer } from './useParcelLayer'
 import { useMapDrawing } from './useMapDrawing'
 import { useTraceDrawing } from './useTraceDrawing'
@@ -29,6 +30,7 @@ export function MapPage() {
   const [mode, setMode] = useState<MapMode>(saved.trace ? 'trace' : 'point')
   const [a, setA] = useState<Coordinates | null>(saved.point)
   const trace = useTraceDrawing(saved.trace)
+  const [options, setOptions] = useState(saved.options)
   const [focus, setFocus] = useState<MapFocus | null>(() => {
     const first = saved.trace?.[0] ?? saved.point
     return first ? { ...first, zoom: closeZoom } : null
@@ -46,13 +48,13 @@ export function MapPage() {
   // Sólo un cambio de zona hecho por la persona encuadra el mapa; la guardada no tapa la URL.
   const fitArea = useRef(false)
   const point = useMapPoint(mode === 'point' ? a : null)
-  const result = useMapTrace(mode === 'trace' ? trace.finished : null)
+  const result = useMapTrace(mode === 'trace' ? trace.finished : null, options.snap)
   const reading = mode === 'point' ? point : result
-  const drawing = useMapDrawing(mode, a, trace, result.data)
+  const drawing = useMapDrawing(mode, a, trace, result.data, options.original)
   const parcels = useParcelLayer(layers.parcels, view)
   useEffect(() => {
-    setParams(writeMapUrl(mode, a, trace.finished), { replace: true })
-  }, [a, trace.finished, mode, setParams])
+    setParams(writeMapUrl(mode, a, trace.finished, options), { replace: true })
+  }, [a, trace.finished, mode, options, setParams])
   useEffect(() => saveChoice('map-basemap', basemap), [basemap])
   useEffect(() => {
     saveChoice('map-county', scope.county ?? '')
@@ -118,6 +120,7 @@ export function MapPage() {
         />
       </div>
       <aside className="map-page__panel" aria-live="polite" aria-label="Resultados del mapa">
+        {mode === 'trace' && <TraceOptions value={options} onChange={setOptions} />}
         <Button
           appearance="secondary"
           size="sm"

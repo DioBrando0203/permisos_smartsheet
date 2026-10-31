@@ -298,6 +298,13 @@ Hacer: unir segmentos LRS contiguos por medida y posición, incluso invertidos o
 Incluye cerrar el botón Actualizar de PEN-30 para punto y trazo: salto real de caché del backend con `refresh=true`, errores visibles y consultas deshabilitadas sin selección.
 Límite de evidencia: las coordenadas del caso SR 953 se obtuvieron a partir de los MPs de la captura; eso verifica la interpolación, no demuestra equivalencia independiente con el algoritmo de OSP para cualquier dibujo. Sigue pendiente comparar entradas idénticas en ambos sistemas (OSP-PEN-01).
 
+### PEN-38 Ajuste automático del recorrido dibujado
+
+Prioridad: alta. Alcance: backend y frontend. Estado: en curso (2026-10-31, solicitado por el usuario).
+Situación: PEN-35 a PEN-37 recortaban la geometría de las vías detectadas, pero no reconstruían un recorrido entre vértices fuera del eje o separados por curvas. El usuario necesita que la línea se desplace, se alargue/acorte y se divida en más tramos cuando cambia de vía.
+Hacer: ajuste geométrico sobre un grafo local de segmentos LRS, con proyección de vértices, continuidad espacial, búsqueda de recorrido y una fila por vía recorrida; tolerancia visible de 100 m en el frontend. Comparación con el original y modo estricto anterior disponibles. URL y claves de caché incluyen la opción. Sin camino, fuera de tolerancia o grafo demasiado grande: resultado estricto de respaldo con aviso; rutas alternativas similares y conexiones geométricas entre vías se identifican para revisión.
+Límites: no hay datos de giros ni elevación/topología de OSP en esta capa; una conexión en planta puede ser un paso a desnivel y se informa. Esta mejora no se presenta como reproducción exacta del algoritmo privado de OSP.
+
 ### PEN-33 Límites de parcelas en el mapa
 
 Prioridad: media. Alcance: backend y frontend. Estado: terminada para Broward y Miami-Dade (2026-10-30): casilla "Límites de parcelas" a zoom 17 o más, `GET /api/map/parcels` por celda (SPEC-B14 CA-19, SPEC-11 CA-15). El resto del estado depende de FDACS.

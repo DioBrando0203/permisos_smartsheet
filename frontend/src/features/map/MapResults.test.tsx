@@ -90,6 +90,24 @@ describe('Resultados del mapa', () => {
     expect(screen.getByText(/Longitud no disponible sobre/)).toBeInTheDocument()
     expect(screen.queryByText(/0.000 mi/)).not.toBeInTheDocument()
   })
+
+  it('identifica el recorrido reconstruido y advierte alternativas y conexiones geométricas', () => {
+    const result = normalizeMapTrace({
+      ...mapTraceFixture,
+      alignment: 'ambiguous',
+      radius_m: 100,
+      snapped_points: [
+        [25.771778, -80.26361],
+        [25.782147, -80.264005],
+      ],
+      warnings: ['TRACE_ALIGNMENT_AMBIGUOUS', 'TRACE_CONNECTIONS_INFERRED'],
+    })
+    render(<TraceResult {...traceProps} result={result} />)
+    expect(screen.getByText(/Recorrido reconstruido sobre las vías/)).toBeInTheDocument()
+    expect(screen.getByText('Hay recorridos alternativos similares')).toBeInTheDocument()
+    expect(screen.getByText(/Revisa cruces a desnivel/)).toBeInTheDocument()
+    expect(result.snappedPoints[1]).toEqual({ lat: 25.782147, lon: -80.264005 })
+  })
 })
 
 const traceProps = {

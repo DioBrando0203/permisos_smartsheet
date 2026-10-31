@@ -155,7 +155,7 @@ test('los límites de parcelas aparecen al acercarse (PEN-33)', async ({ page })
 
 test('un dibujo que sale de la vía muestra lo faltante y conserva la referencia', async ({ page }) => {
   await page.goto(
-    '/mapa?t=25.771778,-80.263610;25.775,-80.26375;25.777,-80.261;25.779,-80.2639;25.782147,-80.264005',
+    '/mapa?snap=off&t=25.771778,-80.263610;25.775,-80.26375;25.777,-80.261;25.779,-80.2639;25.782147,-80.264005',
   )
   await expect(panel(page).getByText('Revisar recorrido incompleto')).toBeVisible()
   await expect(panel(page).getByText(/Dibujo asociado a vías/)).toBeVisible()

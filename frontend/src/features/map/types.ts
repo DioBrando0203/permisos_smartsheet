@@ -58,6 +58,10 @@ export type WorkLocation = {
   coordinates: [number, number][]
 }
 export type MapTrace = {
+  alignment: 'strict' | 'adjusted' | 'ambiguous' | 'unavailable'
+  radiusM: number
+  coverageRadiusM: number
+  snappedPoints: { lat: number; lon: number }[]
   /** Longitud de la polilínea marcada antes de ajustar a la LRS del FDOT. */
   inputLengthMi: number
   /** Longitud de las geometrías oficiales que se dibujan al terminar. */
@@ -119,6 +123,10 @@ export type ApiMapPoint = {
   warnings?: string[]
 }
 export type ApiMapTrace = {
+  alignment?: MapTrace['alignment']
+  radius_m?: number
+  coverage_radius_m?: number
+  snapped_points?: [number, number][]
   path?: [number, number][]
   input_length_mi?: number
   length_mi?: number | null

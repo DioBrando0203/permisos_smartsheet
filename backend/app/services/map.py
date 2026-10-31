@@ -76,9 +76,11 @@ class MapService:
         self._ensure_enabled()
         return await self._places.area(county, city)
 
-    async def trace(self, path: str, radius_m: float, *, refresh: bool) -> MapTrace:
+    async def trace(
+        self, path: str, radius_m: float, *, refresh: bool, snap: bool = False
+    ) -> MapTrace:
         self._ensure_enabled()
-        return await self._trace.trace(path, radius_m, refresh=refresh)
+        return await self._trace.trace(path, radius_m, refresh=refresh, snap=snap)
 
     async def parcel_outlines(
         self, box: tuple[float, float, float, float], *, refresh: bool

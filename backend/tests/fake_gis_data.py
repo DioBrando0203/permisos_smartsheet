@@ -71,6 +71,28 @@ ROADS[6] = [
         "point": [START[1], START[0]],
     }
 ]
+
+# Red separada del control para probar ajuste de dos puntos a tres vías consecutivas.
+NETWORK_ROADS = [
+    ("87001000", "SR 1001", [[-80.15, 26.099, 0.0], [-80.15, 26.102, 0.2]]),
+    ("87002000", "SR 1002", [[-80.15, 26.102, 0.0], [-80.146, 26.102, 0.25]]),
+    ("87003000", "SR 1003", [[-80.146, 26.102, 0.0], [-80.146, 26.105, 0.2]]),
+]
+for roadway, label, geometry in NETWORK_ROADS:
+    attributes = {
+        "ROADWAY": roadway,
+        "COUNTY": "87",
+        "SECTION": roadway[2:5],
+        "BEGIN_POST": 0.0,
+        "END_POST": geometry[-1][2],
+    }
+    ROADS[8].append({"attributes": attributes, "paths": [geometry]})
+    ROADS[15].append(
+        {"attributes": {**attributes, "ROUTE": label, "ROUTENUM": label[3:]}, "paths": [geometry]}
+    )
+    ROADS[13].append(
+        {"attributes": {**attributes, "NAME": f"VIA SINTETICA {label}"}, "paths": [geometry]}
+    )
 # Calles TIGER del Censo por capa (2 interestatales, 6 avenidas, 8 locales): nombres con ordinal.
 TIGER: dict[int, list[Json]] = {
     2: [],

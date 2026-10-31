@@ -58,6 +58,14 @@ def distance_m_to_route(lat: float, lon: float, route: RouteGeometry) -> float |
     return round(math.sqrt(min(distances)), 1)
 
 
+def project_segment(
+    point: tuple[float, float], first: tuple[float, float], last: tuple[float, float]
+) -> tuple[float, float]:
+    """Fracción y distancia en metros de un punto sobre un segmento, todos `(lat, lon)`."""
+    ratio, squared = _projection(point[1], point[0], first[1], first[0], last[1], last[0])
+    return ratio, math.sqrt(squared)
+
+
 def slice_route(route: RouteGeometry, begin: float, end: float) -> list[list[float]]:
     """Recorta todas las trayectorias LRS contiguas; vacío si el rango está incompleto."""
     return slice_paths(route.paths, begin, end)

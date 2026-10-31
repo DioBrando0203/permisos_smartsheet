@@ -1,6 +1,6 @@
 # SPEC-11 Mapa: vía, milepost, jurisdicción y parcela
 
-Estado: implementada M3-M4, buscador de M6, trazo y revisión de cobertura (PEN-32, PEN-35 a PEN-37), límites de parcelas (PEN-33), con E2E (2026-10-31)
+Estado: implementada M3-M4, buscador de M6, trazo, revisión de cobertura y ajuste automático de recorrido (PEN-32, PEN-35 a PEN-38), límites de parcelas (PEN-33), con E2E (2026-10-31)
 Responsable del código: `features/map/`, `components/map/MapView.tsx`, `app/router.tsx`, `components/layout/AppLayout.tsx`
 Relacionadas: PEN-29, ADR-13, ADR-05, SPEC-01, K-01 a K-06; backend SPEC-B14, ADR-B16, ADR-B17
 
@@ -39,6 +39,9 @@ Hacer clic en el mapa y saber al instante sobre qué vía se está, su milepost,
 
 ## Estados
 
+- PEN-38: Trazo activa "Ajustar a vías (hasta 100 m)" por defecto. Se puede desmarcar para usar la detección estricta previa (25 m), con recálculo del mismo dibujo. "Ver dibujo original" superpone la referencia punteada sin cambiar la consulta. Un ajuste completo muestra sólo la red reconstruida y sus extremos proyectados; el resumen diferencia longitud marcada y calculada. Si no se encuentra camino explica cómo corregir/agregar puntos; si hay ambigüedad o conexiones inferidas, avisa que se revise el recorrido. URL `snap=off` conserva el modo estricto (ausencia = automático); `original=on` conserva la comparación.
+  - Esta opción sustituye la restricción previa de dibujar a menos de 25 m en todo el recorrido: los vértices pueden desplazarse hasta 100 m y la red conecta las curvas y vías intermedias. Se priorizan las vías estatales para Work Location; sin camino estatal completo se admite la red completa con sus avisos. La cobertura original se etiqueta "antes del ajuste" cuando se reconstruyó el recorrido.
+
 - PEN-37: el trazo muestra porcentaje estimado asociado y distancia sin vía dentro del radio. Con `TRACE_PARTIAL` explica dónde continuar corrigiendo (agregar vértices sobre curvas o corregir extremos). Con `TRACE_GEOMETRY_INCOMPLETE` informa que la longitud no se conoce. El dibujo manual punteado se conserva junto a las geometrías válidas para revisar el faltante. Los metros de ajuste se etiquetan "Distancia de los extremos a la vía"; el cálculo lo realiza este backend con datos FDOT, no un servicio de snapping de OSP.
 - Punto y trazo tienen "Actualizar" que vuelve a leer con `refresh=true`; muestra "Actualizando…" y queda deshabilitado mientras consulta. Datos parciales identifican las fuentes fallidas y ofrecen actualizar. Un error al actualizar permanece visible aunque existan datos anteriores.
 
@@ -68,6 +71,7 @@ Hacer clic en el mapa y saber al instante sobre qué vía se está, su milepost,
 - CA-17: con zona y "Cruce con", el buscador pide `q=Calle & Cruce` con `county` y `city`, muestra "Cruce · MP …" y al elegirlo el panel pone primero esa vía. Prueba: `MapSearchBox.test.tsx`, `MapResults.test.tsx` y e2e (NW 42nd Ave y W Flagler St en MP 3.124). Manual 2026-10-31 en Fort Lauderdale: Las Olas y 3rd Ave da "E LAS OLAS BLVD y SE 3 AVE · MP 0.258" y el panel la vía `86000142`.
 - CA-18: al terminar un trazo completamente asociado, la polilínea manual no queda sobre el resultado; se ven las geometrías oficiales de las filas. Si hay huecos conserva también el dibujo de referencia (PEN-37). Al abrir `?t=`, la vista encuadra todos sus extremos. Prueba: unidad de `traceDisplay`, componente y E2E.
 - CA-19: ante trazo parcial, el panel muestra cobertura y metros sin asociar, conserva el borrador para revisión y explica la longitud desconocida; la actualización de punto y trazo llega al backend con `refresh=true`. Prueba: reglas de presentación, componente, hooks con MSW y E2E.
+- CA-20: el modo automático pide `snap=true&radius_m=100`, cambia las geometrías y filas usando el recorrido reconstruido, y permite comparar el mismo dibujo en modo estricto; opciones de URL compartibles. Prueba: normalización, presentación y E2E.
 - CA-15: con "Límites de parcelas", a zoom 16 se pide acercarse y a zoom 17 se piden las celdas y se dibujan los contornos. Prueba: e2e con el GIS falso y unidad de `lib/cells.ts`. Manual 2026-10-30 con servicios reales: lotes de Miami-Dade sobre "Calles" y de Broward sobre "Satélite HD".
 
 ## Accesibilidad

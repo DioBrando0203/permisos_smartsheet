@@ -88,6 +88,7 @@ e2e/                                       Playwright contra backend real + Smar
 ## Flujo de datos
 
 - Mapa: `useMapReading` concentra lectura y actualización forzada de punto y trazo; `useMapDrawing` deriva geometrías, marcadores y encuadre; `TraceQuality` presenta cobertura y longitudes desconocidas sin confundir cálculo propio con datos FDOT.
+- PEN-38: `TraceOptions` controla ajuste automático (por defecto) y comparación con el original; `TraceAlignmentNote` explica reconstrucción, alternativas y conexiones geométricas. `useMapTrace` separa cachés por modo y `useMapDrawing` muestra los extremos proyectados y la red reconstruida.
 
 1. La URL decide la vista y los filtros compartibles (`/hojas/:sheetId?tab=actividad`, `?q=`).
 2. Los hooks de cada feature leen con TanStack Query y las claves de `lib/query/keys.ts`.

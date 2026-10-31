@@ -1,6 +1,6 @@
 # SPEC-B14 Mapa: vía, milepost, jurisdicción y parcela de un punto o tramo
 
-Estado: implementada M1-M2, el buscador de M6, el trazo (PEN-32) y los límites de parcelas (PEN-33) (2026-10-30)
+Estado: implementada M1-M2, buscador, trazo con integridad y ajuste automático de recorrido (PEN-32, PEN-35 a PEN-38), límites de parcelas (PEN-33) (2026-10-31)
 Código: `api/routes/map.py`, `models/map.py`, `services/map.py`, `services/map_rules.py`, `services/map_mappers.py`, `services/map_query.py`, `services/map_search.py`, `services/map_places.py`, `services/map_streets.py`, `services/map_geometry.py`, `services/gis/`
 Relacionadas: PEN-29, RQ-26, ADR-B15, ADR-B16, ADR-B17, SPEC-11 del frontend; investigación en `future_docs/GIS_PUBLICO_FLORIDA.md` y `future_docs/MAPAS_JURISDICCION_PARCELAS.md`
 
@@ -86,6 +86,13 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 13. `GET /api/map/area?county=&city=` (PEN-34): `MapArea` del condado (sin `city`) o de una de sus ciudades: límites, contorno simplificado a unos 50 m (`maxAllowableOffset` 0.0005) y los municipios del condado con sus límites; nombres sin distinguir mayúsculas; condado o ciudad que no están en la lista, 404 `MAP_AREA_NOT_FOUND`. Caché por condado (`map:county:{nombre}`).
 
 ## Contrato
+
+PEN-38: el punto 10 describe el modo estricto previo (`snap=false`, por compatibilidad). Con `snap=true` proyecta los vértices sobre una red LRS dentro de `radius_m`, sigue las curvas y enlaza las vías necesarias entre ellos. El frontend pide `snap=true&radius_m=100` por defecto. El grafo sólo une segmentos a 2 m o menos, recorta candidatos al corredor ampliado `max(150, 2*radio, min(500, longitud_dibujo/2))` y limita a 800 segmentos. La ampliación permite encontrar esquinas que una diagonal no toca. La búsqueda respeta el orden de los vértices y penaliza distancia al dibujo; descarta desvíos mayores a 2.5 veces la longitud manual más dos radios. Ningún enlace se escribe en una fuente externa.
+
+- Respuesta adicional: `alignment` (`strict`, `adjusted`, `ambiguous`, `unavailable`), `radius_m`, `coverage_radius_m`, `snapped_points` ([[lat, lon], …], puntos proyectados en el orden original). `matched_percent` sigue midiendo el dibujo original a `coverage_radius_m`; su cobertura baja no invalida un recorrido ajustado completo.
+- Las filas automáticas se agrupan por vía y continuidad de M, con extremos en los cruces geométricos cuando se cambia de vía; la geometría final sigue siendo LRS recortada y los MPs ordenados.
+- Para Work Location se intenta primero la red de vías estatales verificadas por la capa 15, evitando elegir una calzada auxiliar paralela que OSP no admite. Si esa red no permite completar el recorrido, se prueba la red completa y se indican las filas no estatales. El modo estricto conserva su elección por cercanía.
+- `TRACE_ALIGNMENT_UNAVAILABLE`: sin camino local, algún vértice fuera del radio o red demasiado grande. Se mantiene el análisis estricto y su referencia. `TRACE_ALIGNMENT_AMBIGUOUS`: soluciones de coste casi igual con recorridos diferentes. `TRACE_CONNECTIONS_INFERRED`: cambio de vía mediante conexión geométrica sin confirmar nivel/giros; revisar pasos a desnivel. Se conserva la comparación del dibujo.
 
 `MapPoint`:
 - `lat`, `lon`: los de la consulta, redondeados a 6 decimales.
@@ -190,6 +197,8 @@ Errores nuevos (formato de `estilos/API.md`):
 - CA-24: `adjustment.start_m` y `adjustment.end_m` dicen cuánto separaba cada extremo de su LRS elegida; con extremos sobre la vía ambos son 0. Prueba: `test_map_trace.py`.
 - CA-25: trayectorias LRS fragmentadas, invertidas, superpuestas y repetidas se recortan entre ambos MPs; huecos espaciales, medidas ausentes o rango incompleto no producen una línea inventada. Prueba: `test_map_rules.py`.
 - CA-26: salir del radio y volver separa filas y devuelve `TRACE_PARTIAL` con cobertura menor a 100; geometría incompleta informa longitud `null`. Prueba: `test_trace_rules.py`, `test_map_trace.py`.
+- CA-27: con ajuste automático una curva se reconstruye aunque el dibujo corte por dentro; una línea torcida se acorta/desplaza a la vía; un recorrido por varias vías agrega las filas intermedias y termina/inicia cada una en el cruce. Prueba: `test_trace_alignment.py` y endpoint simulado.
+- CA-28: no unir redes desconectadas; advertir soluciones paralelas equivalentes y conexiones geométricas; inversión del dibujo conserva el mismo recorrido con MPs ordenados. Prueba: `test_trace_alignment.py`.
 - CA-19: contornos por celda desde el condado y sin propietario. Prueba: `test_fake_gis.py`; manual 2026-10-30: Broward 41 parcelas (31 KB, 1,1 s) y Miami-Dade 121 (22 KB, 0,8 s).
 
 ## Fases

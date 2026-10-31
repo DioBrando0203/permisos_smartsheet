@@ -1,16 +1,18 @@
 import { StatusAlert } from '../../components/ui'
 import type { MapTrace } from './types'
+import { TraceAlignmentNote } from './TraceAlignmentNote'
 
 /** Explica cobertura estimada y separa datos FDOT de las reglas calculadas por el panel. */
 export function TraceQuality({ result }: { result: MapTrace }) {
   const incomplete = result.warnings.includes('TRACE_GEOMETRY_INCOMPLETE')
   return (
     <>
+      <TraceAlignmentNote result={result} />
       {result.warnings.includes('TRACE_PARTIAL') && (
         <StatusAlert tone="warning" title="Revisar recorrido incompleto">
           {result.unmatchedLengthMi === null
             ? 'Hay partes del dibujo sin vía cercana.'
-            : `${(result.unmatchedLengthMi * 1609.344).toFixed(0)} m del dibujo quedan sin vía dentro de 25 m.`}{' '}
+            : `${(result.unmatchedLengthMi * 1609.344).toFixed(0)} m del dibujo quedan sin vía dentro de ${result.coverageRadiusM} m.`}{' '}
           Conservamos la línea punteada para revisarla. Agrega puntos siguiendo la curva o corrige los
           extremos.
         </StatusAlert>
@@ -22,7 +24,10 @@ export function TraceQuality({ result }: { result: MapTrace }) {
         </StatusAlert>
       )}
       {result.matchedPercent !== null && (
-        <p className="map-note">Dibujo asociado a vías: {result.matchedPercent.toFixed(1)} % (estimado).</p>
+        <p className="map-note">
+          Dibujo asociado a vías: {result.matchedPercent.toFixed(1)} % (estimado)
+          {result.alignment === 'adjusted' || result.alignment === 'ambiguous' ? ', antes del ajuste' : ''}.
+        </p>
       )}
       {result.adjustment && (
         <p className="map-note">

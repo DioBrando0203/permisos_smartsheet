@@ -48,6 +48,7 @@ describe('Actualizar mapa', () => {
       trace.result.current.refresh()
     })
     await waitFor(() => expect(calls.filter((url) => url.includes('refresh=true'))).toHaveLength(2))
+    expect(calls.find((url) => url.includes('/trace?'))).toContain('snap=true&radius_m=100')
   })
 
   it('un error de actualización se muestra aunque haya datos anteriores', async () => {
@@ -64,5 +65,28 @@ describe('Actualizar mapa', () => {
     act(() => point.result.current.refresh())
     await waitFor(() => expect(point.result.current.error?.message).toBe('La fuente no respondió.'))
     expect(point.result.current.data).toBeDefined()
+  })
+
+  it('cambiar ajuste vuelve a consultar sin mezclar las cachés', async () => {
+    const asked: URL[] = []
+    server.use(
+      http.get('/api/map/trace', ({ request }) => {
+        asked.push(new URL(request.url))
+        return HttpResponse.json(mapTraceFixture)
+      }),
+    )
+    const path = [
+      { lat: 25.77, lon: -80.26 },
+      { lat: 25.78, lon: -80.26 },
+    ]
+    const trace = renderHook(({ snap }) => useMapTrace(path, snap), {
+      wrapper: queryWrapper(),
+      initialProps: { snap: true },
+    })
+    await waitFor(() => expect(trace.result.current.data).toBeDefined())
+    trace.rerender({ snap: false })
+    await waitFor(() => expect(asked).toHaveLength(2))
+    expect(asked[1].searchParams.get('snap')).toBe('false')
+    expect(asked[1].searchParams.get('radius_m')).toBe('25')
   })
 })

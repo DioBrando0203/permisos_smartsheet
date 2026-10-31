@@ -44,6 +44,9 @@ describe('URL del mapa', () => {
       path,
     )
     expect(readMapUrl(new URLSearchParams('t=25.7,-80.2')).trace).toBeNull()
+    const strict = writeMapUrl('trace', null, path, { snap: false, original: true })
+    expect(readMapUrl(strict).options).toEqual({ snap: false, original: true })
+    expect(readMapUrl(written).options).toEqual({ snap: true, original: false })
   })
 })
 

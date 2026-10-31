@@ -6,6 +6,8 @@ export type TraceBounds = { west: number; south: number; east: number; north: nu
 export function needsTraceReview(trace: MapTrace): boolean {
   return (
     trace.rows.length === 0 ||
+    trace.alignment === 'unavailable' ||
+    trace.alignment === 'ambiguous' ||
     trace.warnings.some((warning) => warning === 'TRACE_PARTIAL' || warning === 'TRACE_GEOMETRY_INCOMPLETE')
   )
 }

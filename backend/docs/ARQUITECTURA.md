@@ -94,6 +94,10 @@ app/
   services/map_geometry.py       geometría pura: contención, límites, cruce o punto más cercano entre calles
   services/trace_rules.py        reglas puras del trazo: muestras, rectángulos, filas por vía y cobertura sin asociar
   services/map_trace.py          MapTraceService: tabla Work Location de OSP, Turnpike y longitudes LRS oficiales
+  services/trace_network.py      grafo puro acotado, segmentos LRS, proyecciones, índice espacial y conexiones geométricas
+  services/trace_alignment.py    recorrido de mínimo coste que respeta todos los vértices; agrupación de aristas por vía
+  services/trace_analysis.py     modo automático/estricto, preferencia estatal para OSP y respaldo si no hay ajuste
+  services/map_trace_result.py   contrato y avisos del análisis, sin E/S
   services/map_parcels.py        MapParcelsService: contornos de parcelas por celda (sin propietarios)
   services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
   services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService

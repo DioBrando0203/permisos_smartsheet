@@ -93,9 +93,10 @@ async def map_trace(
     path: TracePath,
     radius_m: Radius = 25,
     refresh: bool = False,
+    snap: bool = False,
 ) -> MapTrace:
     """Tabla Work Location de OSP para una línea dibujada: una fila por vía que sigue."""
-    return await services.maps.trace(path, radius_m, refresh=refresh)
+    return await services.maps.trace(path, radius_m, refresh=refresh, snap=snap)
 
 
 @router.get("/parcels")
