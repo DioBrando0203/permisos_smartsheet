@@ -191,3 +191,4 @@ Estado: terminada
 Cambios: `lrs_slicing.py` une fragmentos contiguos por M/posición; `map_rules` corrige escala de longitud por latitud; `trace_rules` separa salidas/regresos y estima cobertura. Contrato con porcentaje, distancia sin vía y longitudes desconocidas en `null`. B-16, specs, API, arquitectura y plan de calidad sincronizados (PY-01, PY-14, PY-21).
 Evidencia: 205 pruebas, Ruff y formato; GET reales de control, inverso y salida/regreso, detallados en RESULTADOS. El trazo parcial real tiene 57.2 % asociado y 0.380 mi sin vía dentro del radio.
 Límite: no se verificó el algoritmo de OSP con los mismos vértices; la evidencia anterior del control era reconstrucción desde medidas, precisada en SPEC-B14 y GIS_PUBLICO_FLORIDA. No se tocó configuración ni datos de Smartsheet.
+Entrega: commit local `a02cd17`; `git push` falló por falta de credenciales HTTPS en esta sesión (`could not read Username`). Pendiente subir desde una sesión autenticada.
