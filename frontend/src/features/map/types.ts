@@ -29,6 +29,8 @@ export type MapPoint = {
     useLabel: string | null
     publicOwner: string | null
     ownerName: string | null
+    /** Fuente de la parcela: `fdacs_parcels` o el respaldo del condado (`broward_parcels`). */
+    source: string
   } | null
   jurisdiction: {
     authority: string
@@ -89,6 +91,7 @@ export type ApiMapPoint = {
     use_label?: string | null
     public_owner?: string | null
     owner_name?: string | null
+    source?: string
   } | null
   jurisdiction?: {
     authority?: string

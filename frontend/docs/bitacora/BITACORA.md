@@ -98,3 +98,17 @@ Estado: en curso
 Cambios: sexto destino `/mapa`, Leaflet diferido, modos Punto y Tramo, coordenadas, URL compartible, mapa USGS, panel de vía/jurisdicción/ubicación/parcela/fuentes y copia de fila OSP.
 Evidencia: format, build, lint y 18 pruebas unitarias pasaron; Leaflet queda en chunk diferido. Audit sin vulnerabilidades con Vite 8.3.5.
 Notas: faltan prueba E2E funcional y revisión visual; M5/M6 no son parte de la fase base.
+
+## 2026-10-30 19:27 -05:00 F7: E2E del mapa, marcador y docs del buscador
+
+Estado: terminada (fase base de F7)
+Cambios: `node_modules` desde el lock y Chromium de Playwright en el equipo Windows nuevo. `playwright.config.ts` con `webServer` (Smartsheet falso 8791, GIS falso 8792, backend de prueba 8793, Vite 5791; nunca reutiliza servidores) y `e2e/map.spec.ts` (tramo de control por URL, clics fuera y sobre la vía, buscador, 320 px). Corregida la carrera de `MapView` que perdía el marcador (FB-07). Docs: SPEC-11 (buscador, botones de copiar por campo, CA-10 y CA-11, estado real de cada CA), `CONTRATO.md` (`useMapSearch`), `ARQUITECTURA.md`, `PLAN_CALIDAD.md` y F7 en `PLAN_IMPLEMENTACION.md`.
+Evidencia: format, build, lint, 22 pruebas unitarias y 4 E2E pasaron; E2E repetido 4 veces sin fallos; revisión visual a 320, 1024 y 1440 px (detalle en RESULTADOS).
+Notas: pendientes del mapa en SPEC-11: encuadrar el tramo completo al abrirlo por URL, pruebas de CA-04 y del aviso "Datos parciales", M5 y el resto de M6. No se llamó a Smartsheet ni a GIS reales.
+
+## 2026-10-30 20:28 -05:00 PEN-31 vista del mapa y PEN-30 en el panel
+
+Estado: terminada
+Cambios: `components/map/tileSources.ts` (USGS, "Satélite HD" con NAIP y capa de vías del FDOT por área con `{bbox}`), `MapView` con capa opcional, escala y zoom 20; `MapToolbar` sale de `MapPage`; preferencias en `lib/preferences.ts`; nombres de fuentes en `lib/sources.ts`; Ubicación con Estado y Parcela con su fuente; `parcel.source` en tipos, normalización y fixture; tokens `--map-road-state` y `--map-road-county`. Docs: SPEC-11 (CA-12 y CA-13), ampliación de ADR-13, `ARQUITECTURA.md` y `CONTRATO.md`.
+Evidencia: format, build, lint, 23 pruebas unitarias y 5 E2E; captura manual con servicios reales (detalle en RESULTADOS).
+Notas: la NAIP es más lenta (unos 8 s por vista a zoom 19), por eso es opción y no el mapa por defecto. La línea del FDOT puede quedar a unos metros de la calle de la foto.

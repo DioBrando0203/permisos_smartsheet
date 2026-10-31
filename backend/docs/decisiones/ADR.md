@@ -134,3 +134,6 @@ Decisión:
 - `owner_name` se devuelve para mostrarlo, pero no se registra en logs ni mensajes de error, no se guarda en disco y en pruebas, fixtures y docs sólo hay nombres sintéticos (igual que los correos de Smartsheet).
 - Cada respuesta dice de qué fuente salió cada dato y si alguna falló, para que nadie tome una aproximación por un dato oficial.
 Consecuencias: la jurisdicción de calles locales es una aproximación con confianza baja hasta tener el adaptador de su condado. El mapa no sustituye la consulta oficial en OSP ni en el condado antes de pedir un permiso.
+Ampliaciones (2026-10-30), con las mismas reglas (GET público, sin clave, plazos, caché y fuente declarada):
+- Buscador: geocodificador del Censo de EE. UU. (SPEC-B14 punto 9); agregado en el commit "mapa mejorado", pendiente de confirmación explícita del usuario.
+- Respaldo de parcelas de Broward (capa pública del condado, sólo `FOLIO`) cuando FDACS falla, a pedido del usuario tras quedar FDACS inaccesible (PEN-30, B-13). Condiciones de uso por revisar (MJ-PEN-06).

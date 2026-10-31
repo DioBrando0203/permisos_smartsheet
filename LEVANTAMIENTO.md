@@ -4,7 +4,7 @@ El backend se levanta siempre desde la carpeta `backend`. Usa el puerto 8710; si
 
 ## Requisitos
 
-- Python 3.11 o superior.
+- Python 3.14. Con 3.11 a 3.13 el backend no arranca (B-12 en `backend/docs/bloqueos/BLOQUEOS.md`).
 - Archivo `backend/.env` con el token de Smartsheet (copiar de `backend/.env.example` y completar `SMARTSHEET_ACCESS_TOKEN`).
 
 ## Linux
@@ -32,7 +32,7 @@ Primera vez:
 
 ```powershell
 cd permisos_smartsheet\backend
-py -m venv .venv
+py -3.14 -m venv .venv
 .venv\Scripts\activate
 python -m pip install -c requirements.lock -e ".[dev]"
 ```
@@ -71,6 +71,10 @@ APP_READ_ONLY=false APP_DESIGNER_CATALOG_SHEET=3333333333333333 python run.py
 En Windows (PowerShell), en la terminal 2: `$env:SMARTSHEET_ACCESS_TOKEN="fake-token"; $env:SMARTSHEET_BASE_URL="http://127.0.0.1:8791/2.0"; $env:APP_READ_ONLY="false"; $env:APP_DESIGNER_CATALOG_SHEET="3333333333333333"; python run.py`.
 
 `/api/me` debe mostrar "Cuenta de prueba". Escrituras recibidas: `http://127.0.0.1:8791/_fake/writes`; volver al estado inicial: `POST http://127.0.0.1:8791/_fake/reset`.
+
+## Pruebas E2E del frontend
+
+Desde `frontend`, con el entorno del backend ya creado y `npx playwright install chromium` hecho una vez: `npm run test:e2e`. Playwright levanta solo el Smartsheet falso (8791), el GIS falso (8792), el backend de prueba (8793, `tests.e2e_backend`: solo lectura y sin leer el token de `backend/.env`) y Vite (5791), y los detiene al terminar. Si alguno de esos puertos está ocupado, falla en vez de reutilizar un servidor que podría hablar con la cuenta real.
 
 ## Problemas comunes
 

@@ -80,3 +80,25 @@ Fecha: 2026-10-16. Estado: resuelto.
 Síntoma: al detener `run.py` con una señal (`kill`, terminal cerrada) quedaba `backend/.port` y el puerto seguía ocupado.
 Causa: la señal terminaba Python sin pasar por `finally`; además, matar de golpe al proceso principal de Uvicorn con `--reload` deja huérfano al que atiende el puerto.
 Solución: `launcher.main` convierte SIGTERM en salida normal y `stop()` pide a Uvicorn que termine (y sólo si no responde en 10 s lo mata). Verificado: tras SIGTERM, sin `.port` y el 8710 libre.
+
+## B-12 El backend no importa con Python 3.11 a 3.13
+
+Fecha: 2026-10-30. Estado: abierto (prevención aplicada).
+Síntoma: en un equipo Windows con Python 3.12, `pytest` no llega a correr: `app/services/sheets.py` falla al importar con `TypeError: 'function' object is not subscriptable`.
+Causa: `SheetService` y `PeopleService` definen un método `list` y, más abajo en el cuerpo de la clase, anotan `-> list[...]` (`sheets.py` líneas 48, 57 y 85; `people.py` líneas 94, 98, 111 y 117). Hasta 3.13 las anotaciones se evalúan al definir la clase y `list` ya es el método; 3.14 las evalúa de forma diferida (PEP 649) y no lo nota. Por eso pasaba inadvertido en el equipo de desarrollo (3.14.4).
+Prevención: crear el entorno con Python 3.14 (Windows: `py -3.14 -m venv .venv`); requisito corregido en `LEVANTAMIENTO.md`, `README.md` y `tecnologias/STACK.md`. Verificado en Windows con 3.14.7: 156 pruebas aprobadas.
+Solución pendiente (decidir con el usuario): para cumplir `requires-python >=3.11` de `pyproject.toml`, anotar con `builtins.list` o renombrar los métodos `list`, y probar con 3.11; si no, subir `requires-python` a 3.14.
+
+## B-13 FDACS no acepta conexiones desde el equipo Windows
+
+Fecha: 2026-10-30. Estado: abierto (externo); mitigado por PEN-30.
+Síntoma: el panel quedaba en "Consultando FDOT y FDACS…" unos 60 s y el punto llegaba sin parcela; en `sources`, `fdacs_parcels: timeout` con 60 566 ms.
+Causa: `gis.fdacs.gov` resuelve por DNS (20.141.132.222) pero no completa la conexión TCP (curl: HTTP 000 a los 21 s), mientras FDOT responde en menos de 1 s desde la misma red. En el equipo Linux funcionó el mismo día a las 17:41; no se sabe si es una caída de FDACS o un bloqueo de esta red.
+Mitigación: plazo de conexión de 5 s sin reintentos, pausa de 120 s para el host que no conecta y respaldo de parcelas de Broward (SPEC-B14, CA-14 y CA-15). Fuera de Broward el punto sigue sin parcela mientras FDACS no responda.
+
+## B-14 `run.py --reload` no termina de recargar en Windows
+
+Fecha: 2026-10-30. Estado: abierto.
+Síntoma: tras editar un archivo, Uvicorn escribe "WatchFiles detected changes … Reloading..." pero no aparece un "Started server process" nuevo y el puerto sigue sirviendo el código anterior (visto dos veces, con consultas al mapa en curso).
+Causa: no confirmada; ocurrió mientras había solicitudes abiertas (una esperaba a FDACS 60 s).
+Prevención: tras cambiar el backend, comprobar en el log que arrancó un proceso nuevo; si no, detener `run.py` y volver a ejecutarlo. Al detenerlo no quedaron procesos huérfanos y el 8710 quedó libre (comprobado con `netstat` y `wmic`).

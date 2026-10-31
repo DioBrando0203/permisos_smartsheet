@@ -235,7 +235,7 @@ Hacer: exportar a CSV la matriz persona por hoja con niveles. El archivo contien
 
 ### PEN-29 Mapa de vías, milepost, jurisdicción y parcelas
 
-Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-30): M1 a M4 implementadas; M5 y M6 pendientes. ADR-B16 y ADR-B17 aprobadas por el usuario.
+Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-30): M1 a M4 implementadas, con E2E contra un GIS falso; de M6, el buscador (dirección, calle, ruta con milepost y coordenadas). Pendientes: M5, el resto de M6, confirmar el geocodificador del Censo como fuente (ADR-B17), verificar el buscador con GET reales y encuadrar el tramo completo al abrirlo por URL. ADR-B16 y ADR-B17 aprobadas por el usuario.
 Tipo (ADR-B15): (a) ni Smartsheet ni OSP dicen el milepost, de quién es la calle y qué parcela hay en un punto sin dibujar una solicitud en OSP; el mapa sólo consulta y no cambia cómo se pide el permiso.
 Situación: verificado con GET reales que los servicios públicos del FDOT y de FDACS reproducen los valores de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839) y dan ciudad, condado, ZIP y parcela en Broward, Palm Beach, Martin y Miami-Dade. Investigación en `future_docs/`.
 Specs: SPEC-B14 (backend) y SPEC-11 (frontend); ADR-13 del frontend (Leaflet).
@@ -245,5 +245,20 @@ Fases:
 - M3 frontend punto: destino "Mapa" en la navegación, `/mapa`, mapa base USGS, clic o coordenadas, panel con vía, jurisdicción, ubicación, parcela y fuentes.
 - M4 frontend tramo: dos clics, tramo resaltado y "Copiar para OSP".
 - M5 adaptadores de condado: Palm Beach (`RESP_AUTH`); Broward, Martin y Miami-Dade según MJ-PEN-01 a MJ-PEN-03.
-- M6 extras: capas de vías dibujadas, búsqueda por dirección, Turnpike (GIS-PEN-01) y mapa base de Esri con clave.
+- M6 extras: capas de vías dibujadas, búsqueda por dirección (hecha: buscador del mapa, SPEC-B14 punto 9), Turnpike (GIS-PEN-01) y mapa base de Esri con clave.
 Límites: la jurisdicción de calles locales es aproximada hasta M5; USGS sólo tiene teselas hasta el zoom 16 en Miami (verificado), por lo que el detalle de calle se ve ampliado y algo borroso hasta M6.
+
+### PEN-30 Mapa: una fuente caída no frena la respuesta, y parcela de respaldo
+
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada para Broward (2026-10-30): primer punto 6,0 s y siguientes 1,6 s con FDACS caído, folio del condado y su fuente en el panel (SPEC-B14 CA-14 y CA-15, SPEC-11 CA-12).
+Tipo (ADR-B15): (b) el mapa ya existe; esto lo hace usable cuando una fuente pública falla.
+Situación: el 2026-10-30, desde el equipo Windows, `gis.fdacs.gov` no aceptó conexiones (DNS sí, TCP no; FDOT respondía en menos de 1 s). Cada punto tardaba 60,5 s (tres intentos de 20 s) y llegaba sin parcela; el panel parecía colgado en "Consultando FDOT y FDACS…" y en "Calculando el tramo…".
+Hacer: plazo de conexión corto (`gis_connect_timeout_seconds`, 5 s) y sin reintentos cuando ni siquiera conecta; si FDACS falla en Broward, pedir la parcela a la capa pública del condado (`services.arcgis.com/JMAJrTsHNLrSsWf5/.../Parcels/FeatureServer/0`, `FOLIO`; MJ-BR-01, verificada desde este equipo el 2026-10-30) y decir de qué fuente salió. Specs: SPEC-B14 y SPEC-11.
+Pendiente aparte: respaldo para Palm Beach, Martin y Miami-Dade (MJ-PEN-02 a MJ-PEN-04); revisar las condiciones de uso de la capa de Broward (MJ-PEN-06); un botón "Actualizar" en el aviso "Datos parciales" que pida `refresh=true`, porque el punto parcial queda una hora en la caché del backend.
+
+### PEN-31 Mapa: mejor vista y más zoom
+
+Prioridad: media. Alcance: frontend. Estado: terminada (2026-10-30): "Satélite HD (NAIP, más zoom)" hasta zoom 20, "Vías del FDOT" con leyenda, escala en metros y pies, Estado en Ubicación; preferencias guardadas en el navegador (SPEC-11 CA-13). La NAIP tarda unos 8 s en llenar la vista a zoom 19: queda como opción, no por defecto.
+Tipo (ADR-B15): (b) mejora del mapa propio, a pedido del usuario: "estar un poquito más cerca y con mejor vista", como opciones si pesan.
+Situación: verificado el 2026-10-30: USGS NAIP Plus (`imagery.nationalmap.gov/.../USGSNAIPPlus/ImageServer`, dominio público, sin clave, píxel de 30 cm) entrega a zoom 18 detalle de autos y carriles en Fort Lauderdale, contra la tesela de USGS que se queda en zoom 16; la exportación del FDOT (`RCI_Layers/MapServer/export`, con `dynamicLayers`) dibuja vías estatales y de condado con colores propios en 0,7 s.
+Hacer: mapa base "Satélite HD (NAIP)" hasta zoom 20, capa opcional "Vías FDOT", escala en pies y metros y el estado (Florida) en Ubicación. Spec: SPEC-11; ADR-13 amplía su excepción de teselas a estos dos servicios.

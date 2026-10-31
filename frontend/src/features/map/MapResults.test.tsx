@@ -22,6 +22,25 @@ describe('Resultados del mapa', () => {
     expect(screen.getByText('Otras vías cerca (1)')).toBeInTheDocument()
     expect(screen.getByText('Fuentes: 1 de 2 respondieron')).toBeInTheDocument()
     expect(screen.getByText(/Parcelas \(FDACS\)/)).toHaveTextContent('no respondió')
+    expect(screen.getByText('Estado').nextElementSibling).toHaveTextContent('Florida')
+    expect(screen.getByText('FDACS (datos del tasador)')).toBeInTheDocument()
+  })
+
+  it('con FDACS caído en Broward muestra el folio del condado y dice qué falta', () => {
+    const fallback = {
+      ...mapPointFixture,
+      parcel: { parcel_id: '000000000002', county_code_dor: '16', source: 'broward_parcels' },
+      sources: [
+        { id: 'fdacs_parcels', status: 'timeout' as const, ms: 5000 },
+        { id: 'broward_parcels', status: 'ok' as const, ms: 900 },
+      ],
+    }
+    render(<PointResult result={normalizeMapPoint(fallback)} loading={false} error={null} onRetry={noop} />)
+    expect(screen.getByRole('button', { name: 'Copiar parcela' })).toBeInTheDocument()
+    expect(screen.getByText('000000000002')).toBeInTheDocument()
+    expect(screen.getByText('Condado de Broward (sólo el folio)')).toBeInTheDocument()
+    expect(screen.getByText('Propietario (tasador)').nextElementSibling).toHaveTextContent('No disponible')
+    expect(screen.getByText(/Parcelas de Broward \(condado\)/)).not.toHaveTextContent('no respondió')
   })
 
   it('da cada campo de OSP con su botón y copia la fila tabulada', async () => {

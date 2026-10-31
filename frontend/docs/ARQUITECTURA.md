@@ -2,7 +2,7 @@
 
 Panel React con estética Fluent 2 sobre el backend de `backend/` (28 endpoints, ver `contrato/CONTRATO.md`). Habla sólo con ese backend. Decisiones en `decisiones/ADR.md`; patrones en `patrones/PATRONES.md`; orden de construcción en `PLAN_IMPLEMENTACION.md`.
 
-Estado: F1-F3 y F7 en curso (2026-10-30). El mapa base M3-M4 está implementado; M5-M6 siguen pendientes.
+Estado: F1-F3 en curso (2026-10-30). F7: mapa base M3-M4 y buscador implementados y con E2E; M5 y el resto de M6 siguen pendientes.
 
 ## Mapa de navegación
 
@@ -53,7 +53,7 @@ src/
                                            useCompare, useCopyShares
     designers/                             DesignersPage, DesignerRow, DesignerDetail, PhaseBar, SheetGaps,
                                            useDesigners
-    map/                                   MapRoute, MapPage, hooks, parser de coordenadas y fila OSP
+    map/                                   MapRoute, MapPage, MapToolbar, MapSearchBox, MapResults, MapSections, hooks; lib: coordenadas, URL, fila OSP, preferencias, nombres de fuentes
   lib/
     api.ts                                 único punto HTTP (fetch), ApiError, timeouts
     types.ts                               contrato normalizado (espejo de backend/docs/estilos/API.md)
@@ -68,11 +68,12 @@ src/
     query/client.ts                        QueryClient con staleTime y reintentos
     query/invalidation.ts                  invalidateAfterShareWrite
   components/map/MapView.tsx               Leaflet genérico, importado sólo en /mapa
+  components/map/tileSources.ts            mapas base (USGS, NAIP) y capa de vías del FDOT (ADR-13)
   test/
     setup.ts                               jest-dom, cleanup, servidor MSW
     handlers/                              handlers MSW por feature con datos sintéticos
     fixtures/                              JSON sintético con la forma del contrato (@example.com)
-e2e/                                       Playwright contra backend real + Smartsheet falso (ADR-10)
+e2e/                                       Playwright contra backend real + Smartsheet y GIS falsos (ADR-10)
 ```
 
 ## Dependencias permitidas

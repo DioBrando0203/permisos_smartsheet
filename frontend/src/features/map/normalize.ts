@@ -44,6 +44,7 @@ export function normalizeMapPoint(source: ApiMapPoint): MapPoint {
           useLabel: source.parcel.use_label ?? null,
           publicOwner: source.parcel.public_owner ?? null,
           ownerName: source.parcel.owner_name ?? null,
+          source: source.parcel.source ?? 'fdacs_parcels',
         }
       : null,
     jurisdiction: {

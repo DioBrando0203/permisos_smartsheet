@@ -9,6 +9,7 @@ import {
 import { useState, type ReactNode } from 'react'
 import { Badge, Button, CopyText } from '../../components/ui'
 import { ospText } from './lib/ospRow'
+import { parcelSources, sourceNames } from './lib/sources'
 import type { MapPoint, MapSegment, RoadMatch } from './types'
 
 const kindLabel = { state: 'Vía estatal', county: 'Vía de condado', other: 'Vía local' }
@@ -17,16 +18,6 @@ const confidence = {
   medium: { text: 'Confianza media', tone: 'warning' },
   low: { text: 'Aproximación', tone: 'warning' },
 } as const
-const sourceNames: Record<string, string> = {
-  fdot_lrs: 'Vías y milepost (FDOT)',
-  fdot_state_roads: 'Vías estatales (FDOT)',
-  fdot_county_roads: 'Vías de condado (FDOT)',
-  fdot_local_names: 'Nombres de calles (FDOT)',
-  fdot_counties: 'Condados (FDOT)',
-  fdot_cities: 'Ciudades (FDOT)',
-  fdot_zip: 'Códigos ZIP (FDOT)',
-  fdacs_parcels: 'Parcelas (FDACS)',
-}
 
 function Section({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
@@ -117,6 +108,8 @@ export function LocationSection({ location }: { location: MapPoint['location'] }
         <Field label="Condado" value={location.county} />
         <Field label="Ciudad" value={location.city ?? (location.county ? 'Zona no incorporada' : null)} />
         <Field label="ZIP" value={location.zip} />
+        {/* El backend sólo acepta puntos dentro de Florida (COORDINATES_OUT_OF_FLORIDA). */}
+        <Field label="Estado" value="Florida" />
         <Field label="Distrito FDOT" value={location.fdotDistrict} />
       </dl>
     </Section>
@@ -134,6 +127,7 @@ export function ParcelSection({ parcel }: { parcel: MapPoint['parcel'] }) {
             value={parcel.useLabel ?? (parcel.useCode ? `Código DOR ${parcel.useCode}` : null)}
           />
           <Field label="Propietario (tasador)" value={parcel.ownerName} />
+          <Field label="Fuente" value={parcelSources[parcel.source] ?? parcel.source} />
         </dl>
       ) : (
         <p>Sin parcela en este punto: suele pasar cuando el clic cae sobre la calle.</p>

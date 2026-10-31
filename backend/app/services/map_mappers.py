@@ -85,6 +85,16 @@ def build_parcel(features: list[dict[str, Any]]) -> tuple[Parcel | None, str | N
     ), None
 
 
+def build_county_parcel(
+    features: list[dict[str, Any]], *, county_code_dor: str, source: str
+) -> Parcel | None:
+    """Respaldo de un condado: sólo el ID (folio); uso y propietario quedan desconocidos."""
+    parcel_id = _string(_attributes(_first(features)).get("FOLIO"))
+    if not parcel_id:
+        return None
+    return Parcel(parcel_id=parcel_id, county_code_dor=county_code_dor, source=source)
+
+
 def warnings(
     roads: list[RoadMatch], statuses: list[SourceStatus], parcel_warning: str | None
 ) -> list[str]:

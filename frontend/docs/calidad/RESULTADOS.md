@@ -71,3 +71,20 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm run test:e2e`: ejecutable, 1 caso F0 omitido; todavía no existe E2E funcional del mapa.
 - El build separa `MapPage` y `leaflet-src` del bundle principal; Leaflet sólo se carga en `/mapa`.
 - `npm audit --omit=dev` y `npm audit`: 0 vulnerabilidades tras actualizar Vite 8.3.5.
+
+## 2026-10-30 19:27 -05:00 E2E del mapa y corrección del marcador (F7)
+
+- Equipo nuevo (Windows 11, Node 24.19.0, npm 11.17.0): `npm ci` desde el lock; Chromium de Playwright 1.63 instalado en la caché de usuario junto a las versiones de otros proyectos, sin reemplazarlas.
+- Antes de los cambios: `npm run format:check`, `npm run build`, `npm run lint` y `npm test` (11 archivos y 22 pruebas): pasaron.
+- `e2e/map.spec.ts` con backend real (`tests.e2e_backend`), Smartsheet falso y GIS falso: la prueba del clic falló de forma intermitente; reproducido con una prueba temporal: 4 de 8 aperturas de `/mapa?p=…` sin marcador (FB-07). Tras la corrección de `MapView`: 12 de 12 con marcador.
+- Después: `npm run format:check`, `npm run build`, `npm run lint`, `npm test` (11 archivos y 22 pruebas) y `npm run test:e2e` (4 pasan, 1 caso F0 omitido): pasaron. Suite E2E repetida 4 veces (`--repeat-each 4`): 16 de 16.
+- El build sigue separando `MapPage` y `leaflet-src` del bundle principal.
+- Revisión visual del tramo de control a 320, 1024 y 1440 px con teselas bloqueadas: sin desborde horizontal; a 320 px el panel queda debajo del mapa y la barra inferior muestra seis destinos. Observación: B queda fuera de la vista al abrir el tramo por URL (pendiente en SPEC-11).
+- Ninguna prueba habló con Smartsheet ni con servicios GIS reales.
+
+## 2026-10-30 20:28 -05:00 Vista del mapa (PEN-31) y parcela de respaldo (PEN-30)
+
+- Verificado antes de programar: USGS NAIP Plus (`exportImage`, píxel de 30 cm) da a zoom 18 autos y marcas de carril en Fort Lauderdale, contra la tesela USGS de zoom 16; la exportación del FDOT con `dynamicLayers` dibuja vías estatales en naranja en 0,7 s; FDOT no publica WMS (400).
+- `npm run format:check`, `npm run build`, `npm run lint` (sin avisos), `npm test` (11 archivos y 23 pruebas) y `npm run test:e2e` (5 pasan, 1 caso F0 omitido): pasaron. Leaflet sigue en su chunk aparte.
+- Manual con el servidor de desarrollo y los servicios reales, a 1440 px y zoom 19 en Fort Lauderdale: Satélite HD nítido, vías del FDOT con leyenda, escala 20 m / 50 ft, Estado "Florida" y parcela `494236300010` con fuente "Condado de Broward (sólo el folio)". La vista HD tardó 8,1 s en cargar todas las imágenes; los fallos `net::ERR_ABORTED` fueron imágenes canceladas por Leaflet al cambiar de zoom.
+- `map.css` dividido: barra y buscador en `map-toolbar.css` (120 y 162 líneas, E-05).

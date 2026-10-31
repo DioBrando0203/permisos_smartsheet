@@ -53,7 +53,14 @@ class Settings(BaseSettings):
     gis_census_geocoder_url: str = (
         "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress"
     )
+    # Respaldo de parcelas en Broward cuando FDACS falla (PEN-30, MJ-BR-01).
+    gis_broward_parcels_url: str = (
+        "https://services.arcgis.com/JMAJrTsHNLrSsWf5/ArcGIS/rest/services/Parcels/FeatureServer/0"
+    )
     gis_timeout_seconds: float = 20.0
+    # Un servidor que no acepta la conexión no se reintenta: sólo alargaría la espera (PEN-30).
+    gis_connect_timeout_seconds: float = 5.0
+    gis_unreachable_cooldown_seconds: float = 120.0
     gis_max_concurrency: int = 4
     gis_max_retries: int = 2
     gis_cache_ttl_seconds: float = 3600.0

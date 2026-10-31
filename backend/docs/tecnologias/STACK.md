@@ -4,7 +4,8 @@ Rangos en `pyproject.toml`; versiones verificadas en `requirements.lock` cuando 
 
 ## Ejecución
 
-- Python 3.11+ (verificado en el equipo: 3.14.4). `StrEnum`, `TaskGroup` y `X | None` nativos.
+- Python 3.14 (verificado: 3.14.4 en Linux y 3.14.7 en Windows). `pyproject.toml` dice 3.11+, pero con 3.11 a 3.13 el código no importa (B-12). `StrEnum`, `TaskGroup` y `X | None` nativos.
+- `requirements.lock` sale de Linux: en Windows `uvloop` no se instala (`uvicorn[standard]` lo excluye) y se agrega `colorama` (de `click`); el resto coincide.
 - FastAPI: API tipada con OpenAPI en `/docs`, que sirve para probar el backend antes de tener frontend.
 - Uvicorn: un solo proceso en 127.0.0.1 (la caché es por proceso, ADR-B06).
 - httpx (`AsyncClient`): cliente HTTP asíncrono con plazos y conexión reutilizada hacia Smartsheet.

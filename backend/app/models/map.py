@@ -34,6 +34,8 @@ class Parcel(BaseModel):
     use_label: str | None = None
     public_owner: Literal["state", "county", "federal", "municipal", "right_of_way"] | None = None
     owner_name: str | None = None
+    # Id de la fuente que dio la parcela: FDACS o el respaldo del condado (PEN-30).
+    source: str = "fdacs_parcels"
 
 
 class Jurisdiction(BaseModel):

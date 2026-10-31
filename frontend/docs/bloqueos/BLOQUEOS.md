@@ -35,3 +35,10 @@ Prevención: UX-33; no mostrar "Abrir en Smartsheet" ni fecha cuando faltan.
 Fecha: 2026-10-16. Estado: abierto (PEN-27 del backend).
 Hecho: la carga de diseñadores depende de `APP_CLOSED_STATUSES`, que aún no confirmó el usuario.
 Prevención: mostrar siempre qué estados se consideran cerrados y permitir cambiarlos en la vista (SPEC-08).
+
+## FB-07 Marcador perdido al abrir un punto por URL
+
+Fecha: 2026-10-30. Estado: resuelto.
+Hecho: al abrir `/mapa?p=…`, el panel mostraba el resultado pero el marcador no aparecía en el mapa en 4 de 8 aperturas (E2E repetido).
+Causa: cada efecto de `MapView` hacía su propio `import('leaflet')`; si el de marcadores se resolvía antes que el que crea el mapa, no encontraba la capa, salía sin dibujar y no volvía a correr porque los marcadores no cambiaban.
+Solución: Leaflet se importa una sola vez al crear el mapa, que marca `ready`; teselas, marcadores, línea y vista dependen de `ready`. Verificado: 12 de 12 aperturas con marcador y la suite E2E repetida 4 veces sin fallos.

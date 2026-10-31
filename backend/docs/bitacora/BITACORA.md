@@ -148,3 +148,17 @@ Estado: en curso
 Cambios: aprobadas ADR-B16 y ADR-B17; implementados transporte GIS sin token, reglas puras, caché de una hora, `GET /api/map/point`, `/segment` y `/sources`, contrato y pruebas simuladas.
 Evidencia: 137 pruebas, ruff limpio y GET manual del tramo de control: SR 953, `87281000`, sección `281`, mileposts 3.124 a 3.839; las ocho fuentes respondieron `ok`.
 Notas: no hubo escrituras en Smartsheet. Quedan M5/M6 y el E2E del mapa.
+
+## 2026-10-30 19:27 -05:00 Entorno en Windows y GIS falso para E2E (PEN-29)
+
+Estado: terminada
+Cambios: entorno aislado en un equipo Windows nuevo (`backend/.venv` con Python 3.14.7; nada global). Nuevos `tests/fake_gis.py` y `tests/fake_gis_data.py` (GIS falso con la vía sintética del caso de control), `tests/e2e_backend.py` (backend para el E2E del frontend, solo lectura, sin leer token ni URL de `.env`) y sus pruebas. Docs del buscador agregado en el commit "mapa mejorado": SPEC-B14 (punto 9, contrato `MapSearch`, CA-12 y CA-13, fuente del Censo), `estilos/API.md`, `ARQUITECTURA.md`, PEN-29 y `PLAN_CALIDAD.md`. Nuevo B-12 (Python 3.11 a 3.13) con el requisito corregido en `LEVANTAMIENTO.md`, `README.md` y `STACK.md`.
+Evidencia: `pytest` 156 aprobadas; `ruff check` y `ruff format --check` sin observaciones (detalle en RESULTADOS).
+Notas: el geocodificador del Censo es una fuente nueva que ADR-B17 no nombraba; queda pendiente confirmarla con el usuario y verificar el buscador con GET reales. B-12 queda abierto hasta decidir entre corregir las anotaciones o exigir 3.14. No hubo escrituras en Smartsheet.
+
+## 2026-10-30 20:28 -05:00 PEN-30: fuente caída y parcela de respaldo
+
+Estado: terminada para Broward
+Cambios: `transport.py` con plazo de conexión de 5 s, sin reintentos si no conecta y pausa de 120 s para ese host; respaldo de parcelas de Broward en `MapService` (`broward_parcels`, sólo folio) y `Parcel.source`; ajustes nuevos en `config.py`; fuente en `/api/map/sources`; GIS falso y backend del E2E apuntados también al respaldo. Docs: PEN-30 y PEN-31 en REQUERIMIENTOS, SPEC-B14 (CA-14 y CA-15), `API.md`, ampliación de ADR-B17, B-13 (FDACS sin conexión) y B-14 (recarga de Uvicorn en Windows), `PLAN_CALIDAD.md`.
+Evidencia: 160 pruebas y ruff limpio; manual: de 60,8 s a 6,0 s y 1,6 s con folio (detalle en RESULTADOS).
+Notas: otros condados siguen sin respaldo; condiciones de uso de la capa de Broward por revisar (MJ-PEN-06). Los puntos consultados mientras FDACS falla quedan en caché una hora sin uso ni propietario. Sólo `refresh=true` los vuelve a pedir: el panel no lo ofrece todavía ("Reintentar" sólo aparece ante un error y no salta la caché del backend); anotado en PEN-30.

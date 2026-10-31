@@ -1,7 +1,7 @@
 # SPEC-B14 Mapa: vía, milepost, jurisdicción y parcela de un punto o tramo
 
-Estado: implementada M1-M2 (2026-10-30)
-Código previsto: `api/routes/map.py`, `models/map.py`, `services/map.py`, `services/map_rules.py`, `services/gis/`
+Estado: implementada M1-M2 y el buscador de M6 (2026-10-30)
+Código: `api/routes/map.py`, `models/map.py`, `services/map.py`, `services/map_rules.py`, `services/map_mappers.py`, `services/map_query.py`, `services/map_search.py`, `services/gis/`
 Relacionadas: PEN-29, RQ-26, ADR-B15, ADR-B16, ADR-B17, SPEC-11 del frontend; investigación en `future_docs/GIS_PUBLICO_FLORIDA.md` y `future_docs/MAPAS_JURISDICCION_PARCELAS.md`
 
 ## Objetivo
@@ -10,8 +10,8 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 
 ## Alcance
 
-- Incluye: consulta de punto, consulta de tramo y catálogo de fuentes, sólo lectura sobre servicios GIS públicos (ADR-B17).
-- Excluye: dibujar capas completas, búsqueda por dirección, Turnpike (GIS-PEN-01), adaptadores de condado distintos de la base estatal (fase M5) y cualquier escritura.
+- Incluye: consulta de punto, consulta de tramo, buscador (dirección, calle, ruta con milepost o coordenadas) y catálogo de fuentes, sólo lectura sobre servicios GIS públicos (ADR-B17).
+- Excluye: dibujar capas completas, Turnpike (GIS-PEN-01), adaptadores de condado distintos de la base estatal (fase M5) y cualquier escritura.
 
 ## Fuentes verificadas (2026-10-30, GET sin sesión)
 
@@ -22,6 +22,7 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
   - capa 2 "County Roads": mismos campos; vacía para Broward.
 - FDOT `…/Admin_Boundaries/MapServer`: capa 6 condados (`COUNTY`, `CNTYNO`, `DISTRICT`), capa 7 ciudades (`NAME`), capa 8 ZIP (`ZIP`).
 - FDACS `https://gis.fdacs.gov/mapping/rest/services/GIO_Parcels_for_OAWP_Optimized/FeatureServer/0`: `CO_NO`, `PARCEL_ID`, `DOR_UC`, `OWN_NAME`.
+- Buscador: geocodificador público del Censo de EE. UU. `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress` (`address`, `benchmark=Public_AR_Current`, `format=json`, sin clave); responde `result.addressMatches[]` con `matchedAddress` y `coordinates` (`x` = lon, `y` = lat).
 - Consulta común: `GET {capa}/query` con `geometry=lon,lat`, `geometryType=esriGeometryPoint`, `inSR=4326`, `spatialRel=esriSpatialRelIntersects`, `outFields` explícitos, `f=json`; en vías, además `distance` en metros, `units=esriSRUnit_Meter`; en la capa 8, `returnGeometry=true`, `returnM=true`, `outSR=4326`.
 - Caso de control: `25.771778,-80.263610` da la vía `87281000` (SR 953, sección 281) con milepost 3.124; `25.782147,-80.264005` da 3.839. Son los valores de la fila de OSP en `future_docs/osp-milepost-paso3.png`.
 
@@ -30,6 +31,7 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 1. `GET /api/map/point?lat=&lon=&radius_m=25&refresh=`:
    - valida que el punto esté en el rectángulo de Florida (lat 24.3 a 31.1, lon -87.7 a -79.8); si no, 422 `COORDINATES_OUT_OF_FLORIDA`;
    - consulta en paralelo las ocho capas con un plazo por fuente; una fuente que falla no tumba la respuesta: queda en `sources` con su estado y en `warnings`;
+   - un servidor que no acepta la conexión en `gis_connect_timeout_seconds` (5) no se reintenta y se salta durante `gis_unreachable_cooldown_seconds` (120) con el mismo estado (`timeout` o `error`), para que cada clic no lo espere de nuevo (PEN-30: con FDACS caído, cada punto tardaba 60 s);
    - si fallan todas las fuentes de vías y de límites, 502 `GIS_UNAVAILABLE`;
    - responde `MapPoint`.
 2. `GET /api/map/segment?start_lat=&start_lon=&end_lat=&end_lon=&radius_m=25&refresh=`:
@@ -47,9 +49,16 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
    - otra vía fuera de toda ciudad: el condado, base `unincorporated`, confianza `low`;
    - sin vía cerca: `UNKNOWN`;
    - siempre con `note` que explica que es una aproximación salvo en `high`; los adaptadores de condado (M5) podrán dar `high` con su propio campo (por ejemplo `RESP_AUTH` de Palm Beach).
-6. Parcela: código de uso `DOR_UC` con etiqueta y tipo de dueño público (`map_rules.DOR_USES`): 086 condado, 087 estado, 088 federal, 089 municipal, 094 derecho de vía; el resto, `null`. Tabla por confirmar con la fuente oficial (MJ-PEN-05). Una parcela con `CO_NO` 0 y `PARCEL_ID` vacío es una vía, no un predio: se responde `parcel: null` y el aviso `PARCEL_IS_ROAD`.
+6. Parcela: código de uso `DOR_UC` con etiqueta y tipo de dueño público (`map_rules.DOR_USES`): 086 condado, 087 estado, 088 federal, 089 municipal, 094 derecho de vía; el resto, `null`. Tabla por confirmar con la fuente oficial (MJ-PEN-05). Una parcela con `CO_NO` 0 y `PARCEL_ID` vacío es una vía, no un predio: se responde `parcel: null` y el aviso `PARCEL_IS_ROAD`. Respaldo (PEN-30): si FDACS falla y el condado del FDOT es Broward (`CNTYNO` 86), se pide la capa pública del condado (`gis_broward_parcels_url`, campo `FOLIO`) y la parcela llega con `parcel_id` = folio, `county_code_dor` 16, uso y propietario `null` y `source` = `broward_parcels`; su estado se agrega a `sources`. Otros condados, sin respaldo todavía.
 7. `owner_name` sale tal cual de FDACS (registro público), pero nunca se registra en logs ni en errores, y en pruebas y fixtures sólo hay nombres sintéticos (ADR-B17).
 8. Caché: clave `map:point:{lat:.5f}:{lon:.5f}:{radio}` y `map:segment:…` con `gis_cache_ttl_seconds` (3600 por defecto, ADR-B16); `refresh=true` la salta.
+9. `GET /api/map/search?q=&refresh=` (`q` de 3 a 120 caracteres; `map_query` lo interpreta sin E/S):
+   - coordenadas (`25.771778, -80.263610` o con espacio): un resultado `coordinates` sin consultar fuentes, o ninguno si caen fuera de Florida;
+   - ruta con milepost (`SR 953 3.5`, `SR-953 MP 3.5`, `CR 811, 0.3` o un ID de vía de 8 dígitos con su milepost): busca en "State Roads" o "County Roads" las vías cuyo rango contiene el milepost y ubica el punto sobre la capa 8 (`point_at_milepost`); resultados `milepost`, fuente `fdot_milepost`;
+   - otro texto: si empieza con número de casa, dirección en el geocodificador del Censo (se agrega ", FL" si falta el estado; sólo coincidencias dentro de Florida), fuente `census_geocoder`; además, calle por nombre en la capa 13 con el texto en mayúsculas, abreviado y sin ordinales como lo escribe FDOT (`NW 42nd Avenue` → `NW 42 AVE`), punto medio de la calle, rampas al final, fuente `fdot_streets`;
+   - los filtros `where` sólo se arman con texto ya validado por expresiones regulares (sin comillas);
+   - hasta 8 resultados; una fuente que falla queda en `sources` y no tumba las demás;
+   - caché `map:search:{texto en mayúsculas}` con el mismo vencimiento.
 
 ## Contrato
 
@@ -71,9 +80,9 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 
 `Jurisdiction`: `authority` (`FDOT`, `COUNTY`, `CITY`, `PRIVATE`, `SPECIAL_DISTRICT`, `UNKNOWN`), `name` ("FDOT", "Palm Beach County", "Miami"), `basis`, `confidence` (`high`, `medium`, `low`), `note`.
 
-`Parcel`: `parcel_id`, `county_code_dor`, `use_code`, `use_label` | null, `public_owner` (`state`, `county`, `federal`, `municipal`, `right_of_way`) | null, `owner_name` | null.
+`Parcel`: `parcel_id`, `county_code_dor`, `use_code`, `use_label` | null, `public_owner` (`state`, `county`, `federal`, `municipal`, `right_of_way`) | null, `owner_name` | null, `source` (`fdacs_parcels` o `broward_parcels`).
 
-`SourceStatus`: `id` (`fdot_lrs`, `fdot_state_roads`, `fdot_county_roads`, `fdot_local_names`, `fdot_counties`, `fdot_cities`, `fdot_zip`, `fdacs_parcels`), `status` (`ok`, `error`, `timeout`), `ms`.
+`SourceStatus`: `id` (`fdot_lrs`, `fdot_state_roads`, `fdot_county_roads`, `fdot_local_names`, `fdot_counties`, `fdot_cities`, `fdot_zip`, `fdacs_parcels` y, sólo si se usó el respaldo, `broward_parcels`), `status` (`ok`, `error`, `timeout`), `ms`.
 
 `MapSegment`:
 - `start`, `end`: `MapPoint` de cada extremo.
@@ -82,6 +91,10 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 - `geometry`: GeoJSON `LineString` en WGS84 (`[[lon, lat], …]`) del tramo entre los dos mileposts.
 - `osp_row`: `county`, `state_road_id`, `section_number`, `beginning_milepost`, `ending_milepost`, en el orden de la tabla Work Location de OSP.
 - `jurisdiction`, `warnings`.
+
+`MapSearch`: `query` (el texto con espacios normalizados), `results` (lista de `SearchResult`), `sources` (`SourceStatus` de `census_geocoder`, `fdot_streets` o `fdot_milepost`; vacía con coordenadas).
+
+`SearchResult`: `kind` (`coordinates`, `address`, `street`, `milepost`), `label`, `detail` | null, `lat`, `lon`, `roadway_id` | null, `milepost` | null.
 
 Avisos (`warnings`): `NO_ROAD_NEARBY`, `MULTIPLE_ROADS`, `SOURCE_FAILED`, `PARCEL_IS_ROAD`, `OUTSIDE_COUNTY_DATA`.
 
@@ -92,14 +105,16 @@ Errores nuevos (formato de `estilos/API.md`):
 
 ## Diseño
 
-- `services/gis/transport.py`: su propio `httpx.AsyncClient`, sin cabecera de autorización, con plazo `gis_timeout_seconds` (20), semáforo `gis_max_concurrency` (4) y `gis_max_retries` (2) ante 5xx o tiempo agotado. Nunca reutiliza el transporte de Smartsheet: el token no debe salir hacia terceros (ADR-B16).
+- `services/gis/transport.py`: su propio `httpx.AsyncClient`, sin cabecera de autorización, con plazo `gis_timeout_seconds` (20) y de conexión `gis_connect_timeout_seconds` (5), semáforo `gis_max_concurrency` (4) y `gis_max_retries` (2) ante 5xx o tiempo de lectura agotado; sin reintentos si no conecta, y ese host se salta `gis_unreachable_cooldown_seconds` (120). Nunca reutiliza el transporte de Smartsheet: el token no debe salir hacia terceros (ADR-B16).
 - `services/gis/layers.py`: catálogo de capas (id de fuente, URL base configurable, campos). Las URL base salen de `gis_fdot_base_url` y `gis_fdacs_parcels_url` para poder apuntar al GIS falso en E2E.
 - `services/gis/client.py`: `query_point(layer, lat, lon, fields, radius_m, with_m)`; traduce el error JSON de ArcGIS (`{"error": {...}}` con HTTP 200) a error de fuente.
 - `services/gis/mappers.py` y `types.py`: JSON de ArcGIS a `RawRoad`, `RawBoundary`, `RawParcel`, `RawRoute` (con trayectos `[lon, lat, m]`).
 - `services/map_rules.py`: puro: `in_florida`, `milepost_at`, `slice_route`, `pick_segment_road`, `jurisdiction` (tabla), `DOR_USES`, `normalize_route`. Si pasa de 300 líneas, separar `milepost.py`.
 - `services/map.py`: `MapService.point` y `MapService.segment`; consultas en paralelo con `asyncio.TaskGroup` y caché `TtlCache`.
+- `services/map_query.py` (puro) y `services/map_search.py` (`MapSearchService`, que `MapService.search` delega): buscador del punto 9; `GisClient.query_where` y `GisClient.geocode`.
+- Pruebas: `tests/fake_gis.py` es el GIS falso del E2E (CA-13) y `tests/e2e_backend.py` arranca el backend apuntado a él y al Smartsheet falso, sin leer el token de `.env`.
 - `models/map.py` y `api/routes/map.py`: contrato y ruta delgada, con etiqueta propia en Swagger ("mapa").
-- Configuración nueva en `core/config.py`: `app_gis_enabled` (true), `gis_fdot_base_url`, `gis_fdacs_parcels_url`, `gis_timeout_seconds`, `gis_max_concurrency`, `gis_max_retries`, `gis_cache_ttl_seconds`, `gis_max_segment_miles`.
+- Configuración nueva en `core/config.py`: `app_gis_enabled` (true), `gis_fdot_base_url`, `gis_fdacs_parcels_url`, `gis_census_geocoder_url`, `gis_broward_parcels_url`, `gis_timeout_seconds`, `gis_connect_timeout_seconds`, `gis_unreachable_cooldown_seconds`, `gis_max_concurrency`, `gis_max_retries`, `gis_cache_ttl_seconds`, `gis_max_segment_miles`.
 
 ## Criterios de aceptación
 
@@ -114,15 +129,21 @@ Errores nuevos (formato de `estilos/API.md`):
 - CA-09: `owner_name` no aparece en los logs de una consulta. Prueba: `test_map.py` con `caplog`.
 - CA-10: la segunda consulta del mismo punto sale de la caché; `refresh=true` vuelve a consultar. Prueba: `test_map.py` cuenta llamadas.
 - CA-11: verificación manual con GET reales del caso de control y de un punto por condado (Broward, Palm Beach, Martin, Miami-Dade). Prueba: manual, anotada en RESULTADOS.
+- CA-12: el buscador entiende coordenadas sin consultar fuentes, ruta con milepost, calle normalizada y dirección, y sobrevive a una fuente caída. Prueba: `test_map_query.py` y `test_map.py::test_search_*`.
+- CA-13: el backend completo funciona contra el GIS falso que usa el E2E del frontend (punto, tramo y buscador) y ninguna solicitud lleva `Authorization`. Prueba: `test_fake_gis.py`.
+- CA-14: una fuente que no conecta se intenta una sola vez y, mientras dura la pausa, el siguiente punto no la vuelve a pedir; pasada la pausa, sí. Prueba: `test_map_fallback.py`. Manual 2026-10-30 con FDACS sin conexión: de 60,8 s a 6,0 s el primer punto y 1,6 s los siguientes.
+- CA-15: con FDACS caído en Broward la parcela llega del condado con `source: broward_parcels`; fuera de Broward, o con FDACS bien, no se pide el respaldo. Prueba: `test_map_fallback.py`; manual 2026-10-30: folio `494236300010` en Fort Lauderdale.
 
 ## Fases
 
 - M1: punto (CA-01 a CA-06, CA-08 a CA-11).
 - M2: tramo (CA-07).
 - M5: pendiente: adaptadores de condado con su propia fuente de jurisdicción, empezando por Palm Beach (`ENG/CENTERLINE`, campo `RESP_AUTH`); cada uno con su spec o una sección nueva aquí.
+- M6: hecho el buscador (CA-12); pendientes las capas dibujadas, Turnpike y el mapa base con clave.
 
 ## Pendientes
 
 - Turnpike en `osp_row` (GIS-PEN-01).
 - Confirmar la tabla `DOR_UC` (MJ-PEN-05).
-- Al implementar: `ARQUITECTURA.md`, `estilos/API.md`, `tecnologias/STACK.md` (sin dependencias nuevas previstas) y RESULTADOS.
+- Confirmar con el usuario el geocodificador del Censo como fuente nueva del buscador: ADR-B17 sólo nombraba FDOT y FDACS para la fase base.
+- Verificación manual del buscador con GET reales (dirección, calle y ruta con milepost): no hay evidencia registrada.

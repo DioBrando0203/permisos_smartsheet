@@ -7,12 +7,26 @@ from typing import Any
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.models.map import MapPoint, MapSearch, MapSegment, MapSource, OspRow, SourceStatus
+from app.models.map import (
+    MapPoint,
+    MapSearch,
+    MapSegment,
+    MapSource,
+    OspRow,
+    Parcel,
+    SourceStatus,
+)
 from app.services.cache import TtlCache
 from app.services.gis import GisClient
-from app.services.gis.layers import Layer, layers
+from app.services.gis.layers import BROWARD_DOR, BROWARD_FDOT, Layer, broward_parcels, layers
 from app.services.gis.transport import GisFailure
-from app.services.map_mappers import build_location, build_parcel, build_roads, warnings
+from app.services.map_mappers import (
+    build_county_parcel,
+    build_location,
+    build_parcel,
+    build_roads,
+    warnings,
+)
 from app.services.map_rules import (
     RouteGeometry,
     haversine_miles,
@@ -132,6 +146,15 @@ class MapService:
                 update_frequency="Según FDACS",
                 license_note="Registro público; confirmar con el tasador.",
             ),
+            MapSource(
+                id="broward_parcels",
+                name="Parcelas de Broward (respaldo)",
+                provider="Broward County",
+                url="https://services.arcgis.com/JMAJrTsHNLrSsWf5/ArcGIS/rest/services/Parcels",
+                provides="Folio de la parcela cuando FDACS no responde",
+                update_frequency="Según el condado",
+                license_note="Datos públicos; condiciones de uso por revisar (MJ-PEN-06).",
+            ),
         ]
 
     async def _resolve(
@@ -157,6 +180,9 @@ class MapService:
         roads, routes = build_roads(data, lat, lon)
         location = build_location(data)
         parcel, parcel_warning = build_parcel(data.get("fdacs_parcels", []))
+        if statuses[-1].status != "ok" and location.county_code_fdot == BROWARD_FDOT:
+            parcel, fallback = await self._broward_parcel(lat, lon, radius_m)
+            statuses.append(fallback)
         point = MapPoint(
             lat=round(lat, 6),
             lon=round(lon, 6),
@@ -168,6 +194,16 @@ class MapService:
             warnings=warnings(roads, statuses, parcel_warning),
         )
         return _Resolution(point, routes)
+
+    async def _broward_parcel(
+        self, lat: float, lon: float, radius_m: float
+    ) -> tuple[Parcel | None, SourceStatus]:
+        """FDACS falló en Broward: el folio sale de la capa pública del condado (PEN-30)."""
+        layer, features, status = await self._query(
+            broward_parcels(self._settings), lat, lon, radius_m
+        )
+        parcel = build_county_parcel(features, county_code_dor=BROWARD_DOR, source=layer.id)
+        return parcel, status
 
     async def _query(
         self, layer: Layer, lat: float, lon: float, radius_m: float

@@ -37,7 +37,7 @@ AGENTS.md   guía breve para retomar el proyecto (personas o IA)
 
 Guía completa para Windows y Linux: [LEVANTAMIENTO.md](LEVANTAMIENTO.md).
 
-Primera vez (Python 3.11+):
+Primera vez (Python 3.14; con 3.11 a 3.13 no arranca, B-12 del backend):
 
 ```bash
 cd backend

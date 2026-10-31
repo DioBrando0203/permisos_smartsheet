@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from app.core.config import Settings
 
 LRS, STATE_ROADS, COUNTY_ROADS, LOCAL_NAMES = 8, 15, 2, 13
+# Broward: código del FDOT (CNTYNO) y del DOR (CO_NO), que no coinciden (MJ-PE-02).
+BROWARD_FDOT, BROWARD_DOR = "86", "16"
 
 
 @dataclass(frozen=True)
@@ -20,6 +22,11 @@ class Layer:
 def road_layer(settings: Settings, number: int) -> str:
     """URL de una capa de vías del FDOT (RCI), configurable para pruebas."""
     return f"{settings.gis_fdot_base_url.rstrip('/')}/RCI_Layers/MapServer/{number}"
+
+
+def broward_parcels(settings: Settings) -> Layer:
+    """Parcelas del condado de Broward: sólo el folio, sin datos del tasador (MJ-BR-01)."""
+    return Layer("broward_parcels", settings.gis_broward_parcels_url.rstrip("/"), ("FOLIO",))
 
 
 def layers(settings: Settings) -> tuple[Layer, ...]:

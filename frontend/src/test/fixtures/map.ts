@@ -28,6 +28,7 @@ export const mapPointFixture: ApiMapPoint = {
     use_label: 'Derecho de vía',
     public_owner: 'right_of_way',
     owner_name: 'PROPIETARIO SINTETICO 1',
+    source: 'fdacs_parcels',
   },
   jurisdiction: {
     authority: 'FDOT',

@@ -43,7 +43,7 @@ app/
   api/routes/export.py           GET /export/access.csv
   api/routes/automations.py      GET /automations, GET /sheets/{id}/automations
   api/routes/designers.py        GET /designers
-  api/routes/map.py              GET /map/{point,segment,sources}
+  api/routes/map.py              GET /map/{search,point,segment,sources}
   api/routes/bulk.py             POST /sheets/{id}/shares/copy, POST /users/{key}/revoke (simulación por defecto)
   core/config.py                 Settings (pydantic-settings) con token SecretStr, read_only, Host y Origin
   core/errors.py                 AppError(code, message, status) y manejador único
@@ -86,6 +86,8 @@ app/
   services/gis/                  transporte público sin token, capas y cliente ArcGIS
   services/map.py                MapService: punto, tramo, caché GIS
   services/map_rules.py          reglas puras de milepost y jurisdicción
+  services/map_query.py          lectura pura del texto del buscador (coordenadas, ruta y MP, calle)
+  services/map_search.py         MapSearchService: dirección (Censo), calle y ruta con MP (FDOT)
   services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
   services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService
 ```

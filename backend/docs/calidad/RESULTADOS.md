@@ -144,3 +144,20 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - `ruff check app tests` y `ruff format --check app tests`: sin observaciones.
 - Verificación manual GET con backend en 8710: el tramo de control devuelve SR 953, vía `87281000`, sección `281`, mileposts `3.124` a `3.839` y las ocho fuentes en estado `ok`.
 - Sólo lecturas GIS públicas; no se escribió en Smartsheet ni se mostró ni registró nombre de propietario.
+
+## 2026-10-30 19:27 -05:00 Entorno Windows, buscador del mapa y GIS falso (PEN-29)
+
+- Equipo nuevo (Windows 11): `backend/.venv` con Python 3.14.7, instalado con `pip install -c requirements.lock -e ".[dev]"`; mismas versiones que el lock salvo `uvloop` (no aplica en Windows) y `colorama` (dependencia de `click` en Windows).
+- Con Python 3.12 la colección de pruebas falló al importar `app/services/sheets.py` (B-12); con 3.14.7 pasa.
+- Antes de los cambios de esta sesión (código del commit "mapa mejorado", que agregó el buscador): `pytest` 151 aprobadas; `ruff check` y `ruff format --check` sin observaciones.
+- Después: `pytest` 156 aprobadas (4 de `test_fake_gis.py` y 1 de `test_e2e_backend.py` nuevas); `ruff check app tests` y `ruff format --check app tests` sin observaciones.
+- El GIS falso respondió las ocho capas del punto sin ninguna solicitud con `Authorization`; el buscador funcionó contra él por ruta con milepost, calle y dirección.
+- No se hicieron GET reales del buscador a FDOT ni al Censo en esta sesión; no se escribió en Smartsheet.
+
+## 2026-10-30 20:28 -05:00 Fuente caída sin espera larga y parcelas de Broward (PEN-30)
+
+- Diagnóstico con el backend real: punto en Fort Lauderdale en 60,6 s; las siete capas del FDOT en menos de 1 s y `fdacs_parcels: timeout` (60 566 ms). `gis.fdacs.gov` resuelve por DNS pero no conecta (curl HTTP 000 a los 21 s); FDOT sí (B-13).
+- Capa de parcelas de Broward (MJ-BR-01) consultada desde este equipo: responde, folio `494236110072` y `494236300010` en dos puntos de prueba.
+- `pytest`: 160 aprobadas (4 nuevas en `test_map_fallback.py`); `ruff check app tests` y `ruff format --check app tests` sin observaciones.
+- Manual tras reiniciar `run.py` (la recarga automática no terminó, B-14): primer punto 6,0 s (FDACS 5,6 s sin conexión, respaldo de Broward ok) y siguiente 1,6 s (FDACS saltado), ambos con folio y `source: broward_parcels`.
+- Sólo lecturas GIS públicas; no se escribió en Smartsheet.

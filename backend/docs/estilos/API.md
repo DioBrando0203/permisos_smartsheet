@@ -41,8 +41,9 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/sheets/{sheet_id}/references?column=&catalog_sheet=&catalog_column=&refresh=`: `SheetReferences` (SPEC-B11).
 - `GET /api/references?column=&catalog_sheet=&catalog_column=&q=&refresh=`: `AccountReferences`.
 - `GET /api/designers?q=&designer_columns=&status_column=&closed_status=&refresh=`: `DesignerWorkload` (SPEC-B12); valores por defecto desde `APP_DESIGNER_COLUMNS`, `APP_STATUS_COLUMN`, `APP_CLOSED_STATUSES`.
-- `GET /api/map/point?lat=&lon=&radius_m=25&refresh=`: `MapPoint` (SPEC-B14); sólo Florida, radio de 1 a 200 m.
+- `GET /api/map/point?lat=&lon=&radius_m=25&refresh=`: `MapPoint` (SPEC-B14); sólo Florida, radio de 1 a 200 m. `parcel.source` dice si la parcela vino de FDACS o del respaldo del condado (`broward_parcels`, sólo folio).
 - `GET /api/map/segment?start_lat=&start_lon=&end_lat=&end_lon=&radius_m=25&refresh=`: `MapSegment` (SPEC-B14).
+- `GET /api/map/search?q=&refresh=`: `MapSearch` (SPEC-B14); `q` de 3 a 120 caracteres: coordenadas, dirección, calle del FDOT o ruta con milepost (`SR 953 3.5`); hasta 8 resultados en Florida y el estado de cada fuente consultada.
 - `GET /api/map/sources`: catálogo fijo `MapSource[]`; no consulta GIS.
 - `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
 - `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.

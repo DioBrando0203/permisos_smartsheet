@@ -1,25 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { MapView, type MapFocus, type MapMarker } from '../../components/map/MapView'
-import { Button, StatusAlert } from '../../components/ui'
+import { MapView, type Basemap, type MapFocus, type MapMarker } from '../../components/map/MapView'
+import { basemapChoices } from '../../components/map/tileSources'
+import { StatusAlert } from '../../components/ui'
 import { useMapPoint, useMapSegment } from './hooks'
 import type { Coordinates } from './lib/coordinates'
 import { readMapUrl, writeMapUrl } from './lib/mapUrl'
+import { readChoice, saveChoice } from './lib/preferences'
 import { PointResult, SegmentResult } from './MapResults'
-import { MapSearchBox } from './MapSearchBox'
+import { MapToolbar, type Mode } from './MapToolbar'
 
-type Mode = 'point' | 'segment'
-type Basemap = 'streets' | 'satellite'
 const noLine: [number, number][] = []
 const closeZoom = 16
-
-function savedBasemap(): Basemap {
-  try {
-    return localStorage.getItem('map-basemap') === 'satellite' ? 'satellite' : 'streets'
-  } catch {
-    return 'streets'
-  }
-}
 
 export function MapPage() {
   const [params, setParams] = useSearchParams()
@@ -31,19 +23,15 @@ export function MapPage() {
     const first = saved.a ?? saved.point
     return first ? { ...first, zoom: closeZoom } : null
   })
-  const [basemap, setBasemap] = useState<Basemap>(savedBasemap)
+  const [basemap, setBasemap] = useState<Basemap>(() => readChoice('map-basemap', basemapChoices, 'streets'))
+  const [roads, setRoads] = useState(() => readChoice('map-roads', ['on', 'off'], 'off') === 'on')
   const point = useMapPoint(mode === 'point' ? a : null)
   const segment = useMapSegment(mode === 'segment' ? a : null, mode === 'segment' ? b : null)
   useEffect(() => {
     setParams(writeMapUrl(mode, a, mode === 'segment' ? b : null), { replace: true })
   }, [a, b, mode, setParams])
-  useEffect(() => {
-    try {
-      localStorage.setItem('map-basemap', basemap)
-    } catch {
-      // Sin almacenamiento (modo privado): sólo se pierde la preferencia.
-    }
-  }, [basemap])
+  useEffect(() => saveChoice('map-basemap', basemap), [basemap])
+  useEffect(() => saveChoice('map-roads', roads ? 'on' : 'off'), [roads])
   useEffect(() => {
     const escape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && !(event.target instanceof HTMLInputElement)) setB(null)
@@ -69,42 +57,28 @@ export function MapPage() {
   return (
     <section className="map-page">
       <div className="map-page__canvas">
-        <div className="map-toolbar">
-          <div className="map-toolbar__modes" role="group" aria-label="Modo de consulta">
-            {(['point', 'segment'] as const).map((value) => (
-              <Button
-                key={value}
-                appearance={mode === value ? 'primary' : 'secondary'}
-                aria-pressed={mode === value}
-                onClick={() => {
-                  setMode(value)
-                  setB(null)
-                }}
-              >
-                {value === 'point' ? 'Punto' : 'Tramo'}
-              </Button>
-            ))}
-          </div>
-          <MapSearchBox
-            onSelect={(next) => {
-              choose(next)
-              setFocus({ ...next, zoom: closeZoom })
-            }}
-          />
-          <label className="map-toolbar__base">
-            Mapa base
-            <select value={basemap} onChange={(event) => setBasemap(event.target.value as Basemap)}>
-              <option value="streets">Calles (USGS)</option>
-              <option value="satellite">Satélite (USGS)</option>
-            </select>
-          </label>
-          <p className="map-toolbar__hint">{hint(mode, a, b)}</p>
-        </div>
+        <MapToolbar
+          mode={mode}
+          basemap={basemap}
+          roads={roads}
+          hint={hint(mode, a, b)}
+          onMode={(value) => {
+            setMode(value)
+            setB(null)
+          }}
+          onBasemap={setBasemap}
+          onRoads={setRoads}
+          onSelect={(next) => {
+            choose(next)
+            setFocus({ ...next, zoom: closeZoom })
+          }}
+        />
         <MapView
           focus={focus}
           markers={markers}
           line={(mode === 'segment' && segment.data?.geometry.coordinates) || noLine}
           basemap={basemap}
+          roads={roads}
           onMapClick={choose}
         />
       </div>

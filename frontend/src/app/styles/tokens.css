@@ -34,6 +34,9 @@
   --danger-fg: #bc2f32;
   --danger-bg: #fdf6f6;
   --danger-border: #f1bbbc;
+  /* Vías del FDOT sobre el mapa: los mismos colores que pide MapView a FDOT (PEN-31). */
+  --map-road-state: #e66e00;
+  --map-road-county: #0e8a46;
   --info-fg: #424242;
   --info-bg: #f5f5f5;
   --info-border: #e0e0e0;
