@@ -162,3 +162,10 @@ Estado: terminada para Broward
 Cambios: `transport.py` con plazo de conexión de 5 s, sin reintentos si no conecta y pausa de 120 s para ese host; respaldo de parcelas de Broward en `MapService` (`broward_parcels`, sólo folio) y `Parcel.source`; ajustes nuevos en `config.py`; fuente en `/api/map/sources`; GIS falso y backend del E2E apuntados también al respaldo. Docs: PEN-30 y PEN-31 en REQUERIMIENTOS, SPEC-B14 (CA-14 y CA-15), `API.md`, ampliación de ADR-B17, B-13 (FDACS sin conexión) y B-14 (recarga de Uvicorn en Windows), `PLAN_CALIDAD.md`.
 Evidencia: 160 pruebas y ruff limpio; manual: de 60,8 s a 6,0 s y 1,6 s con folio (detalle en RESULTADOS).
 Notas: otros condados siguen sin respaldo; condiciones de uso de la capa de Broward por revisar (MJ-PEN-06). Los puntos consultados mientras FDACS falla quedan en caché una hora sin uso ni propietario. Sólo `refresh=true` los vuelve a pedir: el panel no lo ofrece todavía ("Reintentar" sólo aparece ante un error y no salta la caché del backend); anotado en PEN-30.
+
+## 2026-10-30 21:11 -05:00 PEN-32 trazo y PEN-33 contornos de parcelas
+
+Estado: terminada
+Cambios: commit 9cc3e8f subido a main a pedido del usuario. Nuevos trace_rules.py (puro), map_trace.py, map_parcels.py y gis/timing.py (medición compartida con el buscador); GisClient.query_box; GET /api/map/trace y /api/map/parcels; modelos WorkLocation, MapTrace y ParcelOutlines; osp_row.state_road_id del tramo pasa a ser la ruta (SR 953), como OSP; Turnpike con la capa 13 (D8). GIS falso con rectángulos, distritos y parcelas de Miami-Dade. Docs: PEN-32 y PEN-33, SPEC-B14 (puntos 10 y 11, CA-16 a CA-19), API.md, ARQUITECTURA.md, ampliación de ADR-B17, PLAN_CALIDAD.md y GIS-PEN-01 en future_docs.
+Evidencia: 176 pruebas y ruff limpio; GET reales del trazo y de los contornos (detalle en RESULTADOS).
+Notas: falta comparar el Turnpike con OSP en un tramo del Turnpike; Palm Beach y Martin sin contornos propios (usan FDACS, inaccesible desde este equipo, B-13).

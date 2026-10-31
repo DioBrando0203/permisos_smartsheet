@@ -46,7 +46,7 @@ Estado (2026-10-30): verificado con consultas reales sin sesión. Nada implement
 
 ## Pendientes (GIS-PEN)
 
-- GIS-PEN-01: Confirmar cómo decide OSP "Is Location on Turnpike?" (candidatos: capa 13 de `Admin_Boundaries`, `MNG_DIST` de la vía o la capa Toll Roads).
+- GIS-PEN-01: Confirmar cómo decide OSP "Is Location on Turnpike?" (candidatos: capa 13 de `Admin_Boundaries`, `MNG_DIST` de la vía o la capa Toll Roads). Avance 2026-10-30: la capa 13 ("Detailed FDOT District Bndy_w_TPIKE", campo `DVALUE`) da `D8` / `FTE` sobre SR 821 y sólo `D6` sobre SR 953; el panel la usa (SPEC-B14 punto 10). Falta compararlo con OSP en un tramo del Turnpike.
 - GIS-PEN-02: Probar más tramos, incluidas vías locales y cruces, y comparar con OSP.
 - GIS-PEN-03: Revisar qué expone `FDOT_OSP_Permits` (GIS-F05).
 - GIS-PEN-04: Elegir el mapa base y revisar sus condiciones de uso antes de un uso continuo.

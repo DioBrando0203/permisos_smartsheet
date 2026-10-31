@@ -1,4 +1,6 @@
-import type { Coordinates } from './coordinates'
+import { pointKey, type Coordinates } from './coordinates'
+
+export type MapMode = 'point' | 'trace'
 
 function point(value: string | null): Coordinates | null {
   if (!value) return null
@@ -6,23 +8,32 @@ function point(value: string | null): Coordinates | null {
   return Number.isFinite(lat) && Number.isFinite(lon) ? { lat, lon } : null
 }
 
+function trace(value: string | null): Coordinates[] | null {
+  const points = (value ?? '').split(';').map(point)
+  return points.length >= 2 && points.every(Boolean) ? (points as Coordinates[]) : null
+}
+
+/** `?p=lat,lon` (punto) o `?t=lat,lon;lat,lon;…` (trazo); `?a=&b=` del antiguo Tramo es un trazo. */
 export function readMapUrl(params: URLSearchParams): {
   point: Coordinates | null
-  a: Coordinates | null
-  b: Coordinates | null
+  trace: Coordinates[] | null
 } {
-  return { point: point(params.get('p')), a: point(params.get('a')), b: point(params.get('b')) }
+  const a = point(params.get('a'))
+  const b = point(params.get('b'))
+  return { point: point(params.get('p')), trace: trace(params.get('t')) ?? (a && b ? [a, b] : null) }
 }
 
 export function writeMapUrl(
-  mode: 'point' | 'segment',
+  mode: MapMode,
   a: Coordinates | null,
-  b: Coordinates | null,
+  path: Coordinates[] | null,
 ): URLSearchParams {
   const params = new URLSearchParams()
-  const encode = (value: Coordinates) => `${value.lat.toFixed(6)},${value.lon.toFixed(6)}`
-  if (mode === 'point' && a) params.set('p', encode(a))
-  if (mode === 'segment' && a) params.set('a', encode(a))
-  if (mode === 'segment' && b) params.set('b', encode(b))
+  if (mode === 'point' && a) params.set('p', pointKey(a))
+  if (mode === 'trace' && path) params.set('t', pathKey(path))
   return params
+}
+
+export function pathKey(path: Coordinates[]): string {
+  return path.map(pointKey).join(';')
 }

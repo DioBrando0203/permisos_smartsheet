@@ -161,3 +161,11 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - `pytest`: 160 aprobadas (4 nuevas en `test_map_fallback.py`); `ruff check app tests` y `ruff format --check app tests` sin observaciones.
 - Manual tras reiniciar `run.py` (la recarga automática no terminó, B-14): primer punto 6,0 s (FDACS 5,6 s sin conexión, respaldo de Broward ok) y siguiente 1,6 s (FDACS saltado), ambos con folio y `source: broward_parcels`.
 - Sólo lecturas GIS públicas; no se escribió en Smartsheet.
+
+## 2026-10-30 21:11 -05:00 Trazo como en OSP (PEN-32) y contornos de parcelas (PEN-33)
+
+- Verificado antes de programar: la capa 8 del FDOT acepta rectángulos (una línea con radio da 400); la capa 13 de Admin_Boundaries da D8/FTE sobre SR 821 y sólo D6 sobre SR 953; Broward (Parcels/FeatureServer/0) y Miami-Dade (MD_LandInformation capa 26) devuelven polígonos por rectángulo.
+- pytest: 176 aprobadas (nuevas: 7 de test_trace_rules.py, 8 de test_map_trace.py y 2 de test_fake_gis.py); ruff check y ruff format --check sin observaciones.
+- Manual con GET reales (backend reiniciado por B-14): trazo de control en 1,6 s con la fila de OSP (Miami-Dade, SR 953, 87281000, 281, 3.124 a 3.839, Turnpike false, LEJEUNE RD/NW 42 AVE); giro SR 953 a SR 968 en 1,4 s con dos filas (3.126 a 3.449 y 4.533 a 4.789); trazo en SR 821 con Turnpike true.
+- Manual de contornos: Broward 41 parcelas, 1 300 vértices, 31 KB en 1,1 s; Miami-Dade 121 parcelas, 757 vértices, 22 KB en 0,8 s; sólo parcel_id y rings.
+- No se escribió en Smartsheet; no se pidió ni registró ningún propietario.

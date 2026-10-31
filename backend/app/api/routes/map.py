@@ -5,13 +5,29 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from app.api.deps import ServicesDep
-from app.models.map import MapPoint, MapSearch, MapSegment, MapSource
+from app.models.map import (
+    MapPoint,
+    MapSearch,
+    MapSegment,
+    MapSource,
+    MapTrace,
+    ParcelOutlines,
+)
 
 router = APIRouter()
 Latitude = Annotated[float, Query(ge=-90, le=90)]
 Longitude = Annotated[float, Query(ge=-180, le=180)]
 Radius = Annotated[float, Query(ge=1, le=200)]
 SearchText = Annotated[str, Query(min_length=3, max_length=120)]
+TracePath = Annotated[
+    str,
+    Query(
+        min_length=7,
+        max_length=4000,
+        description="Vértices del trazo: `lat,lon;lat,lon;…` (de 2 a 100).",
+        examples=["25.771778,-80.263610;25.776800,-80.263800;25.782147,-80.264005"],
+    ),
+]
 
 
 @router.get("/search")
@@ -46,6 +62,30 @@ async def map_segment(
     return await services.maps.segment(
         start_lat, start_lon, end_lat, end_lon, radius_m, refresh=refresh
     )
+
+
+@router.get("/trace")
+async def map_trace(
+    services: ServicesDep,
+    path: TracePath,
+    radius_m: Radius = 25,
+    refresh: bool = False,
+) -> MapTrace:
+    """Tabla Work Location de OSP para una línea dibujada: una fila por vía que sigue."""
+    return await services.maps.trace(path, radius_m, refresh=refresh)
+
+
+@router.get("/parcels")
+async def map_parcels(
+    services: ServicesDep,
+    west: Longitude,
+    south: Latitude,
+    east: Longitude,
+    north: Latitude,
+    refresh: bool = False,
+) -> ParcelOutlines:
+    """Contornos de parcelas de una celda pequeña, sólo con su ID (sin propietarios)."""
+    return await services.maps.parcel_outlines((west, south, east, north), refresh=refresh)
 
 
 @router.get("/sources")

@@ -9,6 +9,7 @@ export const sourceNames: Record<string, string> = {
   fdot_zip: 'Códigos ZIP (FDOT)',
   fdacs_parcels: 'Parcelas (FDACS)',
   broward_parcels: 'Parcelas de Broward (condado)',
+  fdot_turnpike: 'Distritos y Turnpike (FDOT)',
 }
 
 /** De dónde salió la parcela: FDACS trae uso y propietario; el respaldo del condado, sólo el ID. */

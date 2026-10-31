@@ -1,4 +1,4 @@
-import type { ApiMapPoint, ApiMapSearch, ApiMapSegment } from '../../features/map/types'
+import type { ApiMapPoint, ApiMapSearch, ApiMapTrace, ApiParcelOutlines } from '../../features/map/types'
 
 // Datos sintéticos con la forma de /api/map/*: el propietario nunca es real.
 export const mapPointFixture: ApiMapPoint = {
@@ -44,29 +44,70 @@ export const mapPointFixture: ApiMapPoint = {
   warnings: ['MULTIPLE_ROADS', 'SOURCE_FAILED'],
 }
 
-export const mapSegmentFixture: ApiMapSegment = {
-  start: mapPointFixture,
-  end: { ...mapPointFixture, lat: 25.782147, lon: -80.264005 },
-  road: mapPointFixture.roads?.[0],
-  begin_milepost: 3.124,
-  end_milepost: 3.839,
-  length_mi: 0.717,
-  geometry: {
-    type: 'LineString',
-    coordinates: [
-      [-80.26361, 25.771778],
-      [-80.264005, 25.782147],
-    ],
-  },
-  osp_row: {
-    county: 'Miami-Dade',
-    state_road_id: '87281000',
-    section_number: '281',
-    beginning_milepost: 3.124,
-    ending_milepost: 3.839,
-  },
-  jurisdiction: mapPointFixture.jurisdiction,
-  warnings: [],
+// Trazo del caso de control de OSP que además dobla a una calle local (fila "No estatal").
+export const mapTraceFixture: ApiMapTrace = {
+  path: [
+    [25.771778, -80.26361],
+    [25.782147, -80.264005],
+  ],
+  length_mi: 0.917,
+  rows: [
+    {
+      county: 'Miami-Dade',
+      state_road_id: 'SR 953',
+      roadway_id: '87281000',
+      section_number: '281',
+      beginning_milepost: 3.124,
+      ending_milepost: 3.839,
+      on_turnpike: false,
+      kind: 'state',
+      local_name: 'LEJEUNE RD/NW 42 AVE',
+      length_mi: 0.717,
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [-80.26361, 25.771778],
+          [-80.264005, 25.782147],
+        ],
+      },
+    },
+    {
+      county: 'Miami-Dade',
+      state_road_id: '87000442',
+      roadway_id: '87000442',
+      section_number: '000442',
+      beginning_milepost: 0.1,
+      ending_milepost: 0.304,
+      on_turnpike: null,
+      kind: 'other',
+      local_name: 'NW 7 ST',
+      length_mi: 0.2,
+      geometry: { type: 'LineString', coordinates: [] },
+    },
+  ],
+  sources: [
+    { id: 'fdot_lrs', status: 'ok', ms: 300 },
+    { id: 'fdot_turnpike', status: 'timeout', ms: 20000 },
+  ],
+  warnings: ['SOURCE_FAILED', 'NOT_STATE_ROAD'],
+}
+
+export const parcelOutlinesFixture: ApiParcelOutlines = {
+  source: 'miami_dade_parcels',
+  parcels: [
+    {
+      parcel_id: '300000000000',
+      rings: [
+        [
+          [-80.2633, 25.772],
+          [-80.26285, 25.772],
+          [-80.26285, 25.7724],
+          [-80.2633, 25.772],
+        ],
+      ],
+    },
+  ],
+  truncated: false,
 }
 
 export const mapSearchFixture: ApiMapSearch = {

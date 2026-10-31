@@ -1,12 +1,13 @@
 import { expect, test, type Page } from '@playwright/test'
 
 // Backend real contra el GIS falso: vía sintética del caso de control de OSP (SPEC-11, SPEC-B14).
-const controlSegment = '/mapa?a=25.771778,-80.263610&b=25.782147,-80.264005'
+const controlTrace = '/mapa?t=25.771778,-80.263610;25.782147,-80.264005'
 const controlPoint = '/mapa?p=25.771778,-80.263610'
 const fakeGisCalls = 'http://127.0.0.1:8792/_fake/calls'
 
 const panel = (page: Page) => page.getByRole('complementary', { name: 'Resultados del mapa' })
 const field = (page: Page, label: string) => panel(page).locator('.map-field', { hasText: label })
+const osp = (page: Page) => panel(page).getByRole('row').nth(1)
 // La app escribe la URL con URLSearchParams (la coma sale como %2C): se compara ya decodificada.
 const param = (page: Page, name: string) => new URL(page.url()).searchParams.get(name)
 
@@ -15,22 +16,35 @@ test.beforeEach(async ({ page }) => {
   await page.route(/^https?:\/\/(?!127\.0\.0\.1[:/])/, (route) => route.abort())
 })
 
-test('el tramo de control por URL da la fila para OSP y resalta la vía (CA-02, CA-05)', async ({
+test('el trazo de control por URL da la fila de OSP y resalta la vía (CA-02, CA-05)', async ({
   page,
   request,
 }) => {
-  await page.goto(controlSegment)
-  await expect(page.getByRole('button', { name: 'Tramo' })).toHaveAttribute('aria-pressed', 'true')
-  await expect(field(page, 'State Road ID')).toContainText('87281000')
-  await expect(field(page, 'County')).toContainText('Miami-Dade')
-  await expect(field(page, 'Section Number')).toContainText('281')
-  await expect(field(page, 'Beginning Milepost')).toContainText('3.124')
-  await expect(field(page, 'Ending Milepost')).toContainText('3.839')
-  await expect(page.locator('path.map-line')).toBeVisible()
-  expect([param(page, 'a'), param(page, 'b')]).toEqual(['25.771778,-80.263610', '25.782147,-80.264005'])
+  await page.goto(controlTrace)
+  await expect(page.getByRole('button', { name: 'Trazo' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(osp(page)).toContainText('Miami-DadeSR 953LEJEUNE RD/NW 42 AVE2813.1243.839No')
+  await expect(page.locator('path.map-line--result')).toBeVisible()
+  expect(param(page, 't')).toBe('25.771778,-80.263610;25.782147,-80.264005')
+  // Un enlace del antiguo Tramo (?a=&b=) abre el mismo trazo.
+  await page.goto('/mapa?a=25.771778,-80.263610&b=25.782147,-80.264005')
+  await expect(osp(page)).toContainText('SR 953')
   const calls: { authorization: boolean }[] = await (await request.get(fakeGisCalls)).json()
   expect(calls.length).toBeGreaterThan(0)
   expect(calls.some((call) => call.authorization)).toBe(false)
+})
+
+test('se dibuja el trazo con clics y se termina con doble clic, como en OSP (PEN-32)', async ({ page }) => {
+  await page.goto(controlPoint)
+  await expect(field(page, 'Milepost')).toContainText('3.124')
+  const marker = await page.locator('path.map-marker').boundingBox()
+  const start = { x: marker!.x + marker!.width / 2, y: marker!.y + marker!.height / 2 }
+  await page.getByRole('button', { name: 'Trazo' }).click()
+  await page.mouse.click(start.x, start.y)
+  await expect(panel(page).getByText('1 punto')).toBeVisible()
+  // A zoom 16, 140 px al norte son unos 300 m sobre la vía sintética (milepost ~3.31).
+  await page.mouse.dblclick(start.x - 5, start.y - 140)
+  await expect(osp(page)).toContainText(/SR 953.*3\.12\d3\.3\d\d/)
+  expect(param(page, 't')?.split(';')).toHaveLength(2)
 })
 
 test('los clics en el mapa consultan el punto: fuera y sobre la vía (CA-01, CA-08)', async ({ page }) => {
@@ -65,8 +79,8 @@ test('el buscador lleva a una ruta con milepost y a una calle', async ({ page })
 
 test('a 320 px no hay desborde horizontal y el panel queda debajo del mapa (CA-09)', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 })
-  await page.goto(controlSegment)
-  await expect(field(page, 'State Road ID')).toContainText('87281000')
+  await page.goto(controlTrace)
+  await expect(osp(page)).toContainText('SR 953')
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   )
@@ -100,4 +114,16 @@ test('las opciones de vista piden la ortofoto NAIP y las vías del FDOT por áre
   await page.reload()
   await expect(page.getByLabel('Mapa base')).toHaveValue('hd')
   await expect(page.getByLabel('Vías del FDOT')).toBeChecked()
+})
+
+test('los límites de parcelas aparecen al acercarse (PEN-33)', async ({ page }) => {
+  await page.goto(controlPoint)
+  await expect(field(page, 'Milepost')).toContainText('3.124')
+  await page.getByLabel('Límites de parcelas').check()
+  await expect(page.getByText(/Acércate \(zoom 17 o más\)/)).toBeVisible()
+  const parcels = page.waitForRequest(/\/api\/map\/parcels\?west=/)
+  await page.getByRole('button', { name: 'Zoom in' }).click()
+  await parcels
+  await expect(page.locator('path.map-parcel')).toBeVisible()
+  await expect(page.getByText(/Acércate/)).toBeHidden()
 })

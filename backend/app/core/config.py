@@ -57,6 +57,11 @@ class Settings(BaseSettings):
     gis_broward_parcels_url: str = (
         "https://services.arcgis.com/JMAJrTsHNLrSsWf5/ArcGIS/rest/services/Parcels/FeatureServer/0"
     )
+    # Parcelas para dibujar límites en Miami-Dade (PEN-33); Broward usa la URL de arriba.
+    gis_miami_dade_parcels_url: str = (
+        "https://gisweb.miamidade.gov/arcgis/rest/services/MD_LandInformation/MapServer/26"
+    )
+    gis_trace_max_points: int = 100
     gis_timeout_seconds: float = 20.0
     # Un servidor que no acepta la conexión no se reintenta: sólo alargaría la espera (PEN-30).
     gis_connect_timeout_seconds: float = 5.0

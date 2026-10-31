@@ -1,6 +1,6 @@
 # SPEC-B14 Mapa: vía, milepost, jurisdicción y parcela de un punto o tramo
 
-Estado: implementada M1-M2 y el buscador de M6 (2026-10-30)
+Estado: implementada M1-M2, el buscador de M6, el trazo (PEN-32) y los límites de parcelas (PEN-33) (2026-10-30)
 Código: `api/routes/map.py`, `models/map.py`, `services/map.py`, `services/map_rules.py`, `services/map_mappers.py`, `services/map_query.py`, `services/map_search.py`, `services/gis/`
 Relacionadas: PEN-29, RQ-26, ADR-B15, ADR-B16, ADR-B17, SPEC-11 del frontend; investigación en `future_docs/GIS_PUBLICO_FLORIDA.md` y `future_docs/MAPAS_JURISDICCION_PARCELAS.md`
 
@@ -10,7 +10,7 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 
 ## Alcance
 
-- Incluye: consulta de punto, consulta de tramo, buscador (dirección, calle, ruta con milepost o coordenadas) y catálogo de fuentes, sólo lectura sobre servicios GIS públicos (ADR-B17).
+- Incluye: consulta de punto, trazo con la tabla Work Location de OSP (y el tramo de dos puntos, que el panel ya no usa), buscador (dirección, calle, ruta con milepost o coordenadas), contornos de parcelas para dibujar y catálogo de fuentes, sólo lectura sobre servicios GIS públicos (ADR-B17).
 - Excluye: dibujar capas completas, Turnpike (GIS-PEN-01), adaptadores de condado distintos de la base estatal (fase M5) y cualquier escritura.
 
 ## Fuentes verificadas (2026-10-30, GET sin sesión)
@@ -59,6 +59,16 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
    - los filtros `where` sólo se arman con texto ya validado por expresiones regulares (sin comillas);
    - hasta 8 resultados; una fuente que falla queda en `sources` y no tumba las demás;
    - caché `map:search:{texto en mayúsculas}` con el mismo vencimiento.
+10. `GET /api/map/trace?path=lat,lon;lat,lon;…&radius_m=25&refresh=` (PEN-32), como el paso 3 de OSP (`future_docs/osp-milepost-paso3.png`):
+   - de 2 a `gis_trace_max_points` (100) vértices, todos en Florida y como máximo `gis_max_segment_miles`; si no, 422 `TRACE_INVALID`, `COORDINATES_OUT_OF_FLORIDA` o `SEGMENT_TOO_LONG` sin consultar fuentes;
+   - vías candidatas: la capa 8 por rectángulos de unos 300 m a lo largo del trazo más el radio (`trace_rules.envelopes`), con geometría y medida M;
+   - el trazo se recorre cada 10 m; cada muestra queda en la vía más cercana dentro del radio y no se cambia de vía mientras la actual siga dentro del radio, así un cruce no corta la fila; tramos de menos de 20 m se descartan y una misma vía a ambos lados de uno descartado se une (`trace_rules.runs`);
+   - mileposts de cada fila: proyección de sus extremos, extendidos mientras la vía siga en el radio, para que al doblar cada fila termine y empiece en la intersección; ordenados de menor a mayor, tres decimales;
+   - por atributos y sólo para las vías del trazo: estatales (capa 15) y de condado (capa 2) dan el tipo y la ruta; nombres locales (capa 13) el nombre según el milepost medio; condados (`Admin_Boundaries` capa 6, `CNTYNO IN`) el nombre del condado;
+   - Turnpike: punto medio de cada fila sobre la vía contra `Admin_Boundaries` capa 13; `D8` (FTE) es Turnpike (GIS-PEN-01, verificado el 2026-10-30 en SR 821 y SR 953);
+   - sin vías: 200 con `rows` vacío y `NO_ROAD_NEARBY`; filas que no son estatales: `NOT_STATE_ROAD` (OSP no las acepta); la capa 8 caída: 502 `GIS_UNAVAILABLE`; otra fuente caída: `SOURCE_FAILED` y el dato en `null`;
+   - caché `map:trace:{radio}:{vértices a 6 decimales}`.
+11. `GET /api/map/parcels?west=&south=&east=&north=&refresh=` (PEN-33): contornos de las parcelas que tocan una celda de hasta 0.006 grados por lado (si no, 422 `PARCEL_CELL_INVALID`); el condado del centro (capa 6) decide la fuente: Broward (`gis_broward_parcels_url`, `FOLIO`), Miami-Dade (`gis_miami_dade_parcels_url`, capa 26 de `MD_LandInformation`, `FOLIO`) y FDACS (`PARCEL_ID`) para el resto. Sólo se pide el ID, nunca el propietario; geometría simplificada a 0.000005 grados (~0,5 m) y hasta 1000 parcelas (`truncated` si se llega). Fuente caída: 502 `GIS_UNAVAILABLE`. Caché por celda.
 
 ## Contrato
 
@@ -96,12 +106,22 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 
 `SearchResult`: `kind` (`coordinates`, `address`, `street`, `milepost`), `label`, `detail` | null, `lat`, `lon`, `roadway_id` | null, `milepost` | null.
 
+`MapTrace`: `path` ([[lat, lon], …]), `length_mi`, `rows` (lista de `WorkLocation` en el orden del trazo), `sources` (`fdot_lrs`, `fdot_state_roads`, `fdot_county_roads`, `fdot_local_names`, `fdot_counties`, `fdot_turnpike`), `warnings`.
+
+`WorkLocation` (columnas de Work Location en OSP): `county`, `state_road_id` (la ruta como en OSP, "SR 953"; el ID de vía si no tiene ruta), `roadway_id`, `section_number`, `beginning_milepost`, `ending_milepost`, `on_turnpike` (bool | null), `kind`, `local_name`, `length_mi`, `geometry` (LineString del tramo de la vía).
+
+`ParcelOutlines`: `source` (`broward_parcels`, `miami_dade_parcels` o `fdacs_parcels`), `parcels` (`parcel_id`, `rings` [[[lon, lat], …], …]), `truncated`.
+
+`osp_row.state_road_id` del tramo también es la ruta ("SR 953") desde el 2026-10-30; antes era el ID de vía, distinto de OSP.
+
 Avisos (`warnings`): `NO_ROAD_NEARBY`, `MULTIPLE_ROADS`, `SOURCE_FAILED`, `PARCEL_IS_ROAD`, `OUTSIDE_COUNTY_DATA`.
 
 Errores nuevos (formato de `estilos/API.md`):
 - 422 `COORDINATES_OUT_OF_FLORIDA`, `SEGMENT_ROADWAY_MISMATCH`, `SEGMENT_TOO_LONG`.
 - 502 `GIS_UNAVAILABLE`: ninguna fuente respondió tras los reintentos.
 - 503 `GIS_DISABLED`: `APP_GIS_ENABLED=false`.
+- 422 `TRACE_INVALID`: el trazo no es `lat,lon;…` o no tiene de 2 a 100 vértices.
+- 422 `PARCEL_CELL_INVALID`: la celda pedida es vacía o mide más de 0.006 grados por lado.
 
 ## Diseño
 
@@ -112,9 +132,12 @@ Errores nuevos (formato de `estilos/API.md`):
 - `services/map_rules.py`: puro: `in_florida`, `milepost_at`, `slice_route`, `pick_segment_road`, `jurisdiction` (tabla), `DOR_USES`, `normalize_route`. Si pasa de 300 líneas, separar `milepost.py`.
 - `services/map.py`: `MapService.point` y `MapService.segment`; consultas en paralelo con `asyncio.TaskGroup` y caché `TtlCache`.
 - `services/map_query.py` (puro) y `services/map_search.py` (`MapSearchService`, que `MapService.search` delega): buscador del punto 9; `GisClient.query_where` y `GisClient.geocode`.
+- `services/trace_rules.py` (puro: `parse_path`, `densify`, `envelopes`, `runs`) y `services/map_trace.py` (`MapTraceService`): trazo del punto 10; `GisClient.query_box` (rectángulo).
+- `services/map_parcels.py` (`MapParcelsService`) y `gis/layers.parcel_outline_layer`: contornos del punto 11.
+- `services/gis/timing.py` (`run_source`): mide cada fuente y la vuelve `SourceStatus` sin tumbar la respuesta; lo usan el buscador y el trazo.
 - Pruebas: `tests/fake_gis.py` es el GIS falso del E2E (CA-13) y `tests/e2e_backend.py` arranca el backend apuntado a él y al Smartsheet falso, sin leer el token de `.env`.
 - `models/map.py` y `api/routes/map.py`: contrato y ruta delgada, con etiqueta propia en Swagger ("mapa").
-- Configuración nueva en `core/config.py`: `app_gis_enabled` (true), `gis_fdot_base_url`, `gis_fdacs_parcels_url`, `gis_census_geocoder_url`, `gis_broward_parcels_url`, `gis_timeout_seconds`, `gis_connect_timeout_seconds`, `gis_unreachable_cooldown_seconds`, `gis_max_concurrency`, `gis_max_retries`, `gis_cache_ttl_seconds`, `gis_max_segment_miles`.
+- Configuración nueva en `core/config.py`: `app_gis_enabled` (true), `gis_fdot_base_url`, `gis_fdacs_parcels_url`, `gis_census_geocoder_url`, `gis_broward_parcels_url`, `gis_miami_dade_parcels_url`, `gis_trace_max_points` (100), `gis_timeout_seconds`, `gis_connect_timeout_seconds`, `gis_unreachable_cooldown_seconds`, `gis_max_concurrency`, `gis_max_retries`, `gis_cache_ttl_seconds`, `gis_max_segment_miles`.
 
 ## Criterios de aceptación
 
@@ -133,17 +156,22 @@ Errores nuevos (formato de `estilos/API.md`):
 - CA-13: el backend completo funciona contra el GIS falso que usa el E2E del frontend (punto, tramo y buscador) y ninguna solicitud lleva `Authorization`. Prueba: `test_fake_gis.py`.
 - CA-14: una fuente que no conecta se intenta una sola vez y, mientras dura la pausa, el siguiente punto no la vuelve a pedir; pasada la pausa, sí. Prueba: `test_map_fallback.py`. Manual 2026-10-30 con FDACS sin conexión: de 60,8 s a 6,0 s el primer punto y 1,6 s los siguientes.
 - CA-15: con FDACS caído en Broward la parcela llega del condado con `source: broward_parcels`; fuera de Broward, o con FDACS bien, no se pide el respaldo. Prueba: `test_map_fallback.py`; manual 2026-10-30: folio `494236300010` en Fort Lauderdale.
+- CA-16: el trazo del caso de control da una fila igual a OSP: Miami-Dade, SR 953, 281, 3.124 a 3.839, Turnpike No. Prueba: `test_fake_gis.py`; manual 2026-10-30 con GET reales, en 1,6 s.
+- CA-17: un cruce no corta la fila; al doblar a otra vía hay dos filas que se juntan en la intersección; dibujado al revés da los mismos mileposts; lejos de toda vía, sin filas. Prueba: `test_trace_rules.py`; manual 2026-10-30: SR 953 (3.126 a 3.449) y SR 968 (4.533 a 4.789), contra 3.124 y 4.534 del punto en ese cruce.
+- CA-18: Turnpike con `D8`, trazo inválido, fuera de Florida o largo sin consultar fuentes, sin vías y capa 8 caída. Prueba: `test_map_trace.py`; manual 2026-10-30: SR 821 con Turnpike `true`.
+- CA-19: contornos por celda desde el condado y sin propietario. Prueba: `test_fake_gis.py`; manual 2026-10-30: Broward 41 parcelas (31 KB, 1,1 s) y Miami-Dade 121 (22 KB, 0,8 s).
 
 ## Fases
 
 - M1: punto (CA-01 a CA-06, CA-08 a CA-11).
 - M2: tramo (CA-07).
 - M5: pendiente: adaptadores de condado con su propia fuente de jurisdicción, empezando por Palm Beach (`ENG/CENTERLINE`, campo `RESP_AUTH`); cada uno con su spec o una sección nueva aquí.
-- M6: hecho el buscador (CA-12); pendientes las capas dibujadas, Turnpike y el mapa base con clave.
+- M6: hechos el buscador (CA-12), las vías dibujadas y la imagen HD (PEN-31, en el frontend), el Turnpike (CA-18) y los límites de parcelas (CA-19); pendiente el mapa base con clave.
 
 ## Pendientes
 
-- Turnpike en `osp_row` (GIS-PEN-01).
+- Turnpike: resuelto en el trazo con la capa 13 de distritos (`D8`); falta compararlo con OSP en un tramo real del Turnpike (el `osp_row` del tramo de dos puntos no lo trae).
+- Respaldo de contornos para Palm Beach (`Parcels/Parcels/MapServer`) y Martin; hoy usan FDACS, que no responde desde el equipo Windows (B-13).
 - Confirmar la tabla `DOR_UC` (MJ-PEN-05).
 - Confirmar con el usuario el geocodificador del Censo como fuente nueva del buscador: ADR-B17 sólo nombraba FDOT y FDACS para la fase base.
 - Verificación manual del buscador con GET reales (dirección, calle y ruta con milepost): no hay evidencia registrada.

@@ -1,11 +1,13 @@
 import type {
   ApiMapPoint,
   ApiMapSearch,
-  ApiMapSegment,
+  ApiMapTrace,
+  ApiParcelOutlines,
   ApiRoadMatch,
   MapPoint,
   MapSearch,
-  MapSegment,
+  MapTrace,
+  ParcelOutlines,
   RoadMatch,
 } from './types'
 
@@ -62,27 +64,34 @@ export function normalizeMapPoint(source: ApiMapPoint): MapPoint {
     warnings: source.warnings ?? [],
   }
 }
-export function normalizeMapSegment(source: ApiMapSegment): MapSegment {
-  const start = normalizeMapPoint(source.start ?? {})
+export function normalizeMapTrace(source: ApiMapTrace): MapTrace {
   return {
-    start,
-    end: normalizeMapPoint(source.end ?? {}),
-    road: road(source.road ?? {}),
-    beginMilepost: source.begin_milepost ?? 0,
-    endMilepost: source.end_milepost ?? 0,
     lengthMi: source.length_mi ?? 0,
-    geometry: { type: 'LineString', coordinates: source.geometry?.coordinates ?? [] },
-    ospRow: {
-      county: source.osp_row?.county ?? null,
-      stateRoadId: source.osp_row?.state_road_id ?? '',
-      sectionNumber: source.osp_row?.section_number ?? null,
-      beginningMilepost: source.osp_row?.beginning_milepost ?? 0,
-      endingMilepost: source.osp_row?.ending_milepost ?? 0,
-    },
-    jurisdiction: source.jurisdiction
-      ? normalizeMapPoint({ jurisdiction: source.jurisdiction }).jurisdiction
-      : start.jurisdiction,
+    rows: (source.rows ?? []).map((row) => ({
+      county: row.county ?? null,
+      stateRoadId: row.state_road_id ?? row.roadway_id ?? '',
+      roadwayId: row.roadway_id ?? '',
+      sectionNumber: row.section_number ?? null,
+      beginningMilepost: row.beginning_milepost ?? 0,
+      endingMilepost: row.ending_milepost ?? 0,
+      onTurnpike: row.on_turnpike ?? null,
+      kind: row.kind ?? 'other',
+      localName: row.local_name ?? null,
+      lengthMi: row.length_mi ?? 0,
+      coordinates: row.geometry?.coordinates ?? [],
+    })),
+    sources: normalizeMapPoint({ sources: source.sources }).sources,
     warnings: source.warnings ?? [],
+  }
+}
+export function normalizeParcelOutlines(source: ApiParcelOutlines): ParcelOutlines {
+  return {
+    source: source.source ?? '',
+    parcels: (source.parcels ?? []).map((parcel) => ({
+      parcelId: parcel.parcel_id ?? '',
+      rings: parcel.rings ?? [],
+    })),
+    truncated: source.truncated ?? false,
   }
 }
 export function normalizeMapSearch(source: ApiMapSearch): MapSearch {

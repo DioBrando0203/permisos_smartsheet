@@ -28,6 +28,7 @@ async def stack():
         gis_fdot_base_url=f"{FAKE}/arcgis/rest/services",
         gis_fdacs_parcels_url=f"{FAKE}/fdacs/parcels/0",
         gis_census_geocoder_url=f"{FAKE}/census/onelineaddress",
+        gis_miami_dade_parcels_url=f"{FAKE}/miami-dade/parcels/26",
     )
     gis_http = httpx.AsyncClient(transport=httpx.ASGITransport(app=fake))
     cache = TtlCache(settings.gis_cache_ttl_seconds)
@@ -72,7 +73,7 @@ async def test_segment_on_the_control_case(stack) -> None:
     body = (await client.get("/api/map/segment", params=params)).json()
     assert body["osp_row"] == {
         "county": "Miami-Dade",
-        "state_road_id": ROADWAY,
+        "state_road_id": "SR 953",
         "section_number": "281",
         "beginning_milepost": 3.124,
         "ending_milepost": 3.839,
@@ -90,3 +91,34 @@ async def test_search_through_the_fake(stack) -> None:
     address = (await client.get("/api/map/search", params={"q": "1000 NW 42nd Ave"})).json()
     assert address["results"][0]["kind"] == "address"
     assert {source["status"] for source in address["sources"]} == {"ok"}
+
+
+async def test_trace_on_the_control_case_gives_the_osp_row(stack) -> None:
+    client, _ = stack
+    # Dibujado con un vértice intermedio y a unos metros de la línea central, como a mano.
+    path = f"{START[0]},{START[1]};25.776800,-80.263760;{END[0]},{END[1]}"
+    body = (await client.get("/api/map/trace", params={"path": path})).json()
+    assert [row["state_road_id"] for row in body["rows"]] == ["SR 953"]
+    row = body["rows"][0]
+    assert (row["county"], row["roadway_id"], row["section_number"]) == (
+        "Miami-Dade",
+        ROADWAY,
+        "281",
+    )
+    assert (row["beginning_milepost"], row["ending_milepost"]) == (3.124, 3.839)
+    assert (row["on_turnpike"], row["kind"]) == (False, "state")
+    assert row["local_name"] == "LEJEUNE RD/NW 42 AVE"
+    assert row["geometry"]["coordinates"][0] == [START[1], START[0]]
+    assert body["warnings"] == [] and {s["status"] for s in body["sources"]} == {"ok"}
+
+
+async def test_parcel_outlines_come_from_the_county_without_owners(stack) -> None:
+    client, _ = stack
+    box = {"west": -80.2650, "south": 25.7710, "east": -80.2600, "north": 25.7750}
+    body = (await client.get("/api/map/parcels", params=box)).json()
+    assert body["source"] == "miami_dade_parcels" and body["truncated"] is False
+    assert [parcel["parcel_id"] for parcel in body["parcels"]][:2] == [
+        "300000000000",
+        "300000000001",
+    ]
+    assert set(body["parcels"][0]) == {"parcel_id", "rings"}

@@ -53,7 +53,7 @@ src/
                                            useCompare, useCopyShares
     designers/                             DesignersPage, DesignerRow, DesignerDetail, PhaseBar, SheetGaps,
                                            useDesigners
-    map/                                   MapRoute, MapPage, MapToolbar, MapSearchBox, MapResults, MapSections, hooks; lib: coordenadas, URL, fila OSP, preferencias, nombres de fuentes
+    map/                                   MapRoute, MapPage, MapToolbar, MapSearchBox, MapResults, MapSections, TraceResult, WorkLocationTable, useTraceDrawing, useParcelLayer, hooks; lib: coordenadas, URL, tabla OSP, celdas, preferencias, nombres de fuentes
   lib/
     api.ts                                 único punto HTTP (fetch), ApiError, timeouts
     types.ts                               contrato normalizado (espejo de backend/docs/estilos/API.md)

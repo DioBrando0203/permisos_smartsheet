@@ -88,3 +88,9 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm run format:check`, `npm run build`, `npm run lint` (sin avisos), `npm test` (11 archivos y 23 pruebas) y `npm run test:e2e` (5 pasan, 1 caso F0 omitido): pasaron. Leaflet sigue en su chunk aparte.
 - Manual con el servidor de desarrollo y los servicios reales, a 1440 px y zoom 19 en Fort Lauderdale: Satélite HD nítido, vías del FDOT con leyenda, escala 20 m / 50 ft, Estado "Florida" y parcela `494236300010` con fuente "Condado de Broward (sólo el folio)". La vista HD tardó 8,1 s en cargar todas las imágenes; los fallos `net::ERR_ABORTED` fueron imágenes canceladas por Leaflet al cambiar de zoom.
 - `map.css` dividido: barra y buscador en `map-toolbar.css` (120 y 162 líneas, E-05).
+
+## 2026-10-30 21:11 -05:00 Trazo como en OSP (PEN-32) y límites de parcelas (PEN-33)
+
+- npm run format:check, npm run build, npm run lint (sin avisos), npm test (11 archivos y 27 pruebas) y npm run test:e2e (7 pasan, 1 caso F0 omitido): pasaron. E2E repetido 3 veces: 21 de 21.
+- Durante el desarrollo, el E2E encontró dos fallos reales: el doble clic no cerraba el trazo (FB-08) y la tabla estiraba la página 103 px a 320 px (FB-09); ambos corregidos y verificados.
+- Manual con el servidor de desarrollo y servicios reales a 1440 px: trazo de control con la tabla Work Location (Miami-Dade, SR 953, 281, 3.124, 3.839, No) y lotes de Miami-Dade en amarillo; Fort Lauderdale en Satélite HD con lotes de Broward y SR 838 en naranja; giro SR 953 a SR 968 con dos filas. La tabla ocupa 334 de 334 px del panel (sin scroll) a 1440 px.

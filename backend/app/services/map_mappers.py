@@ -38,11 +38,11 @@ def build_roads(
             RoadMatch(
                 roadway_id=roadway,
                 county_code_fdot=feature_text(feature, "COUNTY"),
-                section=_section(feature_text(feature, "SECTION")),
+                section=section_number(feature_text(feature, "SECTION")),
                 subsection=roadway[-3:] if len(roadway) >= 3 else None,
                 kind=kind,
                 route=_route_name(data, roadway),
-                local_name=_local_name(names.get(roadway, []), milepost),
+                local_name=local_name_at(names.get(roadway, []), milepost),
                 milepost=milepost,
                 distance_m=_distance(attrs, route, lat, lon),
                 begin_post=to_number(attrs.get("BEGIN_POST")),
@@ -108,7 +108,7 @@ def warnings(
     return result
 
 
-def _local_name(features: list[dict[str, Any]], milepost: float | None) -> str | None:
+def local_name_at(features: list[dict[str, Any]], milepost: float | None) -> str | None:
     """Una vía cambia de nombre por tramos (SW 42 Ave, NW 42 Ave): gana el que contiene el MP."""
     for feature in features:
         attrs = _attributes(feature)
@@ -177,5 +177,5 @@ def _distance(attrs: dict[str, Any], route: RouteGeometry | None, lat: float, lo
     return distance_m_to_route(lat, lon, route) if route else 0.0
 
 
-def _section(value: str) -> str | None:
+def section_number(value: str) -> str | None:
     return value[:3] if len(value) == 6 and value.endswith("000") else value or None

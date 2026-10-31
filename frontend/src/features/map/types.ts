@@ -42,23 +42,32 @@ export type MapPoint = {
   sources: { id: string; status: 'ok' | 'error' | 'timeout'; ms: number }[]
   warnings: string[]
 }
-export type MapSegment = {
-  start: MapPoint
-  end: MapPoint
-  road: RoadMatch
-  beginMilepost: number
-  endMilepost: number
+/** Una fila de Work Location de OSP: una por cada vía que sigue el trazo (PEN-32). */
+export type WorkLocation = {
+  county: string | null
+  /** Como en OSP: la ruta ("SR 953"); el ID de vía si no tiene ruta. */
+  stateRoadId: string
+  roadwayId: string
+  sectionNumber: string | null
+  beginningMilepost: number
+  endingMilepost: number
+  onTurnpike: boolean | null
+  kind: RoadMatch['kind']
+  localName: string | null
   lengthMi: number
-  geometry: { type: 'LineString'; coordinates: [number, number][] }
-  ospRow: {
-    county: string | null
-    stateRoadId: string
-    sectionNumber: string | null
-    beginningMilepost: number
-    endingMilepost: number
-  }
-  jurisdiction: MapPoint['jurisdiction']
+  coordinates: [number, number][]
+}
+export type MapTrace = {
+  lengthMi: number
+  rows: WorkLocation[]
+  sources: MapPoint['sources']
   warnings: string[]
+}
+/** Contornos de parcelas de una celda, sólo con el ID (PEN-33). */
+export type ParcelOutlines = {
+  source: string
+  parcels: { parcelId: string; rings: [number, number][][] }[]
+  truncated: boolean
 }
 export type ApiRoadMatch = {
   roadway_id?: string
@@ -103,23 +112,29 @@ export type ApiMapPoint = {
   sources?: { id?: string; status?: 'ok' | 'error' | 'timeout'; ms?: number }[]
   warnings?: string[]
 }
-export type ApiMapSegment = {
-  start?: ApiMapPoint
-  end?: ApiMapPoint
-  road?: ApiRoadMatch
-  begin_milepost?: number
-  end_milepost?: number
+export type ApiMapTrace = {
+  path?: [number, number][]
   length_mi?: number
-  geometry?: { type?: 'LineString'; coordinates?: [number, number][] }
-  osp_row?: {
+  rows?: {
     county?: string | null
     state_road_id?: string
+    roadway_id?: string
     section_number?: string | null
     beginning_milepost?: number
     ending_milepost?: number
-  }
-  jurisdiction?: ApiMapPoint['jurisdiction']
+    on_turnpike?: boolean | null
+    kind?: RoadMatch['kind']
+    local_name?: string | null
+    length_mi?: number
+    geometry?: { type?: 'LineString'; coordinates?: [number, number][] }
+  }[]
+  sources?: ApiMapPoint['sources']
   warnings?: string[]
+}
+export type ApiParcelOutlines = {
+  source?: string
+  parcels?: { parcel_id?: string; rings?: [number, number][][] }[]
+  truncated?: boolean
 }
 export type MapSearchResult = {
   kind: 'coordinates' | 'address' | 'street' | 'milepost'

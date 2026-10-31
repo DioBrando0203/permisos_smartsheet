@@ -1,45 +1,47 @@
 import { basemapChoices, type Basemap } from '../../components/map/tileSources'
 import { Button } from '../../components/ui'
 import type { Coordinates } from './lib/coordinates'
+import type { MapMode } from './lib/mapUrl'
 import { MapSearchBox } from './MapSearchBox'
 
-export type Mode = 'point' | 'segment'
 const basemapLabels: Record<Basemap, string> = {
   streets: 'Calles (USGS)',
   satellite: 'Satélite (USGS)',
   hd: 'Satélite HD (NAIP, más zoom)',
 }
+export type MapLayers = { roads: boolean; parcels: boolean }
 
 type Props = {
-  mode: Mode
+  mode: MapMode
   basemap: Basemap
-  roads: boolean
+  layers: MapLayers
   hint: string
-  onMode: (mode: Mode) => void
+  parcelHint: string | null
+  onMode: (mode: MapMode) => void
   onBasemap: (basemap: Basemap) => void
-  onRoads: (roads: boolean) => void
+  onLayers: (layers: MapLayers) => void
   onSelect: (point: Coordinates) => void
 }
 
-export function MapToolbar({ mode, basemap, roads, hint, onMode, onBasemap, onRoads, onSelect }: Props) {
+export function MapToolbar({ mode, basemap, layers, hint, parcelHint, ...on }: Props) {
   return (
     <div className="map-toolbar">
       <div className="map-toolbar__modes" role="group" aria-label="Modo de consulta">
-        {(['point', 'segment'] as const).map((value) => (
+        {(['point', 'trace'] as const).map((value) => (
           <Button
             key={value}
             appearance={mode === value ? 'primary' : 'secondary'}
             aria-pressed={mode === value}
-            onClick={() => onMode(value)}
+            onClick={() => on.onMode(value)}
           >
-            {value === 'point' ? 'Punto' : 'Tramo'}
+            {value === 'point' ? 'Punto' : 'Trazo'}
           </Button>
         ))}
       </div>
-      <MapSearchBox onSelect={onSelect} />
+      <MapSearchBox onSelect={on.onSelect} />
       <label className="map-toolbar__base">
         Mapa base
-        <select value={basemap} onChange={(event) => onBasemap(event.target.value as Basemap)}>
+        <select value={basemap} onChange={(event) => on.onBasemap(event.target.value as Basemap)}>
           {basemapChoices.map((value) => (
             <option key={value} value={value}>
               {basemapLabels[value]}
@@ -49,13 +51,30 @@ export function MapToolbar({ mode, basemap, roads, hint, onMode, onBasemap, onRo
       </label>
       <div className="map-toolbar__layer">
         <label>
-          <input type="checkbox" checked={roads} onChange={(event) => onRoads(event.target.checked)} />
+          <input
+            type="checkbox"
+            checked={layers.roads}
+            onChange={(event) => on.onLayers({ ...layers, roads: event.target.checked })}
+          />
           Vías del FDOT
         </label>
-        {roads && (
+        {layers.roads && (
           <span className="map-legend">
             <i className="map-legend__state" aria-hidden="true" /> estatales
             <i className="map-legend__county" aria-hidden="true" /> de condado
+          </span>
+        )}
+        <label>
+          <input
+            type="checkbox"
+            checked={layers.parcels}
+            onChange={(event) => on.onLayers({ ...layers, parcels: event.target.checked })}
+          />
+          Límites de parcelas
+        </label>
+        {parcelHint && (
+          <span className="map-legend" role="status">
+            {parcelHint}
           </span>
         )}
       </div>

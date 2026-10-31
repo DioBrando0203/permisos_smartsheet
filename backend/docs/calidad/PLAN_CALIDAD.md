@@ -27,8 +27,9 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `tests/fake_data.py` y `tests/fake_smartsheet.py`: Smartsheet falso con datos sintéticos que registra escrituras (ADR-10 del frontend); `python -m tests.fake_smartsheet --port 8791`.
 - `test_fake_smartsheet.py`: el backend completo contra el falso (lecturas, reportes, calidad, diseñadores, CSV y escrituras registradas); si falla, el falso dejó de parecerse a Smartsheet.
 - `tests/fake_gis_data.py` y `tests/fake_gis.py`: GIS falso (capas ArcGIS del FDOT y de FDACS, geocodificador del Censo) con la vía sintética del caso de control; filtra por radio, campos, geometría y medida M como el real y anota si alguna solicitud llevó `Authorization`; `python -m tests.fake_gis --port 8792`.
+- `test_trace_rules.py` (reglas puras del trazo con dos vías sintéticas que se cruzan) y `test_map_trace.py` (Turnpike, validación sin consultar fuentes, sin vías, capa 8 caída) (PEN-32).
 - `test_map_fallback.py`: fuente que no conecta (un solo intento, pausa y vuelta a intentar) y respaldo de parcelas de Broward sólo cuando FDACS falla en Broward (PEN-30).
-- `test_fake_gis.py`: el backend completo contra el GIS falso (punto sobre la vía y fuera de ella, tramo con `osp_row`, buscador por ruta, calle y dirección).
+- `test_fake_gis.py`: el backend completo contra el GIS falso (punto sobre la vía y fuera de ella, tramo con `osp_row`, buscador por ruta, calle y dirección, trazo con la fila de OSP y contornos de Miami-Dade).
 - `tests/e2e_backend.py` y `test_e2e_backend.py`: backend real para el E2E del frontend, apuntado a los dos falsos, en solo lectura y sin tomar token ni URL de `.env` ni del entorno.
 - `test_security.py`: un solo grupo de Swagger por endpoint; httpx sin URLs en el log, Origin, Host, salud sin llamadas, token secreto, solo lectura por defecto, listas del entorno.
 

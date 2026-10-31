@@ -137,3 +137,4 @@ Consecuencias: la jurisdicción de calles locales es una aproximación con confi
 Ampliaciones (2026-10-30), con las mismas reglas (GET público, sin clave, plazos, caché y fuente declarada):
 - Buscador: geocodificador del Censo de EE. UU. (SPEC-B14 punto 9); agregado en el commit "mapa mejorado", pendiente de confirmación explícita del usuario.
 - Respaldo de parcelas de Broward (capa pública del condado, sólo `FOLIO`) cuando FDACS falla, a pedido del usuario tras quedar FDACS inaccesible (PEN-30, B-13). Condiciones de uso por revisar (MJ-PEN-06).
+- Contornos de parcelas para dibujar (PEN-33, a pedido del usuario): Broward (la misma capa) y Miami-Dade (`MD_LandInformation` capa 26, pública); sólo el ID y la geometría simplificada, nunca el propietario aunque la capa lo tenga. Condiciones de uso por revisar (MJ-PEN-06).

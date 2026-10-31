@@ -2,15 +2,14 @@
 
 import asyncio
 from collections.abc import Awaitable, Callable
-from time import perf_counter
 from typing import Any
 
 from app.core.config import Settings
-from app.models.map import MapSearch, SearchResult, SourceStatus
+from app.models.map import MapSearch, SearchResult
 from app.services.cache import TtlCache
 from app.services.gis import GisClient
 from app.services.gis.layers import COUNTY_ROADS, LOCAL_NAMES, LRS, STATE_ROADS, road_layer
-from app.services.gis.transport import GisFailure
+from app.services.gis.timing import run_source
 from app.services.map_mappers import feature_text, route_geometry, to_number
 from app.services.map_query import (
     RouteQuery,
@@ -50,7 +49,9 @@ class MapSearchService:
                 loaders["census_geocoder"] = lambda: self._addresses(query)
             if cleaned := street_text(query):
                 loaders["fdot_streets"] = lambda: self._streets(cleaned)
-        outcomes = await asyncio.gather(*(_run(source, load) for source, load in loaders.items()))
+        outcomes = await asyncio.gather(
+            *(run_source(source, load, []) for source, load in loaders.items())
+        )
         results = [result for found, _ in outcomes for result in found]
         return MapSearch(
             query=query, results=results[:LIMIT], sources=[status for _, status in outcomes]
@@ -150,16 +151,6 @@ class MapSearchService:
                     feature_text(feature, "COUNTY") or None,
                 )
         return found
-
-
-async def _run(source: str, load: Loader) -> tuple[list[SearchResult], SourceStatus]:
-    started = perf_counter()
-    try:
-        found, status = await load(), "ok"
-    except GisFailure as error:
-        found, status = [], error.status
-    elapsed = round((perf_counter() - started) * 1000, 1)
-    return found, SourceStatus(id=source, status=status, ms=elapsed)
 
 
 def _coordinate_result(lat: float, lon: float) -> list[SearchResult]:

@@ -25,6 +25,7 @@ def make_settings(**overrides: object) -> Settings:
         "gis_fdacs_parcels_url": "https://parcels.test/0",
         "gis_census_geocoder_url": "https://geocoder.test/onelineaddress",
         "gis_broward_parcels_url": "https://broward.test/0",
+        "gis_miami_dade_parcels_url": "https://miami-dade.test/26",
         "gis_max_retries": 0,
     }
     values.update(overrides)

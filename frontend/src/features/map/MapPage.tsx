@@ -1,73 +1,94 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { MapView, type Basemap, type MapFocus, type MapMarker } from '../../components/map/MapView'
+import {
+  MapView,
+  type Basemap,
+  type MapFocus,
+  type MapLine,
+  type MapMarker,
+  type MapViewState,
+} from '../../components/map/MapView'
 import { basemapChoices } from '../../components/map/tileSources'
 import { StatusAlert } from '../../components/ui'
-import { useMapPoint, useMapSegment } from './hooks'
+import { useMapPoint, useMapTrace } from './hooks'
 import type { Coordinates } from './lib/coordinates'
-import { readMapUrl, writeMapUrl } from './lib/mapUrl'
+import { readMapUrl, writeMapUrl, type MapMode } from './lib/mapUrl'
 import { readChoice, saveChoice } from './lib/preferences'
-import { PointResult, SegmentResult } from './MapResults'
-import { MapToolbar, type Mode } from './MapToolbar'
+import { PointResult } from './MapResults'
+import { MapToolbar, type MapLayers } from './MapToolbar'
+import { TraceResult } from './TraceResult'
+import { useParcelLayer } from './useParcelLayer'
+import { useTraceDrawing } from './useTraceDrawing'
 
-const noLine: [number, number][] = []
 const closeZoom = 16
+const onOff = ['on', 'off'] as const
+const savedLayers = (): MapLayers => ({
+  roads: readChoice('map-roads', onOff, 'off') === 'on',
+  parcels: readChoice('map-parcels', onOff, 'off') === 'on',
+})
 
 export function MapPage() {
   const [params, setParams] = useSearchParams()
-  const saved = useMemo(() => readMapUrl(params), [params])
-  const [mode, setMode] = useState<Mode>(saved.a && saved.b ? 'segment' : 'point')
-  const [a, setA] = useState<Coordinates | null>(saved.a ?? saved.point)
-  const [b, setB] = useState<Coordinates | null>(saved.b)
+  const [saved] = useState(() => readMapUrl(params))
+  const [mode, setMode] = useState<MapMode>(saved.trace ? 'trace' : 'point')
+  const [a, setA] = useState<Coordinates | null>(saved.point)
+  const trace = useTraceDrawing(saved.trace)
   const [focus, setFocus] = useState<MapFocus | null>(() => {
-    const first = saved.a ?? saved.point
+    const first = saved.trace?.[0] ?? saved.point
     return first ? { ...first, zoom: closeZoom } : null
   })
   const [basemap, setBasemap] = useState<Basemap>(() => readChoice('map-basemap', basemapChoices, 'streets'))
-  const [roads, setRoads] = useState(() => readChoice('map-roads', ['on', 'off'], 'off') === 'on')
+  const [layers, setLayers] = useState<MapLayers>(savedLayers)
+  const [view, setView] = useState<MapViewState | null>(null)
   const point = useMapPoint(mode === 'point' ? a : null)
-  const segment = useMapSegment(mode === 'segment' ? a : null, mode === 'segment' ? b : null)
+  const result = useMapTrace(mode === 'trace' ? trace.finished : null)
+  const parcels = useParcelLayer(layers.parcels, view)
   useEffect(() => {
-    setParams(writeMapUrl(mode, a, mode === 'segment' ? b : null), { replace: true })
-  }, [a, b, mode, setParams])
+    setParams(writeMapUrl(mode, a, trace.finished), { replace: true })
+  }, [a, trace.finished, mode, setParams])
   useEffect(() => saveChoice('map-basemap', basemap), [basemap])
-  useEffect(() => saveChoice('map-roads', roads ? 'on' : 'off'), [roads])
   useEffect(() => {
-    const escape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !(event.target instanceof HTMLInputElement)) setB(null)
+    saveChoice('map-roads', layers.roads ? 'on' : 'off')
+    saveChoice('map-parcels', layers.parcels ? 'on' : 'off')
+  }, [layers])
+  useEffect(() => {
+    const keys = (event: KeyboardEvent) => {
+      if (mode !== 'trace' || event.target instanceof HTMLInputElement) return
+      if (event.key === 'Enter') trace.finish()
+      if (event.key === 'Escape') trace.clear()
     }
-    window.addEventListener('keydown', escape)
-    return () => window.removeEventListener('keydown', escape)
-  }, [])
-  const choose = (next: Coordinates) => {
-    if (mode === 'point' || (a && b)) {
-      setA(next)
-      setB(null)
-    } else if (!a) setA(next)
-    else setB(next)
-  }
+    window.addEventListener('keydown', keys)
+    return () => window.removeEventListener('keydown', keys)
+  })
+  const choose = (next: Coordinates) => (mode === 'point' ? setA(next) : trace.add(next))
   const markers = useMemo<MapMarker[]>(() => {
     if (mode === 'point') return a ? [a] : []
-    const labeled: MapMarker[] = []
-    if (a) labeled.push({ ...a, label: 'A' })
-    if (b) labeled.push({ ...b, label: 'B' })
-    return labeled
-  }, [a, b, mode])
-  const current = mode === 'point' ? point.data : segment.data?.start
+    return trace.vertices.map((vertex, index) => ({
+      ...vertex,
+      small: true,
+      label: index ? undefined : 'Inicio',
+    }))
+  }, [a, mode, trace.vertices])
+  const lines = useMemo<MapLine[]>(() => {
+    if (mode !== 'trace') return []
+    const rows = (!trace.drawing && result.data?.rows) || []
+    return [
+      { coordinates: trace.vertices.map(({ lat, lon }) => [lon, lat]), style: 'draft' },
+      ...rows.map((row) => ({ coordinates: row.coordinates, style: 'result' as const })),
+    ]
+  }, [mode, trace.vertices, trace.drawing, result.data])
   return (
     <section className="map-page">
       <div className="map-page__canvas">
         <MapToolbar
           mode={mode}
           basemap={basemap}
-          roads={roads}
-          hint={hint(mode, a, b)}
-          onMode={(value) => {
-            setMode(value)
-            setB(null)
-          }}
+          layers={layers}
+          hint={hint(mode, trace.vertices.length, trace.drawing)}
+          parcelHint={parcels.hint}
+          onMode={setMode}
           onBasemap={setBasemap}
-          onRoads={setRoads}
+          onLayers={setLayers}
           onSelect={(next) => {
             choose(next)
             setFocus({ ...next, zoom: closeZoom })
@@ -76,10 +97,14 @@ export function MapPage() {
         <MapView
           focus={focus}
           markers={markers}
-          line={(mode === 'segment' && segment.data?.geometry.coordinates) || noLine}
+          lines={lines}
+          outlines={parcels.rings}
           basemap={basemap}
-          roads={roads}
+          roads={layers.roads}
+          drawing={mode === 'trace' && trace.drawing}
           onMapClick={choose}
+          onMapDoubleClick={() => mode === 'trace' && trace.finish()}
+          onViewChange={setView}
         />
       </div>
       <aside className="map-page__panel" aria-live="polite" aria-label="Resultados del mapa">
@@ -91,15 +116,19 @@ export function MapPage() {
             onRetry={() => void point.refetch()}
           />
         ) : (
-          <SegmentResult
-            result={segment.data}
-            loading={segment.isLoading}
-            error={segment.error}
-            waiting={!a || !b}
-            onRetry={() => void segment.refetch()}
+          <TraceResult
+            vertices={trace.vertices.length}
+            drawing={trace.drawing}
+            result={result.data}
+            loading={result.isLoading}
+            error={result.error}
+            onFinish={trace.finish}
+            onUndo={trace.undo}
+            onClear={trace.clear}
+            onRetry={() => void result.refetch()}
           />
         )}
-        {current?.warnings.includes('SOURCE_FAILED') && (
+        {mode === 'point' && point.data?.warnings.includes('SOURCE_FAILED') && (
           <StatusAlert tone="warning" title="Datos parciales">
             Una fuente GIS no respondió. Puede reintentar la consulta.
           </StatusAlert>
@@ -109,9 +138,9 @@ export function MapPage() {
   )
 }
 
-function hint(mode: Mode, a: Coordinates | null, b: Coordinates | null): string {
+function hint(mode: MapMode, vertices: number, drawing: boolean): string {
   if (mode === 'point') return 'Busca un lugar o haz clic sobre una calle.'
-  if (!a) return 'Marca el punto A: búscalo o haz clic sobre la vía.'
-  if (!b) return 'Ahora marca el punto B sobre la misma vía. Escape lo cancela.'
-  return 'Tramo listo. Un clic o una búsqueda empieza otro.'
+  if (!drawing) return 'Trazo listo. Un clic empieza otro.'
+  if (vertices === 0) return 'Marca el inicio sobre la vía y sigue el recorrido con más clics.'
+  return 'Sigue la vía con más clics; doble clic o Enter para terminar. Escape lo borra.'
 }

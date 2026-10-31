@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
-import { mapPointFixture, mapSegmentFixture } from '../../test/fixtures/map'
-import { PointResult, SegmentResult } from './MapResults'
-import { normalizeMapPoint, normalizeMapSegment } from './normalize'
+import { describe, expect, it, vi } from 'vitest'
+import { mapPointFixture, mapTraceFixture } from '../../test/fixtures/map'
+import { PointResult } from './MapResults'
+import { normalizeMapPoint, normalizeMapTrace } from './normalize'
+import { TraceResult } from './TraceResult'
 
 const noop = () => undefined
 
@@ -43,27 +44,39 @@ describe('Resultados del mapa', () => {
     expect(screen.getByText(/Parcelas de Broward \(condado\)/)).not.toHaveTextContent('no respondió')
   })
 
-  it('da cada campo de OSP con su botón y copia la fila tabulada', async () => {
+  it('el trazo da la tabla Work Location de OSP y copia fila o tabla (PEN-32)', async () => {
     const user = userEvent.setup()
-    render(
-      <SegmentResult
-        result={normalizeMapSegment(mapSegmentFixture)}
-        loading={false}
-        error={null}
-        waiting={false}
-        onRetry={noop}
-      />,
-    )
-    for (const field of [
-      'County',
-      'State Road ID',
-      'Section Number',
-      'Beginning Milepost',
-      'Ending Milepost',
-    ])
-      expect(screen.getByRole('button', { name: `Copiar ${field}` })).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Copiar fila para Excel o Smartsheet' }))
-    expect(await navigator.clipboard.readText()).toBe('Miami-Dade\t87281000\t281\t3.124\t3.839')
-    expect(screen.getByRole('button', { name: 'Fila copiada' })).toBeInTheDocument()
+    render(<TraceResult {...traceProps} result={normalizeMapTrace(mapTraceFixture)} />)
+    const [, first, second] = screen.getAllByRole('row')
+    expect(first).toHaveTextContent('Miami-DadeSR 953LEJEUNE RD/NW 42 AVE2813.1243.839No')
+    expect(second).toHaveTextContent('No estatal')
+    expect(screen.getByText(/no es del Sistema Estatal/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Copiar fila de SR 953' }))
+    expect(await navigator.clipboard.readText()).toBe('Miami-Dade\tSR 953\t281\t3.124\t3.839\tNo')
+    await user.click(screen.getByRole('button', { name: 'Copiar tabla para Excel o Smartsheet' }))
+    expect((await navigator.clipboard.readText()).split('\n')).toHaveLength(3)
+    expect(screen.getByRole('button', { name: 'Tabla copiada' })).toBeInTheDocument()
+  })
+
+  it('mientras se dibuja sólo deja terminar con dos puntos o más', async () => {
+    const user = userEvent.setup()
+    const onFinish = vi.fn()
+    const { rerender } = render(<TraceResult {...traceProps} drawing vertices={1} onFinish={onFinish} />)
+    expect(screen.getByRole('button', { name: 'Terminar' })).toBeDisabled()
+    rerender(<TraceResult {...traceProps} drawing vertices={3} onFinish={onFinish} />)
+    await user.click(screen.getByRole('button', { name: 'Terminar' }))
+    expect(onFinish).toHaveBeenCalledOnce()
+    expect(screen.getByText('3 puntos')).toBeInTheDocument()
   })
 })
+
+const traceProps = {
+  vertices: 2,
+  drawing: false,
+  loading: false,
+  error: null,
+  onFinish: noop,
+  onUndo: noop,
+  onClear: noop,
+  onRetry: noop,
+}

@@ -5,8 +5,11 @@ from dataclasses import dataclass
 from app.core.config import Settings
 
 LRS, STATE_ROADS, COUNTY_ROADS, LOCAL_NAMES = 8, 15, 2, 13
+# Admin_Boundaries: condados y distritos del FDOT con el Turnpike (D8, FTE; GIS-PEN-01).
+COUNTIES, TURNPIKE_DISTRICTS, TURNPIKE = 6, 13, "D8"
 # Broward: código del FDOT (CNTYNO) y del DOR (CO_NO), que no coinciden (MJ-PE-02).
 BROWARD_FDOT, BROWARD_DOR = "86", "16"
+MIAMI_DADE_FDOT = "87"
 
 
 @dataclass(frozen=True)
@@ -24,9 +27,27 @@ def road_layer(settings: Settings, number: int) -> str:
     return f"{settings.gis_fdot_base_url.rstrip('/')}/RCI_Layers/MapServer/{number}"
 
 
+def boundary_layer(settings: Settings, number: int) -> str:
+    """URL de una capa de límites del FDOT (Admin_Boundaries)."""
+    return f"{settings.gis_fdot_base_url.rstrip('/')}/Admin_Boundaries/MapServer/{number}"
+
+
 def broward_parcels(settings: Settings) -> Layer:
     """Parcelas del condado de Broward: sólo el folio, sin datos del tasador (MJ-BR-01)."""
     return Layer("broward_parcels", settings.gis_broward_parcels_url.rstrip("/"), ("FOLIO",))
+
+
+def parcel_outline_layer(settings: Settings, county_fdot: str | None) -> Layer:
+    """Contornos de parcelas: el condado si tiene fuente verificada (PEN-33); si no, FDACS.
+
+    El único campo es el ID: dibujar límites no necesita propietario ni datos del tasador.
+    """
+    if county_fdot == BROWARD_FDOT:
+        return broward_parcels(settings)
+    if county_fdot == MIAMI_DADE_FDOT:
+        url = settings.gis_miami_dade_parcels_url.rstrip("/")
+        return Layer("miami_dade_parcels", url, ("FOLIO",))
+    return Layer("fdacs_parcels", settings.gis_fdacs_parcels_url.rstrip("/"), ("PARCEL_ID",))
 
 
 def layers(settings: Settings) -> tuple[Layer, ...]:

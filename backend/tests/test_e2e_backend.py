@@ -20,6 +20,7 @@ def test_e2e_settings_ignore_the_environment(monkeypatch: pytest.MonkeyPatch) ->
         settings.gis_fdacs_parcels_url,
         settings.gis_census_geocoder_url,
         settings.gis_broward_parcels_url,
+        settings.gis_miami_dade_parcels_url,
     )
     assert all(url.startswith("http://127.0.0.1:8792/") for url in gis_urls)
     assert "http://127.0.0.1:5791" in settings.allowed_origins

@@ -42,3 +42,17 @@ Fecha: 2026-10-30. Estado: resuelto.
 Hecho: al abrir `/mapa?p=…`, el panel mostraba el resultado pero el marcador no aparecía en el mapa en 4 de 8 aperturas (E2E repetido).
 Causa: cada efecto de `MapView` hacía su propio `import('leaflet')`; si el de marcadores se resolvía antes que el que crea el mapa, no encontraba la capa, salía sin dibujar y no volvía a correr porque los marcadores no cambiaban.
 Solución: Leaflet se importa una sola vez al crear el mapa, que marca `ready`; teselas, marcadores, línea y vista dependen de `ready`. Verificado: 12 de 12 aperturas con marcador y la suite E2E repetida 4 veces sin fallos.
+
+## FB-08 El doble clic no terminaba el trazo
+
+Fecha: 2026-10-30. Estado: resuelto.
+Hecho: en el E2E del trazo los clics agregaban vértices (3 puntos) pero el doble clic nunca llegaba a Leaflet y el trazo no se cerraba.
+Causa: tras cada clic, `MapView` borra y vuelve a dibujar los marcadores; el segundo clic del doble clic caía sobre el marcador del vértice recién creado, que se borraba antes del `dblclick`, y el navegador entregaba el `dblclick` a un elemento ya fuera del documento.
+Solución: marcadores, líneas y contornos con `interactive: false` (son sólo visuales); los clics van siempre al mapa. Además `useTraceDrawing` guarda los vértices en una referencia síncrona para que "Terminar" no lea un estado viejo. Verificado: E2E repetido 3 veces sin fallos.
+
+## FB-09 Una tabla ancha estiraba la página a 320 px
+
+Fecha: 2026-10-30. Estado: resuelto.
+Hecho: con la tabla Work Location, la página tenía 103 px de desborde horizontal a 320 px aunque la tabla estaba dentro de `.data-table` con scroll propio.
+Causa: el texto `.sr-only` de la última columna es `position: absolute` y, sin un ancestro posicionado dentro del scroll, se ubicaba respecto de la página.
+Solución: `.data-table { position: relative }` (componente genérico). Verificado con el E2E de 320 px.

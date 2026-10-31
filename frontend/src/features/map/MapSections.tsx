@@ -1,16 +1,14 @@
 import {
   Building20Regular,
   Checkmark16Regular,
-  Copy24Regular,
   DocumentText20Regular,
   Location20Regular,
   Road20Regular,
 } from '@fluentui/react-icons'
-import { useState, type ReactNode } from 'react'
-import { Badge, Button, CopyText } from '../../components/ui'
-import { ospText } from './lib/ospRow'
+import type { ReactNode } from 'react'
+import { Badge, CopyText } from '../../components/ui'
 import { parcelSources, sourceNames } from './lib/sources'
-import type { MapPoint, MapSegment, RoadMatch } from './types'
+import type { MapPoint, RoadMatch } from './types'
 
 const kindLabel = { state: 'Vía estatal', county: 'Vía de condado', other: 'Vía local' }
 const confidence = {
@@ -156,30 +154,5 @@ export function SourcesSection({ sources }: { sources: MapPoint['sources'] }) {
         Datos públicos del FDOT y FDACS; se actualizan una vez al año. Confirma antes de pedir el permiso.
       </p>
     </details>
-  )
-}
-
-export function OspSection({ segment }: { segment: MapSegment }) {
-  const [copied, setCopied] = useState(false)
-  const row = segment.ospRow
-  const copyRow = async () => {
-    await navigator.clipboard.writeText(ospText(segment))
-    setCopied(true)
-  }
-  return (
-    <Section icon={<DocumentText20Regular aria-hidden="true" />} title="Fila para OSP (Work Location)">
-      <p className="map-note">Copia cada valor en su campo de OSP.</p>
-      <dl className="map-fields">
-        <Field label="County" value={row.county} copy="County" />
-        <Field label="State Road ID" value={row.stateRoadId} copy="State Road ID" />
-        <Field label="Section Number" value={row.sectionNumber} copy="Section Number" />
-        <Field label="Beginning Milepost" value={mp(row.beginningMilepost)} copy="Beginning Milepost" />
-        <Field label="Ending Milepost" value={mp(row.endingMilepost)} copy="Ending Milepost" />
-      </dl>
-      <Button appearance="secondary" onClick={() => void copyRow()}>
-        <Copy24Regular aria-hidden="true" />
-        {copied ? 'Fila copiada' : 'Copiar fila para Excel o Smartsheet'}
-      </Button>
-    </Section>
   )
 }

@@ -52,12 +52,28 @@ ROADS: dict[int, list[Json]] = {
         }
     ],
 }
-# Polígonos de Admin_Boundaries (6 condados, 7 ciudades, 8 ZIP): cubren cualquier punto.
+# Polígonos de Admin_Boundaries (6 condados, 7 ciudades, 8 ZIP, 13 distritos con Turnpike):
+# cubren cualquier punto. La vía sintética no está en el Turnpike (distrito 6, no D8).
 BOUNDARIES: dict[int, Json] = {
     6: {"COUNTY": "Miami-Dade", "CNTYNO": "87", "DISTRICT": "6"},
     7: {"NAME": "Miami"},
     8: {"ZIP": "33126"},
+    13: {"DVALUE": "D6", "SG_Distric": "District 6"},
 }
+
+
+def _lot(folio: str, south: float, north: float) -> Json:
+    """Lote rectangular de unos 45 m al este de la vía sintética (sólo para dibujar)."""
+    west, east = -80.26330, -80.26285
+    ring = [[west, south], [east, south], [east, north], [west, north], [west, south]]
+    return {"attributes": {"FOLIO": folio}, "rings": [ring]}
+
+
+# Contornos de Miami-Dade (capa 26 de MD_LandInformation) junto al caso de control.
+MIAMI_DADE_LOTS: list[Json] = [
+    _lot(f"30000000000{index}", 25.7720 + index * 0.0004, 25.7724 + index * 0.0004)
+    for index in range(4)
+]
 ROAD_GAP: Json = {"CO_NO": 0.0, "PARCEL_ID": "", "DOR_UC": "", "OWN_NAME": ""}
 PARCEL: Json = {
     "CO_NO": 23.0,

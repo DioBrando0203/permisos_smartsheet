@@ -37,6 +37,8 @@
   /* Vías del FDOT sobre el mapa: los mismos colores que pide MapView a FDOT (PEN-31). */
   --map-road-state: #e66e00;
   --map-road-county: #0e8a46;
+  /* Límites de parcelas (PEN-33): amarillo como en los mapas del tasador, visible sobre la foto. */
+  --map-parcel: #e8b100;
   --info-fg: #424242;
   --info-bg: #f5f5f5;
   --info-border: #e0e0e0;

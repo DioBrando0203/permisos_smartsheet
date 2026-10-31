@@ -112,3 +112,10 @@ Estado: terminada
 Cambios: `components/map/tileSources.ts` (USGS, "Satélite HD" con NAIP y capa de vías del FDOT por área con `{bbox}`), `MapView` con capa opcional, escala y zoom 20; `MapToolbar` sale de `MapPage`; preferencias en `lib/preferences.ts`; nombres de fuentes en `lib/sources.ts`; Ubicación con Estado y Parcela con su fuente; `parcel.source` en tipos, normalización y fixture; tokens `--map-road-state` y `--map-road-county`. Docs: SPEC-11 (CA-12 y CA-13), ampliación de ADR-13, `ARQUITECTURA.md` y `CONTRATO.md`.
 Evidencia: format, build, lint, 23 pruebas unitarias y 5 E2E; captura manual con servicios reales (detalle en RESULTADOS).
 Notas: la NAIP es más lenta (unos 8 s por vista a zoom 19), por eso es opción y no el mapa por defecto. La línea del FDOT puede quedar a unos metros de la calle de la foto.
+
+## 2026-10-30 21:11 -05:00 PEN-32 modo Trazo y PEN-33 límites de parcelas
+
+Estado: terminada
+Cambios: el modo Tramo pasa a Trazo como en OSP (useTraceDrawing, TraceResult, WorkLocationTable; clic por vértice, doble clic, Enter o Terminar; Deshacer y Borrar; URL ?t= y enlaces viejos ?a=&b=); tabla con las columnas de OSP, copiar fila y tabla. Casilla "Límites de parcelas" (useParcelLayer, lib/cells.ts, celdas con useQueries y combine). MapView con lines, outlines, drawing, onMapDoubleClick y onViewChange; dibujos sin clic propio. Se quitaron useMapSegment, SegmentResult y OspSection. Docs: SPEC-11 (puntos 5, 7 a 10, CA-02, CA-05, CA-14 y CA-15), CONTRATO.md, ARQUITECTURA.md, PLAN_IMPLEMENTACION.md, FB-08 y FB-09.
+Evidencia: format, build, lint, 27 pruebas unitarias y 7 E2E; capturas con servicios reales (detalle en RESULTADOS).
+Notas: sin commit todavía; pendiente encuadrar el trazo completo al abrirlo por URL y un "Actualizar" que pida refresh=true.

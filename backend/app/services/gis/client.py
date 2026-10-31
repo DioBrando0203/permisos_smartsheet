@@ -61,6 +61,36 @@ class GisClient:
             params["returnM"] = "true"
         return await self._features(f"{path}/query", params)
 
+    async def query_box(
+        self,
+        path: str,
+        box: tuple[float, float, float, float],
+        fields: tuple[str, ...],
+        *,
+        with_m: bool = False,
+        simplify_degrees: float | None = None,
+        limit: int | None = None,
+    ) -> tuple[list[dict[str, Any]], float]:
+        """Elementos que tocan el rectángulo (oeste, sur, este, norte), con geometría en WGS84."""
+        params = {
+            "f": "json",
+            "geometry": ",".join(f"{value:.6f}" for value in box),
+            "geometryType": "esriGeometryEnvelope",
+            "inSR": "4326",
+            "spatialRel": "esriSpatialRelIntersects",
+            "outFields": ",".join(fields),
+            "returnGeometry": "true",
+            "outSR": "4326",
+            "geometryPrecision": "6",
+        }
+        if with_m:
+            params["returnM"] = "true"
+        if simplify_degrees:
+            params["maxAllowableOffset"] = f"{simplify_degrees:.7f}"
+        if limit:
+            params["resultRecordCount"] = str(limit)
+        return await self._features(f"{path}/query", params)
+
     async def geocode(self, address: str) -> tuple[list[dict[str, Any]], float]:
         """Direcciones de EE. UU. con el geocodificador público del Censo (sin clave)."""
         params = {"address": address, "benchmark": "Public_AR_Current", "format": "json"}

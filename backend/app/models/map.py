@@ -84,6 +84,45 @@ class MapSegment(BaseModel):
     warnings: list[str]
 
 
+class WorkLocation(BaseModel):
+    """Una fila de la tabla Work Location de OSP, por cada vía que sigue el trazo (PEN-32)."""
+
+    county: str | None = None
+    # Como en OSP: la ruta ("SR 953"); el ID de vía si la vía no tiene ruta.
+    state_road_id: str
+    roadway_id: str
+    section_number: str | None = None
+    beginning_milepost: float
+    ending_milepost: float
+    # Según la capa de distritos del FDOT con Turnpike (D8, FTE); None si no se pudo consultar.
+    on_turnpike: bool | None = None
+    kind: Literal["state", "county", "other"]
+    local_name: str | None = None
+    length_mi: float
+    geometry: dict[Literal["type", "coordinates"], str | list[list[float]]]
+
+
+class MapTrace(BaseModel):
+    path: list[list[float]]
+    length_mi: float
+    rows: list[WorkLocation]
+    sources: list[SourceStatus]
+    warnings: list[str]
+
+
+class ParcelOutline(BaseModel):
+    parcel_id: str
+    # Contornos [[lon, lat], …] sólo para dibujar; sin propietario ni otros datos del tasador.
+    rings: list[list[list[float]]]
+
+
+class ParcelOutlines(BaseModel):
+    source: str
+    parcels: list[ParcelOutline]
+    # True si la fuente devolvió el máximo pedido: puede faltar alguna parcela en la celda.
+    truncated: bool
+
+
 class SearchResult(BaseModel):
     kind: Literal["coordinates", "address", "street", "milepost"]
     label: str

@@ -3,15 +3,20 @@ import type { ApiErrorCode } from './api'
 export type ErrorMessage = { text: string; action: string | null }
 
 const messages: Record<string, ErrorMessage> = {
-  COORDINATES_OUT_OF_FLORIDA: { text: 'El punto está fuera de Florida.', action: null },
+  COORDINATES_OUT_OF_FLORIDA: { text: 'El punto o el trazo está fuera de Florida.', action: null },
   SEGMENT_ROADWAY_MISMATCH: {
     text: 'A y B no están sobre la misma vía.',
     action: 'Elija dos puntos de la misma vía.',
   },
   SEGMENT_TOO_LONG: {
-    text: 'El tramo supera la longitud máxima permitida.',
-    action: 'Elija un tramo de menor longitud.',
+    text: 'El trazo supera la longitud máxima permitida (20 millas).',
+    action: 'Divídalo en trazos más cortos.',
   },
+  TRACE_INVALID: {
+    text: 'El trazo necesita al menos dos puntos (y como máximo cien).',
+    action: 'Borre el trazo y vuelva a dibujarlo.',
+  },
+  PARCEL_CELL_INVALID: { text: 'No se pudieron pedir las parcelas de esta zona.', action: null },
   GIS_UNAVAILABLE: {
     text: 'Los servicios del FDOT no responden; intenta en unos minutos.',
     action: 'Reintentar.',

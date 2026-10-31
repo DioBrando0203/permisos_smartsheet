@@ -262,3 +262,19 @@ Prioridad: media. Alcance: frontend. Estado: terminada (2026-10-30): "Satélite 
 Tipo (ADR-B15): (b) mejora del mapa propio, a pedido del usuario: "estar un poquito más cerca y con mejor vista", como opciones si pesan.
 Situación: verificado el 2026-10-30: USGS NAIP Plus (`imagery.nationalmap.gov/.../USGSNAIPPlus/ImageServer`, dominio público, sin clave, píxel de 30 cm) entrega a zoom 18 detalle de autos y carriles en Fort Lauderdale, contra la tesela de USGS que se queda en zoom 16; la exportación del FDOT (`RCI_Layers/MapServer/export`, con `dynamicLayers`) dibuja vías estatales y de condado con colores propios en 0,7 s.
 Hacer: mapa base "Satélite HD (NAIP)" hasta zoom 20, capa opcional "Vías FDOT", escala en pies y metros y el estado (Florida) en Ubicación. Spec: SPEC-11; ADR-13 amplía su excepción de teselas a estos dos servicios.
+
+### PEN-32 Trazo como en OSP y tabla Work Location
+
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-30): modo "Trazo" en lugar de "Tramo", `GET /api/map/trace`, tabla Work Location copiable; con GET reales el caso de control da la fila de OSP (Miami-Dade, SR 953, 281, 3.124 a 3.839, No) y un giro de SR 953 a SR 968 da dos filas que se juntan en el cruce (SPEC-B14 CA-16 a CA-18, SPEC-11 CA-14). Pendiente: comparar el Turnpike con OSP en un tramo del Turnpike.
+Tipo (ADR-B15): (a) OSP sólo da la tabla tras dibujar dentro de una solicitud; aquí se obtiene sin abrir una.
+Situación: pedido del usuario: "para el milepost se debe hacer siempre un trazo". En OSP (paso 3, `future_docs/osp-milepost-paso3.png`) se marca un punto, se dibuja la línea por el recorrido, se termina con doble clic y sale la tabla Work Location: County, State Road ID ("SR 953", no el ID de vía 87281000 que mostraba el panel), Section Number, Beginning y Ending Milepost e "Is Location on Turnpike?". El modo Tramo sólo aceptaba dos puntos sobre una misma vía.
+Verificado el 2026-10-30: la capa 8 del FDOT acepta consultas por rectángulo y devuelve las vías candidatas; la capa 13 de `Admin_Boundaries` ("District Bndy w TPIKE") da el polígono `D8`/`FTE` sobre SR 821 (Turnpike) y sólo `D6` sobre SR 953 (resuelve GIS-PEN-01).
+Hacer: `GET /api/map/trace` con la línea dibujada; una fila por cada vía que sigue el trazo (sin contar los cruces), con mileposts, condado, State Road ID como ruta ("SR 953"), sección y Turnpike; modo "Trazo" en el mapa con clic por vértice, doble clic o "Terminar", "Deshacer" y tabla copiable. Specs: SPEC-B14 y SPEC-11.
+
+### PEN-33 Límites de parcelas en el mapa
+
+Prioridad: media. Alcance: backend y frontend. Estado: terminada para Broward y Miami-Dade (2026-10-30): casilla "Límites de parcelas" a zoom 17 o más, `GET /api/map/parcels` por celda (SPEC-B14 CA-19, SPEC-11 CA-15). El resto del estado depende de FDACS.
+Tipo (ADR-B15): (b) lo que muestran los mapas del tasador, dentro del mismo mapa del panel.
+Situación: pedido del usuario: ver "cómo se separan" los lotes y las calles, como en un GIS o el mapa del tasador. Verificado el 2026-10-30 desde el equipo Windows: Broward (`services.arcgis.com/JMAJrTsHNLrSsWf5/.../Parcels/FeatureServer/0`, 37 parcelas en 0,8 s) y Miami-Dade (`gisweb.miamidade.gov/.../MD_LandInformation/MapServer/26`, 173 parcelas en 0,6 s) devuelven polígonos por rectángulo en GeoJSON; simplificados a ~0,5 m pesan unos 30 a 50 KB. FDACS (todo el estado) no responde desde este equipo (B-13).
+Hacer: `GET /api/map/parcels` por celda pequeña, sólo con el ID de parcela (sin propietarios), Broward y Miami-Dade por condado y FDACS para el resto; casilla "Límites de parcelas" que dibuja las líneas a zoom 17 o más.
+Pendiente aparte: Palm Beach (`maps.co.palm-beach.fl.us/.../Parcels/Parcels/MapServer`) y Martin; Miami-Dade también publica "County Maintained Road" (capa 8 de `MD_LandInformation`), útil para M5.

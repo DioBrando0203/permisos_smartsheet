@@ -87,6 +87,8 @@
   margin-top: var(--space-xl);
 }
 .data-table {
+  /* Posicionada: el texto `.sr-only` (absoluto) de una celda fuera de vista no estira la página. */
+  position: relative;
   overflow-x: auto;
 }
 .data-table table {

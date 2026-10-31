@@ -118,3 +118,50 @@
   stroke: var(--brand-80);
   stroke-opacity: 0.85;
 }
+.map-trace-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+  margin-bottom: var(--space-s);
+  color: var(--fg-2);
+  font-size: var(--fs-200);
+}
+.map-trace-controls span {
+  margin-right: auto;
+}
+/* Tabla Work Location: compacta para el panel; si no cabe, se desplaza dentro de él. */
+.map-result-section .data-table table {
+  font-size: var(--fs-200);
+}
+.map-result-section .data-table th,
+.map-result-section .data-table td {
+  padding: var(--space-xs) 2px;
+  white-space: nowrap;
+  vertical-align: top;
+}
+/* Encabezados en dos líneas ("Begin / MP") para que la tabla quepa en los 360 px del panel. */
+.map-result-section .data-table th {
+  white-space: normal;
+}
+.map-table__road strong,
+.map-table__road small {
+  display: block;
+}
+.map-table__road small {
+  max-width: 9rem;
+  color: var(--fg-2);
+  white-space: normal;
+}
+.map-result-section > .button {
+  margin-top: var(--space-s);
+}
+.map-line--draft {
+  stroke: var(--fg-2);
+  stroke-dasharray: 6 6;
+}
+.map-parcel {
+  stroke: var(--map-parcel);
+  stroke-opacity: 0.9;
+  fill: none;
+}

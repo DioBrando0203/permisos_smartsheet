@@ -12,8 +12,10 @@ from app.models.map import (
     MapSearch,
     MapSegment,
     MapSource,
+    MapTrace,
     OspRow,
     Parcel,
+    ParcelOutlines,
     SourceStatus,
 )
 from app.services.cache import TtlCache
@@ -27,6 +29,7 @@ from app.services.map_mappers import (
     build_roads,
     warnings,
 )
+from app.services.map_parcels import MapParcelsService
 from app.services.map_rules import (
     RouteGeometry,
     haversine_miles,
@@ -36,6 +39,7 @@ from app.services.map_rules import (
     slice_route,
 )
 from app.services.map_search import MapSearchService
+from app.services.map_trace import MapTraceService
 
 
 @dataclass(frozen=True)
@@ -48,6 +52,8 @@ class MapService:
     def __init__(self, settings: Settings, client: GisClient, cache: TtlCache) -> None:
         self._settings, self._client, self._cache = settings, client, cache
         self._search = MapSearchService(settings, client, cache)
+        self._trace = MapTraceService(settings, client, cache)
+        self._parcels = MapParcelsService(settings, client, cache)
 
     async def aclose(self) -> None:
         await self._client.aclose()
@@ -55,6 +61,16 @@ class MapService:
     async def search(self, text: str, *, refresh: bool) -> MapSearch:
         self._ensure_enabled()
         return await self._search.search(text, refresh=refresh)
+
+    async def trace(self, path: str, radius_m: float, *, refresh: bool) -> MapTrace:
+        self._ensure_enabled()
+        return await self._trace.trace(path, radius_m, refresh=refresh)
+
+    async def parcel_outlines(
+        self, box: tuple[float, float, float, float], *, refresh: bool
+    ) -> ParcelOutlines:
+        self._ensure_enabled()
+        return await self._parcels.outlines(box, refresh=refresh)
 
     async def point(self, lat: float, lon: float, radius_m: float, *, refresh: bool) -> MapPoint:
         return (await self._resolve(lat, lon, radius_m, refresh=refresh)).point
@@ -108,7 +124,8 @@ class MapService:
             geometry={"type": "LineString", "coordinates": geometry},
             osp_row=OspRow(
                 county=start.point.location.county,
-                state_road_id=road.roadway_id,
+                # Como OSP: "SR 953", no el ID de vía (PEN-32).
+                state_road_id=road.route or road.roadway_id,
                 section_number=road.section,
                 beginning_milepost=begin,
                 ending_milepost=finish,

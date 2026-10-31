@@ -3,9 +3,10 @@
 Sirve para E2E sin depender de servicios públicos (ADR-10 del frontend). El backend se apunta
 con `GIS_FDOT_BASE_URL=http://127.0.0.1:<puerto>/arcgis/rest/services`,
 `GIS_FDACS_PARCELS_URL=http://127.0.0.1:<puerto>/fdacs/parcels/0` y
-`GIS_CENSUS_GEOCODER_URL=http://127.0.0.1:<puerto>/census/onelineaddress` (y el respaldo de
-Broward en `/broward/parcels/0`). Anota la ruta de cada
-solicitud y si llevaba `Authorization` (`GET /_fake/calls`), nunca su contenido.
+`GIS_CENSUS_GEOCODER_URL=http://127.0.0.1:<puerto>/census/onelineaddress` (y las parcelas de
+Broward en `/broward/parcels/0` y de Miami-Dade en `/miami-dade/parcels/26`). Las capas de vías
+aceptan punto con radio, rectángulo (trazo) y `where`. Anota la ruta de cada solicitud y si
+llevaba `Authorization` (`GET /_fake/calls`), nunca su contenido.
 
 Uso manual: `python -m tests.fake_gis --port 8792` desde `backend/`.
 """
@@ -59,6 +60,18 @@ def create_fake_gis() -> FastAPI:
     async def broward_parcels(request: Request) -> Json:
         return _query_polygon(data.BROWARD_PARCEL, dict(request.query_params))
 
+    @app.get("/miami-dade/parcels/26/query")
+    async def miami_dade_parcels(request: Request) -> Json:
+        params = dict(request.query_params)
+        box = _box(params["geometry"])
+        lots = [lot for lot in data.MIAMI_DADE_LOTS if _overlaps(lot["rings"], box)]
+        return {
+            "features": [
+                {"attributes": lot["attributes"], "geometry": {"rings": lot["rings"]}}
+                for lot in lots
+            ]
+        }
+
     @app.get("/census/onelineaddress")
     async def geocoder(address: str) -> Json:
         matches = [data.ADDRESS] if "42" in address else []
@@ -81,6 +94,9 @@ def _query_lines(features: list[Json], params: dict[str, str]) -> Json:
         selected = _where(features, params["where"])
         if selected is None:
             return _ARCGIS_ERROR
+    elif params.get("geometryType") == "esriGeometryEnvelope":
+        box = _box(params["geometry"])
+        selected = [item for item in features if _overlaps(item["paths"], box)]
     else:
         lat, lon = _point(params)
         radius = float(params.get("distance", "0"))
@@ -124,6 +140,23 @@ def _shape(feature: Json, params: dict[str, str]) -> Json:
 def _point(params: dict[str, str]) -> tuple[float, float]:
     lon, lat = (float(value) for value in params["geometry"].split(","))
     return lat, lon
+
+
+def _box(text: str) -> tuple[float, float, float, float]:
+    west, south, east, north = (float(value) for value in text.split(","))
+    return west, south, east, north
+
+
+def _overlaps(lines: list[list[list[float]]], box: tuple[float, float, float, float]) -> bool:
+    """Algún tramo cuyo rectángulo se cruza con el pedido (basta para datos sintéticos)."""
+    west, south, east, north = box
+    for line in lines:
+        for first, second in zip(line, line[1:], strict=False):
+            low_x, high_x = sorted((first[0], second[0]))
+            low_y, high_y = sorted((first[1], second[1]))
+            if low_x <= east and high_x >= west and low_y <= north and high_y >= south:
+                return True
+    return False
 
 
 def _meters_to(paths: list[list[list[float]]], lat: float, lon: float) -> float:
