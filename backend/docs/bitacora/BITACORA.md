@@ -183,3 +183,4 @@ Estado: terminada
 Cambios: `MapTrace.input_length_mi`; longitudes de filas y total desde las LineString LRS oficiales; prueba de la regla geométrica y del contrato de trazo. SPEC-B14, API y el backlog actualizados.
 Evidencia: 189 pruebas de backend, Ruff y formato limpios; ver `calidad/RESULTADOS.md`.
 Notas: no se implementó enrutamiento ni se cambió ninguna escritura o configuración de Smartsheet.
+Entrega: commit local `d091361` creado. El `git push` del 2026-10-31 10:59 -05:00 no llegó a GitHub porque el entorno no dispone de credenciales; queda pendiente de una sesión autenticada.

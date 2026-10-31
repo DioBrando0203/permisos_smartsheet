@@ -133,3 +133,4 @@ Estado: terminada
 Cambios: al responder el trazo se oculta la línea manual y se dibujan sólo sus LineString LRS; se informa la longitud oficial y, cuando difiere, la marcada. Una URL de trazo encuadra todas las filas oficiales. Nuevos tipos y normalización para `input_length_mi`, prueba pura y comprobación E2E de que desaparece el borrador.
 Evidencia: build, lint, formato, 32 pruebas unitarias y 8 E2E funcionales aprobados; ver `calidad/RESULTADOS.md`.
 Notas: no es enrutamiento: sigue siendo necesario corregir un trazo que no siga la vía o esté a más de 25 m.
+Entrega: commit local `d091361` creado. El `git push` del 2026-10-31 10:59 -05:00 no llegó a GitHub porque el entorno no dispone de credenciales; queda pendiente de una sesión autenticada.
