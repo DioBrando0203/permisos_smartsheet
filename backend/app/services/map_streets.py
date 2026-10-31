@@ -1,6 +1,7 @@
 """Calles y cruces de calles: TIGER del Censo en la zona elegida, cruces del FDOT y Censo."""
 
 import asyncio
+from typing import Any
 
 from app.core.config import Settings
 from app.models.map import SearchResult
@@ -12,11 +13,11 @@ from app.services.map_mappers import feature_text, to_number
 from app.services.map_places import Scope
 from app.services.map_query import (
     address_text,
+    crossing_filters,
     join_parts,
     name_where,
     street_rank,
     street_text,
-    street_where,
     tiger_where,
 )
 from app.services.map_rules import in_florida
@@ -95,38 +96,28 @@ class StreetFinder:
     async def _fdot_crossings(
         self, road: str, crossing: str, county: str | None
     ) -> list[SearchResult]:
-        names = await self._fdot_roads(road, county)
-        crossing_where = street_where(crossing, "INTSEC_ROA")
-        ids = [roadway for roadway in sorted(names) if roadway.isdigit()][:20]
-        if not ids or not crossing_where:
-            return []
+        # FDOT recorta nombres ("US-1/SR-5/FEDERAL"): sin tipo de vía sólo si el completo no
+        # encontró el cruce, y sin repetir vías ya probadas (PEN-39).
+        tried: set[str] = set()
+        for road_where in crossing_filters(road, "NAME"):
+            names = await self._fdot_roads(road_where, county)
+            ids = [roadway for roadway in sorted(names) if roadway.isdigit()]
+            ids = [roadway for roadway in ids if roadway not in tried][:20]
+            tried.update(ids)
+            for crossing_where in crossing_filters(crossing) if ids else []:
+                if features := await self._intersections(ids, crossing_where):
+                    return _fdot_results(features, names)
+        return []
+
+    async def _intersections(self, ids: list[str], crossing_where: str) -> list[dict[str, Any]]:
         roadways = ",".join(f"'{roadway}'" for roadway in ids)
         where = f"ROADWAY IN ({roadways}) AND {crossing_where}"
         fields = ("ROADWAY", "INTSEC_ROA", "BEGIN_POST", "COUNTY")
         path = road_layer(self._settings, INTERSECTIONS)
         features, _ = await self._client.query_where(path, where, fields, limit=LIMIT * 2)
-        results: dict[tuple[str, float], SearchResult] = {}
-        for feature in features:
-            roadway, geometry = feature_text(feature, "ROADWAY"), feature.get("geometry", {})
-            milepost = to_number(feature.get("attributes", {}).get("BEGIN_POST"))
-            lat, lon = to_number(geometry.get("y")), to_number(geometry.get("x"))
-            if milepost is None or lat is None or lon is None or (roadway, milepost) in results:
-                continue
-            results[(roadway, milepost)] = SearchResult(
-                kind="intersection",
-                label=f"{names[roadway]} y {feature_text(feature, 'INTSEC_ROA')}",
-                detail=join_parts(feature_text(feature, "COUNTY"), f"vía {roadway}"),
-                lat=round(lat, 6),
-                lon=round(lon, 6),
-                roadway_id=roadway,
-                milepost=round(milepost, 3),
-            )
-        return list(results.values())
+        return features
 
-    async def _fdot_roads(self, text: str, county: str | None) -> dict[str, str]:
-        where = street_where(text)
-        if not where:
-            return {}
+    async def _fdot_roads(self, where: str, county: str | None) -> dict[str, str]:
         if county:
             where = f"{where} AND {name_where('COUNTY', county)}"
         path = road_layer(self._settings, LOCAL_NAMES)
@@ -163,6 +154,26 @@ class StreetFinder:
                 grouped.setdefault(feature_text(feature, "NAME"), []).extend(lines)
         grouped.pop("", None)
         return grouped
+
+
+def _fdot_results(features: list[dict[str, Any]], names: dict[str, str]) -> list[SearchResult]:
+    results: dict[tuple[str, float], SearchResult] = {}
+    for feature in features:
+        roadway, geometry = feature_text(feature, "ROADWAY"), feature.get("geometry", {})
+        milepost = to_number(feature.get("attributes", {}).get("BEGIN_POST"))
+        lat, lon = to_number(geometry.get("y")), to_number(geometry.get("x"))
+        if milepost is None or lat is None or lon is None or (roadway, milepost) in results:
+            continue
+        results[(roadway, milepost)] = SearchResult(
+            kind="intersection",
+            label=f"{names[roadway]} y {feature_text(feature, 'INTSEC_ROA')}",
+            detail=join_parts(feature_text(feature, "COUNTY"), f"vía {roadway}"),
+            lat=round(lat, 6),
+            lon=round(lon, 6),
+            roadway_id=roadway,
+            milepost=round(milepost, 3),
+        )
+    return list(results.values())
 
 
 def _ranked(lines: dict[str, list[Line]], text: str) -> list[str]:

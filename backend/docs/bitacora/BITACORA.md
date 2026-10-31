@@ -192,3 +192,10 @@ Cambios: `lrs_slicing.py` une fragmentos contiguos por M/posición; `map_rules` 
 Evidencia: 205 pruebas, Ruff y formato; GET reales de control, inverso y salida/regreso, detallados en RESULTADOS. El trazo parcial real tiene 57.2 % asociado y 0.380 mi sin vía dentro del radio.
 Límite: no se verificó el algoritmo de OSP con los mismos vértices; la evidencia anterior del control era reconstrucción desde medidas, precisada en SPEC-B14 y GIS_PUBLICO_FLORIDA. No se tocó configuración ni datos de Smartsheet.
 Entrega: commit local `a02cd17`; `git push` falló por falta de credenciales HTTPS en esta sesión (`could not read Username`). Pendiente subir desde una sesión autenticada.
+
+## 2026-10-31 12:40 -05:00 Cierre del ajuste automático (PEN-38) y cruces recortados (PEN-39)
+
+Estado: terminada
+Cambios: PEN-38 llegó implementada y en curso en el commit `d2c9999` (grafo LRS local, búsqueda del recorrido, respaldo estricto y avisos); se verificó con datos reales y se cerró. PEN-39: `map_query.crossing_filters` reintenta sin el tipo de vía final y `StreetFinder._fdot_crossings` lo aplica a la calle que cruza y a la vía, sin repetir vías probadas. SPEC-B14 (capa 6 y punto 9, CA-29), REQUERIMIENTOS, plan de calidad y RESULTADOS actualizados.
+Evidencia: 220 pruebas, Ruff y formato limpios. Lecturas reales del GIS del FDOT detalladas en `calidad/RESULTADOS.md`: control exacto, desplazamientos lateral de 45–50 m corregidos, diagonal reconstruida en dos filas y "Federal Hwy & Sunrise" encontrado.
+Límite: sigue sin compararse con OSP usando los mismos vértices (OSP-PEN-01); las conexiones entre vías son geométricas, no confirman giros ni pasos a desnivel. Sin lecturas ni escrituras de Smartsheet.

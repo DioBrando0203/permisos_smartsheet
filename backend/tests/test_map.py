@@ -1,3 +1,4 @@
+import httpx
 import respx
 
 GIS = "https://gis.test/arcgis/rest/services"
@@ -216,6 +217,36 @@ async def test_search_address_survives_a_failed_street_source(client, smartsheet
     statuses = {source["id"]: source["status"] for source in body["sources"]}
     assert statuses == {"census_geocoder": "ok", "fdot_streets": "error"}
     assert geocoder.calls.last.request.url.params["address"] == "200 E Las Olas Blvd, FL"
+
+
+async def test_crossing_cut_by_fdot_is_found_without_its_street_type(client, smartsheet) -> None:
+    """FDOT recorta INTSEC_ROA a 20 caracteres: "US-1/SR-5/FEDERAL HW" (PEN-39)."""
+    smartsheet.get("https://geocoder.test/onelineaddress").respond(
+        json={"result": {"addressMatches": []}}
+    )
+    smartsheet.get(f"{GIS}/RCI_Layers/MapServer/13/query").respond(
+        json={"features": [_feature({"ROADWAY": "86090000", "NAME": "SUNRISE BLVD"})]}
+    )
+    crossing = {
+        "attributes": {
+            "ROADWAY": "86090000",
+            "INTSEC_ROA": "US-1/SR-5/FEDERAL HW",
+            "BEGIN_POST": 1.975,
+            "COUNTY": "Broward",
+        },
+        "geometry": {"x": -80.1372, "y": 26.1377},
+    }
+
+    def intersections(request):
+        where = request.url.params["where"]
+        found = "'%/FEDERAL%'" in where and "FEDERAL HWY" not in where
+        return httpx.Response(200, json={"features": [crossing] if found else []})
+
+    layer = smartsheet.get(f"{GIS}/RCI_Layers/MapServer/6/query").mock(side_effect=intersections)
+    body = (await client.get("/api/map/search", params={"q": "Federal Hwy & Sunrise"})).json()
+    assert [(r["kind"], r["milepost"]) for r in body["results"]] == [("intersection", 1.975)]
+    assert body["results"][0]["label"] == "SUNRISE BLVD y US-1/SR-5/FEDERAL HW"
+    assert layer.call_count == 3  # Sunrise una vez; "Federal Hwy" completo y luego sin "HWY"
 
 
 async def test_search_coordinates_answers_without_calling_gis(client, smartsheet) -> None:

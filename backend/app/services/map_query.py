@@ -30,6 +30,7 @@ _ABBREVIATIONS = {
     "PLACE": "PL",
     "LANE": "LN",
 }
+_STREET_TYPES = frozenset(_ABBREVIATIONS.values()) | {"WAY", "CIR", "TRL"}
 
 
 @dataclass(frozen=True)
@@ -74,6 +75,23 @@ def street_text(text: str) -> str | None:
 def street_where(text: str, field: str = "NAME") -> str | None:
     cleaned = street_text(text)
     return word_like(field, cleaned) if cleaned else None
+
+
+def crossing_filters(text: str, field: str = "INTSEC_ROA") -> list[str]:
+    """Nombre completo y, de respaldo, sin el tipo de vía final (PEN-39).
+
+    FDOT recorta los nombres a 20 caracteres: `INTSEC_ROA` "US-1/SR-5/FEDERAL HW" y `NAME`
+    "US-1/SR-5/FEDERAL"; "Federal Hwy" sólo los encuentra como "FEDERAL". Se recorta sólo si
+    queda una palabra ("SE 3 AVE" no).
+    """
+    cleaned = street_text(text)
+    if not cleaned:
+        return []
+    filters = [word_like(field, cleaned)]
+    *core, last = cleaned.split()
+    if last in _STREET_TYPES and any(len(word) >= 3 and word.isalpha() for word in core):
+        filters.append(word_like(field, " ".join(core)))
+    return filters
 
 
 def word_like(field: str, pattern: str) -> str:

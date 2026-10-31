@@ -108,3 +108,9 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm run test:e2e -- --workers=1 --timeout=90000`: 9 aprobadas, 1 caso F0 omitido; 1.8 min. Verifica actualización real con `refresh=true`, dibujo completo sin borrador y dibujo parcial con referencia y filas separadas.
 - Capturas de trazo parcial en 320, 390, 1024, 1440 y 1920 px: sin desborde horizontal. Inspección visual de 390 y 1440 px: aviso, tabla, fuentes y referencia punteada legibles; teselas externas bloqueadas intencionalmente. Evidencia en `test-results/map-un-dibujo-que-sale-de--4fc18-te-y-conserva-la-referencia/` (ignorado por Git).
 - La primera ejecución simultánea de Vitest y Playwright agotó recursos (7.2 GiB RAM y 3.8 GiB swap llena); se observaron timeouts de inicio de workers y navegación. Tras cancelar sólo esos procesos de prueba, las suites separadas con un worker pasan (FB-10). No se ajustaron las aserciones para ocultar los fallos.
+
+## 2026-10-31 12:40 -05:00 Ajuste de recorrido en el mapa real (PEN-38)
+
+- `npm run build`, `npm run lint` y `npm run format:check`: pasan. `npm test`: 14 archivos, 39 pruebas aprobadas.
+- `npm run test:e2e`: 11 aprobadas y 1 caso F0 omitido (1.5 min), incluido `e2e/map-alignment.spec.ts`.
+- Revisión con Playwright sobre `npm run dev` y el backend con GIS real: diagonal LeJeune–Flagler dibuja dos líneas (SR 953 y SR 968) con "Inicio ajustado" y "Final ajustado"; Broward Blvd dibujado al norte queda sobre el eje; "Ver dibujo original" superpone el punteado y escribe `original=on`. A 320 px no hay desborde horizontal. Capturas sólo en el scratchpad de la sesión (la cabecera muestra la cuenta real).

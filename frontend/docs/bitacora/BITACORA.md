@@ -142,3 +142,10 @@ Cambios: `TraceQuality` muestra cobertura y huecos, `useMapDrawing` conserva/enc
 Evidencia: build/lint/formato limpios, 37 unitarias, 9 E2E funcionales y 1 omitida; capturas en cinco anchos sin desborde y revisión visual de 390/1440 px. RESULTADOS detalla la ejecución secuencial por recursos de la VM (FB-10).
 Pendiente de producto: comparación independiente de OSP con idénticos vértices, adaptadores M5 y respaldos Palm Beach/Martin (PEN-29). Sin escrituras en Smartsheet.
 Entrega: commit local `a02cd17`; `git push` falló por falta de credenciales HTTPS en esta sesión (`could not read Username`). Pendiente subir desde una sesión autenticada.
+
+## 2026-10-31 12:40 -05:00 Verificación del ajuste automático en el mapa (PEN-38)
+
+Estado: terminada
+Cambios: sin cambios de código; el frontend de PEN-38 (`TraceOptions`, `TraceAlignmentNote`, URL `snap`/`original`) llegó en el commit `d2c9999`. Plan de implementación y RESULTADOS actualizados.
+Evidencia: build, lint, formato, 39 unitarias y 11 E2E (1 omitida de F0). Revisión con Playwright contra el GIS real a 1440 y 320 px: dos líneas en la diagonal de Miami, Broward Blvd ajustado al eje, comparación con el dibujo original y sin desborde.
+Pendiente de producto: comparación con OSP usando idénticos vértices (OSP-PEN-01), adaptadores M5 y respaldos de parcelas Palm Beach/Martin (PEN-29). Sin escrituras en Smartsheet.

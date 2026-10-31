@@ -183,3 +183,15 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - GET manual real desde `/api/map/trace`, con `refresh=true`: control `25.771778,-80.263610;25.782147,-80.264005` y su inverso dan SR 953, MP 3.124–3.839, longitud 0.717 mi, cobertura 100 %, sin avisos.
 - GET manual real de salida/regreso: `25.771778,-80.263610;25.775,-80.26375;25.777,-80.261;25.779,-80.2639;25.782147,-80.264005`: cobertura 57.2 %, 0.380 mi sin vía, `TRACE_PARTIAL`; filas SR 953 (3.124–3.353), vía local 87580500 (0.018–0.051) y SR 953 (3.615–3.839).
 - Las lecturas reales consultaron sólo GIS público a través del backend activo con recarga; no hubo escrituras ni lecturas de Smartsheet. El caso de control reconstruye coordenadas desde MPs: no prueba igualdad independiente del ajuste OSP para entradas idénticas.
+
+## 2026-10-31 12:40 -05:00 Ajuste de recorrido con datos reales (PEN-38) y cruces recortados (PEN-39)
+
+- Python 3.14.4 en Linux. `pytest`: 220 aprobadas; Ruff check y format --check: limpios (128 archivos).
+- `MapService.trace` contra el GIS real del FDOT (script local, sin HTTP ni Smartsheet), `snap=true`, `radius_m=100`:
+  - control `25.771778,-80.263610;25.782147,-80.264005`: SR 953 sección 281, MP 3.124–3.839, 0.717 mi, ajuste 0.0/0.0 m; igual que en modo estricto.
+  - control corrido 0.0005° al oeste (~50 m): `adjusted`, SR 953 MP 3.125–3.839, ajuste 50.0/50.1 m; el modo estricto daba la vía local 87049500 con `TRACE_PARTIAL`.
+  - diagonal `25.782147,-80.264005;25.771676,-80.255605`: dibujo 0.893 mi, resultado 1.221 mi en SR 953 (3.118–3.839) y SR 968 (4.534–5.032), `TRACE_CONNECTIONS_INFERRED`.
+  - Broward Blvd entre Andrews Ave y Federal Hwy: SR 842 MP 6.773–7.166; dibujado ~45 m al norte: `adjusted`, SR 842 MP 6.775–7.166 (el estricto daba tres vías locales incompletas); zigzag desde NW 7 Ave: SR 842 MP 6.336–7.166, 0.832 a 0.828 mi.
+  - Respuestas entre 1.1 y 1.7 s sin caché; las seis fuentes respondieron.
+- Buscador real en Fort Lauderdale: "Federal Hwy & Sunrise" no daba resultados; tras PEN-39 da `86020000` (US-1) en MP 1.975 y 1.027 y "Sunrise Blvd & Federal Hwy" además `86005000` en 0.0. "Las Olas & 3rd Ave" (0.258), "Broward Blvd & Andrews Ave" (6.773) y "NW 42 Ave & W Flagler St" (3.117) sin cambios. "Las Olas & Federal Hwy" sigue vacío: no hay cruce a nivel (túnel) y TIGER está bloqueado (B-15).
+- Sólo lecturas de GIS público; ninguna lectura ni escritura de Smartsheet.

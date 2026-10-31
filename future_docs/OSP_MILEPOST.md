@@ -102,9 +102,16 @@ Sólo si se decide operar dentro de OSP. Pasos en Chrome, hechos por el usuario:
 - OSP-HAR-11: Borrar la fila de prueba (Edit, luego Remove en Work Location) y cerrar sesión en OSP.
 - OSP-HAR-12: Antes de leerlo, sanearlo con un script: la versión "sanitized" quita cookies y la cabecera `Authorization`, pero no el `bearer_token` de las URL de SignalR (WS-05). De los datos de la solicitud sólo se mira la estructura (endpoints, nombres de campos, acciones), no los valores. El HAR nunca entra al repositorio.
 
+## Comparación con permisos públicos (OSP-CMP)
+
+- OSP-CMP-01 (2026-10-31): el FDOT publica los permisos de OSP en `https://gis.fdot.gov/arcgis/rest/services/FDOT_OSP_Permits/MapServer/0` ("Permits Lines"): línea guardada, `RoadwayId`, `SectionNumber`, `BeginMilepost`, `EndMilepost`, `PermitType`, `LOC_ERROR`. Trae también nombres de permisionarios e ingenieros: nunca pedir esos campos (`outFields` explícitos) ni copiarlos.
+- OSP-CMP-02: en 30 permisos de SR 953 (`87281000`, MP 2.9 a 4.2) la línea guardada está sobre el LRS (0 m) y sus MPs son la medida M de la capa 8 de RCI en los extremos. OSP calcula el milepost como el panel; la diferencia posible está en qué extremos elige a partir del dibujo.
+- OSP-CMP-03: las 20 líneas más recientes de Broward (Access, General Use, Drainage y Construction, de 0.05 a 1.5 mi) pasadas por `MapService.trace` con ajuste dan la misma vía y los mismos MPs (tolerancia 0.002) en 20 de 20. El modo estricto agrega una vez una fila de 0.01 mi en un cruce. Límite: son líneas ya ajustadas por OSP (o creadas desde MPs escritos a mano), no dibujos crudos.
+- OSP-CMP-04: capturas del usuario (2026-10-31, Miami-Dade): dos clics sobre NW 42 Ave, de cerca de NW 12 St a cerca de NW 5 St (LRS 3.507 a 3.897 según los nombres de calles de la captura). La tabla mostró SR 836 sección 200 (0.020 a 0.094) y SR 953 sección 281 (3.124 a 3.839); el panel da SR 953 3.507 a 3.897. No lo explican la proyección, los vértices del LRS, la geometría de `newOSPlayer` (igual al LRS) ni los cruces con otras vías estatales. 3.124 a 3.839 coincide con la captura anterior y con tres permisos públicos de 2020 a 2023; ningún permiso público tiene la fila de SR 836. Por confirmar si la tabla mostraba filas ya guardadas de la solicitud (OSP-R02) en vez del cálculo del dibujo nuevo. El usuario repitió los clics en el panel: SR 953 sección 281, 3.494 a 3.845; el final queda a 0.006 mi (unos 10 m) del de OSP y el inicio a 0.370 mi.
+
 ## Pendientes (OSP-PEN)
 
-- OSP-PEN-01: En espera (ver la decisión del inicio). HAR saneado (OSP-HAR) de una sesión en el paso 3 mientras se dibuja un tramo, para confirmar qué llamada calcula el milepost, sus `datastoreId` y `queryId`, el formato de la respuesta y si escribe algo.
+- OSP-PEN-01: En espera (ver la decisión del inicio). Avance 2026-10-31 en OSP-CMP: el cálculo del milepost coincide; falta saber cómo elige OSP los extremos del dibujo (OSP-CMP-04), con una prueba en una solicitud sin filas previas y capturas de la tabla antes y después. HAR saneado (OSP-HAR) de una sesión en el paso 3 mientras se dibuja un tramo, para confirmar qué llamada calcula el milepost, sus `datastoreId` y `queryId`, el formato de la respuesta y si escribe algo.
 - OSP-PEN-02: Ver cómo se avanza entre pasos e identificar el `actionId` del envío, para bloquearlo.
 - OSP-PEN-03: Revisar los términos de uso de OSP sobre acceso automatizado.
 - OSP-PEN-04: Investigar OSP-ENF-03. Hecho el 2026-10-30: ver `GIS_PUBLICO_FLORIDA.md`.

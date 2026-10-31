@@ -1,6 +1,7 @@
 from app.services.map_query import (
     RouteQuery,
     address_text,
+    crossing_filters,
     looks_like_address,
     name_where,
     parse_coordinates,
@@ -78,6 +79,15 @@ def test_tiger_where_accepts_ordinals_but_only_at_a_word_start() -> None:
     where = tiger_where("SE 3rd Ave") or ""
     assert "LIKE 'SE 3% AVE%'" in where and "LIKE '% SE 3% AVE%'" in where
     assert "'%SE 3" not in where  # "SE 13TH AVE" no debe coincidir
+
+
+def test_crossing_filters_retry_without_the_street_type_only_for_a_name() -> None:
+    full, core = crossing_filters("Federal Hwy")
+    assert "LIKE '%/FEDERAL HWY%'" in full
+    assert "LIKE '%/FEDERAL%'" in core and "HWY" not in core  # "US-1/SR-5/FEDERAL HW"
+    assert len(crossing_filters("SE 3rd Ave")) == 1  # "SE 3" encontraría también "SE 3 ST"
+    assert len(crossing_filters("Sunrise")) == 1
+    assert crossing_filters("x") == []
 
 
 def test_name_where_doubles_quotes() -> None:

@@ -235,7 +235,7 @@ Hacer: exportar a CSV la matriz persona por hoja con niveles. El archivo contien
 
 ### PEN-29 Mapa de vías, milepost, jurisdicción y parcelas
 
-Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-31): M1 a M4, buscador, imagen HD, vías y parcelas implementadas. PEN-34 verificó búsquedas por zona y cruces; PEN-35 encuadra el trazo completo. Pendientes: M5, comparación independiente con OSP usando idénticos vértices, respaldo de parcelas para Palm Beach/Martin y mapa base con clave opcional. ADR-B16 y ADR-B17 aprobadas por el usuario.
+Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-31): M1 a M4, buscador, imagen HD, vías y parcelas implementadas. PEN-34 verificó búsquedas por zona y cruces; PEN-35 encuadra el trazo completo; PEN-38 ajusta el recorrido a la red LRS; PEN-39 encuentra cruces con nombre recortado. Pendientes: M5, comparación independiente con OSP usando idénticos vértices, respaldo de parcelas para Palm Beach/Martin y mapa base con clave opcional. ADR-B16 y ADR-B17 aprobadas por el usuario.
 Tipo (ADR-B15): (a) ni Smartsheet ni OSP dicen el milepost, de quién es la calle y qué parcela hay en un punto sin dibujar una solicitud en OSP; el mapa sólo consulta y no cambia cómo se pide el permiso.
 Situación: verificado con GET reales que los servicios públicos del FDOT y de FDACS reproducen los valores de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839) y dan ciudad, condado, ZIP y parcela en Broward, Palm Beach, Martin y Miami-Dade. Investigación en `future_docs/`.
 Specs: SPEC-B14 (backend) y SPEC-11 (frontend); ADR-13 del frontend (Leaflet).
@@ -300,10 +300,18 @@ Límite de evidencia: las coordenadas del caso SR 953 se obtuvieron a partir de 
 
 ### PEN-38 Ajuste automático del recorrido dibujado
 
-Prioridad: alta. Alcance: backend y frontend. Estado: en curso (2026-10-31, solicitado por el usuario).
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-31, solicitado por el usuario).
+Evidencia real (GIS del FDOT, 2026-10-31): el control de OSP sigue en SR 953 MP 3.124–3.839; corrido 50 m al oeste vuelve a SR 953 (3.125–3.839) cuando el modo estricto daba una vía local; una diagonal de LeJeune a W Flagler pasa de 0.893 a 1.221 mi en dos filas (SR 953 3.118–3.839 y SR 968 4.534–5.032); Broward Blvd dibujado 45 m al norte vuelve a SR 842 (6.775–7.166). Revisión visual a 1440 y 320 px sin desborde.
 Situación: PEN-35 a PEN-37 recortaban la geometría de las vías detectadas, pero no reconstruían un recorrido entre vértices fuera del eje o separados por curvas. El usuario necesita que la línea se desplace, se alargue/acorte y se divida en más tramos cuando cambia de vía.
 Hacer: ajuste geométrico sobre un grafo local de segmentos LRS, con proyección de vértices, continuidad espacial, búsqueda de recorrido y una fila por vía recorrida; tolerancia visible de 100 m en el frontend. Comparación con el original y modo estricto anterior disponibles. URL y claves de caché incluyen la opción. Sin camino, fuera de tolerancia o grafo demasiado grande: resultado estricto de respaldo con aviso; rutas alternativas similares y conexiones geométricas entre vías se identifican para revisión.
 Límites: no hay datos de giros ni elevación/topología de OSP en esta capa; una conexión en planta puede ser un paso a desnivel y se informa. Esta mejora no se presenta como reproducción exacta del algoritmo privado de OSP.
+
+### PEN-39 Cruces del FDOT con el nombre recortado
+
+Prioridad: media. Alcance: backend. Estado: terminada (2026-10-31); SPEC-B14 CA-29.
+Evidencia: en Fort Lauderdale "Sunrise Blvd & Federal" encuentra el cruce, pero "Federal Hwy & Sunrise" no devuelve nada. La capa 6 de RCI recorta `INTSEC_ROA` a 20 caracteres ("US-1/SR-5/FEDERAL HW", "US-1/SR-5/N FEDERAL"), así que "FEDERAL HWY" no coincide.
+Hacer: si el nombre completo no da el cruce, reintentar una vez sin el tipo de vía final (HWY, BLVD, AVE…), en la calle que cruza y en la vía (la capa 13 también recorta: "US-1/SR-5/FEDERAL", vía 86020000), sólo si queda una palabra de 3 letras o más ("SE 3 AVE" no se recorta). Prueba pura del filtro y prueba con GIS simulado.
+Fuera de alcance: cruces que no existen a nivel (Federal Hwy pasa en túnel bajo Las Olas); esos dependen del punto más cercano de TIGER (B-15).
 
 ### PEN-33 Límites de parcelas en el mapa
 
