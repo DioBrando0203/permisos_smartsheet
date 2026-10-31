@@ -134,3 +134,10 @@ Cambios: al responder el trazo se oculta la línea manual y se dibujan sólo sus
 Evidencia: build, lint, formato, 32 pruebas unitarias y 8 E2E funcionales aprobados; ver `calidad/RESULTADOS.md`.
 Notas: no es enrutamiento: sigue siendo necesario corregir un trazo que no siga la vía o esté a más de 25 m.
 Entrega: commit local `d091361` creado. El `git push` del 2026-10-31 10:59 -05:00 no llegó a GitHub porque el entorno no dispone de credenciales; queda pendiente de una sesión autenticada.
+
+## 2026-10-31 11:30 -05:00 Revisión de trazos incompletos y Actualizar (PEN-37)
+
+Estado: terminada
+Cambios: `TraceQuality` muestra cobertura y huecos, `useMapDrawing` conserva/encuadra referencia punteada si falta geometría o recorrido. Longitudes desconocidas conservan `null`. `useMapReading` implementa Actualizar con `refresh=true` para punto/trazo y errores visibles aunque haya caché anterior. Se cuenta cada vía una vez aunque tenga varias filas separadas. Etiqueta de extremos corregida: el panel calcula distancias con datos FDOT. Specs, contrato y arquitectura actualizados (P-07, P-09, UX-19, UX-20, UX-31).
+Evidencia: build/lint/formato limpios, 37 unitarias, 9 E2E funcionales y 1 omitida; capturas en cinco anchos sin desborde y revisión visual de 390/1440 px. RESULTADOS detalla la ejecución secuencial por recursos de la VM (FB-10).
+Pendiente de producto: comparación independiente de OSP con idénticos vértices, adaptadores M5 y respaldos Palm Beach/Martin (PEN-29). Sin escrituras en Smartsheet.

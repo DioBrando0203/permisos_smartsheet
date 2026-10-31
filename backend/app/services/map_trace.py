@@ -37,7 +37,16 @@ from app.services.map_rules import (
     point_at_milepost,
     slice_route,
 )
-from app.services.trace_rules import Point, Run, densify, envelopes, parse_path, path_meters, runs
+from app.services.trace_rules import (
+    Point,
+    Run,
+    densify,
+    envelopes,
+    parse_path,
+    path_meters,
+    runs,
+    unmatched_meters,
+)
 
 METERS_PER_MILE = 1609.344
 Features = list[dict[str, Any]]
@@ -81,7 +90,10 @@ class MapTraceService:
         (routes, attrs), lrs = await self._routes(path, radius_m)
         if lrs.status != "ok" and not routes:
             raise AppError("GIS_UNAVAILABLE", "Los servicios GIS no responden.", 502)
-        found = runs(densify(path), routes, radius_m)
+        samples = densify(path)
+        found = runs(samples, routes, radius_m)
+        total_m = path_meters(path)
+        unmatched_m = unmatched_meters(samples, routes, radius_m)
         lookups, statuses = await self._lookups(found, attrs)
         middles = [_middle(run, routes[run.roadway_id]) for run in found]
         turnpike = await asyncio.gather(
@@ -94,12 +106,16 @@ class MapTraceService:
         sources = [lrs, *statuses, *_worst([status for _, status in turnpike])]
         return MapTrace(
             path=[[round(lat, 6), round(lon, 6)] for lat, lon in path],
-            input_length_mi=round(path_meters(path) / METERS_PER_MILE, 3),
-            length_mi=round(sum(row.length_mi for row in rows), 3),
+            input_length_mi=round(total_m / METERS_PER_MILE, 3),
+            length_mi=_total_length(rows),
+            matched_percent=round(100 * max(0, total_m - unmatched_m) / total_m, 1)
+            if total_m
+            else 0,
+            unmatched_length_mi=round(unmatched_m / METERS_PER_MILE, 3),
             adjustment=_adjustment(path, found, routes),
             rows=rows,
             sources=sources,
-            warnings=_warnings(rows, sources),
+            warnings=_warnings(rows, sources, unmatched_m),
         )
 
     async def _routes(
@@ -219,7 +235,7 @@ def _row(
         on_turnpike=on_turnpike,
         kind=kind,
         local_name=local_name_at(lookups.names.get(roadway, []), middle),
-        length_mi=round(geometry_miles(coordinates), 3),
+        length_mi=round(geometry_miles(coordinates), 3) if len(coordinates) >= 2 else None,
         geometry={"type": "LineString", "coordinates": coordinates},
     )
 
@@ -232,12 +248,24 @@ def _worst(statuses: list[SourceStatus]) -> list[SourceStatus]:
     return [failed[0] if failed else max(statuses, key=lambda status: status.ms)]
 
 
-def _warnings(rows: list[WorkLocation], sources: list[SourceStatus]) -> list[str]:
+def _total_length(rows: list[WorkLocation]) -> float | None:
+    if any(row.length_mi is None for row in rows):
+        return None
+    return round(sum(row.length_mi for row in rows if row.length_mi is not None), 3)
+
+
+def _warnings(
+    rows: list[WorkLocation], sources: list[SourceStatus], unmatched_m: float
+) -> list[str]:
     result = ["SOURCE_FAILED"] if any(source.status != "ok" for source in sources) else []
     if not rows:
         result.append("NO_ROAD_NEARBY")
     if any(row.kind != "state" for row in rows):
         result.append("NOT_STATE_ROAD")
+    if unmatched_m > 0.1:
+        result.append("TRACE_PARTIAL")
+    if any(row.length_mi is None for row in rows):
+        result.append("TRACE_GEOMETRY_INCOMPLETE")
     return result
 
 

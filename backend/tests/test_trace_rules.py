@@ -14,6 +14,7 @@ from app.services.trace_rules import (
     parse_path,
     path_meters,
     runs,
+    unmatched_meters,
 )
 
 ROUTES = {
@@ -78,3 +79,25 @@ def test_mileposts_are_ordered_even_when_drawn_backwards() -> None:
 
 def test_a_trace_away_from_every_road_gives_no_rows() -> None:
     assert _runs([(26.001, -79.99), (26.002, -79.99)]) == []
+
+
+def test_leaving_the_road_and_returning_does_not_silently_join_the_gap() -> None:
+    path = [(26.001, -80.0), (26.004, -80.0), (26.005, -79.998), (26.006, -80.0), (26.009, -80.0)]
+    routes = {"A": ROUTES["A"]}
+    samples = densify(path)
+    found = runs(samples, routes, 25)
+    assert len(found) == 2
+    assert found[0].end_milepost < found[1].begin_milepost
+    assert unmatched_meters(samples, routes, 25) > 300
+
+
+def test_coverage_is_complete_for_a_crooked_line_inside_the_road_radius() -> None:
+    samples = densify([(26.001, -80.0001), (26.004, -79.9999), (26.009, -80.0001)])
+    assert unmatched_meters(samples, {"A": ROUTES["A"]}, 25) == 0
+
+
+def test_a_route_without_measure_cannot_match_a_trace() -> None:
+    route = RouteGeometry("A", (((-80.0, 26.0, None), (-80.0, 26.01, None)),))
+    samples = densify([(26.001, -80.0), (26.009, -80.0)])
+    assert runs(samples, {"A": route}, 25) == []
+    assert unmatched_meters(samples, {"A": route}, 25) == pytest.approx(path_meters(samples))

@@ -1,6 +1,6 @@
 # SPEC-11 Mapa: vía, milepost, jurisdicción y parcela
 
-Estado: implementada M3-M4, el buscador de M6, el trazo como en OSP (PEN-32), su ajuste visual a LRS (PEN-35) y los límites de parcelas (PEN-33), con E2E (2026-10-31)
+Estado: implementada M3-M4, buscador de M6, trazo y revisión de cobertura (PEN-32, PEN-35 a PEN-37), límites de parcelas (PEN-33), con E2E (2026-10-31)
 Responsable del código: `features/map/`, `components/map/MapView.tsx`, `app/router.tsx`, `components/layout/AppLayout.tsx`
 Relacionadas: PEN-29, ADR-13, ADR-05, SPEC-01, K-01 a K-06; backend SPEC-B14, ADR-B16, ADR-B17
 
@@ -11,7 +11,7 @@ Hacer clic en el mapa y saber al instante sobre qué vía se está, su milepost,
 ## Alcance
 
 - Incluye: destino "Mapa" en la navegación, ruta `/mapa`, modos Punto y Trazo, buscador (dirección, calle, ruta con milepost o coordenadas pegadas), panel de resultados, copiar datos, fuentes y avisos, estado en la URL.
-- Excluye: capas de vías dibujadas, Turnpike, mapa base con clave (resto de la fase M6 de PEN-29) y cualquier escritura.
+- Excluye: adaptadores de jurisdicción M5, mapa base con clave y cualquier escritura. Vías dibujadas, Turnpike e imagen HD ya están implementados.
 
 ## Comportamiento
 
@@ -33,11 +33,14 @@ Hacer clic en el mapa y saber al instante sobre qué vía se está, su milepost,
 6. Sin vía cerca: el panel lo dice ("No hay una vía a menos de 25 m") y muestra igual ubicación y parcela.
 6b. Zona y cruce (PEN-34): selectores "Condado" ("Todo Florida" por defecto; grupo "Donde trabajamos" con Broward, Palm Beach, Martin y Miami-Dade, luego "Otros condados") y "Ciudad" (sólo municipios del condado elegido, más "Todo el condado"; deshabilitado sin condado). Elegir zona encuadra el mapa en sus límites y dibuja su contorno punteado (`map-area`); la zona se recuerda en localStorage (`map-county`, `map-city`) y la guardada no tapa la vista de una URL. Con zona, el buscador dice "Calle o dirección en {ciudad}" y busca sólo ahí; el campo "Cruce con (opcional)" convierte la búsqueda en `Calle & Cruce`. Las sugerencias distinguen "Cruce" (con el milepost si es una vía del FDOT) y "Punto más cercano" (calles que no se cruzan, con la distancia en el detalle). Elegir un resultado con vía hace que el panel muestre primero esa vía (un cruce toca dos).
 7. URL compartible: `/mapa?p=lat,lon` en Punto y `/mapa?t=lat,lon;lat,lon;…` con el trazo terminado; abrir esa URL repite la consulta y encuadra la geometría oficial completa. Los enlaces del antiguo Tramo (`?a=…&b=…`) abren un trazo de dos puntos. Las coordenadas van con 6 decimales (la coma y el punto y coma salen codificados).
-8. Datos: hooks `useMapPoint(lat, lon)`, `useMapTrace(trazo)`, `useParcelOutlines(celdas)` y `useMapSearch(texto)` con TanStack Query, claves `['map-point', lat, lon]`, `['map-trace', trazo]`, `['map-parcels', celda]` y `['map-search', texto en mayúsculas]`, `staleTime` de 10 minutos (el backend cachea una hora). El panel todavía no ofrece un "Actualizar" que pida `refresh=true` (pendiente en PEN-30).
+8. Datos: hooks `useMapPoint(lat, lon)`, `useMapTrace(trazo)`, `useParcelOutlines(celdas)` y `useMapSearch(texto)` con TanStack Query, claves `['map-point', lat, lon]`, `['map-trace', trazo]`, `['map-parcels', celda]` y `['map-search', texto en mayúsculas]`, `staleTime` de 10 minutos (el backend cachea una hora). Punto y trazo ofrecen Actualizar con `refresh=true` (PEN-30, PEN-37).
 9. Privacidad (ADR-05): el nombre del propietario sólo vive en la caché de Query y los contornos de parcelas no lo traen; la URL lleva sólo coordenadas; el mapa base y las casillas se guardan en localStorage (`map-basemap`, `map-roads`, `map-parcels`), que son preferencias sin datos (`lib/preferences.ts`).
 10. Casilla "Límites de parcelas" (PEN-33): a zoom 17 o más dibuja en amarillo (`--map-parcel`) los contornos de las parcelas de la vista, pedidos por celdas fijas de 0.004 grados (`lib/cells.ts`, hasta 24 celdas) y sin repetir parcelas entre celdas; sin clic propio, el mapa sigue respondiendo debajo. Avisos junto a la casilla: "Acércate (zoom 17 o más)…", "Cargando parcelas…", "Algunas parcelas no se pudieron cargar." o "Hay demasiadas parcelas…".
 
 ## Estados
+
+- PEN-37: el trazo muestra porcentaje estimado asociado y distancia sin vía dentro del radio. Con `TRACE_PARTIAL` explica dónde continuar corrigiendo (agregar vértices sobre curvas o corregir extremos). Con `TRACE_GEOMETRY_INCOMPLETE` informa que la longitud no se conoce. El dibujo manual punteado se conserva junto a las geometrías válidas para revisar el faltante. Los metros de ajuste se etiquetan "Distancia de los extremos a la vía"; el cálculo lo realiza este backend con datos FDOT, no un servicio de snapping de OSP.
+- Punto y trazo tienen "Actualizar" que vuelve a leer con `refresh=true`; muestra "Actualizando…" y queda deshabilitado mientras consulta. Datos parciales identifican las fuentes fallidas y ofrecen actualizar. Un error al actualizar permanece visible aunque existan datos anteriores.
 
 - Carga: marcador visible al instante y esqueleto en el panel; si tarda más de 3 s, LoadingNotice "Consultando FDOT y FDACS…".
 - Vacío: instrucciones de uso; sin vía cerca, el mensaje del punto 6.
@@ -63,7 +66,8 @@ Hacer clic en el mapa y saber al instante sobre qué vía se está, su milepost,
 - CA-14: el trazo se dibuja con clics y se termina con doble clic (los puntos repetidos del doble clic se descartan); "Terminar" sólo se activa con dos puntos. Prueba: e2e (clic sobre la vía y doble clic 300 m más al norte) y componente. Ver FB-08.
 - CA-16: los selectores ponen primero los condados del equipo, listan sólo los municipios del condado y avisan el cambio de zona; la zona elegida encuadra el mapa. Prueba: `MapScopePicker.test.tsx` y e2e (Miami-Dade y Miami con el GIS falso: la zona no incorporada no aparece). Manual 2026-10-31 con datos reales: Broward con 31 municipios y Fort Lauderdale encuadrada con su límite.
 - CA-17: con zona y "Cruce con", el buscador pide `q=Calle & Cruce` con `county` y `city`, muestra "Cruce · MP …" y al elegirlo el panel pone primero esa vía. Prueba: `MapSearchBox.test.tsx`, `MapResults.test.tsx` y e2e (NW 42nd Ave y W Flagler St en MP 3.124). Manual 2026-10-31 en Fort Lauderdale: Las Olas y 3rd Ave da "E LAS OLAS BLVD y SE 3 AVE · MP 0.258" y el panel la vía `86000142`.
-- CA-18: al terminar el trazo, la polilínea manual no queda sobre el resultado; se ven únicamente las geometrías oficiales de las filas y el panel las identifica como ajustadas. Al abrir `?t=`, la vista encuadra todos sus extremos. Prueba: unidad de `traceDisplay`, componente y E2E.
+- CA-18: al terminar un trazo completamente asociado, la polilínea manual no queda sobre el resultado; se ven las geometrías oficiales de las filas. Si hay huecos conserva también el dibujo de referencia (PEN-37). Al abrir `?t=`, la vista encuadra todos sus extremos. Prueba: unidad de `traceDisplay`, componente y E2E.
+- CA-19: ante trazo parcial, el panel muestra cobertura y metros sin asociar, conserva el borrador para revisión y explica la longitud desconocida; la actualización de punto y trazo llega al backend con `refresh=true`. Prueba: reglas de presentación, componente, hooks con MSW y E2E.
 - CA-15: con "Límites de parcelas", a zoom 16 se pide acercarse y a zoom 17 se piden las celdas y se dibujan los contornos. Prueba: e2e con el GIS falso y unidad de `lib/cells.ts`. Manual 2026-10-30 con servicios reales: lotes de Miami-Dade sobre "Calles" y de Broward sobre "Satélite HD".
 
 ## Accesibilidad
@@ -90,6 +94,6 @@ Hacer clic en el mapa y saber al instante sobre qué vía se está, su milepost,
 ## Pendientes
 
 - M5: con adaptadores de condado, la confianza "Alta" en calles locales de Palm Beach.
-- M6: capas de vías estatales y de condado dibujadas, Turnpike en la fila de OSP y mapa base con más zoom (el buscador ya está).
+- M6: mapa base con clave opcional; comparar Turnpike con un dibujo idéntico en OSP. Vías, Turnpike, HD y buscador están implementados.
 - Pruebas de CA-04 y del aviso "Datos parciales" de CA-03.
 - Decidir si un tramo se puede guardar o enviar a una hoja de Smartsheet: hoy no (ADR-B15, sin base de datos propia).

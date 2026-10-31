@@ -67,7 +67,9 @@ export function normalizeMapPoint(source: ApiMapPoint): MapPoint {
 export function normalizeMapTrace(source: ApiMapTrace): MapTrace {
   return {
     inputLengthMi: source.input_length_mi ?? source.length_mi ?? 0,
-    lengthMi: source.length_mi ?? 0,
+    lengthMi: source.length_mi ?? null,
+    matchedPercent: source.matched_percent ?? null,
+    unmatchedLengthMi: source.unmatched_length_mi ?? null,
     adjustment: source.adjustment
       ? { startM: source.adjustment.start_m ?? null, endM: source.adjustment.end_m ?? null }
       : null,
@@ -81,7 +83,7 @@ export function normalizeMapTrace(source: ApiMapTrace): MapTrace {
       onTurnpike: row.on_turnpike ?? null,
       kind: row.kind ?? 'other',
       localName: row.local_name ?? null,
-      lengthMi: row.length_mi ?? 0,
+      lengthMi: row.length_mi ?? null,
       coordinates: row.geometry?.coordinates ?? [],
     })),
     sources: normalizeMapPoint({ sources: source.sources }).sources,

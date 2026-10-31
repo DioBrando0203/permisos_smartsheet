@@ -2,6 +2,13 @@
 
 Formato: ID, fecha Lima, síntoma, causa, solución o prevención, estado.
 
+## B-16 Geometría LRS incompleta y huecos de dibujo unidos
+
+Fecha: 2026-10-31. Estado: corregido en código (PEN-37).
+Síntoma: una fila cubría MPs de varios fragmentos pero sólo dibujaba el primero; al salir de la vía y volver, la fila aparentaba continuidad sin avisar.
+Causa: `slice_route` devolvía al encontrar la primera trayectoria; `runs` unía vías iguales ignorando las muestras intermedias sin vía.
+Solución: recorte continuo de todas las trayectorias con medidas, detección de huecos y cobertura estimada en el contrato. Pruebas de regresión en `test_map_rules.py`, `test_trace_rules.py` y `test_map_trace.py`.
+
 ## B-01 Escrituras de `/2.0/shares` sin verificar
 
 Fecha: 2026-10-12. Estado: abierto (PEN-07).

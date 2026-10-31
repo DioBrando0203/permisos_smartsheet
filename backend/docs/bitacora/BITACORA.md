@@ -184,3 +184,10 @@ Cambios: `MapTrace.input_length_mi`; longitudes de filas y total desde las LineS
 Evidencia: 189 pruebas de backend, Ruff y formato limpios; ver `calidad/RESULTADOS.md`.
 Notas: no se implementó enrutamiento ni se cambió ninguna escritura o configuración de Smartsheet.
 Entrega: commit local `d091361` creado. El `git push` del 2026-10-31 10:59 -05:00 no llegó a GitHub porque el entorno no dispone de credenciales; queda pendiente de una sesión autenticada.
+
+## 2026-10-31 11:30 -05:00 Integridad del trazo (PEN-37)
+
+Estado: terminada
+Cambios: `lrs_slicing.py` une fragmentos contiguos por M/posición; `map_rules` corrige escala de longitud por latitud; `trace_rules` separa salidas/regresos y estima cobertura. Contrato con porcentaje, distancia sin vía y longitudes desconocidas en `null`. B-16, specs, API, arquitectura y plan de calidad sincronizados (PY-01, PY-14, PY-21).
+Evidencia: 205 pruebas, Ruff y formato; GET reales de control, inverso y salida/regreso, detallados en RESULTADOS. El trazo parcial real tiene 57.2 % asociado y 0.380 mi sin vía dentro del radio.
+Límite: no se verificó el algoritmo de OSP con los mismos vértices; la evidencia anterior del control era reconstrucción desde medidas, precisada en SPEC-B14 y GIS_PUBLICO_FLORIDA. No se tocó configuración ni datos de Smartsheet.

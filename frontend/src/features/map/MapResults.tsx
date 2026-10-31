@@ -38,6 +38,11 @@ export function PointResult({
       <LocationSection location={result.location} />
       <ParcelSection parcel={result.parcel} />
       <SourcesSection sources={result.sources} />
+      {result.warnings.includes('SOURCE_FAILED') && (
+        <StatusAlert tone="warning" title="Datos parciales">
+          Una fuente GIS no respondió. Usa Actualizar para consultar de nuevo.
+        </StatusAlert>
+      )}
     </>
   )
 }

@@ -1,6 +1,9 @@
+import pytest
+
 from app.models.map import MapLocation, RoadMatch
 from app.services.map_rules import (
     RouteGeometry,
+    distance_m_to_route,
     geometry_miles,
     haversine_miles,
     jurisdiction,
@@ -52,3 +55,50 @@ def test_point_at_milepost_interpolates_and_rejects_out_of_range() -> None:
 def test_geometry_miles_uses_the_lrs_line_not_the_input_trace() -> None:
     geometry = [[-80.26361, 25.771778], [-80.264005, 25.782147]]
     assert geometry_miles(geometry) == haversine_miles(25.771778, -80.26361, 25.782147, -80.264005)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def test_slice_joins_all_multipart_lrs_fragments_in_measure_order(reverse: bool) -> None:
+    first = ((-80.0, 26.0, 0.0), (-80.0, 26.005, 0.5))
+    second = ((-80.0, 26.005, 0.5), (-80.0, 26.01, 1.0))
+    paths = (second[::-1], first[::-1], second) if reverse else (first, second, first)
+    route = RouteGeometry("synthetic", paths)
+    assert slice_route(route, 0.2, 0.8) == [[-80.0, 26.002], [-80.0, 26.005], [-80.0, 26.008]]
+    assert slice_route(route, 0.8, 0.2) == slice_route(route, 0.2, 0.8)
+
+
+def test_slice_clips_overlapping_fragments_without_backtracking() -> None:
+    route = RouteGeometry(
+        "synthetic",
+        (
+            ((-80.0, 26.0, 0.0), (-80.0, 26.006, 0.6)),
+            ((-80.0, 26.004, 0.4), (-80.0, 26.01, 1.0)),
+        ),
+    )
+    assert slice_route(route, 0.2, 0.8) == [[-80.0, 26.002], [-80.0, 26.006], [-80.0, 26.008]]
+
+
+@pytest.mark.parametrize(
+    "paths",
+    [
+        (((-80.0, 26.0, 0.0), (-80.0, 26.005, 0.5)),),  # Falta el final.
+        (((-80.0, 26.005, 0.5), (-80.0, 26.01, 1.0)),),  # Falta el principio.
+        (((-80.0, 26.0, None), (-80.0, 26.01, 1.0)),),  # Sin medidas.
+        (
+            ((-80.0, 26.0, 0.0), (-80.0, 26.004, 0.4)),
+            ((-80.0, 26.006, 0.6), (-80.0, 26.01, 1.0)),
+        ),  # Hueco de medidas.
+        (
+            ((-80.0, 26.0, 0.0), (-80.0, 26.005, 0.5)),
+            ((-80.001, 26.005, 0.5), (-80.001, 26.01, 1.0)),
+        ),  # Hueco espacial.
+    ],
+)
+def test_slice_does_not_invent_geometry_for_a_missing_part(paths) -> None:
+    assert slice_route(RouteGeometry("synthetic", paths), 0.2, 0.8) == []
+
+
+def test_distance_to_lrs_uses_longitude_scale_at_florida_latitude() -> None:
+    route = RouteGeometry("synthetic", (((-80.0, 26.0, 0.0), (-80.0, 26.01, 1.0)),))
+    expected = haversine_miles(26.005, -79.9998, 26.005, -80.0) * 1609.344
+    assert distance_m_to_route(26.005, -79.9998, route) == pytest.approx(expected, abs=0.1)

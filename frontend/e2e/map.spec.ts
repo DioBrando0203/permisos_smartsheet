@@ -25,6 +25,12 @@ test('el trazo de control por URL da la fila de OSP y resalta la vía (CA-02, CA
   await expect(osp(page)).toContainText('Miami-DadeSR 953LEJEUNE RD/NW 42 AVE2813.1243.839No')
   await expect(page.locator('path.map-line--result')).toBeVisible()
   await expect(page.locator('path.map-line--draft')).toHaveCount(0)
+  const refresh = page.waitForRequest((request) => {
+    const url = new URL(request.url())
+    return url.pathname === '/api/map/trace' && url.searchParams.get('refresh') === 'true'
+  })
+  await panel(page).getByRole('button', { name: 'Actualizar', exact: true }).click()
+  await refresh
   expect(param(page, 't')).toBe('25.771778,-80.263610;25.782147,-80.264005')
   // Un enlace del antiguo Tramo (?a=&b=) abre el mismo trazo.
   await page.goto('/mapa?a=25.771778,-80.263610&b=25.782147,-80.264005')
@@ -145,4 +151,23 @@ test('los límites de parcelas aparecen al acercarse (PEN-33)', async ({ page })
   await parcels
   await expect(page.locator('path.map-parcel')).toBeVisible()
   await expect(page.getByText(/Acércate/)).toBeHidden()
+})
+
+test('un dibujo que sale de la vía muestra lo faltante y conserva la referencia', async ({ page }) => {
+  await page.goto(
+    '/mapa?t=25.771778,-80.263610;25.775,-80.26375;25.777,-80.261;25.779,-80.2639;25.782147,-80.264005',
+  )
+  await expect(panel(page).getByText('Revisar recorrido incompleto')).toBeVisible()
+  await expect(panel(page).getByText(/Dibujo asociado a vías/)).toBeVisible()
+  await expect(page.locator('path.map-line--draft')).toBeVisible()
+  await expect(page.locator('path.map-line--result')).toHaveCount(2)
+  for (const width of [320, 390, 1024, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 1000 })
+    await expect(panel(page).getByText('Revisar recorrido incompleto')).toBeVisible()
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )
+    expect(overflow).toBe(0)
+    await page.screenshot({ path: test.info().outputPath(`trazo-parcial-${width}.png`), fullPage: true })
+  }
 })

@@ -13,7 +13,7 @@ Seis destinos en la navegación lateral, cada uno con URL propia (ADR-04):
 - Diseñadores `/disenadores`: carga y acceso (SPEC-08).
 - Revisión `/revision`: riesgos de la cuenta, resumen de acceso y automatizaciones de toda la cuenta (SPEC-06); referencias entre hojas (SPEC-09).
 - Comparar `/comparar?a=&b=`: dos hojas lado a lado y copiar permisos con simulación (SPEC-07).
-- Mapa `/mapa`: punto o trazo, milepost, jurisdicción, parcela y filas Work Location; al terminar muestra la geometría LRS oficial del FDOT, no la línea manual (SPEC-11).
+- Mapa `/mapa`: punto o trazo, milepost, jurisdicción, parcela y filas Work Location; muestra la geometría LRS del FDOT y, si está incompleta, conserva el dibujo de referencia y avisa su cobertura (SPEC-11, PEN-37).
 
 Además: `/` redirige a `/hojas`; ruta desconocida muestra "Esta página no existe" (SPEC-01).
 
@@ -86,6 +86,8 @@ e2e/                                       Playwright contra backend real + Smar
 - `lib` no importa React salvo `lib/query`.
 
 ## Flujo de datos
+
+- Mapa: `useMapReading` concentra lectura y actualización forzada de punto y trazo; `useMapDrawing` deriva geometrías, marcadores y encuadre; `TraceQuality` presenta cobertura y longitudes desconocidas sin confundir cálculo propio con datos FDOT.
 
 1. La URL decide la vista y los filtros compartibles (`/hojas/:sheetId?tab=actividad`, `?q=`).
 2. Los hooks de cada feature leen con TanStack Query y las claves de `lib/query/keys.ts`.

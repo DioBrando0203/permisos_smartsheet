@@ -235,7 +235,7 @@ Hacer: exportar a CSV la matriz persona por hoja con niveles. El archivo contien
 
 ### PEN-29 Mapa de vías, milepost, jurisdicción y parcelas
 
-Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-30): M1 a M4 implementadas, con E2E contra un GIS falso; de M6, el buscador (dirección, calle, ruta con milepost y coordenadas). Pendientes: M5, el resto de M6, confirmar el geocodificador del Censo como fuente (ADR-B17), verificar el buscador con GET reales y encuadrar el tramo completo al abrirlo por URL. ADR-B16 y ADR-B17 aprobadas por el usuario.
+Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-31): M1 a M4, buscador, imagen HD, vías y parcelas implementadas. PEN-34 verificó búsquedas por zona y cruces; PEN-35 encuadra el trazo completo. Pendientes: M5, comparación independiente con OSP usando idénticos vértices, respaldo de parcelas para Palm Beach/Martin y mapa base con clave opcional. ADR-B16 y ADR-B17 aprobadas por el usuario.
 Tipo (ADR-B15): (a) ni Smartsheet ni OSP dicen el milepost, de quién es la calle y qué parcela hay en un punto sin dibujar una solicitud en OSP; el mapa sólo consulta y no cambia cómo se pide el permiso.
 Situación: verificado con GET reales que los servicios públicos del FDOT y de FDACS reproducen los valores de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839) y dan ciudad, condado, ZIP y parcela en Broward, Palm Beach, Martin y Miami-Dade. Investigación en `future_docs/`.
 Specs: SPEC-B14 (backend) y SPEC-11 (frontend); ADR-13 del frontend (Leaflet).
@@ -254,7 +254,7 @@ Prioridad: alta. Alcance: backend y frontend. Estado: terminada para Broward (20
 Tipo (ADR-B15): (b) el mapa ya existe; esto lo hace usable cuando una fuente pública falla.
 Situación: el 2026-10-30, desde el equipo Windows, `gis.fdacs.gov` no aceptó conexiones (DNS sí, TCP no; FDOT respondía en menos de 1 s). Cada punto tardaba 60,5 s (tres intentos de 20 s) y llegaba sin parcela; el panel parecía colgado en "Consultando FDOT y FDACS…" y en "Calculando el tramo…".
 Hacer: plazo de conexión corto (`gis_connect_timeout_seconds`, 5 s) y sin reintentos cuando ni siquiera conecta; si FDACS falla en Broward, pedir la parcela a la capa pública del condado (`services.arcgis.com/JMAJrTsHNLrSsWf5/.../Parcels/FeatureServer/0`, `FOLIO`; MJ-BR-01, verificada desde este equipo el 2026-10-30) y decir de qué fuente salió. Specs: SPEC-B14 y SPEC-11.
-Pendiente aparte: respaldo para Palm Beach, Martin y Miami-Dade (MJ-PEN-02 a MJ-PEN-04); revisar las condiciones de uso de la capa de Broward (MJ-PEN-06); un botón "Actualizar" en el aviso "Datos parciales" que pida `refresh=true`, porque el punto parcial queda una hora en la caché del backend.
+Pendiente aparte: respaldo de consulta de parcela para Palm Beach, Martin y Miami-Dade (MJ-PEN-02 a MJ-PEN-04); revisar las condiciones de uso de la capa de Broward (MJ-PEN-06). PEN-37 implementa Actualizar con `refresh=true` en punto y trazo; los contornos de Miami-Dade ya usan la fuente del condado (PEN-33).
 
 ### PEN-31 Mapa: mejor vista y más zoom
 
@@ -289,6 +289,14 @@ Hacer: tras terminar, mostrar sólo las geometrías LRS de las filas como result
 Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-31).
 Situación: el resultado ya dibuja la LRS oficial, pero la persona no puede comprobar en cifras cuánto se movieron los extremos elegidos hasta esa vía. Esto hacía parecer que el panel conservaba la línea manual.
 Hacer: `GET /api/map/trace` devuelve la distancia en metros desde el primer y último punto marcados a sus vías LRS elegidas. El panel la explica como ajuste de FDOT junto a la longitud oficial. Cero metros significa que el punto ya estaba sobre la geometría; no implica que se haya hecho enrutamiento.
+
+### PEN-37 Integridad del trazo y geometrías LRS fragmentadas
+
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-31); comparación independiente con OSP sigue en PEN-29 y OSP-PEN-01.
+Evidencia: una LRS sintética partida en MP 0–0.5 y 0.5–1 devolvía sólo 0.2–0.5 al pedir 0.2–0.8; un dibujo que sale más de 25 m de la calle y vuelve se unía sin informar el hueco.
+Hacer: unir segmentos LRS contiguos por medida y posición, incluso invertidos o repetidos; sin puente artificial entre fragmentos desconectados. Separar filas ante huecos del dibujo; devolver cobertura estimada por muestras de 10 m (`matched_percent`, `unmatched_length_mi`) y `TRACE_PARTIAL` si falta recorrido, `TRACE_GEOMETRY_INCOMPLETE` si la geometría de una fila está incompleta. Longitud desconocida en `null`, nunca cero supuesto. Explicar estas situaciones en el panel y conservar el dibujo cuando el resultado está incompleto. Distancias calculadas en plano local con corrección de longitud por latitud.
+Incluye cerrar el botón Actualizar de PEN-30 para punto y trazo: salto real de caché del backend con `refresh=true`, errores visibles y consultas deshabilitadas sin selección.
+Límite de evidencia: las coordenadas del caso SR 953 se obtuvieron a partir de los MPs de la captura; eso verifica la interpolación, no demuestra equivalencia independiente con el algoritmo de OSP para cualquier dibujo. Sigue pendiente comparar entradas idénticas en ambos sistemas (OSP-PEN-01).
 
 ### PEN-33 Límites de parcelas en el mapa
 

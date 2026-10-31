@@ -54,14 +54,16 @@ export type WorkLocation = {
   onTurnpike: boolean | null
   kind: RoadMatch['kind']
   localName: string | null
-  lengthMi: number
+  lengthMi: number | null
   coordinates: [number, number][]
 }
 export type MapTrace = {
   /** Longitud de la polilínea marcada antes de ajustar a la LRS del FDOT. */
   inputLengthMi: number
   /** Longitud de las geometrías oficiales que se dibujan al terminar. */
-  lengthMi: number
+  lengthMi: number | null
+  matchedPercent: number | null
+  unmatchedLengthMi: number | null
   adjustment: { startM: number | null; endM: number | null } | null
   rows: WorkLocation[]
   sources: MapPoint['sources']
@@ -119,7 +121,9 @@ export type ApiMapPoint = {
 export type ApiMapTrace = {
   path?: [number, number][]
   input_length_mi?: number
-  length_mi?: number
+  length_mi?: number | null
+  matched_percent?: number
+  unmatched_length_mi?: number
   adjustment?: { start_m?: number | null; end_m?: number | null } | null
   rows?: {
     county?: string | null
@@ -131,7 +135,7 @@ export type ApiMapTrace = {
     on_turnpike?: boolean | null
     kind?: RoadMatch['kind']
     local_name?: string | null
-    length_mi?: number
+    length_mi?: number | null
     geometry?: { type?: 'LineString'; coordinates?: [number, number][] }
   }[]
   sources?: ApiMapPoint['sources']

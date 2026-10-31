@@ -31,7 +31,7 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
   - el geocodificador del Censo entiende cruces `A & B, Ciudad, FL` aun con nombres incompletos ("Las Olas Blvd & 3rd Ave" da E Las Olas Blvd y SE 3rd Ave), pero no los alias ("LeJeune Rd" no, "NW 42nd Ave" sí);
   - el firewall de census.gov bloqueó la IP del equipo el 2026-10-31 tras unas decenas de consultas seguidas: TIGERweb y el geocodificador respondían 200 con una página HTML "Request Rejected" (B-15).
 - Consulta común: `GET {capa}/query` con `geometry=lon,lat`, `geometryType=esriGeometryPoint`, `inSR=4326`, `spatialRel=esriSpatialRelIntersects`, `outFields` explícitos, `f=json`; en vías, además `distance` en metros, `units=esriSRUnit_Meter`; en la capa 8, `returnGeometry=true`, `returnM=true`, `outSR=4326`.
-- Caso de control: `25.771778,-80.263610` da la vía `87281000` (SR 953, sección 281) con milepost 3.124; `25.782147,-80.264005` da 3.839. Son los valores de la fila de OSP en `future_docs/osp-milepost-paso3.png`.
+- Caso de control: `25.771778,-80.263610` da la vía `87281000` (SR 953, sección 281) con milepost 3.124; `25.782147,-80.264005` da 3.839. Estos puntos se reconstruyeron desde las medidas de la fila OSP; la captura no aporta los vértices originales. Verifica la interpolación LRS, pero la equivalencia independiente del algoritmo OSP para el mismo dibujo sigue sin verificar (OSP-PEN-01).
 
 ## Comportamiento
 
@@ -49,6 +49,7 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
    - responde `MapSegment` con los mileposts ordenados de menor a mayor y la geometría del tramo recortada de la capa 8.
 3. `GET /api/map/sources`: catálogo fijo de fuentes (id, nombre, proveedor, URL pública, qué aporta, frecuencia de actualización, licencia o nota). No llama a ningún servicio.
 4. Milepost: proyectar el punto sobre la polilínea de la capa 8 e interpolar M en el segmento más cercano; tres decimales, como OSP (`map_rules.milepost_at`).
+   - PEN-37: proyección y distancia en plano local (longitud corregida por coseno de latitud). El recorte selecciona por M los segmentos de todas las trayectorias y sólo une extremos contiguos (tolerancia 2 m y 0.00051 mi de M por redondeo). Sin cobertura continua del rango, geometría vacía y aviso; no dibujar un puente artificial.
 5. Jurisdicción (`map_rules.jurisdiction`, tabla de reglas en orden):
    - vía en "State Roads": `FDOT`, base `state_road`, confianza `high`;
    - vía en "County Roads": el condado, base `county_road`, confianza `medium` (CR no siempre significa mantenida por el condado);
@@ -73,7 +74,8 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 10. `GET /api/map/trace?path=lat,lon;lat,lon;…&radius_m=25&refresh=` (PEN-32), como el paso 3 de OSP (`future_docs/osp-milepost-paso3.png`):
    - de 2 a `gis_trace_max_points` (100) vértices, todos en Florida y como máximo `gis_max_segment_miles`; si no, 422 `TRACE_INVALID`, `COORDINATES_OUT_OF_FLORIDA` o `SEGMENT_TOO_LONG` sin consultar fuentes;
    - vías candidatas: la capa 8 por rectángulos de unos 300 m a lo largo del trazo más el radio (`trace_rules.envelopes`), con geometría y medida M;
-   - el trazo se recorre cada 10 m; cada muestra queda en la vía más cercana dentro del radio y no se cambia de vía mientras la actual siga dentro del radio, así un cruce no corta la fila; tramos de menos de 20 m se descartan y una misma vía a ambos lados de uno descartado se une (`trace_rules.runs`);
+   - el trazo se recorre cada 10 m; cada muestra queda en la vía más cercana dentro del radio y no se cambia de vía mientras la actual siga dentro del radio, así un cruce no corta la fila; tramos de menos de 20 m se descartan; una misma vía a ambos lados de un tramo descartado sólo se une si cada muestra intermedia sigue en su radio (`trace_rules.runs`);
+   - cobertura estimada: una arista de muestra cuenta como asociada cuando ambos extremos están dentro del radio de alguna vía con M válido; lo demás suma `unmatched_length_mi` y `TRACE_PARTIAL`. `matched_percent` es esa longitud asociada sobre la longitud manual. Con geometría de fila incompleta, `TRACE_GEOMETRY_INCOMPLETE`, longitud de fila y total en `null`. La fila conserva sus MPs para revisión;
    - mileposts de cada fila: proyección de sus extremos, extendidos mientras la vía siga en el radio, para que al doblar cada fila termine y empiece en la intersección; ordenados de menor a mayor, tres decimales;
    - por atributos y sólo para las vías del trazo: estatales (capa 15) y de condado (capa 2) dan el tipo y la ruta; nombres locales (capa 13) el nombre según el milepost medio; condados (`Admin_Boundaries` capa 6, `CNTYNO IN`) el nombre del condado;
    - Turnpike: punto medio de cada fila sobre la vía contra `Admin_Boundaries` capa 13; `D8` (FTE) es Turnpike (GIS-PEN-01, verificado el 2026-10-30 en SR 821 y SR 953);
@@ -127,6 +129,8 @@ Fuentes del buscador (`MapSearch.sources`): `fdot_milepost`, `fdot_streets`, `ce
 
 `WorkLocation` (columnas de Work Location en OSP): `county`, `state_road_id` (la ruta como en OSP, "SR 953"; el ID de vía si no tiene ruta), `roadway_id`, `section_number`, `beginning_milepost`, `ending_milepost`, `on_turnpike` (bool | null), `kind`, `local_name`, `length_mi`, `geometry` (LineString del tramo de la vía).
 
+PEN-37: `MapTrace.matched_percent` y `unmatched_length_mi` describen la cobertura estimada del dibujo. `WorkLocation.length_mi` y `MapTrace.length_mi` son `number | null`: `null` si no se pudo reconstruir alguna geometría completa. `TRACE_PARTIAL` y `TRACE_GEOMETRY_INCOMPLETE` son avisos de revisión, independientes de `SOURCE_FAILED`. `adjustment` mide distancias calculadas por el backend, no una llamada de ajuste a OSP.
+
 `ParcelOutlines`: `source` (`broward_parcels`, `miami_dade_parcels` o `fdacs_parcels`), `parcels` (`parcel_id`, `rings` [[[lon, lat], …], …]), `truncated`.
 
 `osp_row.state_road_id` del tramo también es la ruta ("SR 953") desde el 2026-10-30; antes era el ID de vía, distinto de OSP.
@@ -148,6 +152,7 @@ Errores nuevos (formato de `estilos/API.md`):
 - `services/gis/client.py`: `query_point(layer, lat, lon, fields, radius_m, with_m)`; traduce el error JSON de ArcGIS (`{"error": {...}}` con HTTP 200) a error de fuente.
 - `services/gis/mappers.py` y `types.py`: JSON de ArcGIS a `RawRoad`, `RawBoundary`, `RawParcel`, `RawRoute` (con trayectos `[lon, lat, m]`).
 - `services/map_rules.py`: puro: `in_florida`, `milepost_at`, `slice_route`, `pick_segment_road`, `jurisdiction` (tabla), `DOR_USES`, `normalize_route`. Si pasa de 300 líneas, separar `milepost.py`.
+- `services/lrs_slicing.py`: recorte continuo por medidas, unión de fragmentos sin puentes artificiales y tolerancia de redondeo 0.00051 mi en M y 2 m en posición.
 - `services/map.py`: `MapService.point` y `MapService.segment`; consultas en paralelo con `asyncio.TaskGroup` y caché `TtlCache`.
 - `services/map_query.py` (puro) y `services/map_search.py` (`MapSearchService`, que `MapService.search` delega): buscador del punto 9; `GisClient.query_where` y `GisClient.geocode`.
 - `services/trace_rules.py` (puro: `parse_path`, `densify`, `envelopes`, `runs`) y `services/map_trace.py` (`MapTraceService`): trazo del punto 10; `GisClient.query_box` (rectángulo).
@@ -183,6 +188,8 @@ Errores nuevos (formato de `estilos/API.md`):
 - CA-22: una fuente que responde HTML (firewall) queda en `error`, la búsqueda responde 200 y ese servidor no se vuelve a pedir durante la pausa. Prueba: `test_map.py::test_firewall_html_is_a_failed_source_and_the_host_rests`; manual 2026-10-31 con el Censo bloqueando: 200 con el cruce del FDOT.
 - CA-23: la longitud del trazo terminado sale de las geometrías LRS entre los mileposts y `input_length_mi` conserva la longitud manual; una línea manual paralela a una vía devuelve la geometría de la vía. Prueba: `test_map_rules.py` y `test_map_trace.py`.
 - CA-24: `adjustment.start_m` y `adjustment.end_m` dicen cuánto separaba cada extremo de su LRS elegida; con extremos sobre la vía ambos son 0. Prueba: `test_map_trace.py`.
+- CA-25: trayectorias LRS fragmentadas, invertidas, superpuestas y repetidas se recortan entre ambos MPs; huecos espaciales, medidas ausentes o rango incompleto no producen una línea inventada. Prueba: `test_map_rules.py`.
+- CA-26: salir del radio y volver separa filas y devuelve `TRACE_PARTIAL` con cobertura menor a 100; geometría incompleta informa longitud `null`. Prueba: `test_trace_rules.py`, `test_map_trace.py`.
 - CA-19: contornos por celda desde el condado y sin propietario. Prueba: `test_fake_gis.py`; manual 2026-10-30: Broward 41 parcelas (31 KB, 1,1 s) y Miami-Dade 121 (22 KB, 0,8 s).
 
 ## Fases

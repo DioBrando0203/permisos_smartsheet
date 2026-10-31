@@ -87,8 +87,12 @@ def runs(samples: list[Point], routes: dict[str, RouteGeometry], radius_m: float
     for roadway, first, last in _groups(near):
         if path_meters(samples[first : last + 1]) < MIN_RUN_METERS:
             continue
-        if kept and kept[-1][0] == roadway:
-            # La misma vía a ambos lados de un tramo descartado: una sola fila.
+        if (
+            kept
+            and kept[-1][0] == roadway
+            and all(roadway in item for item in near[kept[-1][2] : first + 1])
+        ):
+            # Sólo unir si la propia vía cubre también las muestras intermedias.
             kept[-1] = (roadway, kept[-1][1], last)
         else:
             kept.append((roadway, first, last))
@@ -105,7 +109,7 @@ def _near(point: Point, routes: dict[str, RouteGeometry], radius_m: float) -> di
     found = {}
     for roadway, route in routes.items():
         distance = distance_m_to_route(point[0], point[1], route)
-        if distance is not None and distance <= radius_m:
+        if distance is not None and distance <= radius_m and milepost_at(*point, route) is not None:
             found[roadway] = distance
     return found
 
@@ -124,6 +128,18 @@ def _groups(near: list[dict[str, float]]) -> list[tuple[str, int, int]]:
         else:
             groups.append((current, index, index))
     return groups
+
+
+def unmatched_meters(
+    samples: list[Point], routes: dict[str, RouteGeometry], radius_m: float
+) -> float:
+    """Estimación por aristas de 10 m sin vía LRS en alguno de sus extremos."""
+    near = [bool(_near(point, routes, radius_m)) for point in samples]
+    return sum(
+        meters_between(first, last)
+        for index, (first, last) in enumerate(zip(samples, samples[1:], strict=False))
+        if not (near[index] and near[index + 1])
+    )
 
 
 def _mileposts(

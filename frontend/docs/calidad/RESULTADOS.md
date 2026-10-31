@@ -101,3 +101,10 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm test`: 13 archivos y 32 pruebas aprobadas. La prueba nueva verifica que el resultado usa sólo las geometrías LRS y obtiene su rectángulo completo.
 - `npm run test:e2e`: pasa; 8 pruebas funcionales y 1 caso F0 omitido. El trazo de control verifica que, al terminar, queda la línea oficial sólida y ninguna línea punteada manual.
 - E2E contra GIS y Smartsheet falsos; no se consultó la cuenta ni un proveedor GIS real.
+
+## 2026-10-31 11:30 -05:00 Integridad de trazo y actualización (PEN-37)
+
+- `npm run build`, `npm run lint` y `npm run format:check`: pasan. `npm test -- --maxWorkers=1`: 14 archivos, 37 pruebas aprobadas.
+- `npm run test:e2e -- --workers=1 --timeout=90000`: 9 aprobadas, 1 caso F0 omitido; 1.8 min. Verifica actualización real con `refresh=true`, dibujo completo sin borrador y dibujo parcial con referencia y filas separadas.
+- Capturas de trazo parcial en 320, 390, 1024, 1440 y 1920 px: sin desborde horizontal. Inspección visual de 390 y 1440 px: aviso, tabla, fuentes y referencia punteada legibles; teselas externas bloqueadas intencionalmente. Evidencia en `test-results/map-un-dibujo-que-sale-de--4fc18-te-y-conserva-la-referencia/` (ignorado por Git).
+- La primera ejecución simultánea de Vitest y Playwright agotó recursos (7.2 GiB RAM y 3.8 GiB swap llena); se observaron timeouts de inicio de workers y navegación. Tras cancelar sólo esos procesos de prueba, las suites separadas con un worker pasan (FB-10). No se ajustaron las aserciones para ocultar los fallos.

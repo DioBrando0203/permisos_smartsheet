@@ -175,3 +175,11 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - `pytest`: 189 pruebas aprobadas. `ruff check app tests` y `ruff format --check app tests`: sin observaciones.
 - `GET /api/map/trace` conserva `input_length_mi` para la polilínea marcada y calcula `length_mi` y cada `WorkLocation.length_mi` desde la geometría LRS oficial recortada entre mileposts.
 - La comprobación fue simulada contra el GIS falso; no se consultó Smartsheet ni se realizó ninguna escritura.
+
+## 2026-10-31 11:30 -05:00 Integridad de trazo y actualización (PEN-37)
+
+- Python 3.14.4 en Linux. `pytest`: 205 aprobadas; Ruff check y format --check: limpios (123 archivos).
+- Regresión reproducida antes de corregir: LRS sintética dividida en dos paths devolvía sólo MP 0.2–0.5 al pedir 0.2–0.8; una salida y regreso a la vía se unían en una fila sin aviso.
+- GET manual real desde `/api/map/trace`, con `refresh=true`: control `25.771778,-80.263610;25.782147,-80.264005` y su inverso dan SR 953, MP 3.124–3.839, longitud 0.717 mi, cobertura 100 %, sin avisos.
+- GET manual real de salida/regreso: `25.771778,-80.263610;25.775,-80.26375;25.777,-80.261;25.779,-80.2639;25.782147,-80.264005`: cobertura 57.2 %, 0.380 mi sin vía, `TRACE_PARTIAL`; filas SR 953 (3.124–3.353), vía local 87580500 (0.018–0.051) y SR 953 (3.615–3.839).
+- Las lecturas reales consultaron sólo GIS público a través del backend activo con recarga; no hubo escrituras ni lecturas de Smartsheet. El caso de control reconstruye coordenadas desde MPs: no prueba igualdad independiente del ajuste OSP para entradas idénticas.

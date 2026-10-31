@@ -25,7 +25,7 @@ def _routes(router: respx.MockRouter, *, lrs: list | None = None, districts: lis
         "/Admin_Boundaries/MapServer/13/query": districts or [{"attributes": {"DVALUE": "D6"}}],
     }
     for path, features in responses.items():
-        router.get(f"{GIS}{path}").respond(json={"features": features})
+        router.get(f"{GIS}{path}", name=path).respond(json={"features": features})
 
 
 async def test_turnpike_district_marks_the_row(client, smartsheet) -> None:
@@ -47,6 +47,50 @@ async def test_trace_reports_how_far_fdot_adjusted_its_endpoints(client, smartsh
     assert body["rows"][0]["state_road_id"] == "SR 953"
     assert body["adjustment"]["start_m"] == pytest.approx(6, abs=1)
     assert body["adjustment"]["end_m"] == pytest.approx(6, abs=1)
+    assert body["matched_percent"] == 100
+    assert body["unmatched_length_mi"] == 0
+
+
+async def test_trace_warns_if_the_drawn_line_leaves_and_rejoins_the_road(
+    client, smartsheet
+) -> None:
+    _routes(smartsheet)
+    path = (
+        "25.771778,-80.263610;25.775,-80.26375;25.777,-80.261;25.779,-80.2639;25.782147,-80.264005"
+    )
+    body = (await client.get("/api/map/trace", params={"path": path})).json()
+    assert len(body["rows"]) == 2
+    assert "TRACE_PARTIAL" in body["warnings"]
+    assert 0 < body["matched_percent"] < 100
+    assert body["unmatched_length_mi"] > 0.1
+
+
+async def test_incomplete_geometry_has_unknown_length_and_a_warning(client, smartsheet) -> None:
+    split = {
+        **LRS,
+        "geometry": {
+            "paths": [
+                [[-80.26361, 25.771778, 3.124], [-80.2638, 25.777, 3.48]],
+                [[-80.2638, 25.7771, 3.49], [-80.264005, 25.782147, 3.839]],
+            ]
+        },
+    }
+    _routes(smartsheet, lrs=[split])
+    body = (await client.get("/api/map/trace", params={"path": CONTROL})).json()
+    assert body["length_mi"] is None
+    assert body["rows"][0]["length_mi"] is None
+    assert "TRACE_GEOMETRY_INCOMPLETE" in body["warnings"]
+
+
+async def test_refresh_trace_queries_gis_again(client, smartsheet) -> None:
+    _routes(smartsheet)
+    route = smartsheet.routes["/RCI_Layers/MapServer/8/query"]
+    await client.get("/api/map/trace", params={"path": CONTROL})
+    before = route.call_count
+    await client.get("/api/map/trace", params={"path": CONTROL})
+    assert route.call_count == before
+    await client.get("/api/map/trace", params={"path": CONTROL, "refresh": "true"})
+    assert route.call_count > before
 
 
 @pytest.mark.parametrize(

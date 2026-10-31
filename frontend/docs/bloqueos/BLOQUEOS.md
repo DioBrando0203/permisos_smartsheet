@@ -56,3 +56,9 @@ Fecha: 2026-10-30. Estado: resuelto.
 Hecho: con la tabla Work Location, la página tenía 103 px de desborde horizontal a 320 px aunque la tabla estaba dentro de `.data-table` con scroll propio.
 Causa: el texto `.sr-only` de la última columna es `position: absolute` y, sin un ancestro posicionado dentro del scroll, se ubicaba respecto de la página.
 Solución: `.data-table { position: relative }` (componente genérico). Verificado con el E2E de 320 px.
+
+## FB-10 Pruebas concurrentes agotan recursos de la VM
+
+Fecha: 2026-10-31. Estado: mitigado con ejecución secuencial.
+Evidencia: 7.2 GiB RAM y 3.8 GiB swap ocupada durante Vitest y Playwright simultáneos; timeouts al crear workers y al navegar, también en pruebas existentes.
+Prevención: ejecutar `npm test -- --maxWorkers=1` y luego `npm run test:e2e -- --workers=1 --timeout=90000` por separado. Ambas suites pasaron así. No cerrar procesos del usuario ni reutilizar servidores reales para E2E.

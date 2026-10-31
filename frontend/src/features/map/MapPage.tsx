@@ -1,25 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import {
-  MapView,
-  type Basemap,
-  type MapFocus,
-  type MapLine,
-  type MapMarker,
-  type MapViewState,
-} from '../../components/map/MapView'
+import { MapView, type Basemap, type MapFocus, type MapViewState } from '../../components/map/MapView'
 import { basemapChoices } from '../../components/map/tileSources'
-import { StatusAlert } from '../../components/ui'
+import { Button } from '../../components/ui'
 import type { MapScope } from './area'
 import { useMapArea, useMapPoint, useMapTrace } from './hooks'
 import type { Coordinates } from './lib/coordinates'
 import { readMapUrl, writeMapUrl, type MapMode } from './lib/mapUrl'
 import { readChoice, readText, saveChoice } from './lib/preferences'
-import { officialBounds, officialLines } from './lib/traceDisplay'
 import { PointResult } from './MapResults'
 import { MapToolbar, type MapLayers } from './MapToolbar'
 import { TraceResult } from './TraceResult'
 import { useParcelLayer } from './useParcelLayer'
+import { useMapDrawing } from './useMapDrawing'
 import { useTraceDrawing } from './useTraceDrawing'
 
 const closeZoom = 16
@@ -54,6 +47,8 @@ export function MapPage() {
   const fitArea = useRef(false)
   const point = useMapPoint(mode === 'point' ? a : null)
   const result = useMapTrace(mode === 'trace' ? trace.finished : null)
+  const reading = mode === 'point' ? point : result
+  const drawing = useMapDrawing(mode, a, trace, result.data)
   const parcels = useParcelLayer(layers.parcels, view)
   useEffect(() => {
     setParams(writeMapUrl(mode, a, trace.finished), { replace: true })
@@ -82,25 +77,6 @@ export function MapPage() {
     return () => window.removeEventListener('keydown', keys)
   })
   const choose = (next: Coordinates) => (mode === 'point' ? setA(next) : trace.add(next))
-  const resultFocus = useMemo<MapFocus | null>(() => {
-    const bounds = mode === 'trace' && result.data ? officialBounds(result.data) : null
-    return bounds ? { bounds } : null
-  }, [mode, result.data])
-  const markers = useMemo<MapMarker[]>(() => {
-    if (mode === 'point') return a ? [a] : []
-    if (!trace.drawing && result.data) return []
-    return trace.vertices.map((vertex, index) => ({
-      ...vertex,
-      small: true,
-      label: index ? undefined : 'Inicio',
-    }))
-  }, [a, mode, result.data, trace.drawing, trace.vertices])
-  const lines = useMemo<MapLine[]>(() => {
-    if (mode !== 'trace') return []
-    if (!trace.drawing && result.data)
-      return officialLines(result.data).map((coordinates) => ({ coordinates, style: 'result' as const }))
-    return [{ coordinates: trace.vertices.map(({ lat, lon }) => [lon, lat]), style: 'draft' }]
-  }, [mode, trace.vertices, trace.drawing, result.data])
   return (
     <section className="map-page">
       <div className="map-page__canvas">
@@ -125,9 +101,9 @@ export function MapPage() {
           }}
         />
         <MapView
-          focus={resultFocus ?? focus}
-          markers={markers}
-          lines={lines}
+          focus={drawing.focus ?? focus}
+          markers={drawing.markers}
+          lines={drawing.lines}
           outlines={parcels.rings}
           area={(scope.county && area.data?.outline) || noArea}
           basemap={basemap}
@@ -142,13 +118,21 @@ export function MapPage() {
         />
       </div>
       <aside className="map-page__panel" aria-live="polite" aria-label="Resultados del mapa">
+        <Button
+          appearance="secondary"
+          size="sm"
+          onClick={reading.refresh}
+          disabled={reading.isFetching || (mode === 'point' ? !a : !trace.finished)}
+        >
+          {reading.isFetching ? 'Actualizando…' : 'Actualizar'}
+        </Button>
         {mode === 'point' ? (
           <PointResult
             result={point.data}
             preferRoadway={preferred}
             loading={point.isLoading}
             error={point.error}
-            onRetry={() => void point.refetch()}
+            onRetry={point.refresh}
           />
         ) : (
           <TraceResult
@@ -160,13 +144,8 @@ export function MapPage() {
             onFinish={trace.finish}
             onUndo={trace.undo}
             onClear={trace.clear}
-            onRetry={() => void result.refetch()}
+            onRetry={result.refresh}
           />
-        )}
-        {mode === 'point' && point.data?.warnings.includes('SOURCE_FAILED') && (
-          <StatusAlert tone="warning" title="Datos parciales">
-            Una fuente GIS no respondió. Puede reintentar la consulta.
-          </StatusAlert>
         )}
       </aside>
     </section>

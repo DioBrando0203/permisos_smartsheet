@@ -2,6 +2,7 @@ import { Button, LoadingNotice, StatusAlert } from '../../components/ui'
 import { MapEmpty, MapError } from './MapResults'
 import { SourcesSection } from './MapSections'
 import type { MapTrace } from './types'
+import { TraceQuality } from './TraceQuality'
 import { WorkLocationTable } from './WorkLocationTable'
 
 type Props = {
@@ -58,35 +59,38 @@ function TraceBody({
   if (!result) return null
   if (result.rows.length === 0)
     return (
-      <StatusAlert tone="info" title="Sin vías en el trazo">
-        El trazo no sigue ninguna vía del FDOT a menos de 25 m. Dibújalo sobre la calle.
-      </StatusAlert>
+      <>
+        <StatusAlert tone="info" title="Sin vías en el trazo">
+          El trazo no sigue ninguna vía del FDOT a menos de 25 m. Dibújalo sobre la calle.
+        </StatusAlert>
+        <TraceQuality result={result} />
+        <SourcesSection sources={result.sources} />
+      </>
     )
-  const roads = result.rows.length === 1 ? '1 vía' : `${result.rows.length} vías`
+  const roadCount = new Set(result.rows.map((row) => row.roadwayId)).size
+  const roads = roadCount === 1 ? '1 vía' : `${roadCount} vías`
   return (
     <>
+      <TraceQuality result={result} />
       <WorkLocationTable rows={result.rows} />
       <p className="map-note">
-        Resultado ajustado a la geometría oficial del FDOT: {result.lengthMi.toFixed(3)} mi sobre {roads}. Los
-        cruces no cortan la fila.
+        {result.lengthMi === null
+          ? 'Longitud no disponible'
+          : `Recorrido sobre geometría FDOT: ${result.lengthMi.toFixed(3)} mi`}{' '}
+        sobre {roads}.
       </p>
-      {Math.abs(result.inputLengthMi - result.lengthMi) >= 0.001 && (
+      {result.lengthMi !== null && Math.abs(result.inputLengthMi - result.lengthMi) >= 0.001 && (
         <p className="map-note">Línea marcada: {result.inputLengthMi.toFixed(3)} mi.</p>
       )}
-      {result.adjustment && <AdjustmentNote adjustment={result.adjustment} />}
       {result.warnings.includes('NOT_STATE_ROAD') && (
         <p className="map-note">"No estatal": la vía no es del Sistema Estatal y OSP no la acepta.</p>
       )}
       <SourcesSection sources={result.sources} />
+      {result.warnings.includes('SOURCE_FAILED') && (
+        <StatusAlert tone="warning" title="Datos parciales">
+          Una fuente no respondió. Usa Actualizar para consultar de nuevo.
+        </StatusAlert>
+      )}
     </>
-  )
-}
-
-function AdjustmentNote({ adjustment }: { adjustment: NonNullable<MapTrace['adjustment']> }) {
-  if (adjustment.startM === null || adjustment.endM === null) return null
-  return (
-    <p className="map-note">
-      Ajuste de FDOT a la vía: inicio {adjustment.startM.toFixed(1)} m; final {adjustment.endM.toFixed(1)} m.
-    </p>
   )
 }

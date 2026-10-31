@@ -4,6 +4,7 @@ import math
 from dataclasses import dataclass
 
 from app.models.map import Jurisdiction, MapLocation, RoadMatch
+from app.services.lrs_slicing import at_measure, slice_paths
 
 DOR_USES = {
     "086": ("Gobierno del condado", "county"),
@@ -54,17 +55,12 @@ def distance_m_to_route(lat: float, lon: float, route: RouteGeometry) -> float |
     ]
     if not distances:
         return None
-    return round(math.sqrt(min(distances)) * 111_000, 1)
+    return round(math.sqrt(min(distances)), 1)
 
 
 def slice_route(route: RouteGeometry, begin: float, end: float) -> list[list[float]]:
-    """Recorta una trayectoria LRS entre medidas; conserva una línea segura si falta M."""
-    low, high = sorted((begin, end))
-    for path in route.paths:
-        sliced = _slice_path(path, low, high)
-        if len(sliced) >= 2:
-            return [[round(lon, 6), round(lat, 6)] for lon, lat, _ in sliced]
-    return []
+    """Recorta todas las trayectorias LRS contiguas; vacío si el rango está incompleto."""
+    return slice_paths(route.paths, begin, end)
 
 
 def point_at_milepost(route: RouteGeometry, milepost: float) -> tuple[float, float] | None:
@@ -75,7 +71,7 @@ def point_at_milepost(route: RouteGeometry, milepost: float) -> tuple[float, flo
                 continue
             low, high = sorted((first[2], second[2]))
             if low <= milepost <= high:
-                lon, lat, _ = _at_measure(first, second, milepost)
+                lon, lat, _ = at_measure(first, second, milepost)
                 return round(lat, 6), round(lon, 6)
     return None
 
@@ -157,39 +153,12 @@ def geometry_miles(coordinates: list[list[float]]) -> float:
 def _projection(
     px: float, py: float, ax: float, ay: float, bx: float, by: float
 ) -> tuple[float, float]:
+    # Plano tangente local: un grado de longitud no mide lo mismo que uno de latitud.
+    scale = math.cos(math.radians(py))
+    px, ax, bx = px * scale * 111_195, ax * scale * 111_195, bx * scale * 111_195
+    py, ay, by = py * 111_195, ay * 111_195, by * 111_195
     dx, dy = bx - ax, by - ay
     length = dx * dx + dy * dy
     ratio = 0.0 if length == 0 else max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / length))
     cx, cy = ax + ratio * dx, ay + ratio * dy
     return ratio, (px - cx) ** 2 + (py - cy) ** 2
-
-
-def _slice_path(
-    path: tuple[tuple[float, float, float | None], ...], low: float, high: float
-) -> list[tuple[float, float, float | None]]:
-    result: list[tuple[float, float, float | None]] = []
-    for first, second in zip(path, path[1:], strict=False):
-        if first[2] is None or second[2] is None:
-            continue
-        segment_low, segment_high = sorted((first[2], second[2]))
-        if segment_high < low or segment_low > high:
-            continue
-        result.extend((_at_measure(first, second, low), _at_measure(first, second, high)))
-    return list(dict.fromkeys(result))
-
-
-def _at_measure(
-    first: tuple[float, float, float | None],
-    second: tuple[float, float, float | None],
-    measure: float,
-) -> tuple[float, float, float]:
-    first_m, second_m = first[2], second[2]
-    assert first_m is not None and second_m is not None
-    ratio = (
-        0 if first_m == second_m else max(0.0, min(1.0, (measure - first_m) / (second_m - first_m)))
-    )
-    return (
-        first[0] + ratio * (second[0] - first[0]),
-        first[1] + ratio * (second[1] - first[1]),
-        measure,
-    )

@@ -7,6 +7,7 @@ Estado (2026-10-30): verificado con consultas reales sin sesión. Nada implement
 - GIS-C01: El milepost que OSP calcula en el paso 3 se obtiene igual desde los servicios GIS públicos del FDOT, sin iniciar sesión en OSP ni crear borradores (resuelve OSP-ENF-03).
 - GIS-C02: Prueba con el tramo de `osp-milepost-paso3.png`: la SR 953 en Miami-Dade es la vía `87281000` (condado `87`, sección `281`, igual que el "Section Number 281" de OSP). Los mileposts 3.124 y 3.839 de OSP caen sobre "LEJEUNE RD/NW 42 AVE", del cruce con W Flagler St hacia el norte, y el cálculo inverso desde esos puntos devuelve 3.124 y 3.839 (a 0,0 m de la vía).
 - GIS-C03: El ID de vía del FDOT tiene 8 dígitos: 2 de condado (numeración FDOT, 87 = Miami-Dade), 3 de sección y 3 de subsección. La "Section Number" de OSP son los 3 dígitos de la sección.
+- GIS-C02-A (precisión de evidencia, 2026-10-31): las coordenadas de control se reconstruyeron desde los MPs de la captura. La coincidencia demuestra consistencia de interpolación y atributos, pero no valida por sí sola el algoritmo de ajuste de OSP ante el mismo dibujo. La captura no contiene los vértices originales; OSP-PEN-01 sigue abierto.
 - GIS-C04: Los servicios del FDOT y de FDACS responden con `Access-Control-Allow-Origin` igual al origen que llama (probado con `http://localhost:5710`): una página web puede consultarlos directamente desde el navegador.
 
 ## Servicios del FDOT (`https://gis.fdot.gov/arcgis/rest/services`)

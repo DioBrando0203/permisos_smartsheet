@@ -11,6 +11,7 @@ import type { ApiMapPoint, ApiMapSearch, ApiMapTrace, ApiParcelOutlines, ParcelO
 import type { Coordinates } from './lib/coordinates'
 import type { Bounds } from './lib/cells'
 import { pathKey } from './lib/mapUrl'
+import { useMapReading } from './useMapReading'
 import {
   normalizeArea,
   normalizeCounties,
@@ -22,27 +23,22 @@ import {
 
 const staleTime = 10 * 60 * 1000
 
-export function useMapPoint(point: Coordinates | null, refresh = false) {
-  return useQuery({
-    queryKey: point ? queryKeys.mapPoint(point.lat, point.lon) : ['map-point', 'empty'],
-    queryFn: () =>
-      api<ApiMapPoint>(
-        `/api/map/point?lat=${point!.lat}&lon=${point!.lon}${refresh ? '&refresh=true' : ''}`,
-      ).then(normalizeMapPoint),
-    enabled: Boolean(point),
-    staleTime,
-  })
+export function useMapPoint(point: Coordinates | null) {
+  return useMapReading<ApiMapPoint, ReturnType<typeof normalizeMapPoint>>(
+    queryKeys.mapPoint(point?.lat ?? 0, point?.lon ?? 0),
+    point ? `/api/map/point?lat=${point.lat}&lon=${point.lon}` : null,
+    normalizeMapPoint,
+  )
 }
 
 /** Tabla Work Location del trazo terminado (PEN-32); `path` es null mientras se dibuja. */
 export function useMapTrace(path: Coordinates[] | null) {
   const key = path ? pathKey(path) : ''
-  return useQuery({
-    queryKey: queryKeys.mapTrace(key),
-    queryFn: () => api<ApiMapTrace>(`/api/map/trace?path=${encodeURIComponent(key)}`).then(normalizeMapTrace),
-    enabled: Boolean(path),
-    staleTime,
-  })
+  return useMapReading<ApiMapTrace, ReturnType<typeof normalizeMapTrace>>(
+    queryKeys.mapTrace(key),
+    path ? `/api/map/trace?path=${encodeURIComponent(key)}` : null,
+    normalizeMapTrace,
+  )
 }
 
 export type ParcelLayer = {

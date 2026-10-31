@@ -98,7 +98,7 @@ class WorkLocation(BaseModel):
     on_turnpike: bool | None = None
     kind: Literal["state", "county", "other"]
     local_name: str | None = None
-    length_mi: float
+    length_mi: float | None
     geometry: dict[Literal["type", "coordinates"], str | list[list[float]]]
 
 
@@ -114,7 +114,9 @@ class MapTrace(BaseModel):
     # Longitud de la polilínea de entrada, útil para explicar un ajuste de la LRS (PEN-35).
     input_length_mi: float
     # Longitud de las geometrías LRS oficiales de las filas, no de la polilínea de entrada.
-    length_mi: float
+    length_mi: float | None
+    matched_percent: float
+    unmatched_length_mi: float
     adjustment: TraceAdjustment | None = None
     rows: list[WorkLocation]
     sources: list[SourceStatus]
