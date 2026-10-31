@@ -35,6 +35,8 @@ async def test_turnpike_district_marks_the_row(client, smartsheet) -> None:
     body = (await client.get("/api/map/trace", params={"path": CONTROL})).json()
     assert body["rows"][0]["on_turnpike"] is True
     assert body["rows"][0]["state_road_id"] == "SR 953"
+    assert body["length_mi"] == body["rows"][0]["length_mi"]
+    assert body["input_length_mi"] == pytest.approx(body["length_mi"], abs=0.002)
 
 
 @pytest.mark.parametrize(

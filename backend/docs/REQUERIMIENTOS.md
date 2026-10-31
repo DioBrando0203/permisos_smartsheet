@@ -278,6 +278,12 @@ Tipo (ADR-B15): (a) ni OSP ni Smartsheet llevan a un cruce de calles con su mile
 Hecho: selectores Condado (los cuatro donde trabaja el equipo primero) y Ciudad (sólo municipios del condado) que encuadran el mapa y dibujan el límite; el buscador se acota a la zona, suma calles locales del Censo (TIGER) y entiende cruces "A & B" o el campo "Cruce con": el FDOT da el milepost del cruce, el Censo cubre calles locales y, si no se cruzan, el punto más cercano con su distancia.
 Límite: el firewall de census.gov bloquea la IP tras ráfagas de consultas (B-15); mientras dure, las calles locales y las direcciones no responden y queda lo del FDOT (vías estatales y de su inventario).
 
+### PEN-35 Trazo ajustado a la geometría oficial del FDOT
+
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-31).
+Situación: el trazo ya clasifica cada muestra contra la LRS del FDOT y las filas llevan una geometría oficial recortada, pero el mapa conserva encima la polilínea manual y reporta su longitud. Eso hace parecer que el resultado no se acomoda a la vía, aunque los mileposts sí se calculan sobre ella.
+Hacer: tras terminar, mostrar sólo las geometrías LRS de las filas como resultado; reservar la línea punteada para la edición. `length_mi` será la longitud de esas geometrías oficiales e `input_length_mi` conservará la longitud dibujada para explicar diferencias. Al cargar un enlace de trazo, encuadrar todas las geometrías devueltas. Probar la regla pura, contrato, componente y E2E. No se hace enrutamiento: un trazo que pase por otra vía o quede a más de 25 m sigue requiriendo que la persona lo corrija.
+
 ### PEN-33 Límites de parcelas en el mapa
 
 Prioridad: media. Alcance: backend y frontend. Estado: terminada para Broward y Miami-Dade (2026-10-30): casilla "Límites de parcelas" a zoom 17 o más, `GET /api/map/parcels` por celda (SPEC-B14 CA-19, SPEC-11 CA-15). El resto del estado depende de FDACS.

@@ -50,6 +50,8 @@ describe('Resultados del mapa', () => {
     const [, first, second] = screen.getAllByRole('row')
     expect(first).toHaveTextContent('Miami-DadeSR 953LEJEUNE RD/NW 42 AVE2813.1243.839No')
     expect(second).toHaveTextContent('No estatal')
+    expect(screen.getByText(/Resultado ajustado a la geometría oficial del FDOT/)).toBeInTheDocument()
+    expect(screen.getByText('Línea marcada: 0.920 mi.')).toBeInTheDocument()
     expect(screen.getByText(/no es del Sistema Estatal/)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Copiar fila de SR 953' }))
     expect(await navigator.clipboard.readText()).toBe('Miami-Dade\tSR 953\t281\t3.124\t3.839\tNo')

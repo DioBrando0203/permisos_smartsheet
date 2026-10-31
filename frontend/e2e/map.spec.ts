@@ -24,6 +24,7 @@ test('el trazo de control por URL da la fila de OSP y resalta la vía (CA-02, CA
   await expect(page.getByRole('button', { name: 'Trazo' })).toHaveAttribute('aria-pressed', 'true')
   await expect(osp(page)).toContainText('Miami-DadeSR 953LEJEUNE RD/NW 42 AVE2813.1243.839No')
   await expect(page.locator('path.map-line--result')).toBeVisible()
+  await expect(page.locator('path.map-line--draft')).toHaveCount(0)
   expect(param(page, 't')).toBe('25.771778,-80.263610;25.782147,-80.264005')
   // Un enlace del antiguo Tramo (?a=&b=) abre el mismo trazo.
   await page.goto('/mapa?a=25.771778,-80.263610&b=25.782147,-80.264005')

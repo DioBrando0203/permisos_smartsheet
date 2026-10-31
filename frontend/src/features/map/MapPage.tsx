@@ -15,6 +15,7 @@ import { useMapArea, useMapPoint, useMapTrace } from './hooks'
 import type { Coordinates } from './lib/coordinates'
 import { readMapUrl, writeMapUrl, type MapMode } from './lib/mapUrl'
 import { readChoice, readText, saveChoice } from './lib/preferences'
+import { officialBounds, officialLines } from './lib/traceDisplay'
 import { PointResult } from './MapResults'
 import { MapToolbar, type MapLayers } from './MapToolbar'
 import { TraceResult } from './TraceResult'
@@ -81,21 +82,24 @@ export function MapPage() {
     return () => window.removeEventListener('keydown', keys)
   })
   const choose = (next: Coordinates) => (mode === 'point' ? setA(next) : trace.add(next))
+  const resultFocus = useMemo<MapFocus | null>(() => {
+    const bounds = mode === 'trace' && result.data ? officialBounds(result.data) : null
+    return bounds ? { bounds } : null
+  }, [mode, result.data])
   const markers = useMemo<MapMarker[]>(() => {
     if (mode === 'point') return a ? [a] : []
+    if (!trace.drawing && result.data) return []
     return trace.vertices.map((vertex, index) => ({
       ...vertex,
       small: true,
       label: index ? undefined : 'Inicio',
     }))
-  }, [a, mode, trace.vertices])
+  }, [a, mode, result.data, trace.drawing, trace.vertices])
   const lines = useMemo<MapLine[]>(() => {
     if (mode !== 'trace') return []
-    const rows = (!trace.drawing && result.data?.rows) || []
-    return [
-      { coordinates: trace.vertices.map(({ lat, lon }) => [lon, lat]), style: 'draft' },
-      ...rows.map((row) => ({ coordinates: row.coordinates, style: 'result' as const })),
-    ]
+    if (!trace.drawing && result.data)
+      return officialLines(result.data).map((coordinates) => ({ coordinates, style: 'result' as const }))
+    return [{ coordinates: trace.vertices.map(({ lat, lon }) => [lon, lat]), style: 'draft' }]
   }, [mode, trace.vertices, trace.drawing, result.data])
   return (
     <section className="map-page">
@@ -121,7 +125,7 @@ export function MapPage() {
           }}
         />
         <MapView
-          focus={focus}
+          focus={resultFocus ?? focus}
           markers={markers}
           lines={lines}
           outlines={parcels.rings}

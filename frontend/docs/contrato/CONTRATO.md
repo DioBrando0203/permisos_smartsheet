@@ -41,7 +41,7 @@ Formato: método y ruta | hook | clave de caché | spec.
 - `GET /api/sheets/compare?a&b` | `useCompare` | `['compare', a, b]` | SPEC-07.
 - `GET /api/designers?q&closed_status` | `useDesigners` | `['designers', params]` | SPEC-08. Primera carga lenta (unos 14 s).
 - `GET /api/map/point?lat&lon` | `useMapPoint` | `['map-point', lat, lon]` | SPEC-11. `staleTime` 10 minutos. `parcel.source` (`fdacs_parcels` o `broward_parcels`) se normaliza con `fdacs_parcels` por defecto.
-- `GET /api/map/trace?path` | `useMapTrace` | `['map-trace', path]` | SPEC-11 (PEN-32). Sólo con el trazo terminado; `staleTime` 10 minutos. Reemplaza a `/api/map/segment` en el panel.
+- `GET /api/map/trace?path` | `useMapTrace` | `['map-trace', path]` | SPEC-11 (PEN-32, PEN-35). Sólo con el trazo terminado; `staleTime` 10 minutos. `input_length_mi` es la línea manual y `length_mi` la LRS oficial; el frontend dibuja esta última al terminar y encuadra todas sus filas. Reemplaza a `/api/map/segment` en el panel.
 - `GET /api/map/parcels?west&south&east&north` | `useParcelOutlines` (por celda, con `useQueries`) | `['map-parcels', celda]` | SPEC-11 (PEN-33). Sólo a zoom 17 o más; `staleTime` 10 minutos.
 - `GET /api/map/search?q&county&city` | `useMapSearch` | `['map-search', q en mayúsculas, zona]` | SPEC-11. Sólo con 3 caracteres o más, tras 500 ms sin escribir (el Censo bloquea ráfagas, B-15 del backend); `q` lleva `Calle & Cruce` si se llenó "Cruce con"; `staleTime` 10 minutos.
 - `GET /api/map/counties` | `useMapCounties` | `['map-counties']` | SPEC-11 (PEN-34). Una vez por sesión (`staleTime` infinito).

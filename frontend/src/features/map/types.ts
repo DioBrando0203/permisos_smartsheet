@@ -58,6 +58,9 @@ export type WorkLocation = {
   coordinates: [number, number][]
 }
 export type MapTrace = {
+  /** Longitud de la polilínea marcada antes de ajustar a la LRS del FDOT. */
+  inputLengthMi: number
+  /** Longitud de las geometrías oficiales que se dibujan al terminar. */
   lengthMi: number
   rows: WorkLocation[]
   sources: MapPoint['sources']
@@ -114,6 +117,7 @@ export type ApiMapPoint = {
 }
 export type ApiMapTrace = {
   path?: [number, number][]
+  input_length_mi?: number
   length_mi?: number
   rows?: {
     county?: string | null

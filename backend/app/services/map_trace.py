@@ -30,6 +30,7 @@ from app.services.gis.timing import run_source
 from app.services.map_mappers import feature_text, local_name_at, route_geometry, section_number
 from app.services.map_rules import (
     RouteGeometry,
+    geometry_miles,
     in_florida,
     normalize_route,
     point_at_milepost,
@@ -92,7 +93,8 @@ class MapTraceService:
         sources = [lrs, *statuses, *_worst([status for _, status in turnpike])]
         return MapTrace(
             path=[[round(lat, 6), round(lon, 6)] for lat, lon in path],
-            length_mi=round(path_meters(path) / METERS_PER_MILE, 3),
+            input_length_mi=round(path_meters(path) / METERS_PER_MILE, 3),
+            length_mi=round(sum(row.length_mi for row in rows), 3),
             rows=rows,
             sources=sources,
             warnings=_warnings(rows, sources),
@@ -215,7 +217,7 @@ def _row(
         on_turnpike=on_turnpike,
         kind=kind,
         local_name=local_name_at(lookups.names.get(roadway, []), middle),
-        length_mi=round(run.length_m / METERS_PER_MILE, 3),
+        length_mi=round(geometry_miles(coordinates), 3),
         geometry={"type": "LineString", "coordinates": coordinates},
     )
 

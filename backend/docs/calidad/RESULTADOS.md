@@ -169,3 +169,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Manual con GET reales (backend reiniciado por B-14): trazo de control en 1,6 s con la fila de OSP (Miami-Dade, SR 953, 87281000, 281, 3.124 a 3.839, Turnpike false, LEJEUNE RD/NW 42 AVE); giro SR 953 a SR 968 en 1,4 s con dos filas (3.126 a 3.449 y 4.533 a 4.789); trazo en SR 821 con Turnpike true.
 - Manual de contornos: Broward 41 parcelas, 1 300 vértices, 31 KB en 1,1 s; Miami-Dade 121 parcelas, 757 vértices, 22 KB en 0,8 s; sólo parcel_id y rings.
 - No se escribió en Smartsheet; no se pidió ni registró ningún propietario.
+
+## 2026-10-31 10:58 -05:00 Trazo ajustado a LRS oficial (PEN-35)
+
+- `pytest`: 189 pruebas aprobadas. `ruff check app tests` y `ruff format --check app tests`: sin observaciones.
+- `GET /api/map/trace` conserva `input_length_mi` para la polilínea marcada y calcula `length_mi` y cada `WorkLocation.length_mi` desde la geometría LRS oficial recortada entre mileposts.
+- La comprobación fue simulada contra el GIS falso; no se consultó Smartsheet ni se realizó ninguna escritura.

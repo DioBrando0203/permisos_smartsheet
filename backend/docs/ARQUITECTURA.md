@@ -92,7 +92,7 @@ app/
   services/map_streets.py        StreetFinder: calles TIGER del Censo y cruces (FDOT con MP, Censo, calculados)
   services/map_geometry.py       geometría pura: contención, límites, cruce o punto más cercano entre calles
   services/trace_rules.py        reglas puras del trazo: muestras, rectángulos, filas por vía
-  services/map_trace.py          MapTraceService: tabla Work Location de OSP y Turnpike
+  services/map_trace.py          MapTraceService: tabla Work Location de OSP, Turnpike y longitudes LRS oficiales
   services/map_parcels.py        MapParcelsService: contornos de parcelas por celda (sin propietarios)
   services/bulk_plans.py         planes puros: nivel efectivo, plan de copia, StepAction
   services/bulk.py               BulkService: copiar y revocar con simulación; ejecuta vía ShareService

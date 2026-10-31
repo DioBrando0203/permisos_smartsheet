@@ -94,3 +94,10 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - npm run format:check, npm run build, npm run lint (sin avisos), npm test (11 archivos y 27 pruebas) y npm run test:e2e (7 pasan, 1 caso F0 omitido): pasaron. E2E repetido 3 veces: 21 de 21.
 - Durante el desarrollo, el E2E encontró dos fallos reales: el doble clic no cerraba el trazo (FB-08) y la tabla estiraba la página 103 px a 320 px (FB-09); ambos corregidos y verificados.
 - Manual con el servidor de desarrollo y servicios reales a 1440 px: trazo de control con la tabla Work Location (Miami-Dade, SR 953, 281, 3.124, 3.839, No) y lotes de Miami-Dade en amarillo; Fort Lauderdale en Satélite HD con lotes de Broward y SR 838 en naranja; giro SR 953 a SR 968 con dos filas. La tabla ocupa 334 de 334 px del panel (sin scroll) a 1440 px.
+
+## 2026-10-31 10:58 -05:00 Trazo ajustado a LRS oficial (PEN-35)
+
+- `npm run build`, `npm run lint` y `npm run format:check`: pasan sin avisos.
+- `npm test`: 13 archivos y 32 pruebas aprobadas. La prueba nueva verifica que el resultado usa sólo las geometrías LRS y obtiene su rectángulo completo.
+- `npm run test:e2e`: pasa; 8 pruebas funcionales y 1 caso F0 omitido. El trazo de control verifica que, al terminar, queda la línea oficial sólida y ninguna línea punteada manual.
+- E2E contra GIS y Smartsheet falsos; no se consultó la cuenta ni un proveedor GIS real.

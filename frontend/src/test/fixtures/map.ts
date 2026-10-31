@@ -51,6 +51,7 @@ export const mapTraceFixture: ApiMapTrace = {
     [25.771778, -80.26361],
     [25.782147, -80.264005],
   ],
+  input_length_mi: 0.92,
   length_mi: 0.917,
   rows: [
     {

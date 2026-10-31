@@ -126,3 +126,10 @@ Estado: terminada
 Cambios: `MapScopePicker` (Condado con los cuatro del equipo primero y Ciudad con los municipios del condado), `area.ts` (zona y su normalización), `useMapCounties`, `useMapArea` y `useMapSearch` con zona; campo "Cruce con (opcional)"; sugerencias "Cruce" con milepost y "Punto más cercano"; `MapView` encuadra un rectángulo y dibuja el límite punteado de la zona; el panel pone primero la vía del resultado elegido; espera del buscador de 350 a 500 ms; `MAP_AREA_NOT_FOUND` en `errorMessages`.
 Evidencia: format, lint, build, 31 pruebas unitarias y 8 E2E (1 omitido de antes) a las 10:14. Recorrido con Playwright sobre el servidor de desarrollo y datos reales: Broward, Fort Lauderdale, "Las Olas" y "3rd Ave" dan "E LAS OLAS BLVD y SE 3 AVE · Cruce · MP 0.258"; al elegirlo, el marcador cae en el cruce y el panel muestra la vía `86000142` en 0.258. Capturas fuera del repositorio.
 Notas: SPEC-11 CA-16 y CA-17, CONTRATO y ARQUITECTURA actualizados. Mientras el Censo bloquee la IP (B-15 del backend) sólo responden las fuentes del FDOT. Sin commit.
+
+## 2026-10-31 10:58 -05:00 Resultado de trazo ajustado a FDOT (PEN-35)
+
+Estado: terminada
+Cambios: al responder el trazo se oculta la línea manual y se dibujan sólo sus LineString LRS; se informa la longitud oficial y, cuando difiere, la marcada. Una URL de trazo encuadra todas las filas oficiales. Nuevos tipos y normalización para `input_length_mi`, prueba pura y comprobación E2E de que desaparece el borrador.
+Evidencia: build, lint, formato, 32 pruebas unitarias y 8 E2E funcionales aprobados; ver `calidad/RESULTADOS.md`.
+Notas: no es enrutamiento: sigue siendo necesario corregir un trazo que no siga la vía o esté a más de 25 m.

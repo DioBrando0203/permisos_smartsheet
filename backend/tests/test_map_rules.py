@@ -1,6 +1,8 @@
 from app.models.map import MapLocation, RoadMatch
 from app.services.map_rules import (
     RouteGeometry,
+    geometry_miles,
+    haversine_miles,
     jurisdiction,
     milepost_at,
     pick_segment_road,
@@ -45,3 +47,8 @@ def test_point_at_milepost_interpolates_and_rejects_out_of_range() -> None:
     lat, lon = point_at_milepost(route, 3.5) or (0, 0)
     assert 25.771778 < lat < 25.782147 and -80.264005 < lon < -80.26361
     assert point_at_milepost(route, 9.0) is None
+
+
+def test_geometry_miles_uses_the_lrs_line_not_the_input_trace() -> None:
+    geometry = [[-80.26361, 25.771778], [-80.264005, 25.782147]]
+    assert geometry_miles(geometry) == haversine_miles(25.771778, -80.26361, 25.782147, -80.264005)

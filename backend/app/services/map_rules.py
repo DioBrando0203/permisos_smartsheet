@@ -146,6 +146,14 @@ def haversine_miles(start_lat: float, start_lon: float, end_lat: float, end_lon:
     return radius * 2 * math.asin(math.sqrt(a))
 
 
+def geometry_miles(coordinates: list[list[float]]) -> float:
+    """Longitud de una LineString LRS `[lon, lat]`; no usa la línea manual del usuario."""
+    return sum(
+        haversine_miles(first[1], first[0], second[1], second[0])
+        for first, second in zip(coordinates, coordinates[1:], strict=False)
+    )
+
+
 def _projection(
     px: float, py: float, ax: float, ay: float, bx: float, by: float
 ) -> tuple[float, float]:

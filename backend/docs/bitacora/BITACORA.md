@@ -176,3 +176,10 @@ Estado: terminada
 Cambios: `GET /api/map/counties`, `GET /api/map/area` y `county`/`city` en `/api/map/search`; cruces "A & B" desde el FDOT (capa 6 de RCI, con milepost del cruce), el geocodificador del Censo y un cálculo con calles TIGER; calles locales del Censo dentro de la zona; filtros por inicio de palabra (`word_like`). Nuevos `map_places.py`, `map_streets.py` y `map_geometry.py` (puro); `GisClient.query_where` con rectángulo y simplificación; `gis_tiger_roads_url`. El transporte trata una respuesta que no es JSON como fuente caída y salta ese host (B-15). GIS falso con condado, ciudades, cruces y TIGER; E2E apuntado al TIGER falso.
 Evidencia: 188 pruebas, `ruff check` y `ruff format --check` limpios a las 10:16. GET reales el 2026-10-31: 67 condados; Broward con 31 municipios; Fort Lauderdale con su contorno; Las Olas y 3rd Ave en MP 0.258 de `86000142`; Broward Blvd y Andrews Ave en MP 6.773 de `86006000`; Las Olas Blvd y Broward Blvd "no se cruzan, a 292 m". Después el Censo bloqueó la IP (HTML "Request Rejected"); con la corrección la búsqueda responde 200 con el cruce del FDOT y el Censo marcado como caído.
 Notas: B-15 abierto del lado del Censo (se levanta solo). SPEC-B14 puntos 9, 12 y 13, CA-20 a CA-22; API.md y ARQUITECTURA actualizados. Sin commit.
+
+## 2026-10-31 10:58 -05:00 Trazo ajustado a la LRS del FDOT (PEN-35)
+
+Estado: terminada
+Cambios: `MapTrace.input_length_mi`; longitudes de filas y total desde las LineString LRS oficiales; prueba de la regla geométrica y del contrato de trazo. SPEC-B14, API y el backlog actualizados.
+Evidencia: 189 pruebas de backend, Ruff y formato limpios; ver `calidad/RESULTADOS.md`.
+Notas: no se implementó enrutamiento ni se cambió ninguna escritura o configuración de Smartsheet.

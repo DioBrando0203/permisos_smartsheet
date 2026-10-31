@@ -67,8 +67,12 @@ function TraceBody({
     <>
       <WorkLocationTable rows={result.rows} />
       <p className="map-note">
-        Trazo de {result.lengthMi.toFixed(3)} mi sobre {roads}. Los cruces no cortan la fila.
+        Resultado ajustado a la geometría oficial del FDOT: {result.lengthMi.toFixed(3)} mi sobre {roads}. Los
+        cruces no cortan la fila.
       </p>
+      {Math.abs(result.inputLengthMi - result.lengthMi) >= 0.001 && (
+        <p className="map-note">Línea marcada: {result.inputLengthMi.toFixed(3)} mi.</p>
+      )}
       {result.warnings.includes('NOT_STATE_ROAD') && (
         <p className="map-note">"No estatal": la vía no es del Sistema Estatal y OSP no la acepta.</p>
       )}

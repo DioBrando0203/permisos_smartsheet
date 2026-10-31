@@ -56,7 +56,7 @@ Terminado cuando: `npm run build`, `lint`, `test` y `format:check` pasan; con el
 
 ## F7 Mapa (PEN-29)
 
-- Estado: fase base terminada (2026-10-30): M3, M4 y el buscador de M6, con E2E (`e2e/map.spec.ts`, backend real y GIS falso) y revisión visual a 320, 1024 y 1440 px. Después, a pedido del usuario: Satélite HD y vías del FDOT (PEN-31), trazo como en OSP con tabla Work Location (PEN-32) y límites de parcelas (PEN-33). Fuera de la fase base: M5, el mapa base con clave y encuadrar el trazo completo al abrirlo por URL.
+- Estado: fase base terminada (2026-10-30): M3, M4 y el buscador de M6, con E2E (`e2e/map.spec.ts`, backend real y GIS falso) y revisión visual a 320, 1024 y 1440 px. Después, a pedido del usuario: Satélite HD y vías del FDOT (PEN-31), trazo como en OSP con tabla Work Location (PEN-32), límites de parcelas (PEN-33) y resultado ajustado a la LRS con encuadre completo desde URL (PEN-35). Fuera de la fase base: M5 y el mapa base con clave.
 - Specs: SPEC-11 (frontend) y SPEC-B14 (backend).
 - M3: destino "Mapa" en la navegación (SPEC-01 pasa a seis destinos), `MapView` con Leaflet diferido, modo Punto, coordenadas, panel y URL.
 - M4: modo Tramo, línea resaltada y "Copiar para OSP".

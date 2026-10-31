@@ -123,7 +123,7 @@ Fuentes del buscador (`MapSearch.sources`): `fdot_milepost`, `fdot_streets`, `ce
 
 `MapCounty`: `name`, `code_fdot`. `MapArea`: `county`, `code_fdot`, `city` | null, `bounds` (`west`, `south`, `east`, `north`), `outline` ([[[lon, lat], …], …]), `cities` (`name`, `bounds`).
 
-`MapTrace`: `path` ([[lat, lon], …]), `length_mi`, `rows` (lista de `WorkLocation` en el orden del trazo), `sources` (`fdot_lrs`, `fdot_state_roads`, `fdot_county_roads`, `fdot_local_names`, `fdot_counties`, `fdot_turnpike`), `warnings`.
+`MapTrace`: `path` ([[lat, lon], …]), `input_length_mi` (la polilínea manual), `length_mi` (suma de las geometrías LRS oficiales de `rows`), `rows` (lista de `WorkLocation` en el orden del trazo), `sources` (`fdot_lrs`, `fdot_state_roads`, `fdot_county_roads`, `fdot_local_names`, `fdot_counties`, `fdot_turnpike`), `warnings`. PEN-35: la tabla y la geometría visible final siempre salen de la LRS; no se afirma que el dibujo manual sea una ruta oficial.
 
 `WorkLocation` (columnas de Work Location en OSP): `county`, `state_road_id` (la ruta como en OSP, "SR 953"; el ID de vía si no tiene ruta), `roadway_id`, `section_number`, `beginning_milepost`, `ending_milepost`, `on_turnpike` (bool | null), `kind`, `local_name`, `length_mi`, `geometry` (LineString del tramo de la vía).
 
@@ -181,6 +181,7 @@ Errores nuevos (formato de `estilos/API.md`):
 - CA-20: la zona da sólo los municipios del condado (descarta vecinos y zonas no incorporadas), el contorno y los límites; condado o ciudad desconocidos, 404. Prueba: `test_fake_gis.py::test_area_*`, `test_map_geometry.py`; manual 2026-10-31: Broward con sus 31 municipios, Fort Lauderdale con contorno de 214 puntos.
 - CA-21: un cruce dentro de una ciudad da el milepost del FDOT una sola vez aunque lo vean tres fuentes; dos calles que no se cruzan dan `nearest` con la distancia; con ciudad se suman las calles locales del Censo y sin zona no. Prueba: `test_fake_gis.py`, `test_map_query.py`; manual 2026-10-31 en Fort Lauderdale: Las Olas y 3rd Ave en MP 0.258 de `86000142`, Broward Blvd y Andrews Ave en MP 6.773 de `86006000`, Las Olas Blvd y Broward Blvd "a 292 m".
 - CA-22: una fuente que responde HTML (firewall) queda en `error`, la búsqueda responde 200 y ese servidor no se vuelve a pedir durante la pausa. Prueba: `test_map.py::test_firewall_html_is_a_failed_source_and_the_host_rests`; manual 2026-10-31 con el Censo bloqueando: 200 con el cruce del FDOT.
+- CA-23: la longitud del trazo terminado sale de las geometrías LRS entre los mileposts y `input_length_mi` conserva la longitud manual; una línea manual paralela a una vía devuelve la geometría de la vía. Prueba: `test_map_rules.py` y `test_map_trace.py`.
 - CA-19: contornos por celda desde el condado y sin propietario. Prueba: `test_fake_gis.py`; manual 2026-10-30: Broward 41 parcelas (31 KB, 1,1 s) y Miami-Dade 121 (22 KB, 0,8 s).
 
 ## Fases

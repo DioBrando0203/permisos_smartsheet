@@ -13,7 +13,7 @@ Seis destinos en la navegación lateral, cada uno con URL propia (ADR-04):
 - Diseñadores `/disenadores`: carga y acceso (SPEC-08).
 - Revisión `/revision`: riesgos de la cuenta, resumen de acceso y automatizaciones de toda la cuenta (SPEC-06); referencias entre hojas (SPEC-09).
 - Comparar `/comparar?a=&b=`: dos hojas lado a lado y copiar permisos con simulación (SPEC-07).
-- Mapa `/mapa`: punto o tramo, milepost, jurisdicción, parcela y fila para OSP (SPEC-11).
+- Mapa `/mapa`: punto o trazo, milepost, jurisdicción, parcela y filas Work Location; al terminar muestra la geometría LRS oficial del FDOT, no la línea manual (SPEC-11).
 
 Además: `/` redirige a `/hojas`; ruta desconocida muestra "Esta página no existe" (SPEC-01).
 

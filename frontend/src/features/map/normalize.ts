@@ -66,6 +66,7 @@ export function normalizeMapPoint(source: ApiMapPoint): MapPoint {
 }
 export function normalizeMapTrace(source: ApiMapTrace): MapTrace {
   return {
+    inputLengthMi: source.input_length_mi ?? source.length_mi ?? 0,
     lengthMi: source.length_mi ?? 0,
     rows: (source.rows ?? []).map((row) => ({
       county: row.county ?? null,

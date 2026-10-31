@@ -104,6 +104,9 @@ class WorkLocation(BaseModel):
 
 class MapTrace(BaseModel):
     path: list[list[float]]
+    # Longitud de la polilínea de entrada, útil para explicar un ajuste de la LRS (PEN-35).
+    input_length_mi: float
+    # Longitud de las geometrías LRS oficiales de las filas, no de la polilínea de entrada.
     length_mi: float
     rows: list[WorkLocation]
     sources: list[SourceStatus]
