@@ -4,9 +4,11 @@ from dataclasses import dataclass
 
 from app.core.config import Settings
 
-LRS, STATE_ROADS, COUNTY_ROADS, LOCAL_NAMES = 8, 15, 2, 13
-# Admin_Boundaries: condados y distritos del FDOT con el Turnpike (D8, FTE; GIS-PEN-01).
-COUNTIES, TURNPIKE_DISTRICTS, TURNPIKE = 6, 13, "D8"
+LRS, STATE_ROADS, COUNTY_ROADS, LOCAL_NAMES, INTERSECTIONS = 8, 15, 2, 13, 6
+# Admin_Boundaries: condados, ciudades y distritos del FDOT con el Turnpike (D8, FTE; GIS-PEN-01).
+COUNTIES, CITIES, TURNPIKE_DISTRICTS, TURNPIKE = 6, 7, 13, "D8"
+# TIGER del Censo: interestatales, avenidas y calles locales están en capas distintas.
+TIGER_ROADS = (2, 6, 8)
 # Broward: código del FDOT (CNTYNO) y del DOR (CO_NO), que no coinciden (MJ-PE-02).
 BROWARD_FDOT, BROWARD_DOR = "86", "16"
 MIAMI_DADE_FDOT = "87"
@@ -25,6 +27,11 @@ class Layer:
 def road_layer(settings: Settings, number: int) -> str:
     """URL de una capa de vías del FDOT (RCI), configurable para pruebas."""
     return f"{settings.gis_fdot_base_url.rstrip('/')}/RCI_Layers/MapServer/{number}"
+
+
+def tiger_layer(settings: Settings, number: int) -> str:
+    """URL de una capa de calles TIGER del Censo (verificadas 2026-10-31 en Fort Lauderdale)."""
+    return f"{settings.gis_tiger_roads_url.rstrip('/')}/{number}"
 
 
 def boundary_layer(settings: Settings, number: int) -> str:

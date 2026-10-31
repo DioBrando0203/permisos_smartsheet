@@ -45,7 +45,9 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/map/segment?start_lat=&start_lon=&end_lat=&end_lon=&radius_m=25&refresh=`: `MapSegment` (SPEC-B14); `osp_row.state_road_id` es la ruta ("SR 953"). El panel usa el trazo.
 - `GET /api/map/trace?path=lat,lon;lat,lon;…&radius_m=25&refresh=`: `MapTrace` (SPEC-B14 punto 10, PEN-32): tabla Work Location de OSP, una fila por vía que sigue el trazo, con Turnpike; de 2 a 100 vértices.
 - `GET /api/map/parcels?west=&south=&east=&north=&refresh=`: `ParcelOutlines` (punto 11, PEN-33): contornos de una celda de hasta 0.006 grados, sólo con el ID de parcela.
-- `GET /api/map/search?q=&refresh=`: `MapSearch` (SPEC-B14); `q` de 3 a 120 caracteres: coordenadas, dirección, calle del FDOT o ruta con milepost (`SR 953 3.5`); hasta 8 resultados en Florida y el estado de cada fuente consultada.
+- `GET /api/map/search?q=&county=&city=&refresh=`: `MapSearch` (SPEC-B14 punto 9); `q` de 3 a 120 caracteres: coordenadas, dirección, calle, cruce (`Las Olas & 3rd Ave`) o ruta con milepost (`SR 953 3.5`); con `county` (y `city`) se acota a esa zona y suma calles locales del Censo; hasta 8 resultados en Florida y el estado de cada fuente consultada.
+- `GET /api/map/counties`: `MapCounty[]`, los 67 condados del FDOT.
+- `GET /api/map/area?county=&city=`: `MapArea` (punto 13): límites y contorno del condado o de la ciudad, y los municipios del condado; 404 `MAP_AREA_NOT_FOUND` si no existe.
 - `GET /api/map/sources`: catálogo fijo `MapSource[]`; no consulta GIS.
 - `POST /api/sheets/{sheet_id}/shares/copy`: cuerpo `CopyRequest`; `CopyPlan` (SPEC-B06). Simulación por defecto.
 - `POST /api/users/{key}/revoke`: cuerpo `RevokeRequest`; `RevokePlan`. Simulación por defecto.
@@ -195,7 +197,7 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - 403 `NOT_SHARED_WITH_TOKEN`: escritura en una hoja de otra persona no compartida con el token (PEN-14).
 - 403 `CANNOT_MANAGE_SHARES`: el token no es `ADMIN` ni `OWNER` de la hoja.
 - 403 `SMARTSHEET_FORBIDDEN`: Smartsheet negó la operación.
-- 404 `SHEET_NOT_FOUND`, `SHARE_NOT_FOUND`, `PERSON_NOT_FOUND`, `ROW_NOT_FOUND`, `COLUMN_NOT_FOUND`.
+- 404 `SHEET_NOT_FOUND`, `SHARE_NOT_FOUND`, `PERSON_NOT_FOUND`, `ROW_NOT_FOUND`, `COLUMN_NOT_FOUND`, `MAP_AREA_NOT_FOUND`.
 - 409 `OWNER_LOCKED`: cambiar o quitar al propietario.
 - 409 `SHARE_INHERITED`: cambiar o quitar un permiso heredado del workspace.
 - 422 `NO_CHECKS`, `TOO_MANY_COLUMNS`, `INVALID_PATTERN`: revisión de calidad mal pedida (SPEC-B09).

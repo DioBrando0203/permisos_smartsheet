@@ -22,6 +22,10 @@ const messages: Record<string, ErrorMessage> = {
     action: 'Reintentar.',
   },
   GIS_DISABLED: { text: 'El mapa está deshabilitado en este servidor.', action: null },
+  MAP_AREA_NOT_FOUND: {
+    text: 'No se encontró esa zona: el condado o la ciudad no está en la lista del FDOT.',
+    action: 'Elija otra en la lista.',
+  },
   BACKEND_UNREACHABLE: {
     text: 'No se puede conectar con el backend del panel.',
     action: 'Inícielo con `python run.py` en `backend` y pulse Reintentar.',

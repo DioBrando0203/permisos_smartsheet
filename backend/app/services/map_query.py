@@ -14,6 +14,8 @@ _ROADWAY = re.compile(rf"^\s*([0-9]{{8}}){_SEPARATOR}({_NUMBER})\s*$", re.IGNORE
 _ADDRESS = re.compile(r"^\s*[0-9]+[A-Z]?\s+[A-Z]", re.IGNORECASE)
 _STATE = re.compile(r"\b(FL|FLORIDA)\b", re.IGNORECASE)
 _ORDINAL = re.compile(r"\b([0-9]+)(ST|ND|RD|TH)\b")
+# Cruce de calles: "Las Olas & 3rd Ave", "Las Olas y 3rd Ave", "Broward Blvd at Andrews".
+_CROSSING = re.compile(r"\s*&\s*|\s+(?:and|y|at|con|x)\s+", re.IGNORECASE)
 # FDOT escribe los nombres abreviados y sin ordinales: "NW 42 AVE", "W FLAGLER ST".
 _ABBREVIATIONS = {
     "AVENUE": "AVE",
@@ -69,9 +71,18 @@ def street_text(text: str) -> str | None:
     return cleaned if len(cleaned) >= 3 else None
 
 
-def street_where(text: str) -> str | None:
+def street_where(text: str, field: str = "NAME") -> str | None:
     cleaned = street_text(text)
-    return f"UPPER(NAME) LIKE '%{cleaned}%'" if cleaned else None
+    return word_like(field, cleaned) if cleaned else None
+
+
+def word_like(field: str, pattern: str) -> str:
+    """`LIKE` que empieza en una palabra: "3 AVE" no debe encontrar "SE 13 AVE".
+
+    Vale al inicio del nombre, tras un espacio o tras `/` ("LEJEUNE RD/NW 42 AVE").
+    """
+    options = (f"UPPER({field}) LIKE '{prefix}{pattern}%'" for prefix in ("", "% ", "%/"))
+    return f"({' OR '.join(options)})"
 
 
 def street_rank(name: str, cleaned: str) -> tuple[int, int, int]:
@@ -86,6 +97,40 @@ def looks_like_address(text: str) -> bool:
     return bool(_ADDRESS.match(text))
 
 
-def address_text(text: str) -> str:
-    """El geocodificador del Censo cubre todo EE. UU.: se acota a Florida si falta el estado."""
-    return text if _STATE.search(text) else f"{text}, FL"
+def address_text(text: str, city: str | None = None) -> str:
+    """El geocodificador del Censo cubre todo EE. UU.: se acota a la ciudad elegida y a Florida.
+
+    Sólo una ciudad ayuda; el nombre de un condado en esa posición hace fallar la coincidencia.
+    """
+    if _STATE.search(text):
+        return text
+    if city and city.upper() not in text.upper():
+        return f"{text}, {city}, FL"
+    return f"{text}, FL"
+
+
+def join_parts(*parts: str | None) -> str:
+    return " · ".join(part for part in parts if part)
+
+
+def parse_intersection(text: str) -> tuple[str, str] | None:
+    """Dos calles separadas por `&`, `and`, `y`, `at`, `con` o `x`; cada una de 3 letras o más."""
+    parts = [part.strip() for part in _CROSSING.split(text, maxsplit=1)]
+    if len(parts) != 2 or any(len(part) < 3 for part in parts):
+        return None
+    return parts[0], parts[1]
+
+
+def tiger_where(text: str) -> str | None:
+    """Filtro para nombres del Censo ("SE 3rd Ave"): un número acepta su ordinal (`3%`)."""
+    cleaned = street_text(text)
+    if not cleaned:
+        return None
+    pattern = " ".join(f"{word}%" if word.isdigit() else word for word in cleaned.split())
+    return word_like("NAME", pattern)
+
+
+def name_where(field: str, value: str) -> str:
+    """Igualdad con un nombre que dio la propia fuente (condado, ciudad); duplica comillas."""
+    escaped = value.replace("'", "''")
+    return f"{field} = '{escaped}'"

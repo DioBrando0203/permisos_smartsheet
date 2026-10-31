@@ -165,3 +165,9 @@
   stroke-opacity: 0.9;
   fill: none;
 }
+.map-area {
+  fill: none;
+  stroke: var(--brand-80);
+  stroke-dasharray: 8 6;
+  stroke-opacity: 0.9;
+}

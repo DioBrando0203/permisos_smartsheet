@@ -29,6 +29,7 @@ async def stack():
         gis_fdacs_parcels_url=f"{FAKE}/fdacs/parcels/0",
         gis_census_geocoder_url=f"{FAKE}/census/onelineaddress",
         gis_miami_dade_parcels_url=f"{FAKE}/miami-dade/parcels/26",
+        gis_tiger_roads_url=f"{FAKE}/tiger/Transportation/MapServer",
     )
     gis_http = httpx.AsyncClient(transport=httpx.ASGITransport(app=fake))
     cache = TtlCache(settings.gis_cache_ttl_seconds)
@@ -122,3 +123,50 @@ async def test_parcel_outlines_come_from_the_county_without_owners(stack) -> Non
         "300000000001",
     ]
     assert set(body["parcels"][0]) == {"parcel_id", "rings"}
+
+
+async def test_area_lists_only_the_municipalities_inside_the_county(stack) -> None:
+    client, _ = stack
+    assert [c["name"] for c in (await client.get("/api/map/counties")).json()] == ["Miami-Dade"]
+    county = (await client.get("/api/map/area", params={"county": "miami-dade"})).json()
+    assert county["county"] == "Miami-Dade" and county["city"] is None
+    assert [city["name"] for city in county["cities"]] == ["Miami"]
+    assert county["bounds"] == {"west": -80.3, "south": 25.74, "east": -80.22, "north": 25.81}
+    city = await client.get("/api/map/area", params={"county": "Miami-Dade", "city": "miami"})
+    assert city.json()["city"] == "Miami" and city.json()["bounds"]["west"] == -80.28
+    for params in ({"county": "Nowhere"}, {"county": "Miami-Dade", "city": "Zona Sintetica"}):
+        missing = await client.get("/api/map/area", params=params)
+        assert missing.status_code == 404
+        assert missing.json()["detail"]["code"] == "MAP_AREA_NOT_FOUND"
+
+
+async def test_crossing_in_a_city_gives_the_fdot_milepost_once(stack) -> None:
+    client, _ = stack
+    params = {"q": "NW 42nd Ave & W Flagler St", "county": "Miami-Dade", "city": "Miami"}
+    body = (await client.get("/api/map/search", params=params)).json()
+    assert len(body["results"]) == 1  # FDOT, Censo y TIGER ven el mismo cruce
+    result = body["results"][0]
+    assert (result["kind"], result["roadway_id"], result["milepost"]) == (
+        "intersection",
+        ROADWAY,
+        3.124,
+    )
+    statuses = {source["id"]: source["status"] for source in body["sources"]}
+    assert statuses == {"fdot_crossings": "ok", "census_geocoder": "ok", "tiger_crossings": "ok"}
+
+
+async def test_streets_that_never_cross_give_the_nearest_point(stack) -> None:
+    client, _ = stack
+    params = {"q": "NW 41st Ave & NW 42nd Ave", "county": "Miami-Dade", "city": "Miami"}
+    result = (await client.get("/api/map/search", params=params)).json()["results"][0]
+    assert result["kind"] == "nearest" and 95 < result["distance_m"] < 105
+    assert "No se cruzan" in result["detail"]
+
+
+async def test_a_city_adds_local_streets_from_the_census(stack) -> None:
+    client, _ = stack
+    params = {"q": "Flagler", "county": "Miami-Dade", "city": "Miami"}
+    body = (await client.get("/api/map/search", params=params)).json()
+    assert [(r["kind"], r["label"]) for r in body["results"]] == [("street", "W Flagler St")]
+    without_city = (await client.get("/api/map/search", params={"q": "Flagler"})).json()
+    assert without_city["results"] == []  # sin zona sólo se busca en vías del FDOT

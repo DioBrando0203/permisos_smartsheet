@@ -47,19 +47,78 @@ ROADS: dict[int, list[Json]] = {
     2: [],
     13: [
         {
-            "attributes": {"ROADWAY": ROADWAY, "NAME": "LEJEUNE RD/NW 42 AVE", **_POSTS},
+            "attributes": {
+                "ROADWAY": ROADWAY,
+                "NAME": "LEJEUNE RD/NW 42 AVE",
+                "COUNTY": "Miami-Dade",
+                **_POSTS,
+            },
             "paths": [ROUTE],
         }
     ],
 }
+# W Flagler St cruza la vía sintética en `START` (milepost 3.124), de oeste a este.
+FLAGLER = [[-80.2700, START[0]], [-80.2500, START[0]]]
+# Capa 6 de RCI (cruces): punto y milepost del cruce sobre la vía.
+ROADS[6] = [
+    {
+        "attributes": {
+            "ROADWAY": ROADWAY,
+            "INTSEC_ROA": "SR- 968/W FLAGLER ST",
+            "BEGIN_POST": 3.124,
+            "COUNTY": "Miami-Dade",
+        },
+        "point": [START[1], START[0]],
+    }
+]
+# Calles TIGER del Censo por capa (2 interestatales, 6 avenidas, 8 locales): nombres con ordinal.
+TIGER: dict[int, list[Json]] = {
+    2: [],
+    6: [{"attributes": {"NAME": "NW 42nd Ave"}, "paths": [[point[:2] for point in ROUTE]]}],
+    8: [
+        {"attributes": {"NAME": "W Flagler St"}, "paths": [FLAGLER]},
+        # Paralela a la vía, unos 100 m al este: nunca la cruza.
+        {"attributes": {"NAME": "NW 41st Ave"}, "paths": [[[p[0] + 0.001, p[1]] for p in ROUTE]]},
+    ],
+}
+
+
+def _rectangle(west: float, south: float, east: float, north: float) -> list[list[float]]:
+    return [[west, south], [east, south], [east, north], [west, north], [west, south]]
+
+
 # Polígonos de Admin_Boundaries (6 condados, 7 ciudades, 8 ZIP, 13 distritos con Turnpike):
-# cubren cualquier punto. La vía sintética no está en el Turnpike (distrito 6, no D8).
+# en consultas por punto cubren cualquier punto. La vía sintética no está en el Turnpike.
 BOUNDARIES: dict[int, Json] = {
     6: {"COUNTY": "Miami-Dade", "CNTYNO": "87", "DISTRICT": "6"},
     7: {"NAME": "Miami"},
     8: {"ZIP": "33126"},
     13: {"DVALUE": "D6", "SG_Distric": "District 6"},
 }
+# Contorno del condado cuando se pide con geometría (selector Condado del mapa).
+COUNTY_RING = _rectangle(-80.30, 25.74, -80.22, 25.81)
+# Ciudades del rectángulo del condado: un municipio (C1) y una zona no incorporada (U1) que
+# el selector Ciudad debe descartar.
+CITIES: list[Json] = [
+    {
+        "attributes": {
+            "NAME": "Miami",
+            "CLASSFP": "C1",
+            "INTPTLAT": "+25.7750000",
+            "INTPTLON": "-080.2600000",
+        },
+        "rings": [_rectangle(-80.28, 25.75, -80.24, 25.80)],
+    },
+    {
+        "attributes": {
+            "NAME": "Zona Sintetica",
+            "CLASSFP": "U1",
+            "INTPTLAT": "+25.7900000",
+            "INTPTLON": "-080.2900000",
+        },
+        "rings": [_rectangle(-80.30, 25.78, -80.28, 25.80)],
+    },
+]
 
 
 def _lot(folio: str, south: float, north: float) -> Json:
@@ -83,7 +142,11 @@ PARCEL: Json = {
 }
 # Respaldo del condado de Broward (sólo el folio); la vía sintética está en Miami-Dade.
 BROWARD_PARCEL: Json = {"FOLIO": "000000000001"}
-# El geocodificador sólo reconoce direcciones sobre la vía sintética.
+# El geocodificador sólo reconoce el cruce con W Flagler St y direcciones sobre la vía sintética.
+CROSSING: Json = {
+    "matchedAddress": "W FLAGLER ST & NW 42ND AVE, MIAMI, FL, 33126",
+    "coordinates": {"x": START[1], "y": START[0]},
+}
 ADDRESS: Json = {
     "matchedAddress": "1000 NW 42ND AVE, MIAMI, FL, 33126",
     "coordinates": {"x": -80.263768, "y": 25.775926},

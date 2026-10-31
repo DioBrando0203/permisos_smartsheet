@@ -61,6 +61,10 @@ class Settings(BaseSettings):
     gis_miami_dade_parcels_url: str = (
         "https://gisweb.miamidade.gov/arcgis/rest/services/MD_LandInformation/MapServer/26"
     )
+    # Calles de todo EE. UU. (TIGER del Censo): el buscador las usa sólo dentro de un condado.
+    gis_tiger_roads_url: str = (
+        "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Transportation/MapServer"
+    )
     gis_trace_max_points: int = 100
     gis_timeout_seconds: float = 20.0
     # Un servidor que no acepta la conexión no se reintenta: sólo alargaría la espera (PEN-30).

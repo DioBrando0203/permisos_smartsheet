@@ -105,6 +105,7 @@ export function normalizeMapSearch(source: ApiMapSearch): MapSearch {
       lon: item.lon ?? 0,
       roadwayId: item.roadway_id ?? null,
       milepost: item.milepost ?? null,
+      distanceM: item.distance_m ?? null,
     })),
     sources: normalizeMapPoint({ sources: source.sources }).sources,
   }

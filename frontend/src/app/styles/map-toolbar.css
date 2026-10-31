@@ -160,3 +160,34 @@
 .map-legend__county {
   background: var(--map-road-county);
 }
+.map-scope {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  align-items: end;
+}
+.map-scope select {
+  max-width: 200px;
+}
+.map-search__fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.map-search__fields .map-search__field {
+  flex: 2 1 220px;
+}
+.map-search__crossing {
+  flex: 1 1 160px;
+  min-width: 0;
+  min-height: var(--control-md);
+  padding: 0 var(--space-s);
+  border: 1px solid var(--stroke-1);
+  border-radius: var(--radius-md);
+  color: var(--fg-1);
+  background: var(--bg-1);
+}
+.map-search__crossing:focus {
+  border-color: var(--brand-80);
+  outline: 1px solid var(--brand-80);
+}

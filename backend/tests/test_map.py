@@ -193,7 +193,10 @@ async def test_search_street_normalizes_the_text_and_uses_the_middle_point(
         json={"features": [street]}
     )
     body = (await client.get("/api/map/search", params={"q": "NW 42nd Avenue"})).json()
-    assert route.calls.last.request.url.params["where"] == "UPPER(NAME) LIKE '%NW 42 AVE%'"
+    assert route.calls.last.request.url.params["where"] == (
+        "(UPPER(NAME) LIKE 'NW 42 AVE%' OR UPPER(NAME) LIKE '% NW 42 AVE%' "
+        "OR UPPER(NAME) LIKE '%/NW 42 AVE%')"
+    )
     result = body["results"][0]
     assert (result["kind"], result["lat"], result["lon"]) == ("street", 25.79, -80.264)
     assert result["detail"] == "Miami-Dade · vía 87281000 · MP 3.117 a 5.822"
@@ -225,3 +228,20 @@ async def test_parcel_county_code_is_an_integer_code(client, smartsheet) -> None
     _routes(smartsheet)
     response = await client.get("/api/map/point", params={"lat": 25.771778, "lon": -80.26361})
     assert response.json()["parcel"]["county_code_dor"] == "13"
+
+
+async def test_firewall_html_is_a_failed_source_and_the_host_rests(client, smartsheet) -> None:
+    """El Censo responde 200 con HTML "Request Rejected" al bloquear la IP (2026-10-31)."""
+    rejected = smartsheet.get("https://geocoder.test/onelineaddress").respond(
+        200,
+        text="<html><title>Request Rejected</title></html>",
+        headers={"Content-Type": "text/html"},
+    )
+    smartsheet.get(f"{GIS}/RCI_Layers/MapServer/13/query").respond(json={"features": []})
+    for _ in range(2):
+        params = {"q": "NW 42 Ave & W Flagler St", "refresh": True}
+        response = await client.get("/api/map/search", params=params)
+        assert response.status_code == 200
+        statuses = {source["id"]: source["status"] for source in response.json()["sources"]}
+        assert statuses == {"fdot_crossings": "ok", "census_geocoder": "error"}
+    assert rejected.call_count == 1  # tras el rechazo, el servidor se salta un rato

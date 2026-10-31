@@ -43,7 +43,9 @@ Formato: método y ruta | hook | clave de caché | spec.
 - `GET /api/map/point?lat&lon` | `useMapPoint` | `['map-point', lat, lon]` | SPEC-11. `staleTime` 10 minutos. `parcel.source` (`fdacs_parcels` o `broward_parcels`) se normaliza con `fdacs_parcels` por defecto.
 - `GET /api/map/trace?path` | `useMapTrace` | `['map-trace', path]` | SPEC-11 (PEN-32). Sólo con el trazo terminado; `staleTime` 10 minutos. Reemplaza a `/api/map/segment` en el panel.
 - `GET /api/map/parcels?west&south&east&north` | `useParcelOutlines` (por celda, con `useQueries`) | `['map-parcels', celda]` | SPEC-11 (PEN-33). Sólo a zoom 17 o más; `staleTime` 10 minutos.
-- `GET /api/map/search?q` | `useMapSearch` | `['map-search', q en mayúsculas]` | SPEC-11. Sólo con 3 caracteres o más, tras 350 ms sin escribir; `staleTime` 10 minutos.
+- `GET /api/map/search?q&county&city` | `useMapSearch` | `['map-search', q en mayúsculas, zona]` | SPEC-11. Sólo con 3 caracteres o más, tras 500 ms sin escribir (el Censo bloquea ráfagas, B-15 del backend); `q` lleva `Calle & Cruce` si se llenó "Cruce con"; `staleTime` 10 minutos.
+- `GET /api/map/counties` | `useMapCounties` | `['map-counties']` | SPEC-11 (PEN-34). Una vez por sesión (`staleTime` infinito).
+- `GET /api/map/area?county&city` | `useMapArea` | `['map-area', condado, ciudad]` | SPEC-11 (PEN-34). Sólo con condado; la ciudad vacía da el condado y su lista de municipios.
 - `GET /api/export/access.csv?q&scope` | enlace de descarga | sin caché | SPEC-02 y SPEC-04 (K-09).
 
 ## Escrituras

@@ -1,3 +1,4 @@
+import type { ApiMapArea, ApiMapCounty } from '../../features/map/area'
 import type { ApiMapPoint, ApiMapSearch, ApiMapTrace, ApiParcelOutlines } from '../../features/map/types'
 
 // Datos sintéticos con la forma de /api/map/*: el propietario nunca es real.
@@ -131,4 +132,47 @@ export const mapSearchFixture: ApiMapSearch = {
     },
   ],
   sources: [{ id: 'census_geocoder', status: 'error', ms: 50 }],
+}
+
+export const mapCountiesFixture: ApiMapCounty[] = [
+  { name: 'Alachua', code_fdot: '26' },
+  { name: 'Broward', code_fdot: '86' },
+  { name: 'Miami-Dade', code_fdot: '87' },
+]
+
+const fortLauderdale = { west: -80.203854, south: 26.068973, east: -80.091544, north: 26.211925 }
+export const mapAreaFixture: ApiMapArea = {
+  county: 'Broward',
+  code_fdot: '86',
+  city: null,
+  bounds: { west: -80.881236, south: 25.956775, east: -80.07474, north: 26.355552 },
+  outline: [
+    [
+      [-80.88, 25.96],
+      [-80.07, 25.96],
+      [-80.07, 26.36],
+      [-80.88, 25.96],
+    ],
+  ],
+  cities: [
+    { name: 'Fort Lauderdale', bounds: fortLauderdale },
+    { name: 'Hollywood', bounds: { west: -80.25, south: 25.99, east: -80.11, north: 26.05 } },
+  ],
+}
+
+// Cruce sobre vía del FDOT, con el milepost del cruce (como Las Olas y SE 3 Ave).
+export const mapCrossingFixture: ApiMapSearch = {
+  query: 'Las Olas & 3rd Ave',
+  results: [
+    {
+      kind: 'intersection',
+      label: 'E LAS OLAS BLVD y SE 3 AVE',
+      detail: 'Broward · vía 86000142',
+      lat: 26.119161,
+      lon: -80.140422,
+      roadway_id: '86000142',
+      milepost: 0.258,
+    },
+  ],
+  sources: [{ id: 'fdot_crossings', status: 'ok', ms: 900 }],
 }

@@ -8,6 +8,8 @@ from typing import Any
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.models.map import (
+    MapArea,
+    MapCounty,
     MapPoint,
     MapSearch,
     MapSegment,
@@ -30,6 +32,7 @@ from app.services.map_mappers import (
     warnings,
 )
 from app.services.map_parcels import MapParcelsService
+from app.services.map_places import MapPlacesService
 from app.services.map_rules import (
     RouteGeometry,
     haversine_miles,
@@ -51,16 +54,27 @@ class _Resolution:
 class MapService:
     def __init__(self, settings: Settings, client: GisClient, cache: TtlCache) -> None:
         self._settings, self._client, self._cache = settings, client, cache
-        self._search = MapSearchService(settings, client, cache)
+        self._places = MapPlacesService(settings, client, cache)
+        self._search = MapSearchService(settings, client, cache, self._places)
         self._trace = MapTraceService(settings, client, cache)
         self._parcels = MapParcelsService(settings, client, cache)
 
     async def aclose(self) -> None:
         await self._client.aclose()
 
-    async def search(self, text: str, *, refresh: bool) -> MapSearch:
+    async def search(
+        self, text: str, *, county: str | None, city: str | None, refresh: bool
+    ) -> MapSearch:
         self._ensure_enabled()
-        return await self._search.search(text, refresh=refresh)
+        return await self._search.search(text, county=county, city=city, refresh=refresh)
+
+    async def counties(self) -> list[MapCounty]:
+        self._ensure_enabled()
+        return await self._places.counties()
+
+    async def area(self, county: str, city: str | None) -> MapArea:
+        self._ensure_enabled()
+        return await self._places.area(county, city)
 
     async def trace(self, path: str, radius_m: float, *, refresh: bool) -> MapTrace:
         self._ensure_enabled()

@@ -60,7 +60,12 @@ class GisTransport:
                 continue
             if response.status_code >= 400:
                 raise GisFailure("error")
-            data = response.json()
+            try:
+                data = response.json()
+            except ValueError:
+                # El firewall del Censo responde 200 con una página HTML "Request Rejected" cuando
+                # bloquea la IP (visto el 2026-10-31): se salta un rato en vez de insistir.
+                raise self._skip(host, "error") from None
             if isinstance(data, dict) and data.get("error"):
                 raise GisFailure("error")
             return data, round((time.perf_counter() - started) * 1000, 1)

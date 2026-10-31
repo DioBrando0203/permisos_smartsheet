@@ -119,3 +119,10 @@ Estado: terminada
 Cambios: el modo Tramo pasa a Trazo como en OSP (useTraceDrawing, TraceResult, WorkLocationTable; clic por vértice, doble clic, Enter o Terminar; Deshacer y Borrar; URL ?t= y enlaces viejos ?a=&b=); tabla con las columnas de OSP, copiar fila y tabla. Casilla "Límites de parcelas" (useParcelLayer, lib/cells.ts, celdas con useQueries y combine). MapView con lines, outlines, drawing, onMapDoubleClick y onViewChange; dibujos sin clic propio. Se quitaron useMapSegment, SegmentResult y OspSection. Docs: SPEC-11 (puntos 5, 7 a 10, CA-02, CA-05, CA-14 y CA-15), CONTRATO.md, ARQUITECTURA.md, PLAN_IMPLEMENTACION.md, FB-08 y FB-09.
 Evidencia: format, build, lint, 27 pruebas unitarias y 7 E2E; capturas con servicios reales (detalle en RESULTADOS).
 Notas: sin commit todavía; pendiente encuadrar el trazo completo al abrirlo por URL y un "Actualizar" que pida refresh=true.
+
+## 2026-10-31 10:18 -05:00 Zona y cruce en el buscador del mapa (PEN-34)
+
+Estado: terminada
+Cambios: `MapScopePicker` (Condado con los cuatro del equipo primero y Ciudad con los municipios del condado), `area.ts` (zona y su normalización), `useMapCounties`, `useMapArea` y `useMapSearch` con zona; campo "Cruce con (opcional)"; sugerencias "Cruce" con milepost y "Punto más cercano"; `MapView` encuadra un rectángulo y dibuja el límite punteado de la zona; el panel pone primero la vía del resultado elegido; espera del buscador de 350 a 500 ms; `MAP_AREA_NOT_FOUND` en `errorMessages`.
+Evidencia: format, lint, build, 31 pruebas unitarias y 8 E2E (1 omitido de antes) a las 10:14. Recorrido con Playwright sobre el servidor de desarrollo y datos reales: Broward, Fort Lauderdale, "Las Olas" y "3rd Ave" dan "E LAS OLAS BLVD y SE 3 AVE · Cruce · MP 0.258"; al elegirlo, el marcador cae en el cruce y el panel muestra la vía `86000142` en 0.258. Capturas fuera del repositorio.
+Notas: SPEC-11 CA-16 y CA-17, CONTRATO y ARQUITECTURA actualizados. Mientras el Censo bloquee la IP (B-15 del backend) sólo responden las fuentes del FDOT. Sin commit.

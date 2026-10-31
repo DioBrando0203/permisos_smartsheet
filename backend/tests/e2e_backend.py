@@ -35,6 +35,7 @@ def e2e_settings(port: int, smartsheet: int, gis: int, frontend: int) -> Setting
         gis_census_geocoder_url=f"{fake_gis}/census/onelineaddress",
         gis_broward_parcels_url=f"{fake_gis}/broward/parcels/0",
         gis_miami_dade_parcels_url=f"{fake_gis}/miami-dade/parcels/26",
+        gis_tiger_roads_url=f"{fake_gis}/tiger/Transportation/MapServer",
         gis_max_retries=0,
     )
 

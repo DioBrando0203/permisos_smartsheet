@@ -271,6 +271,13 @@ Situación: pedido del usuario: "para el milepost se debe hacer siempre un trazo
 Verificado el 2026-10-30: la capa 8 del FDOT acepta consultas por rectángulo y devuelve las vías candidatas; la capa 13 de `Admin_Boundaries` ("District Bndy w TPIKE") da el polígono `D8`/`FTE` sobre SR 821 (Turnpike) y sólo `D6` sobre SR 953 (resuelve GIS-PEN-01).
 Hacer: `GET /api/map/trace` con la línea dibujada; una fila por cada vía que sigue el trazo (sin contar los cruces), con mileposts, condado, State Road ID como ruta ("SR 953"), sección y Turnpike; modo "Trazo" en el mapa con clic por vértice, doble clic o "Terminar", "Deshacer" y tabla copiable. Specs: SPEC-B14 y SPEC-11.
 
+### PEN-34 Ubicarse por condado, ciudad, calle y cruce
+
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-10-31, pedida por el usuario para probar en Fort Lauderdale, Broward): SPEC-B14 puntos 9, 12 y 13 (CA-20 a CA-22) y SPEC-11 (CA-16 y CA-17).
+Tipo (ADR-B15): (a) ni OSP ni Smartsheet llevan a un cruce de calles con su milepost; el mapa sólo consulta.
+Hecho: selectores Condado (los cuatro donde trabaja el equipo primero) y Ciudad (sólo municipios del condado) que encuadran el mapa y dibujan el límite; el buscador se acota a la zona, suma calles locales del Censo (TIGER) y entiende cruces "A & B" o el campo "Cruce con": el FDOT da el milepost del cruce, el Censo cubre calles locales y, si no se cruzan, el punto más cercano con su distancia.
+Límite: el firewall de census.gov bloquea la IP tras ráfagas de consultas (B-15); mientras dure, las calles locales y las direcciones no responden y queda lo del FDOT (vías estatales y de su inventario).
+
 ### PEN-33 Límites de parcelas en el mapa
 
 Prioridad: media. Alcance: backend y frontend. Estado: terminada para Broward y Miami-Dade (2026-10-30): casilla "Límites de parcelas" a zoom 17 o más, `GET /api/map/parcels` por celda (SPEC-B14 CA-19, SPEC-11 CA-15). El resto del estado depende de FDACS.

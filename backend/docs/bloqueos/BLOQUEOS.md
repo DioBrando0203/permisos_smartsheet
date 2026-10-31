@@ -102,3 +102,11 @@ Fecha: 2026-10-30. Estado: abierto.
 Síntoma: tras editar un archivo, Uvicorn escribe "WatchFiles detected changes … Reloading..." pero no aparece un "Started server process" nuevo y el puerto sigue sirviendo el código anterior (visto dos veces, con consultas al mapa en curso).
 Causa: no confirmada; ocurrió mientras había solicitudes abiertas (una esperaba a FDACS 60 s).
 Prevención: tras cambiar el backend, comprobar en el log que arrancó un proceso nuevo; si no, detener `run.py` y volver a ejecutarlo. Al detenerlo no quedaron procesos huérfanos y el 8710 quedó libre (comprobado con `netstat` y `wmic`).
+
+## B-15 El firewall del Censo bloquea la IP tras ráfagas de consultas
+
+Fecha: 2026-10-31. Estado: mitigado; el bloqueo es del proveedor.
+Síntoma: `/api/map/search` respondía 500 en Fort Lauderdale; TIGERweb y el geocodificador del Censo devolvían HTTP 200 con una página HTML "Request Rejected" (189 a 247 bytes) a cualquier consulta, también a los metadatos; el FDOT seguía respondiendo.
+Causa: unas decenas de consultas seguidas desde el equipo (cada búsqueda con zona y cruce pide hasta seis a TIGER, una por pausa al escribir, más las pruebas manuales). El transporte llamaba a `response.json()` sin protección y el HTML tumbaba la búsqueda.
+Solución: el HTML cuenta como fuente caída y el host se salta `gis_unreachable_cooldown_seconds`; las líneas TIGER se cachean por zona y filtro; el buscador espera 500 ms en vez de 350 (SPEC-B14 CA-22). Prevención: no hacer ráfagas de pruebas contra census.gov; el bloqueo se levanta solo, sin plazo publicado.
+

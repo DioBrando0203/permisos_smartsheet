@@ -124,13 +124,43 @@ class ParcelOutlines(BaseModel):
 
 
 class SearchResult(BaseModel):
-    kind: Literal["coordinates", "address", "street", "milepost"]
+    kind: Literal["coordinates", "address", "street", "milepost", "intersection", "nearest"]
     label: str
     detail: str | None = None
     lat: float
     lon: float
     roadway_id: str | None = None
     milepost: float | None = None
+    # Sólo en `nearest`: las calles no se cruzan y este es el punto más cercano entre ambas.
+    distance_m: float | None = None
+
+
+class Bounds(BaseModel):
+    west: float
+    south: float
+    east: float
+    north: float
+
+
+class MapCounty(BaseModel):
+    name: str
+    code_fdot: str
+
+
+class MapCity(BaseModel):
+    name: str
+    bounds: Bounds
+
+
+class MapArea(BaseModel):
+    county: str
+    code_fdot: str
+    city: str | None = None
+    bounds: Bounds
+    # Contorno simplificado [[lon, lat], …] del condado o de la ciudad elegida, para dibujarlo.
+    outline: list[list[list[float]]]
+    # Municipios del condado (CLASSFP C1 cuyo punto interior cae dentro del condado).
+    cities: list[MapCity]
 
 
 class MapSearch(BaseModel):

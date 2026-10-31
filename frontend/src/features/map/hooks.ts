@@ -11,6 +11,14 @@ import type { ApiMapPoint, ApiMapSearch, ApiMapTrace, ApiParcelOutlines, ParcelO
 import type { Coordinates } from './lib/coordinates'
 import type { Bounds } from './lib/cells'
 import { pathKey } from './lib/mapUrl'
+import {
+  normalizeArea,
+  normalizeCounties,
+  scopeQuery,
+  type ApiMapArea,
+  type ApiMapCounty,
+  type MapScope,
+} from './area'
 
 const staleTime = 10 * 60 * 1000
 
@@ -76,14 +84,34 @@ export function useParcelOutlines(cells: Bounds[]): ParcelLayer {
   })
 }
 
-/** Sugerencias del buscador; `text` ya llega con espera aplicada (MapSearchBox). */
-export function useMapSearch(text: string) {
+/** Sugerencias del buscador, acotadas a la zona; `text` ya llega con espera (MapSearchBox). */
+export function useMapSearch(text: string, scope: MapScope) {
   const query = text.trim()
+  const zone = scopeQuery(scope)
   return useQuery({
-    queryKey: queryKeys.mapSearch(query.toUpperCase()),
+    queryKey: queryKeys.mapSearch(query.toUpperCase(), zone),
     queryFn: () =>
-      api<ApiMapSearch>(`/api/map/search?q=${encodeURIComponent(query)}`).then(normalizeMapSearch),
+      api<ApiMapSearch>(`/api/map/search?q=${encodeURIComponent(query)}${zone}`).then(normalizeMapSearch),
     enabled: query.length >= 3,
+    staleTime,
+  })
+}
+
+/** Los 67 condados de Florida (cambian casi nunca: se piden una vez por sesión). */
+export function useMapCounties() {
+  return useQuery({
+    queryKey: queryKeys.mapCounties(),
+    queryFn: () => api<ApiMapCounty[]>('/api/map/counties').then(normalizeCounties),
+    staleTime: Infinity,
+  })
+}
+
+/** Contorno y límites del condado o de la ciudad, y los municipios del condado. */
+export function useMapArea(scope: MapScope) {
+  return useQuery({
+    queryKey: queryKeys.mapArea(scope.county ?? '', scope.city ?? ''),
+    queryFn: () => api<ApiMapArea>(`/api/map/area?${scopeQuery(scope).slice(1)}`).then(normalizeArea),
+    enabled: Boolean(scope.county),
     staleTime,
   })
 }

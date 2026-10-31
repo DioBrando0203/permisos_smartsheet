@@ -80,3 +80,19 @@ const traceProps = {
   onClear: noop,
   onRetry: noop,
 }
+
+describe('Vía preferida', () => {
+  it('pone primero la vía del resultado elegido en el buscador', () => {
+    render(
+      <PointResult
+        result={normalizeMapPoint(mapPointFixture)}
+        loading={false}
+        error={null}
+        onRetry={() => undefined}
+        preferRoadway="87053000"
+      />,
+    )
+    expect(screen.getByText('SR 968')).toBeInTheDocument()
+    expect(screen.getByText('Otras vías cerca (1)')).toBeInTheDocument()
+  })
+})

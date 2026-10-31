@@ -29,5 +29,7 @@ export const queryKeys = {
   mapPoint: (lat: number, lon: number) => ['map-point', lat, lon] as const,
   mapTrace: (path: string) => ['map-trace', path] as const,
   mapParcels: (cell: string) => ['map-parcels', cell] as const,
-  mapSearch: (text: string) => ['map-search', text] as const,
+  mapSearch: (text: string, scope: string) => ['map-search', text, scope] as const,
+  mapCounties: () => ['map-counties'] as const,
+  mapArea: (county: string, city: string) => ['map-area', county, city] as const,
 }

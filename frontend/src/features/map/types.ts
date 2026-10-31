@@ -137,13 +137,15 @@ export type ApiParcelOutlines = {
   truncated?: boolean
 }
 export type MapSearchResult = {
-  kind: 'coordinates' | 'address' | 'street' | 'milepost'
+  kind: 'coordinates' | 'address' | 'street' | 'milepost' | 'intersection' | 'nearest'
   label: string
   detail: string | null
   lat: number
   lon: number
   roadwayId: string | null
   milepost: number | null
+  /** Sólo en `nearest`: las calles no se cruzan y este es su punto más cercano. */
+  distanceM: number | null
 }
 export type MapSearch = { query: string; results: MapSearchResult[]; sources: MapPoint['sources'] }
 export type ApiMapSearch = {
@@ -156,6 +158,7 @@ export type ApiMapSearch = {
     lon?: number
     roadway_id?: string | null
     milepost?: number | null
+    distance_m?: number | null
   }[]
   sources?: ApiMapPoint['sources']
 }

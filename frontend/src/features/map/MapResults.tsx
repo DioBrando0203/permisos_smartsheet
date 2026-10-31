@@ -16,18 +16,24 @@ export function PointResult({
   loading,
   error,
   onRetry,
+  preferRoadway = null,
 }: {
   result?: MapPoint
   loading: boolean
   error: Error | null
   onRetry: () => void
+  preferRoadway?: string | null
 }) {
   if (loading) return <LoadingNotice>Consultando FDOT y FDACS…</LoadingNotice>
   if (error) return <MapError error={error} onRetry={onRetry} />
   if (!result) return <MapEmpty />
+  const roads = [
+    ...result.roads.filter((road) => road.roadwayId === preferRoadway),
+    ...result.roads.filter((road) => road.roadwayId !== preferRoadway),
+  ]
   return (
     <>
-      <RoadSection road={result.roads[0]} nearby={result.roads.slice(1)} />
+      <RoadSection road={roads[0]} nearby={roads.slice(1)} />
       <JurisdictionSection data={result.jurisdiction} />
       <LocationSection location={result.location} />
       <ParcelSection parcel={result.parcel} />

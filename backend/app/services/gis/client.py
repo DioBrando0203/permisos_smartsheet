@@ -46,8 +46,13 @@ class GisClient:
         limit: int,
         geometry: bool = True,
         with_m: bool = False,
+        box: tuple[float, float, float, float] | None = None,
+        simplify_degrees: float | None = None,
     ) -> tuple[list[dict[str, Any]], float]:
-        """Búsqueda por atributos; `where` sólo se arma con texto validado (map_query)."""
+        """Búsqueda por atributos, opcionalmente dentro de un rectángulo (oeste, sur, este, norte).
+
+        `where` sólo se arma con texto validado (map_query) o con nombres que dio la propia fuente.
+        """
         params = {
             "f": "json",
             "where": where,
@@ -57,8 +62,17 @@ class GisClient:
             "geometryPrecision": "6",
             "resultRecordCount": str(limit),
         }
+        if box:
+            params |= {
+                "geometry": ",".join(f"{value:.6f}" for value in box),
+                "geometryType": "esriGeometryEnvelope",
+                "inSR": "4326",
+                "spatialRel": "esriSpatialRelIntersects",
+            }
         if with_m:
             params["returnM"] = "true"
+        if simplify_degrees:
+            params["maxAllowableOffset"] = f"{simplify_degrees:.7f}"
         return await self._features(f"{path}/query", params)
 
     async def query_box(

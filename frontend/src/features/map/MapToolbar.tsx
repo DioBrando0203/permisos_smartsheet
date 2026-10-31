@@ -1,8 +1,9 @@
 import { basemapChoices, type Basemap } from '../../components/map/tileSources'
 import { Button } from '../../components/ui'
-import type { Coordinates } from './lib/coordinates'
+import type { MapScope } from './area'
 import type { MapMode } from './lib/mapUrl'
-import { MapSearchBox } from './MapSearchBox'
+import { MapScopePicker } from './MapScopePicker'
+import { MapSearchBox, type MapSelect } from './MapSearchBox'
 
 const basemapLabels: Record<Basemap, string> = {
   streets: 'Calles (USGS)',
@@ -13,17 +14,19 @@ export type MapLayers = { roads: boolean; parcels: boolean }
 
 type Props = {
   mode: MapMode
+  scope: MapScope
   basemap: Basemap
   layers: MapLayers
   hint: string
   parcelHint: string | null
   onMode: (mode: MapMode) => void
+  onScope: (scope: MapScope) => void
   onBasemap: (basemap: Basemap) => void
   onLayers: (layers: MapLayers) => void
-  onSelect: (point: Coordinates) => void
+  onSelect: MapSelect
 }
 
-export function MapToolbar({ mode, basemap, layers, hint, parcelHint, ...on }: Props) {
+export function MapToolbar({ mode, scope, basemap, layers, hint, parcelHint, ...on }: Props) {
   return (
     <div className="map-toolbar">
       <div className="map-toolbar__modes" role="group" aria-label="Modo de consulta">
@@ -38,7 +41,8 @@ export function MapToolbar({ mode, basemap, layers, hint, parcelHint, ...on }: P
           </Button>
         ))}
       </div>
-      <MapSearchBox onSelect={on.onSelect} />
+      <MapScopePicker scope={scope} onScope={on.onScope} />
+      <MapSearchBox scope={scope} onSelect={on.onSelect} />
       <label className="map-toolbar__base">
         Mapa base
         <select value={basemap} onChange={(event) => on.onBasemap(event.target.value as Basemap)}>

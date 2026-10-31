@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import {
   MapView,
@@ -10,10 +10,11 @@ import {
 } from '../../components/map/MapView'
 import { basemapChoices } from '../../components/map/tileSources'
 import { StatusAlert } from '../../components/ui'
-import { useMapPoint, useMapTrace } from './hooks'
+import type { MapScope } from './area'
+import { useMapArea, useMapPoint, useMapTrace } from './hooks'
 import type { Coordinates } from './lib/coordinates'
 import { readMapUrl, writeMapUrl, type MapMode } from './lib/mapUrl'
-import { readChoice, saveChoice } from './lib/preferences'
+import { readChoice, readText, saveChoice } from './lib/preferences'
 import { PointResult } from './MapResults'
 import { MapToolbar, type MapLayers } from './MapToolbar'
 import { TraceResult } from './TraceResult'
@@ -21,6 +22,7 @@ import { useParcelLayer } from './useParcelLayer'
 import { useTraceDrawing } from './useTraceDrawing'
 
 const closeZoom = 16
+const noArea: [number, number][][] = []
 const onOff = ['on', 'off'] as const
 const savedLayers = (): MapLayers => ({
   roads: readChoice('map-roads', onOff, 'off') === 'on',
@@ -40,6 +42,15 @@ export function MapPage() {
   const [basemap, setBasemap] = useState<Basemap>(() => readChoice('map-basemap', basemapChoices, 'streets'))
   const [layers, setLayers] = useState<MapLayers>(savedLayers)
   const [view, setView] = useState<MapViewState | null>(null)
+  // Vía del resultado elegido en el buscador: el panel la pone primero (un cruce toca dos vías).
+  const [preferred, setPreferred] = useState<string | null>(null)
+  const [scope, setScope] = useState<MapScope>(() => ({
+    county: readText('map-county'),
+    city: readText('map-county') ? readText('map-city') : null,
+  }))
+  const area = useMapArea(scope)
+  // Sólo un cambio de zona hecho por la persona encuadra el mapa; la guardada no tapa la URL.
+  const fitArea = useRef(false)
   const point = useMapPoint(mode === 'point' ? a : null)
   const result = useMapTrace(mode === 'trace' ? trace.finished : null)
   const parcels = useParcelLayer(layers.parcels, view)
@@ -47,6 +58,15 @@ export function MapPage() {
     setParams(writeMapUrl(mode, a, trace.finished), { replace: true })
   }, [a, trace.finished, mode, setParams])
   useEffect(() => saveChoice('map-basemap', basemap), [basemap])
+  useEffect(() => {
+    saveChoice('map-county', scope.county ?? '')
+    saveChoice('map-city', scope.city ?? '')
+  }, [scope])
+  useEffect(() => {
+    if (!fitArea.current || !area.data) return
+    fitArea.current = false
+    setFocus({ bounds: area.data.bounds })
+  }, [area.data])
   useEffect(() => {
     saveChoice('map-roads', layers.roads ? 'on' : 'off')
     saveChoice('map-parcels', layers.parcels ? 'on' : 'off')
@@ -82,14 +102,20 @@ export function MapPage() {
       <div className="map-page__canvas">
         <MapToolbar
           mode={mode}
+          scope={scope}
           basemap={basemap}
           layers={layers}
           hint={hint(mode, trace.vertices.length, trace.drawing)}
           parcelHint={parcels.hint}
           onMode={setMode}
+          onScope={(next) => {
+            fitArea.current = Boolean(next.county)
+            setScope(next)
+          }}
           onBasemap={setBasemap}
           onLayers={setLayers}
-          onSelect={(next) => {
+          onSelect={(next, _label, roadway) => {
+            setPreferred(roadway)
             choose(next)
             setFocus({ ...next, zoom: closeZoom })
           }}
@@ -99,10 +125,14 @@ export function MapPage() {
           markers={markers}
           lines={lines}
           outlines={parcels.rings}
+          area={(scope.county && area.data?.outline) || noArea}
           basemap={basemap}
           roads={layers.roads}
           drawing={mode === 'trace' && trace.drawing}
-          onMapClick={choose}
+          onMapClick={(next) => {
+            setPreferred(null)
+            choose(next)
+          }}
           onMapDoubleClick={() => mode === 'trace' && trace.finish()}
           onViewChange={setView}
         />
@@ -111,6 +141,7 @@ export function MapPage() {
         {mode === 'point' ? (
           <PointResult
             result={point.data}
+            preferRoadway={preferred}
             loading={point.isLoading}
             error={point.error}
             onRetry={() => void point.refetch()}

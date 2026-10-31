@@ -6,6 +6,8 @@ from fastapi import APIRouter, Query
 
 from app.api.deps import ServicesDep
 from app.models.map import (
+    MapArea,
+    MapCounty,
     MapPoint,
     MapSearch,
     MapSegment,
@@ -19,6 +21,8 @@ Latitude = Annotated[float, Query(ge=-90, le=90)]
 Longitude = Annotated[float, Query(ge=-180, le=180)]
 Radius = Annotated[float, Query(ge=1, le=200)]
 SearchText = Annotated[str, Query(min_length=3, max_length=120)]
+PlaceName = Annotated[str, Query(min_length=2, max_length=60, examples=["Broward"])]
+OptionalPlace = Annotated[str | None, Query(min_length=2, max_length=60)]
 TracePath = Annotated[
     str,
     Query(
@@ -31,9 +35,28 @@ TracePath = Annotated[
 
 
 @router.get("/search")
-async def map_search(services: ServicesDep, q: SearchText, refresh: bool = False) -> MapSearch:
-    """Dirección, calle del FDOT, ruta con milepost (`SR 953 3.5`) o coordenadas."""
-    return await services.maps.search(q, refresh=refresh)
+async def map_search(
+    services: ServicesDep,
+    q: SearchText,
+    county: OptionalPlace = None,
+    city: OptionalPlace = None,
+    refresh: bool = False,
+) -> MapSearch:
+    """Dirección, calle, cruce (`Las Olas & 3rd Ave`), ruta con milepost (`SR 953 3.5`) o
+    coordenadas; con `county` (y `city`) se acota a esa zona y suma las calles locales del Censo."""
+    return await services.maps.search(q, county=county, city=city, refresh=refresh)
+
+
+@router.get("/counties")
+async def map_counties(services: ServicesDep) -> list[MapCounty]:
+    """Los 67 condados de Florida según el FDOT."""
+    return await services.maps.counties()
+
+
+@router.get("/area")
+async def map_area(services: ServicesDep, county: PlaceName, city: OptionalPlace = None) -> MapArea:
+    """Límites y contorno del condado o de una de sus ciudades, y los municipios del condado."""
+    return await services.maps.area(county, city)
 
 
 @router.get("/point")

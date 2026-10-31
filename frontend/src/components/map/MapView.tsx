@@ -4,14 +4,12 @@ import type { Coordinates } from '../../features/map/lib/coordinates'
 import { basemaps, fdotRoads, maxZoom, type Basemap } from './tileSources'
 
 export type MapMarker = Coordinates & { label?: string; small?: boolean }
-/** Pedido de mover la vista: sólo al buscar o al abrir una URL; un clic no mueve el mapa. */
-export type MapFocus = Coordinates & { zoom: number }
+export type MapBounds = { west: number; south: number; east: number; north: number }
+/** Pedido de mover la vista: al buscar, al elegir una zona o al abrir una URL; un clic no la mueve. */
+export type MapFocus = (Coordinates & { zoom: number }) | { bounds: MapBounds }
 /** Línea [[lon, lat], …]: `draft` es un trazo a medias; `result`, lo que respondió el backend. */
 export type MapLine = { coordinates: [number, number][]; style: 'draft' | 'result' }
-export type MapViewState = {
-  bounds: { west: number; south: number; east: number; north: number }
-  zoom: number
-}
+export type MapViewState = { bounds: MapBounds; zoom: number }
 export type { Basemap }
 
 type Props = {
@@ -20,6 +18,8 @@ type Props = {
   lines: MapLine[]
   /** Contornos [[lon, lat], …] finos y sin clic, debajo de todo lo demás. */
   outlines: [number, number][][]
+  /** Contorno punteado de la zona elegida (condado o ciudad), sin clic. */
+  area: [number, number][][]
   basemap: Basemap
   /** Capa opcional con las vías estatales y de condado del FDOT. */
   roads: boolean
@@ -30,11 +30,11 @@ type Props = {
   onViewChange: (view: MapViewState) => void
 }
 type Handlers = Pick<Props, 'onMapClick' | 'onMapDoubleClick' | 'onViewChange'>
-const start: MapFocus = { lat: 26.1, lon: -80.25, zoom: 10 }
+const start = { lat: 26.1, lon: -80.25, zoom: 10 }
 const toLatLng = (line: [number, number][]) => line.map(([lon, lat]) => [lat, lon] as [number, number])
 
 export function MapView(props: Props) {
-  const { focus, markers, lines, outlines, basemap, roads, drawing } = props
+  const { focus, markers, lines, outlines, area, basemap, roads, drawing } = props
   const element = useRef<HTMLDivElement>(null)
   // Leaflet se importa una sola vez y los demás efectos esperan a `ready`: con una importación
   // por efecto, el orden en que se resuelven no está garantizado y un marcador podía perderse.
@@ -42,6 +42,7 @@ export function MapView(props: Props) {
   const map = useRef<import('leaflet').Map | null>(null)
   const layers = useRef<import('leaflet').LayerGroup | null>(null)
   const outlineLayer = useRef<import('leaflet').LayerGroup | null>(null)
+  const areaLayer = useRef<import('leaflet').LayerGroup | null>(null)
   const tile = useRef<import('leaflet').TileLayer | null>(null)
   const [ready, setReady] = useState(false)
   const handlers = useRef<Handlers>(props)
@@ -52,7 +53,8 @@ export function MapView(props: Props) {
     let active = true
     void import('leaflet').then((L) => {
       if (!active || !element.current) return
-      const view = focus ?? start
+      // Un rectángulo (zona) se encuadra en el efecto de `focus`, cuando el mapa ya existe.
+      const view = focus && 'lat' in focus ? focus : start
       const instance = L.map(element.current, { zoomControl: true, maxZoom }).setView(
         [view.lat, view.lon],
         view.zoom,
@@ -60,6 +62,7 @@ export function MapView(props: Props) {
       L.control.scale({ imperial: true, metric: true }).addTo(instance)
       leaflet.current = L
       map.current = instance
+      areaLayer.current = L.layerGroup().addTo(instance)
       outlineLayer.current = L.layerGroup().addTo(instance)
       layers.current = L.layerGroup().addTo(instance)
       const at = (event: import('leaflet').LeafletMouseEvent) => ({
@@ -90,6 +93,7 @@ export function MapView(props: Props) {
       map.current = null
       layers.current = null
       outlineLayer.current = null
+      areaLayer.current = null
       tile.current = null
       setReady(false)
     }
@@ -156,7 +160,25 @@ export function MapView(props: Props) {
     })
   }, [ready, lines, markers])
   useEffect(() => {
-    if (ready && focus) map.current?.setView([focus.lat, focus.lon], focus.zoom)
+    const L = leaflet.current
+    const group = areaLayer.current
+    if (!ready || !L || !group) return
+    group.clearLayers()
+    if (area.length)
+      L.polyline(area.map(toLatLng), { className: 'map-area', weight: 2, interactive: false }).addTo(group)
+  }, [ready, area])
+  useEffect(() => {
+    if (!ready || !focus || !map.current) return
+    if ('bounds' in focus) {
+      const { west, south, east, north } = focus.bounds
+      map.current.fitBounds(
+        [
+          [south, west],
+          [north, east],
+        ],
+        { padding: [16, 16] },
+      )
+    } else map.current.setView([focus.lat, focus.lon], focus.zoom)
   }, [ready, focus])
   return <div ref={element} className="map-view" role="application" aria-label="Mapa" />
 }

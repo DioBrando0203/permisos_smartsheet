@@ -77,6 +77,24 @@ test('el buscador lleva a una ruta con milepost y a una calle', async ({ page })
   await expect(page.getByRole('option', { name: /LEJEUNE RD\/NW 42 AVE/ })).toBeVisible()
 })
 
+test('condado, ciudad, calle y cruce llevan al cruce con su milepost', async ({ page }) => {
+  await page.goto('/mapa')
+  await page.getByRole('combobox', { name: 'Condado' }).selectOption('Miami-Dade')
+  const city = page.getByRole('combobox', { name: 'Ciudad' })
+  await expect(city.getByRole('option', { name: 'Miami', exact: true })).toBeAttached()
+  await expect(city.getByRole('option')).toHaveCount(2) // la zona no incorporada no aparece
+  await city.selectOption('Miami')
+  const search = page.getByRole('combobox', { name: 'Buscar lugar' })
+  await expect(search).toHaveAttribute('placeholder', 'Calle o dirección en Miami')
+  await search.fill('NW 42nd Ave')
+  await page.getByRole('textbox', { name: 'Cruce con (opcional)' }).fill('W Flagler St')
+  const crossing = page.getByRole('option', { name: /LEJEUNE RD\/NW 42 AVE y SR- 968\/W FLAGLER ST/ })
+  await expect(crossing).toContainText('Cruce · MP 3.124')
+  await crossing.click()
+  await expect(field(page, 'Milepost')).toContainText('3.124')
+  expect(param(page, 'p')).toBe('25.771778,-80.263610')
+})
+
 test('a 320 px no hay desborde horizontal y el panel queda debajo del mapa (CA-09)', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 })
   await page.goto(controlTrace)

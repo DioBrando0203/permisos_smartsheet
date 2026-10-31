@@ -86,8 +86,11 @@ app/
   services/gis/                  transporte público sin token, capas y cliente ArcGIS
   services/map.py                MapService: punto, tramo, caché GIS
   services/map_rules.py          reglas puras de milepost y jurisdicción
-  services/map_query.py          lectura pura del texto del buscador (coordenadas, ruta y MP, calle)
-  services/map_search.py         MapSearchService: dirección (Censo), calle y ruta con MP (FDOT)
+  services/map_query.py          lectura pura del texto del buscador (coordenadas, ruta y MP, calle, cruce)
+  services/map_search.py         MapSearchService: dirección, calle, cruce y ruta con MP, acotado a una zona
+  services/map_places.py         MapPlacesService: condados, municipios (C1 dentro del condado) y Scope
+  services/map_streets.py        StreetFinder: calles TIGER del Censo y cruces (FDOT con MP, Censo, calculados)
+  services/map_geometry.py       geometría pura: contención, límites, cruce o punto más cercano entre calles
   services/trace_rules.py        reglas puras del trazo: muestras, rectángulos, filas por vía
   services/map_trace.py          MapTraceService: tabla Work Location de OSP y Turnpike
   services/map_parcels.py        MapParcelsService: contornos de parcelas por celda (sin propietarios)

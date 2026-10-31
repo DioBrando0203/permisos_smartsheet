@@ -1,4 +1,8 @@
-"""Buscador del mapa: dirección, calle del FDOT, ruta con milepost o coordenadas."""
+"""Buscador del mapa: dirección, calle, cruce de calles, ruta con milepost o coordenadas.
+
+Con un condado (y una ciudad) elegidos, cada fuente se acota a esa zona y se suman las calles
+locales del Censo; sin zona se busca en todo Florida sólo en las vías del FDOT.
+"""
 
 import asyncio
 from collections.abc import Awaitable, Callable
@@ -11,54 +15,83 @@ from app.services.gis import GisClient
 from app.services.gis.layers import COUNTY_ROADS, LOCAL_NAMES, LRS, STATE_ROADS, road_layer
 from app.services.gis.timing import run_source
 from app.services.map_mappers import feature_text, route_geometry, to_number
+from app.services.map_places import MapPlacesService, Scope
 from app.services.map_query import (
     RouteQuery,
     address_text,
+    join_parts,
     looks_like_address,
+    name_where,
     parse_coordinates,
+    parse_intersection,
     parse_route_milepost,
     route_where,
     street_rank,
     street_text,
     street_where,
 )
-from app.services.map_rules import in_florida, normalize_route, point_at_milepost
+from app.services.map_rules import haversine_miles, in_florida, normalize_route, point_at_milepost
+from app.services.map_streets import StreetFinder
 
 LIMIT = 8
+# Resultados de fuentes distintas a menos de esto (unos 30 m) son el mismo lugar.
+SAME_PLACE_MILES = 0.02
 Loader = Callable[[], Awaitable[list[SearchResult]]]
 
 
 class MapSearchService:
-    def __init__(self, settings: Settings, client: GisClient, cache: TtlCache) -> None:
+    def __init__(
+        self, settings: Settings, client: GisClient, cache: TtlCache, places: MapPlacesService
+    ) -> None:
         self._settings, self._client, self._cache = settings, client, cache
+        self._places = places
+        self._streets_finder = StreetFinder(settings, client, cache)
 
-    async def search(self, text: str, *, refresh: bool) -> MapSearch:
+    async def search(
+        self, text: str, *, county: str | None = None, city: str | None = None, refresh: bool
+    ) -> MapSearch:
         query = " ".join(text.split())
+        scope = await self._places.scope(county, city)
+        where = f"{scope.county}/{scope.city or ''}" if scope else ""
         return await self._cache.get_or_load(
-            f"map:search:{query.upper()}", lambda: self._load(query), refresh=refresh
+            f"map:search:{where}:{query.upper()}", lambda: self._load(query, scope), refresh=refresh
         )
 
-    async def _load(self, query: str) -> MapSearch:
+    async def _load(self, query: str, scope: Scope | None) -> MapSearch:
         if coordinates := parse_coordinates(query):
             return MapSearch(query=query, results=_coordinate_result(*coordinates), sources=[])
-        loaders: dict[str, Loader] = {}
-        if route := parse_route_milepost(query):
-            loaders["fdot_milepost"] = lambda: self._mileposts(route)
-        else:
-            if looks_like_address(query):
-                loaders["census_geocoder"] = lambda: self._addresses(query)
-            if cleaned := street_text(query):
-                loaders["fdot_streets"] = lambda: self._streets(cleaned)
         outcomes = await asyncio.gather(
-            *(run_source(source, load, []) for source, load in loaders.items())
+            *(run_source(source, load, []) for source, load in self._loaders(query, scope).items())
         )
-        results = [result for found, _ in outcomes for result in found]
+        results = _distinct([result for found, _ in outcomes for result in found])
         return MapSearch(
             query=query, results=results[:LIMIT], sources=[status for _, status in outcomes]
         )
 
-    async def _addresses(self, query: str) -> list[SearchResult]:
-        matches, _ = await self._client.geocode(address_text(query))
+    def _loaders(self, query: str, scope: Scope | None) -> dict[str, Loader]:
+        finder, county = self._streets_finder, scope.county if scope else None
+        if route := parse_route_milepost(query):
+            return {"fdot_milepost": lambda: self._mileposts(route, county)}
+        if crossing := parse_intersection(query):
+            first, second = crossing
+            loaders: dict[str, Loader] = {
+                "fdot_crossings": lambda: finder.fdot_crossings(first, second, county),
+                "census_geocoder": lambda: finder.census_crossing(first, second, scope),
+            }
+            if scope:
+                loaders["tiger_crossings"] = lambda: finder.tiger_crossing(first, second, scope)
+            return loaders
+        loaders = {}
+        if looks_like_address(query):
+            loaders["census_geocoder"] = lambda: self._addresses(query, scope)
+        if cleaned := street_text(query):
+            loaders["fdot_streets"] = lambda: self._streets(cleaned, county)
+            if scope:
+                loaders["tiger_streets"] = lambda: finder.tiger_streets(query, scope)
+        return loaders
+
+    async def _addresses(self, query: str, scope: Scope | None) -> list[SearchResult]:
+        matches, _ = await self._client.geocode(address_text(query, scope.city if scope else None))
         results = []
         for match in matches[:5]:
             coordinates = match.get("coordinates") or {}
@@ -76,10 +109,12 @@ class MapSearchService:
             )
         return results
 
-    async def _streets(self, cleaned: str) -> list[SearchResult]:
+    async def _streets(self, cleaned: str, county: str | None) -> list[SearchResult]:
         fields = ("ROADWAY", "NAME", "COUNTY", "BEGIN_POST", "END_POST")
         path = road_layer(self._settings, LOCAL_NAMES)
         where = street_where(cleaned) or ""
+        if county:
+            where = f"{where} AND {name_where('COUNTY', county)}"
         features, _ = await self._client.query_where(path, where, fields, limit=LIMIT * 3)
         features.sort(key=lambda feature: street_rank(feature_text(feature, "NAME"), cleaned))
         results = []
@@ -88,12 +123,12 @@ class MapSearchService:
             if middle is None:
                 continue
             roadway = feature_text(feature, "ROADWAY")
-            county = feature_text(feature, "COUNTY")
+            county_name = feature_text(feature, "COUNTY")
             results.append(
                 SearchResult(
                     kind="street",
                     label=feature_text(feature, "NAME") or roadway,
-                    detail=_join(county, f"vía {roadway}", _range(feature)),
+                    detail=join_parts(county_name, f"vía {roadway}", _range(feature)),
                     lat=middle[0],
                     lon=middle[1],
                     roadway_id=roadway,
@@ -101,8 +136,10 @@ class MapSearchService:
             )
         return results
 
-    async def _mileposts(self, route: RouteQuery) -> list[SearchResult]:
+    async def _mileposts(self, route: RouteQuery, county: str | None) -> list[SearchResult]:
         names = await self._roadways(route)
+        if county:
+            names = {key: value for key, value in names.items() if value[1] == county}
         ids = [roadway for roadway in sorted(names) if roadway.isdigit()][:LIMIT]
         if not ids:
             return []
@@ -117,12 +154,12 @@ class MapSearchService:
             point = point_at_milepost(geometry, route.milepost) if geometry else None
             if point is None:
                 continue
-            name, county = names.get(roadway, (None, None))
+            name, county_name = names.get(roadway, (None, None))
             results.append(
                 SearchResult(
                     kind="milepost",
                     label=f"{name or roadway} · MP {route.milepost:.3f}",
-                    detail=_join(county, f"vía {roadway}"),
+                    detail=join_parts(county_name, f"vía {roadway}"),
                     lat=point[0],
                     lon=point[1],
                     roadway_id=roadway,
@@ -153,6 +190,19 @@ class MapSearchService:
         return found
 
 
+def _distinct(results: list[SearchResult]) -> list[SearchResult]:
+    """Junta el mismo lugar visto por varias fuentes; gana el primero (FDOT trae milepost)."""
+    kept: list[SearchResult] = []
+    for result in results:
+        if not any(
+            other.kind == result.kind
+            and haversine_miles(other.lat, other.lon, result.lat, result.lon) < SAME_PLACE_MILES
+            for other in kept
+        ):
+            kept.append(result)
+    return kept
+
+
 def _coordinate_result(lat: float, lon: float) -> list[SearchResult]:
     if not in_florida(lat, lon):
         return []
@@ -172,7 +222,3 @@ def _range(feature: dict[str, Any]) -> str | None:
     attrs = feature.get("attributes", {})
     begin, end = to_number(attrs.get("BEGIN_POST")), to_number(attrs.get("END_POST"))
     return None if begin is None or end is None else f"MP {begin:.3f} a {end:.3f}"
-
-
-def _join(*parts: str | None) -> str:
-    return " · ".join(part for part in parts if part)

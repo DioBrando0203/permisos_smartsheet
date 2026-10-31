@@ -15,3 +15,12 @@ export function saveChoice(key: string, value: string) {
     // Sin almacenamiento (modo privado): sólo se pierde la preferencia.
   }
 }
+
+/** Texto libre guardado (condado o ciudad elegidos); vacío o sin almacenamiento da null. */
+export function readText(key: string): string | null {
+  try {
+    return localStorage.getItem(key) || null
+  } catch {
+    return null
+  }
+}
