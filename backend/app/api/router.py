@@ -13,6 +13,7 @@ from app.api.routes.references import router as references_router
 from app.api.routes.reports import router as reports_router
 from app.api.routes.review import router as review_router
 from app.api.routes.sheets import router as sheets_router
+from app.api.routes.idsmart import router as idsmart_router
 
 api_router = APIRouter()
 api_router.include_router(health_router, tags=["estado"])
@@ -31,3 +32,4 @@ api_router.include_router(export_router, tags=["exportar"])
 api_router.include_router(automations_router, tags=["automatizaciones de Smartsheet"])
 api_router.include_router(references_router, tags=["calidad de datos"])
 api_router.include_router(designers_router, tags=["carga de diseñadores"])
+api_router.include_router(idsmart_router, prefix="/ids", tags=["Galp - ID Manager"])
