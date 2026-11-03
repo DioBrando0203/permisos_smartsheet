@@ -59,6 +59,18 @@ class SmartsheetClient:
         data = await self._transport.request("GET", f"/sheets/{sheet_id}", params=params)
         return mappers.to_sheet(data)
 
+    async def sheet_workspace_id(self, sheet_id: str) -> str | None:
+        """Lee el workspace actual de la hoja, sin usar caché."""
+        data = await self._transport.request(
+            "GET", f"/sheets/{sheet_id}", params={"pageSize": 1, "page": 1}
+        )
+        return mappers.sheet_workspace_id(data)
+
+    async def sheet_version(self, sheet_id: str) -> int:
+        """Versión actual de una hoja, consultada sin caché."""
+        data = await self._transport.request("GET", f"/sheets/{sheet_id}/version")
+        return int(data["version"])
+
     async def list_sheet_shares(self, sheet_id: str) -> list[RawShare]:
         params = _asset(sheet_id) | {"sharingInclude": _SHARING_INCLUDE}
         return [

@@ -1,0 +1,55 @@
+# Servicios futuros sobre Smartsheet: persistencia mínima
+
+Estado: base y tablas iniciales creadas en Linux según salida compartida por el usuario; motor local de reservas probado, sin integración de escritura. Complementa PEN-24; no autoriza escrituras ni despliegue.
+
+## Alcance
+
+- SBD-01: El equipo sigue trabajando en Smartsheet y Dynamic View. Un servicio futuro en Windows podría consultar periódicamente las hojas autorizadas, asignar IDs permanentes y validar referencias. Bridge no forma parte de esta propuesta.
+- SBD-02: Smartsheet conserva los datos de negocio y los IDs visibles. La base propuesta guarda sólo el estado técnico indispensable para asignarlos sin reutilizar consecutivos; no replica proyectos, tareas, personas, permisos ni catálogos.
+- SBD-03: La mejora futura incorpora PostgreSQL con estado operativo mínimo para un servicio separado (ADR-B18); el panel actual sigue sin base de datos. Antes de escribir, resolver el requisito de OAuth indicado en PEN-24. Sigue vigente `APP_READ_ONLY=true`.
+- SBD-04: La sincronización del catálogo y la validación de Linked Tracking leerían sus datos desde Smartsheet. No necesitan tablas propias en esta propuesta. Sus reglas, hojas y columnas concretas aún deben definirse.
+
+## Modelo propuesto
+
+- SBD-05: `secuencia_id`: una fila por ámbito de numeración. Campos: `ambito` (clave primaria estable, por ejemplo tipo de entidad y clave inmutable del proyecto codificados sin ambigüedad), `ultimo_numero` (entero no negativo). El ámbito exacto y el formato del ID se acuerdan para cada tipo antes de implementarlo.
+- SBD-06: `asignacion_id`: una fila por entidad a la que el servicio reservó un ID. Campos: `hoja_id` y `fila_id` (clave primaria compuesta, identificadores de Smartsheet); `ambito` (clave foránea a `secuencia_id`); `numero` (entero positivo); `id_generado` (texto completo inmutable); `estado` (`reservado` o `confirmado`). Restricciones: unicidad de `(ambito, numero)` y de `id_generado` dentro del alcance que se acuerde para los IDs.
+- SBD-07: La asignación guarda el ID completo porque su formato o el nombre visible del proyecto podrían cambiar después de reservarlo. No se almacenan columnas descriptivas del proyecto ni datos personales. La secuencia es estado operativo, no una segunda copia del catálogo.
+
+## Operación y recuperación
+
+- SBD-08: Una transacción con bloqueo o actualización atómica incrementa la secuencia e inserta la reserva; las restricciones de unicidad impiden asignar el mismo número dos veces entre procesos. Una reserva confirmada nunca se elimina ni se reutiliza, incluso si se borra la fila en Smartsheet. Los huecos son aceptables.
+- SBD-09: La transacción local y la escritura en Smartsheet no son atómicas entre sí. Tras reservar, el servicio lee la fila: si el ID está vacío, intenta escribir el reservado; si ya coincide, confirma; si difiere, detiene esa asignación y reporta el conflicto. Ante respuesta incierta o reinicio vuelve a leer antes de reintentar. Nunca genera otra reserva para la misma fila.
+- SBD-10: La lectura previa no evita por sí sola una edición simultánea entre la lectura y la escritura. Antes de habilitar el servicio debe verificarse si la API ofrece una condición de escritura adecuada; si no, acordar un único escritor de la columna y un procedimiento para detectar y resolver conflictos. No se garantiza ausencia de sobrescrituras concurrentes sin esa condición.
+- SBD-11: Antes de iniciar, inventariar los IDs existentes, comprobar duplicados y cargar los máximos por ámbito y las asignaciones necesarias sin bajar una secuencia. Detenerse ante ambigüedades. Respaldar y restaurar la base junto con un procedimiento de reconciliación con Smartsheet; una copia antigua por sí sola no garantiza evitar reutilizaciones.
+- SBD-12: La solicitud del usuario añade auditoría mínima de inicializaciones y reservas y un indicador de inicialización (migración 002). No incluir datos personales ni secretos; frecuencia, retención y alertas quedan por definir.
+
+## Límites y decisiones pendientes
+
+- SBD-13: Confirmar las cuatro hojas del piloto, sus columnas, formatos, ámbitos de consecutivos, relaciones entre entidades y tratamiento de filas movidas o copiadas. No asumir que los IDs actuales son únicos o que los códigos de proyecto son inmutables.
+- SBD-14: Verificar con documentación y una prueba acordada las capacidades reales de Linked Dropdowns y Dynamic View, sus licencias y el diseño de selectores por cliente. La afirmación del texto original sobre filtros y columnas auxiliares es una hipótesis, no una capacidad comprobada aquí. Mantener referencias históricas aunque el proyecto deje de estar activo; no sustituirlas automáticamente.
+- SBD-15: El usuario eligió PostgreSQL; creó `galp_servicios` y sus dos tablas en Linux para comenzar. El esquema y la guía para Windows están en `servicios/ids/`; faltan usuario de aplicación, respaldo, reconciliación con Smartsheet e instalación futura en Windows.
+- SBD-16: Definir cómo se detectan y presentan las validaciones y conflictos; una consulta periódica detecta problemas después de guardar y no impide por sí sola asociaciones erróneas. Webhooks, historial persistente, facturación e integraciones adicionales quedan fuera de esta propuesta mínima.
+- SBD-17: Pruebas automáticas con respuestas simuladas. Cualquier escritura real requiere que el usuario la solicite y acuerde una hoja de prueba; no se cambia el modo de sólo lectura por esta documentación.
+
+## Servicios y mejoras previstas
+
+- SBD-18 IDs permanentes: detectar filas elegibles sin ID, reservar y escribir un ID estable para proyectos, tareas, solicitudes de Records y revisiones. Para cada tipo se definirán hoja, columna, formato, ámbito y condiciones de creación. No cambiar un ID existente automáticamente; informar conflictos.
+- SBD-19 Catálogos centrales: identificar o preparar en Smartsheet las hojas de proyectos, clientes y agencias necesarias; mantener y consultar sus valores y estado activo según reglas acordadas. No duplicar el catálogo en la base. Toda sincronización que escriba requiere definir origen, destino y tratamiento de cambios y bajas.
+- SBD-20 Selectores por cliente: investigar y probar la configuración de Linked Dropdowns y Dynamic View; si es viable, mostrar proyectos pertinentes al cliente y consolidar la selección en Linked Tracking. Si no lo es, documentar una alternativa viable antes de implementarla. Preservar referencias históricas y evitar cambios automáticos destructivos.
+- SBD-21 Validación: detectar referencias inexistentes, asociaciones entre clientes y proyectos incorrectas, IDs duplicados y datos obligatorios faltantes. Reutilizar las capacidades existentes de SPEC-B09 y SPEC-B11 cuando correspondan. Definir dónde se muestran los avisos y cómo los corrige una persona; no prometer bloqueo previo al guardado mediante consultas periódicas.
+- SBD-22 Supervisión: registrar resultados y errores sin secretos ni datos personales, informar conflictos y permitir reintentos seguros tras comprobación del estado remoto. Definir alertas, responsables y retención; no crear tablas adicionales por anticipado. La salud de automatizaciones nativas existente se conserva (PEN-25).
+- SBD-23 Integraciones posteriores: estudiar conexiones entre permisos, tareas, contratos, pagos y facturación sólo cuando exista un caso definido, sin duplicar datos ni sustituir herramientas. Webhooks y registro persistente de eventos también son una etapa posterior y podrían justificar nuevas tablas tras un diseño específico.
+- SBD-24 Piloto confirmado por el usuario: workspace `Pruebas`, carpeta `Normalizacion de Datos - Piloto/01 Datos`; primero Proyectos, Tareas, Solicitudes de Records y Revisiones de Permiso (Piloto), después Agencias (Piloto). Reportes y dashboards se revisan después. Fuera del workspace `Pruebas` sólo lectura; cualquier escritura dentro sigue sujeta a autorización expresa y al modo solo lectura.
+- SBD-25: Validación configurable cliente-proyecto implementada para lectura en SPEC-B15; la relación principal del piloto fue confirmada. La semántica de la validación de referencias relacionadas aún necesita diseño. No implementa selectores ni sincronización.
+- SBD-26: Relación principal confirmada: `Tareas.Tracking Project` y `Tareas.Reference` apuntan a `Proyectos.Tracking Project`. `Linked Tracking` es otro proyecto relacionado, posiblemente histórico, y en Tareas es una fórmula. Valores históricos ausentes del piloto no se eliminan ni corrigen automáticamente.
+- SBD-27: Motor local de reservas y plan puro de comparación de catálogos implementados y probados sin escrituras. La sincronización real y la clasificación definitiva de referencias históricas aún no están implementadas; falta definir el catálogo destino y sus reglas.
+
+## Fases y condiciones de entrega
+
+- SBD-F01 Descubrimiento: inventariar las cuatro hojas del piloto, columnas, fórmulas, IDs históricos, relaciones y automatizaciones existentes; confirmar los flujos y licencias. Definir qué es fuente y destino en cada sincronización. Entrega: inventario y reglas verificadas, sin escrituras.
+- SBD-F02 Diseño: formalizar autenticación, especificaciones y criterios de aceptación; definir respaldo, ámbito y formato de IDs, permisos, manejo de conflictos y despliegue Windows. PostgreSQL elegido y ADR-B18 registrado; evaluar la factibilidad de selectores y acordar cómo señalar errores.
+- SBD-F03 Lecturas y simulación: conectar únicamente hojas autorizadas, detectar candidatos y validar con datos simulados; mostrar o registrar el resultado sin modificar Smartsheet. Probar duplicados, históricos, interrupciones y límites de API.
+- SBD-F04 IDs en piloto: crear las dos tablas, inicializarlas con el inventario y probar reservas, concurrencia y recuperación. Sólo después de autorización expresa para escribir y acuerdo de hoja de prueba, comprobar escrituras reales y su reversión; activar gradualmente.
+- SBD-F05 Catálogos y selectores: implementar únicamente el diseño comprobado, validar asociaciones y conservar valores históricos. Probar con datos simulados y, si hay escrituras reales, bajo las mismas condiciones del piloto.
+- SBD-F06 Operación: instalar en Windows como proceso o servicio supervisado, configurar acceso saliente, programación, logs, alertas, respaldo y recuperación; definir responsable y procedimiento de parada. La puesta en producción requiere decisión posterior del usuario.
+- SBD-F07 Evolución: evaluar webhooks, métricas de tiempo por estado e integraciones adicionales según necesidad. HTTPS público sólo sería necesario si se adoptan webhooks; la consulta periódica funciona con conexión saliente. No se presupone su implementación.

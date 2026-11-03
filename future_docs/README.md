@@ -10,6 +10,7 @@ El mapa (milepost, jurisdicción de calles y parcelas) ya pasó al proyecto como
 - `GIS_PUBLICO_FLORIDA.md`: servicios GIS públicos del FDOT y de FDACS para obtener vía, milepost, calle, condado, ciudad, ZIP y parcela de un punto o tramo, sin OSP. Verificado contra la captura de OSP.
 - `MAPAS_JURISDICCION_PARCELAS.md`: mapas base gratuitos, de quién es cada calle (estatal, condado, ciudad, privada) y parcelas, con la base estatal recomendada para empezar y el detalle por condado (Broward, Palm Beach, Martin, Miami-Dade).
 - `JUSTFOIA_REGISTROS_PUBLICOS.md`: portal JustFOIA del FDOT para solicitudes de registros públicos; endpoints y por qué no se automatiza el envío.
+- `SERVICIOS_SMARTSHEET_BD.md`: plan de servicios futuros, fases y persistencia mínima de IDs (PEN-24); sin implementación.
 - `osp-milepost-paso3.png`: captura del paso 3 "Project Location" de OSP, que marca hasta dónde llega el alcance.
 
 ## Reglas comunes (WS-xx)
@@ -24,6 +25,9 @@ El mapa (milepost, jurisdicción de calles y parcelas) ya pasó al proyecto como
 - WS-08: El repositorio es público en GitHub: todo lo que se guarde en esta carpeta queda publicado al hacer push.
 
 ## Registro
+
+- 2026-11-03 10:10 (America/Lima): ampliado el plan de servicios futuros con funcionalidades, fases, condiciones de entrega y base de datos operativa mínima. Estado: documentado, sin implementación ni acceso a Smartsheet. Evidencia: `SERVICIOS_SMARTSHEET_BD.md` y PEN-24.
+- 2026-11-03 10:10 (America/Lima): documentada la propuesta mínima de dos tablas para reservas de IDs de servicios futuros, sus límites y decisiones pendientes. Estado: propuesta, sin código ni acceso a Smartsheet. Evidencia: `SERVICIOS_SMARTSHEET_BD.md`.
 
 - 2026-10-30 10:55 (America/Lima): creada la carpeta. Análisis de JustFOIA y OSP con peticiones GET anónimas y lectura del JavaScript público de cada sitio; sin inicio de sesión y sin envíos. Estado: investigación, sin código. Evidencia: respuestas descritas en cada documento y captura `osp-milepost-paso3.png` aportada por el usuario.
 - 2026-10-30 11:49 (America/Lima): servicios GIS públicos del FDOT y de FDACS consultados sin sesión. El cálculo de milepost reproduce los valores de la captura de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839). Estado: investigación verificada, sin código en el repositorio. Evidencia: `GIS_PUBLICO_FLORIDA.md` (GIS-C02).

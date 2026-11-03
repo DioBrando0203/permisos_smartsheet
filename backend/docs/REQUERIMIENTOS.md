@@ -195,8 +195,10 @@ Hacer: `_get_all` con `page` y `pageSize` en vez de `includeAll` (B-09, B-06); p
 
 ### PEN-24 Servicios propios sobre Smartsheet (propuesta, requiere decisión)
 
-Prioridad: media. Alcance: proyecto. Estado: propuesta (2026-10-16); exige ADR y OAuth (PEN-08) antes de escribir.
+Prioridad: media. Alcance: proyecto. Estado: en curso (2026-11-03): base PostgreSQL y migración 002 aplicadas; respaldo previo restaurado en instancia temporal. Usuario limitado creado y 19 IDs importados, con importación idempotente y simulación real sin escrituras. Historial incompleto, reservas deshabilitadas por defecto. Conector, despliegue, sincronización, selectores y supervisión pendientes. Sin escrituras; exige OAuth (PEN-08) antes de escribir.
 Contexto: el usuario evalúa Jira y Salesforce por sus conectores de pago. Smartsheet sigue como fuente de verdad; nuestro servicio sólo agrega lo que no da bien.
+Plan futuro: IDs permanentes, catálogos, selectores por cliente, validación y supervisión en un servicio Windows; PostgreSQL con estado mínimo de asignación de IDs, sin replicar datos de negocio (ADR-B18). Fases y límites: `future_docs/SERVICIOS_SMARTSHEET_BD.md`; esquema e instalación: `servicios/ids/`. El panel actual conserva ADR-B02 y el modo solo lectura.
+Prioridad actual: ID Manager, luego catálogo basado en Proyectos (Piloto) y validaciones; reutilizar capacidades nativas de Smartsheet cuando cumplan el requisito. DRY_RUN y coordinador de escritura condicional y recuperación probados con simulación. Falta adaptador real con garantías, aplicar migración 003 y política de transición histórica (SPEC-ID01).
 Opciones, de menor a mayor esfuerzo:
 - Validación de datos: hecha (SPEC-B09 y SPEC-B11, 2026-10-16): repetidos, vacíos, formato y referencias contra una hoja catálogo. No hay hoja maestra de Record IDs; el catálogo verificado es "Source Designers".
 - Bandeja personal por persona (sus filas asignadas en todas las hojas), con login OAuth para que cada cambio quede a su nombre. Cubre parte de Dynamic View y de la vista "mis tareas" de Jira.

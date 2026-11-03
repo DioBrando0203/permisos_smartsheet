@@ -199,3 +199,71 @@ Estado: terminada
 Cambios: PEN-38 llegó implementada y en curso en el commit `d2c9999` (grafo LRS local, búsqueda del recorrido, respaldo estricto y avisos); se verificó con datos reales y se cerró. PEN-39: `map_query.crossing_filters` reintenta sin el tipo de vía final y `StreetFinder._fdot_crossings` lo aplica a la calle que cruza y a la vía, sin repetir vías probadas. SPEC-B14 (capa 6 y punto 9, CA-29), REQUERIMIENTOS, plan de calidad y RESULTADOS actualizados.
 Evidencia: 220 pruebas, Ruff y formato limpios. Lecturas reales del GIS del FDOT detalladas en `calidad/RESULTADOS.md`: control exacto, desplazamientos lateral de 45–50 m corregidos, diagonal reconstruida en dos filas y "Federal Hwy & Sunrise" encontrado.
 Límite: sigue sin compararse con OSP usando los mismos vértices (OSP-PEN-01); las conexiones entre vías son geométricas, no confirman giros ni pasos a desnivel. Sin lecturas ni escrituras de Smartsheet.
+## 2026-11-03 10:11 -05:00 Plan de servicios futuros (PEN-24)
+
+Estado: documentado, sin implementar.
+Cambio: ampliado PEN-24 con el plan de IDs, catálogos, selectores, validación y supervisión, y una base mínima de estado operativo para el servicio futuro. Detalle y fases en `future_docs/SERVICIOS_SMARTSHEET_BD.md`.
+Evidencia: revisión de documentación y del texto proporcionado por el usuario; sin pruebas ni acceso a Smartsheet. El panel sigue sin base de datos y en modo solo lectura.
+
+## 2026-11-03 10:13 -05:00 Esquema PostgreSQL para IDs (PEN-24)
+
+Estado: esquema preparado; instalación en Windows y servicio pendientes.
+Cambios: ADR-B18, dos tablas y guía de instalación en `servicios/ids/`; panel y modo solo lectura sin cambios.
+Evidencia: PostgreSQL 18 temporal ejecutó el esquema y aceptó una reserva sintética; rechazó número duplicado y ámbito inexistente. Sin acceso a Smartsheet.
+
+## 2026-11-03 10:20 -05:00 Base PostgreSQL creada en Linux (PEN-24)
+
+Estado: base y esquema creados; servicio y usuario de aplicación pendientes.
+Evidencia: el usuario ejecutó el esquema y compartió `COMMIT` y la salida de `\dt` de `galp_servicios` con `secuencia_id` y `asignacion_id`, ambas propiedad de `postgres`. No se verificó conexión propia ni se accedió a Smartsheet.
+
+## 2026-11-03 10:23 -05:00 Validación de asociaciones (PEN-24)
+
+Estado: implementada en solo lectura; configuración del piloto pendiente.
+Cambios: SPEC-B15, endpoint y reglas de asociaciones con catálogo configurable, y regla de escritura exclusiva para workspace `Pruebas` (PY-21, SM-02, ADR-B11). Catálogos, IDs y selectores no implementados.
+Evidencia: 222 pruebas aprobadas, Ruff y formato correctos. Consultas GET reales identificaron las cuatro hojas y sus columnas; comparación tentativa de Tareas contra Proyectos con 2 referencias desconocidas, sin confirmar aún que las columnas elegidas representen la relación correcta. Ninguna escritura.
+
+## 2026-11-03 10:39 -05:00 Motor de reservas de IDs (PEN-24)
+
+Estado: motor independiente y plan puro de catálogo implementados; integración real incompleta.
+Cambios: reglas de formato, inicialización atómica, transacciones, auditoría e idempotencia; migración 002 preparada sin aplicar; relación principal y workspace confirmados por el usuario. SPEC-ID01 y SPEC-B15 actualizadas.
+Evidencia: 226 pruebas, Ruff y formato aprobados; pruebas concurrentes en PostgreSQL temporal. Lecturas GET del piloto: 19 IDs visibles canónicos, 6 relaciones principales revisadas sin problemas. No se conocen máximos de filas eliminadas; sin inicializar base real ni escribir en Smartsheet.
+
+## 2026-11-03 10:45 -05:00 Preparación de integración de IDs (PEN-24)
+
+Estado: parcial; migración e importación reales, conector y ejecución DRY_RUN pendientes.
+Cambios: validación de inventario, carga opcional de máximos históricos conocidos, reglas puras de simulación y recuperación, script de respaldo y migración 002. Escritura remota bloqueada hasta resolver concurrencia y verificación de workspace.
+Evidencia: 229 pruebas aprobadas, Ruff, formato y sintaxis shell correctos. GET reales: 19 IDs validados en memoria, 38 consultas de historial a celdas de las cuatro hojas sin fallos; 55 hojas candidatas fuera del piloto inspeccionadas en lectura, con 21 120 valores canónicos y 785 otros. No se garantizan máximos históricos ni se importaron datos o escribieron hojas. `sudo` interactivo necesario para migrar la base existente.
+
+## 2026-11-03 10:46 -05:00 Corrección del script de migración (PEN-24)
+
+Estado: corregido; ejecución de migración pendiente.
+Evidencia: usuario reportó respaldo creado y error de permiso al leer SQL como `postgres`; el script ahora redirige el SQL leído por el usuario a `psql`. `bash -n` y `git diff --check` aprobados. No se afirma ejecución de la migración.
+
+## 2026-11-03 10:47 -05:00 Migración PostgreSQL aplicada (PEN-24)
+
+Estado: terminada según salida aportada por el usuario; inicialización pendiente.
+Evidencia: script informó respaldo creado e índice legible, `BEGIN`, dos `CREATE TABLE`, `COMMIT` y listado de las cuatro tablas de `galp_servicios`. No se probó restauración completa ni conexión propia, y no se importaron IDs ni se escribieron hojas.
+
+## 2026-11-03 11:00 -05:00 Importación y simulación de IDs (PEN-24)
+
+Estado: implementación probada; usuario de aplicación e importación real pendientes de acceso sudo.
+Cambios: importación repetible que valida relaciones, workspace y versiones; CLI DRY_RUN con proyección en memoria; reservas deshabilitadas por defecto; script para rol PostgreSQL de permisos limitados. No se habilitaron escrituras en Smartsheet.
+Evidencia: 233 pruebas aprobadas, Ruff y formato; GET reales confirmaron workspace, 19 IDs y sus relaciones. Respaldo previo a 002 restaurado en instancia PostgreSQL temporal: dos tablas originales presentes. Sin prueba de restauración de un respaldo posterior a 002. `sudo -n` requiere autenticación; no se creó rol ni se inicializó la base real.
+
+## 2026-11-03 11:02 -05:00 Importación del piloto a PostgreSQL (PEN-24)
+
+Estado: importación terminada; generación automática y escrituras remotas deshabilitadas.
+Evidencia: usuario creó rol `galp_ids`; conexión confirmó ausencia de superusuario, creación de roles, bases y replicación, y ausencia de DELETE sobre asignaciones. Dos ejecuciones de importación: 19 asignaciones confirmadas, 12 secuencias, 19 eventos de inicialización, sin IDs duplicados. DRY_RUN: 19 ya estables, sin cambios. Reserva histórica incompleta; no hay garantía sobre números eliminados antes del inventario. Sin escrituras en Smartsheet.
+Configuración: se detectó `APP_READ_ONLY=false` en configuración local y se cambió a `true` conforme a la instrucción del usuario; no había servidor en 8710 ni archivo de puerto activo.
+
+## 2026-11-03 11:15 -05:00 Simulación de tareas nuevas (PEN-24)
+
+Estado: implementada en solo lectura; integración de escritura pendiente.
+Cambios: DRY_RUN proyecta ID cuando la fórmula de tarea está pendiente, reutiliza reservas por fila y exige padre confirmado en Smartsheet y PostgreSQL; discrepancias en referencias o fórmula se reportan. Prioridad incremental y política histórica propuesta en SPEC-ID01 y README.
+Evidencia: 11 pruebas específicas y 234 de backend aprobadas, Ruff y formato correctos; DRY_RUN real leyó 19 IDs ya estables. Sin reservas nuevas ni escrituras en Smartsheet.
+
+## 2026-11-03 11:55 -05:00 Coordinación de IDs y recuperación (PEN-24)
+
+Estado: coordinador probado con adaptador simulado; escritura real bloqueada.
+Cambios: confirmación idempotente auditada, migración 003 preparada y coordinador con verificación de workspace, lista de hojas, fórmula y reserva; relee tras respuesta incierta. Falta adaptador remoto con escritura condicional atómica comprobada y aplicar 003.
+Evidencia: 15 pruebas específicas aprobadas con PostgreSQL temporal, incluyendo concurrencia, fallos de red y recuperación; Ruff y formato correctos. Ninguna escritura en Smartsheet ni migración de la base real.

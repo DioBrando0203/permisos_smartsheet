@@ -199,3 +199,10 @@ def _date(value: Any) -> datetime | None:
         return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
     except ValueError:
         return None
+
+
+def sheet_workspace_id(data: dict[str, Any]) -> str | None:
+    """Workspace de una hoja o None si la respuesta no permite comprobarlo."""
+    workspace = data.get("workspace") or {}
+    workspace_id = workspace.get("id")
+    return str(workspace_id) if workspace_id else None

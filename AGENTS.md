@@ -20,9 +20,12 @@ Antes de modificar, leer este archivo y la guía del lado afectado (metodología
 - Las pruebas automáticas no llaman a Smartsheet: usan respuestas simuladas. Las escrituras reales sólo se verifican a mano en una hoja de prueba acordada con el usuario.
 - Puertos propios: backend 8710, frontend 5710 (no usar 8000 ni 5173, los usan otros proyectos del usuario). Arranque sólo desde `backend`: activar `.venv` y `python run.py`; si el 8710 está ocupado elige uno libre al azar y lo informa (ADR-B14).
 - Modo solo lectura (`APP_READ_ONLY=true`) activo por decisión del usuario: no desactivarlo ni escribir en Smartsheet sin que lo pida (ADR-B11).
+- Alcance de cambios en Smartsheet: sólo recursos dentro del workspace `Pruebas` (ID `7965022790936452`); los demás workspaces son exclusivamente de lectura. Toda escritura sigue sujeta al modo solo lectura y a una autorización expresa y hoja de prueba acordada; el futuro servicio debe verificar el workspace y la hoja antes de escribir.
 - Acceso por defecto sólo desde este equipo (loopback); el acceso desde la red es opcional y explícito por variables de entorno.
 
 ## Arquitectura y reglas
+
+Prioridad actual: avanzar incrementalmente en ID Manager (primero simulación y después integración segura), luego catálogos y validaciones; reutilizar lo implementado y no modificar funcionalidades existentes sin necesidad. Smartsheet sigue siendo la interfaz y fuente de datos operativos; PostgreSQL conserva IDs y estado técnico. Reportes, dashboards, bitácora operativa y facturación no son el foco actual.
 
 `backend/`: FastAPI, rutas delgadas, cliente de Smartsheet aislado en `services/smartsheet/`, reglas de permisos puras en `services/permissions/`.
 `frontend/`: React/TS/Vite, Fluent 2 (tokens e iconos MIT), features autónomas y UI reutilizable fuera del dominio.

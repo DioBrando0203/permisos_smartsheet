@@ -40,6 +40,7 @@ Estado: implementado (2026-10-12). Se actualiza en el mismo cambio que `app/mode
 - `GET /api/sheets/{sheet_id}/automations?refresh=`: `SheetAutomations`.
 - `GET /api/sheets/{sheet_id}/references?column=&catalog_sheet=&catalog_column=&refresh=`: `SheetReferences` (SPEC-B11).
 - `GET /api/references?column=&catalog_sheet=&catalog_column=&q=&refresh=`: `AccountReferences`.
+- `GET /api/sheets/{sheet_id}/project-associations?customer_column=&project_column=&catalog_sheet=&catalog_customer_column=&catalog_project_column=&refresh=`: revisión de cliente y proyecto por fila frente al catálogo; `AssociationReport` con conteo total, hasta 200 problemas y `truncated`. Motivos: `missing_customer`, `unknown_project`, `ambiguous_project`, `wrong_customer` (SPEC-B15). Sólo lectura; no bloquea la edición ni comprueba si el proyecto está activo.
 - `GET /api/designers?q=&designer_columns=&status_column=&closed_status=&refresh=`: `DesignerWorkload` (SPEC-B12); valores por defecto desde `APP_DESIGNER_COLUMNS`, `APP_STATUS_COLUMN`, `APP_CLOSED_STATUSES`.
 - `GET /api/map/point?lat=&lon=&radius_m=25&refresh=`: `MapPoint` (SPEC-B14); sólo Florida, radio de 1 a 200 m. `parcel.source` dice si la parcela vino de FDACS o del respaldo del condado (`broward_parcels`, sólo folio).
 - `GET /api/map/segment?start_lat=&start_lon=&end_lat=&end_lon=&radius_m=25&refresh=`: `MapSegment` (SPEC-B14); `osp_row.state_road_id` es la ruta ("SR 953"). El panel usa el trazo.

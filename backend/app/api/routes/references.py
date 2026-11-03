@@ -3,9 +3,36 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from app.api.deps import ServicesDep, SheetId
+from app.models.associations import AssociationReport
 from app.models.quality import AccountReferences, SheetReferences
+from app.services.associations import AssociationRequest, AssociationService
 
 router = APIRouter()
+
+
+@router.get("/sheets/{sheet_id}/project-associations")
+async def project_associations(
+    services: ServicesDep,
+    sheet_id: SheetId,
+    customer_column: str,
+    project_column: str,
+    catalog_sheet: Annotated[str, Query(pattern=r"^[A-Za-z0-9]{1,64}$")],
+    catalog_customer_column: str,
+    catalog_project_column: str,
+    refresh: bool = False,
+) -> AssociationReport:
+    """Revisa que cada proyecto seleccionado corresponda al cliente de la fila."""
+    request = AssociationRequest(
+        customer_column,
+        project_column,
+        catalog_sheet,
+        catalog_customer_column,
+        catalog_project_column,
+    )
+    return await AssociationService(services.sheets, services.quality).check(
+        sheet_id, request, refresh=refresh
+    )
+
 
 # Catálogo real de la cuenta usado como ejemplo en Swagger: "Source Designers".
 _CATALOG_EXAMPLE = {"designers": {"summary": "Source Designers", "value": "4315680049418116"}}

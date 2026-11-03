@@ -16,6 +16,13 @@ Contexto: los permisos cambian también desde Smartsheet; una copia propia queda
 Decisión: sin base de datos. Toda lectura viene de Smartsheet (con caché corta, ADR-B06) y toda escritura se confirma releyendo de Smartsheet.
 Consecuencias: sin migraciones ni sincronización; la vista por usuario cuesta una solicitud por hoja (ADR-B09). Un historial propio exigiría un ADR nuevo (PEN-09).
 
+## ADR-B18 PostgreSQL para el servicio futuro de IDs
+
+Fecha: 2026-11-03. Estado: aceptado para preparar el esquema; servicio sin implementar.
+Contexto: el usuario eligió PostgreSQL en Windows Server para las mejoras futuras; los consecutivos necesitan estado duradero para no reutilizar reservas.
+Decisión: el servicio futuro usa una base dedicada con el mínimo estado operativo de secuencias y asignaciones. ADR-B02 sigue vigente para el panel y para los datos de negocio: Smartsheet conserva la fuente de verdad. No se almacenan copias de catálogos ni permisos.
+Consecuencias: instalar, restringir el acceso, respaldar y reconciliar antes de operar. Formato, ámbitos y arranque con IDs existentes deben acordarse; la instalación no autoriza escrituras en Smartsheet ni modifica el modo solo lectura. Detalle en `servicios/ids/README.md` y `future_docs/SERVICIOS_SMARTSHEET_BD.md`.
+
 ## ADR-B03 Endpoints unificados `/2.0/shares`
 
 Fecha: 2026-10-12. Estado: vigente; escrituras pendientes de verificar (PEN-07).

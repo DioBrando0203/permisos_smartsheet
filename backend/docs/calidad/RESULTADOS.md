@@ -195,3 +195,24 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
   - Respuestas entre 1.1 y 1.7 s sin caché; las seis fuentes respondieron.
 - Buscador real en Fort Lauderdale: "Federal Hwy & Sunrise" no daba resultados; tras PEN-39 da `86020000` (US-1) en MP 1.975 y 1.027 y "Sunrise Blvd & Federal Hwy" además `86005000` en 0.0. "Las Olas & 3rd Ave" (0.258), "Broward Blvd & Andrews Ave" (6.773) y "NW 42 Ave & W Flagler St" (3.117) sin cambios. "Las Olas & Federal Hwy" sigue vacío: no hay cruce a nivel (túnel) y TIGER está bloqueado (B-15).
 - Sólo lecturas de GIS público; ninguna lectura ni escritura de Smartsheet.
+# 2026-11-03 10:23 -05:00 Validación de asociaciones (PEN-24)
+
+- Backend: 222 pruebas aprobadas; `ruff check app tests` y `ruff format --check app tests` aprobados.
+- Lectura real: 4 hojas del piloto identificadas; comparación exploratoria de Tareas contra Proyectos con 2 filas revisadas y 2 proyectos no encontrados. Columnas y reglas de relación pendientes de confirmar; sin escrituras.
+# 2026-11-03 10:45 -05:00 Preparación de integración de IDs
+
+- Backend: 229 pruebas aprobadas; Ruff y formato aprobados; sintaxis shell de respaldo/migración comprobada. PostgreSQL temporal, sin migrar ni inicializar la base real.
+- Inventario piloto validado en memoria: 19 IDs. Historial de celdas actuales: 38 lecturas correctas; 4 valores históricos de proyectos no canónicos. Otras hojas candidatas: 55 revisadas, 48 con columna, 21 120 valores canónicos y 785 otros; sin garantía de historia completa. Ninguna escritura en Smartsheet.
+
+# 2026-11-03 10:39 -05:00 Motor de reservas de IDs
+
+- Backend: 226 pruebas aprobadas, Ruff y formato aprobados; pruebas de PostgreSQL 18 temporal con inicialización, rollback, auditoría, idempotencia y reservas concurrentes.
+- GET reales: 19 IDs visibles canónicos y columnas estables no vacías en las cuatro hojas; 6 relaciones principales de Tareas revisadas sin problemas. No comprueba máximos históricos de filas eliminadas. Sin inicialización de la base real ni escrituras en Smartsheet.
+# 2026-11-03 11:00 -05:00 Importación y simulación de IDs
+
+- 233 pruebas aprobadas, Ruff y formato; importación repetida y DRY_RUN sin cambios verificados con PostgreSQL temporal.
+- Lecturas reales comprobaron workspace, versiones y relaciones de 19 IDs; sin importación real ni escrituras en Smartsheet.
+- Restauración aislada de respaldo previo a 002: dos tablas originales restauradas; no prueba respaldo posterior a la migración.
+# 2026-11-03 11:15 -05:00 Simulación de tareas nuevas
+
+- 11 pruebas específicas y 234 pruebas backend aprobadas; Ruff y formato correctos. DRY_RUN real: 19 IDs ya estables; no hubo reservas nuevas ni escrituras en Smartsheet.

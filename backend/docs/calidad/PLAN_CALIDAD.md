@@ -22,6 +22,10 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_export.py`: CSV para Excel (BOM, `;`, fórmulas neutralizadas, columnas en español).
 - `test_automation_rules.py` y `test_automations.py`: cada problema de la tabla, regla sana, vista por hoja y de cuenta con hoja fallida.
 - `test_references.py`: referencias por hoja (catálogo por permalink) y de cuenta (sin catálogo, hojas sin la columna, faltantes por valor sin distinguir mayúsculas).
+- `test_associations.py`: asociaciones correctas y erróneas, cliente vacío, catálogo ambiguo, columna inexistente, límite de respuesta y ausencia de escrituras (SPEC-B15).
+- `test_ids.py`: formatos, inicialización atómica, importación repetible, simulación sin mutación, idempotencia y concurrencia en PostgreSQL temporal; requiere dependencia opcional y PostgreSQL 18 local no root. `test_catalog_plan.py`: comparación sin borrados de históricos y conflictos.
+- `test_id_dry_run.py`: decisiones puras de seguridad, dependencias, conflictos y recuperación, y validación de inventario; no valida un conector ni escrituras remotas.
+- `test_ids.py::test_simulation_proposes_new_task_and_reuses_reservation`: tarea pendiente sin fórmula, propuesta en memoria, reutilización de reserva y ausencia de nuevas asignaciones en DRY_RUN.
 - `test_workload_rules.py` y `test_designers.py`: estado y fase, mismo diseñador en dos columnas, encabezados copiados, persona por nombre, acceso por hoja y estados cerrados configurables.
 - `test_frontend.py`: build servido, rutas del panel a `index.html`, API y `/docs` intactos, sin salir de `dist`, sin build no se monta nada.
 - `tests/fake_data.py` y `tests/fake_smartsheet.py`: Smartsheet falso con datos sintéticos que registra escrituras (ADR-10 del frontend); `python -m tests.fake_smartsheet --port 8791`.
