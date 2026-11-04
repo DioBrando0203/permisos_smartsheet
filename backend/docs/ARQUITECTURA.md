@@ -81,6 +81,9 @@ app/
   services/associations.py       AssociationService: consulta configurable de proyecto y cliente entre hojas
   services/association_rules.py reglas puras de asociaciones y ambigüedad del catálogo
   services/ids/                 formatos, importación manual y simulación del piloto, reservas transaccionales deshabilitadas por defecto; no conectado al panel
+  services/ids/monitor.py       procesador opcional de simulación, lock PostgreSQL y parada en lifespan
+  services/ids/gateway.py       adaptador de Stable IDs con comprobaciones y riesgo residual de edición externa
+  api/routes/idsmart.py         consultas protegidas con token independiente para el ID Manager
   services/catalog_plan.py      comparación pura de catálogos; no ejecuta sincronización
   models/associations.py         contrato de la revisión de asociaciones
   services/export.py             CSV para Excel de permisos por hoja (sin guardar en el servidor)

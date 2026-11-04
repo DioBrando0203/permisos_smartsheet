@@ -12,6 +12,7 @@ from app.services.ids.dry_run import PILOT_WORKSPACE, Candidate, PlanAction, pla
 from app.services.ids.inventory import InventorySheet, collect_inventory  # noqa: E402
 from app.services.ids.pilot import SHEETS, read_pilot  # noqa: E402
 from app.services.ids.simulation import Projector  # noqa: E402
+from app.services.ids.transition import approved_starts  # noqa: E402
 from app.services.smartsheet import RawColumn, RawRow  # noqa: E402
 
 
@@ -89,6 +90,14 @@ def test_hypothetical_ids_do_not_mutate_database_snapshot() -> None:
     assert projector.next(EntityKind.TASK, "KMV-BS-26-452") == "KMV-BS-26-452-04"
     assert projector.next(EntityKind.TASK, "KMV-BS-26-452") == "KMV-BS-26-452-05"
     assert scopes["task:KMV-BS-26-452"] == 2
+
+
+def test_transition_policy_requires_approval_and_valid_scope() -> None:
+    raw = '{"task:KMV-BS-26-452": 90}'
+    assert approved_starts(raw, approved=False) == {}
+    assert approved_starts(raw, approved=True) == {"task:KMV-BS-26-452": 90}
+    with pytest.raises(ValueError):
+        approved_starts('{"task:invalido": 1}', approved=True)
 
 
 async def test_pilot_rechecks_workspace_and_rejects_unknown() -> None:

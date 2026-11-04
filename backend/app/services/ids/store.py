@@ -26,9 +26,16 @@ class Reservation:
 class IdStore:
     """Crea transacciones por operación, con una conexión independiente por llamada."""
 
-    def __init__(self, dsn: str, *, allow_reservations: bool = False) -> None:
+    def __init__(
+        self,
+        dsn: str,
+        *,
+        allow_reservations: bool = False,
+        approved_starts: dict[str, int] | None = None,
+    ) -> None:
         self._dsn = dsn
         self._allow_reservations = allow_reservations
+        self._approved_starts = dict(approved_starts or {})
 
     def lookup(self, sheet_id: int, row_id: int) -> Reservation | None:
         """Consulta la reserva de una fila sin modificarla."""
@@ -38,6 +45,37 @@ class IdStore:
                 (sheet_id, row_id),
             ).fetchone()
             return Reservation(*row) if row else None
+
+    def confirmed_parent(self, sheet_id: int, value: str) -> int | None:
+        """Encuentra la fila confirmada del padre dentro de su hoja autorizada."""
+        with psycopg.connect(self._dsn) as conn:
+            row = conn.execute(
+                "SELECT fila_id FROM asignacion_id WHERE hoja_id=%s AND id_generado=%s "
+                "AND estado='confirmado'",
+                (sheet_id, value),
+            ).fetchone()
+            return row[0] if row else None
+
+    def is_service_reservation(self, sheet_id: int, row_id: int) -> bool:
+        """Distingue una reserva propia de un ID importado anteriormente."""
+        with psycopg.connect(self._dsn) as conn:
+            return bool(
+                conn.execute(
+                    "SELECT 1 FROM auditoria_id WHERE hoja_id=%s AND fila_id=%s "
+                    "AND accion='reservado' LIMIT 1",
+                    (sheet_id, row_id),
+                ).fetchone()
+            )
+
+    def lock_sheet(self, sheet_id: int) -> psycopg.Connection | None:
+        """Impide dos escritores del servicio sobre la misma hoja."""
+        conn = psycopg.connect(self._dsn, autocommit=True, connect_timeout=5)
+        if not conn.execute(
+            "SELECT pg_try_advisory_lock(%s, %s)", (714382, sheet_id % 2147483647)
+        ).fetchone()[0]:
+            conn.close()
+            return None
+        return conn
 
     def initialize(
         self, entries: list[ExistingId], historical: list[tuple[EntityKind, str]] | None = None
@@ -105,6 +143,9 @@ class IdStore:
             raise ValueError("Reservas deshabilitadas hasta resolver los máximos históricos")
         make_id(kind, parent, 1)
         scope = f"{kind.value}:{parent}"
+        start = self._approved_starts.get(scope)
+        if not isinstance(start, int) or isinstance(start, bool) or start < 1:
+            raise ValueError("Falta consecutivo inicial aprobado para este ámbito")
         with psycopg.connect(self._dsn) as conn:
             conn.execute("SELECT pg_advisory_xact_lock_shared(%s)", (_INIT_LOCK,))
             if not conn.execute("SELECT 1 FROM estado_inicializacion_id").fetchone():
@@ -122,9 +163,10 @@ class IdStore:
                     raise ValueError("La fila ya tiene un ID en otro ámbito")
                 return Reservation(existing[1], existing[2])
             number = conn.execute(
-                "INSERT INTO secuencia_id VALUES (%s, 1) ON CONFLICT (ambito) "
-                "DO UPDATE SET ultimo_numero=secuencia_id.ultimo_numero+1 RETURNING ultimo_numero",
-                (scope,),
+                "INSERT INTO secuencia_id VALUES (%s, %s) ON CONFLICT (ambito) "
+                "DO UPDATE SET ultimo_numero=GREATEST(secuencia_id.ultimo_numero+1, "
+                "EXCLUDED.ultimo_numero) RETURNING ultimo_numero",
+                (scope, start),
             ).fetchone()[0]
             value = make_id(kind, parent, number)
             conn.execute(

@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     cache_ttl_seconds: float = 120.0
     # Activo por defecto: escribir en Smartsheet exige desactivarlo a propósito (ADR-B11).
     app_read_only: bool = True
+    ids_admin_token: SecretStr | None = None
+    ids_monitor_enabled: bool = False
+    ids_monitor_interval_seconds: int = 60
+    ids_writes_enabled: bool = False
+    ids_transition_approved: bool = False
+    ids_approved_starts: str = "{}"
     app_allowed_hosts: str = _DEFAULT_HOSTS
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""

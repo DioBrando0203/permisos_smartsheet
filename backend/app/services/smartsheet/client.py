@@ -34,6 +34,7 @@ _ROWS_PAGE = 500
 
 class SmartsheetClient:
     def __init__(self, settings: Settings, http: httpx.AsyncClient | None = None) -> None:
+        self._settings = settings
         self._transport = Transport(settings, http)
 
     async def aclose(self) -> None:
@@ -135,6 +136,46 @@ class SmartsheetClient:
             for cell in data.get("cells", [])
             if cell.get("value") is not None or cell.get("displayValue")
         ]
+
+    async def get_row(self, sheet_id: str, row_id: str) -> RawRow:
+        """Fila actual sin caché."""
+        data = await self._transport.request("GET", f"/sheets/{sheet_id}/rows/{row_id}")
+        return mappers.to_row(data)
+
+    async def update_stable_id_once(self, sheet_id: str, row_id: str, value: str) -> None:
+        """Escritura de una celda con barreras explícitas; no es atómica frente a otros editores."""
+        from app.core.errors import AppError
+        from app.services.permissions import AccessLevel
+
+        allowed = {
+            "4365321059389316": "Stable Tracking Project",
+            "73093952524164": "Stable Task ID",
+            "8140679218941828": "Stable Request ID",
+            "5463681132613508": "Stable Revision ID",
+        }
+        if (
+            self._settings.app_read_only
+            or not self._settings.ids_writes_enabled
+            or not self._settings.ids_transition_approved
+            or sheet_id not in allowed
+        ):
+            raise AppError("IDS_WRITE_BLOCKED", "Escrituras de IDs deshabilitadas.", 403)
+        if await self.sheet_workspace_id(sheet_id) != "7965022790936452":
+            raise AppError("IDS_WORKSPACE_BLOCKED", "Hoja fuera del workspace permitido.", 403)
+        access = await self.get_sheet_access_level(sheet_id)
+        if access.access_level not in (AccessLevel.ADMIN, AccessLevel.OWNER):
+            raise AppError("IDS_ACCESS_BLOCKED", "Sin acceso de administración a la hoja.", 403)
+        columns = await self.list_columns(sheet_id)
+        matches = [c.id for c in columns if c.title == allowed[sheet_id]]
+        if len(matches) != 1:
+            raise AppError(
+                "IDS_COLUMN_INVALID", "Columna Stable ID no encontrada o duplicada.", 409
+            )
+        row = await self.get_row(sheet_id, row_id)
+        if (row.cells.get(matches[0]) or "").strip():
+            raise AppError("IDS_STABLE_EXISTS", "El Stable ID ya contiene un valor.", 409)
+        body = [{"id": int(row_id), "cells": [{"columnId": int(matches[0]), "value": value}]}]
+        await self._transport.request("PUT", f"/sheets/{sheet_id}/rows", json=body, retry=False)
 
     async def get_cell_history(
         self, sheet_id: str, row_id: str, column_id: str

@@ -33,6 +33,13 @@ from tests.conftest import make_settings  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 BIN = Path("/usr/lib/postgresql/18/bin")
+TEST_STARTS = {
+    "project:KMV-BS-26": 1,
+    "project:KMV-CC-26": 1,
+    "task:KMV-BS-26-452": 1,
+    "record:KMV-BS-26-452-02": 1,
+    "revision:KMV-BS-26-452-02": 1,
+}
 
 
 @pytest.fixture
@@ -89,7 +96,7 @@ def test_formats() -> None:
 
 
 def test_initialization_atomic_and_idempotent(database) -> None:
-    store = IdStore(database, allow_reservations=True)
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
     with pytest.raises(ValueError):
         store.reserve(1, 2, EntityKind.PROJECT, "KMV-BS-26")
     existing = ExistingId(1, 1, EntityKind.PROJECT, "KMV-BS-26-452")
@@ -109,7 +116,7 @@ def test_initialization_atomic_and_idempotent(database) -> None:
 
 
 def test_concurrent_reservations(database) -> None:
-    store = IdStore(database, allow_reservations=True)
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
     store.initialize([ExistingId(1, 1, EntityKind.TASK, "KMV-BS-26-452-02")])
     with ThreadPoolExecutor(max_workers=12) as pool:
         same = list(
@@ -125,7 +132,7 @@ def test_concurrent_reservations(database) -> None:
 
 
 def test_historical_maximum_in_initialization(database) -> None:
-    store = IdStore(database, allow_reservations=True)
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
     store.initialize(
         [ExistingId(1, 1, EntityKind.PROJECT, "KMV-BS-26-452")],
         historical=[(EntityKind.PROJECT, "KMV-BS-26-499")],
@@ -155,7 +162,7 @@ async def test_simulation_proposes_new_task_and_reuses_reservation(database, mon
     project_id, task_id = 4365321059389316, 73093952524164
     project = ExistingId(project_id, 1, EntityKind.PROJECT, "KMV-BS-26-452")
     task = ExistingId(task_id, 2, EntityKind.TASK, "KMV-BS-26-452-02")
-    store = IdStore(database, allow_reservations=True)
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
     store.initialize([project, task])
     pending = RawRow(
         "3",
@@ -186,7 +193,7 @@ async def test_connector_recovers_lost_response_and_never_overwrites(database) -
 
     task_sheet = 73093952524164
     parent = "KMV-BS-26-452"
-    store = IdStore(database, allow_reservations=True)
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
     store.initialize([ExistingId(task_sheet, 1, EntityKind.TASK, f"{parent}-02")])
     target = Target(task_sheet, 2, EntityKind.TASK, parent)
 
@@ -226,7 +233,7 @@ async def test_network_failure_retains_reservation_for_retry(database) -> None:
     from dataclasses import replace
 
     task_sheet, parent = 73093952524164, "KMV-BS-26-452"
-    store = IdStore(database, allow_reservations=True)
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
     store.initialize([ExistingId(task_sheet, 1, EntityKind.TASK, f"{parent}-02")])
 
     class Gateway:
@@ -256,10 +263,57 @@ async def test_network_failure_retains_reservation_for_retry(database) -> None:
     assert gateway.attempts == 2
 
 
+async def test_connector_assigns_when_formula_is_still_empty(database) -> None:
+    from dataclasses import replace
+
+    task_sheet, parent = 73093952524164, "KMV-BS-26-452"
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
+    store.initialize([ExistingId(task_sheet, 1, EntityKind.TASK, f"{parent}-02")])
+
+    class Gateway:
+        snapshot = Snapshot(PILOT_WORKSPACE, parent, True, "", "")
+
+        async def read(self, target):
+            return self.snapshot
+
+        async def write_if_unchanged(self, target, previous, value):
+            self.snapshot = replace(self.snapshot, stable=value)
+            return True
+
+    connector = IdConnector(store, Gateway(), read_only=False)
+    assert (
+        await connector.process(Target(task_sheet, 2, EntityKind.TASK, parent)) == Outcome.CONFIRMED
+    )
+    assert store.lookup(task_sheet, 2).value == f"{parent}-03"
+
+
+def test_reservations_require_approved_scope_and_respect_start(database) -> None:
+    initial = ExistingId(1, 1, EntityKind.PROJECT, "KMV-BS-26-452")
+    store = IdStore(database, allow_reservations=True)
+    store.initialize([initial])
+    with pytest.raises(ValueError):
+        store.reserve(1, 2, EntityKind.PROJECT, "KMV-BS-26")
+    approved = IdStore(
+        database, allow_reservations=True, approved_starts={"project:KMV-BS-26": 900}
+    )
+    assert approved.reserve(1, 2, EntityKind.PROJECT, "KMV-BS-26").value == "KMV-BS-26-900"
+    assert approved.reserve(1, 3, EntityKind.PROJECT, "KMV-BS-26").value == "KMV-BS-26-901"
+
+
+def test_confirmation_migration_is_repeatable_and_preserves_assignments(database) -> None:
+    store = IdStore(database)
+    store.initialize([ExistingId(1, 1, EntityKind.PROJECT, "KMV-BS-26-452")])
+    migration = (ROOT / "servicios/ids/sql/003_confirmacion.sql").read_text()
+    with psycopg.connect(database) as conn:
+        conn.execute(migration)
+        assert conn.execute("SELECT count(*) FROM asignacion_id").fetchone()[0] == 1
+        assert conn.execute("SELECT count(*) FROM auditoria_id").fetchone()[0] == 1
+
+
 async def test_connector_rejects_wrong_workspace_and_formula(database) -> None:
     task_sheet = 73093952524164
     parent = "KMV-BS-26-452"
-    store = IdStore(database, allow_reservations=True)
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
     store.initialize([ExistingId(task_sheet, 1, EntityKind.TASK, f"{parent}-02")])
     gateway = AsyncMock()
     gateway.read.return_value = Snapshot("otro", parent, True, f"{parent}-03", "")
@@ -276,7 +330,7 @@ async def test_connector_concurrent_calls_share_one_reservation(database) -> Non
     from dataclasses import replace
 
     task_sheet, parent = 73093952524164, "KMV-BS-26-452"
-    store = IdStore(database, allow_reservations=True)
+    store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
     store.initialize([ExistingId(task_sheet, 1, EntityKind.TASK, f"{parent}-02")])
 
     class Gateway:
@@ -297,7 +351,10 @@ async def test_connector_concurrent_calls_share_one_reservation(database) -> Non
     connector = IdConnector(store, gateway, read_only=False)
     target = Target(task_sheet, 2, EntityKind.TASK, parent)
     results = await asyncio.gather(*(connector.process(target) for _ in range(8)))
-    assert all(result in (Outcome.CONFIRMED, Outcome.CONFLICT) for result in results)
+    assert all(
+        result in (Outcome.CONFIRMED, Outcome.CONFLICT, Outcome.PENDING) for result in results
+    )
+    assert Outcome.CONFIRMED in results
     assert gateway.writes == 1
     with psycopg.connect(database) as conn:
         assert conn.execute("SELECT count(*) FROM asignacion_id").fetchone()[0] == 2

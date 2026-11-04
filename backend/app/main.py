@@ -15,6 +15,7 @@ from app.core.config import Settings, get_settings
 from app.core.errors import AppError, app_error_handler
 from app.core.middleware import OriginMiddleware
 from app.frontend import DEFAULT_DIST, mount_frontend
+from app.services.ids.monitor import IdMonitor
 
 
 def create_app(
@@ -24,15 +25,21 @@ def create_app(
 ) -> FastAPI:
     settings = settings or get_settings()
     services = services or build_services(settings)
+    monitor = IdMonitor(
+        services.client, settings.ids_monitor_enabled, settings.ids_monitor_interval_seconds
+    )
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        monitor.start()
         yield
+        await monitor.stop()
         await services.client.aclose()
         await services.maps.aclose()
 
     app = FastAPI(title=settings.app_name, version="0.1.0", docs_url="/docs", lifespan=lifespan)
     app.state.services = services
+    app.state.ids_monitor = monitor
     app.add_exception_handler(AppError, app_error_handler)
     app.add_middleware(
         CORSMiddleware,

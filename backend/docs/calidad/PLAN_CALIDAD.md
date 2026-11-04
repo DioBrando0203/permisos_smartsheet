@@ -25,6 +25,7 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `test_associations.py`: asociaciones correctas y erróneas, cliente vacío, catálogo ambiguo, columna inexistente, límite de respuesta y ausencia de escrituras (SPEC-B15).
 - `test_ids.py`: formatos, inicialización atómica, importación repetible, simulación sin mutación, idempotencia y concurrencia en PostgreSQL temporal; requiere dependencia opcional y PostgreSQL 18 local no root. `test_catalog_plan.py`: comparación sin borrados de históricos y conflictos.
 - `test_id_dry_run.py`: decisiones puras de seguridad, dependencias, conflictos y recuperación, y validación de inventario; no valida un conector ni escrituras remotas.
+- `test_idsmart.py` y `test_id_gateway.py`: autenticación, Swagger, consultas y paginación, simulación, procesador, adaptador y bloqueo de escritura en modo solo lectura; integración de Smartsheet simulada.
 - `test_ids.py::test_simulation_proposes_new_task_and_reuses_reservation`: tarea pendiente sin fórmula, propuesta en memoria, reutilización de reserva y ausencia de nuevas asignaciones en DRY_RUN.
 - `test_workload_rules.py` y `test_designers.py`: estado y fase, mismo diseñador en dos columnas, encabezados copiados, persona por nombre, acceso por hoja y estados cerrados configurables.
 - `test_frontend.py`: build servido, rutas del panel a `index.html`, API y `/docs` intactos, sin salir de `dist`, sin build no se monta nada.

@@ -82,11 +82,12 @@ class Transport:
         *,
         params: dict[str, Any] | None = None,
         json: Any = None,
+        retry: bool = True,
     ) -> Any:
         if not self._settings.has_token:
             raise token_missing()
         retry_status = _READ_RETRY_STATUS if method == "GET" else _WRITE_RETRY_STATUS
-        attempts = self._settings.smartsheet_max_retries + 1
+        attempts = self._settings.smartsheet_max_retries + 1 if retry else 1
         for attempt in range(attempts):
             is_last = attempt == attempts - 1
             response = await self._send(method, path, params, json, can_retry=not is_last)

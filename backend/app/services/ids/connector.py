@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Protocol
 
+import psycopg
+
 from app.services.ids.dry_run import PILOT_WORKSPACE
 from app.services.ids.formats import EntityKind, parse_id
 from app.services.ids.pilot import SHEETS
@@ -42,12 +44,12 @@ class Snapshot:
 
 
 class ConditionalGateway(Protocol):
-    """Exige comparación atómica de workspace, padre, ID visible y celda estable."""
+    """Comprueba workspace, padre, ID visible y Stable ID antes de escribir."""
 
     async def read(self, target: Target) -> Snapshot: ...
 
     async def write_if_unchanged(self, target: Target, previous: Snapshot, value: str) -> bool:
-        """True sólo si se escribió sin alterar datos que cambiaron desde previous."""
+        """True si se escribió; Smartsheet no garantiza atomicidad frente a otros editores."""
         ...
 
 
@@ -65,6 +67,15 @@ class IdConnector:
         allowed = {(int(item[0]), item[1]) for item in SHEETS}
         if (target.sheet_id, target.kind) not in allowed:
             return Outcome.DENIED
+        lock = await asyncio.to_thread(self._store.lock_sheet, target.sheet_id)
+        if lock is None:
+            return Outcome.PENDING
+        try:
+            return await self._process_locked(target, lock)
+        finally:
+            await asyncio.to_thread(lock.close)
+
+    async def _process_locked(self, target: Target, lock: psycopg.Connection) -> Outcome:
         current = await self._gateway.read(target)
         if not _valid(target, current):
             return Outcome.DENIED
@@ -90,8 +101,9 @@ class IdConnector:
             return Outcome.DENIED
         if current.stable:
             return await self._reconcile(target, current, reservation)
-        if current.visible != reservation.value:
-            return Outcome.CONFLICT if current.visible else Outcome.PENDING
+        if current.visible and current.visible != reservation.value:
+            return Outcome.CONFLICT
+        await asyncio.to_thread(lock.execute, "SELECT 1")
         try:
             if not await self._gateway.write_if_unchanged(target, current, reservation.value):
                 return Outcome.CONFLICT
