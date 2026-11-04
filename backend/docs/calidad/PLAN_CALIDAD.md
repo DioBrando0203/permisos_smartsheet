@@ -61,3 +61,4 @@ Desde `backend/`:
 - Endpoint nuevo de Smartsheet: éxito, 404, 429 y 5xx.
 - Regla nueva de permisos: todos los niveles y scopes (QB-05).
 - Cambio de contrato: actualizar `estilos/API.md` y, si existe, los tipos del frontend.
+- `test_catalog_rules.py` y `test_project_catalog.py` (SPEC-B16): filtros BS, CC, OT y empresa, históricos, duplicados, siete clasificaciones de Linked Tracking, cliente cambiado, sincronización bloqueada por token, barreras, hoja del piloto o workspace ajeno, alta y actualización sin borrados ni escrituras en Proyectos, y aislamiento de fallos del catálogo en el procesador.

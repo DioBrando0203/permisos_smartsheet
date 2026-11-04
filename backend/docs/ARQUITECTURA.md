@@ -87,6 +87,10 @@ app/
   services/ids/gateway.py       adaptador de Stable IDs con comprobaciones y riesgo residual de edición externa
   api/routes/idsmart.py         ID Manager con token independiente: consultas, simulación, recuperación y escrituras con barreras
   services/catalog_plan.py      comparación pura de catálogos; no ejecuta sincronización
+  services/catalog_rules.py     reglas puras del catálogo de proyectos y de Linked Tracking (SPEC-B16)
+  services/project_catalog.py   lectura del catálogo desde Proyectos y la hoja catálogo, validación y plan
+  services/catalog_sync.py      escritura de la hoja catálogo en Pruebas con barreras; nunca borra
+  api/routes/catalogs.py        /api/catalogs: consultas y sincronización protegida
   models/associations.py         contrato de la revisión de asociaciones
   services/export.py             CSV para Excel de permisos por hoja (sin guardar en el servidor)
   services/automation_rules.py   diagnóstico puro de una automatización (tabla PROBLEMS)

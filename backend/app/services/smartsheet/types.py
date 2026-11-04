@@ -94,6 +94,8 @@ class RawColumn:
     index: int
     primary: bool
     type: str | None = None
+    # Opciones de un desplegable (PICKLIST); vacío en los demás tipos.
+    options: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

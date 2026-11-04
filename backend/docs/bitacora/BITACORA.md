@@ -321,3 +321,37 @@ Estado: configurado; pendiente de reinicio del backend por el usuario.
 Pedido: el usuario decidió activar el procesador tal como está; nadie usará el panel por ahora y la separación de `APP_READ_ONLY` se revisará al final.
 Cambios: `backend/.env` con `APP_READ_ONLY=false`, `IDS_WRITES_ENABLED`, `IDS_TRANSITION_APPROVED`, `IDS_PROCESSOR_WRITES_ENABLED` e `IDS_MONITOR_ENABLED` en `true`; intervalo 60 s y máximo 5 filas por ciclo. AGENTS.md y SPEC-ID01 ID-36 actualizados.
 Evidencia: `Settings` lee las cuatro barreras activas. Sin escrituras nuevas en Smartsheet al configurar.
+
+## 2026-11-04 16:56 -05:00 Selectores de Linked Tracking por cliente (PEN-24, SPEC-B16)
+
+Estado: backend implementado y probado; hoja catálogo y desplegable vinculado pendientes de autorización y prueba en la interfaz.
+Pedido: que Customer determine qué proyectos se pueden elegir en Linked Tracking, priorizando capacidades nativas y conservando históricos.
+Hallazgos: desplegables vinculados nativos con filtro estático de una condición; dependientes por fila "In Planning"; formularios y Dynamic View no cambian opciones por fila; Customer tiene 11 clientes y Linked Tracking ya es desplegable estático con dos históricos.
+Cambios: opciones de desplegable en `RawColumn`; `catalog_rules`, `project_catalog`, `catalog_sync`, rutas `/api/catalogs`; ajuste `APP_PROJECT_CATALOG_SHEET`; sincronización opcional al final del ciclo del procesador.
+Evidencia: ver RESULTADOS de la misma hora. Sin escrituras en Smartsheet.
+
+## 2026-11-04 17:00 -05:00 Procesador automático verificado (PEN-24)
+
+Estado: en operación en Pruebas.
+Pedido: el usuario reinició el servidor y pidió probarlo.
+Evidencia: ver RESULTADOS de la misma hora. El procesador asignó sin intervención la fila de Records creada por el usuario (`KMV-CC-26-720-01-R1`); no hubo conflictos ni escrituras fuera de la columna Stable ID.
+
+## 2026-11-04 17:07 -05:00 Hoja catálogo creada y sincronizada (PEN-24, SPEC-B16)
+
+Estado: catálogo en operación; vínculo del desplegable pendiente de configuración manual en la interfaz.
+Pedido: el usuario autorizó crear todo lo necesario para el selector de Linked Tracking.
+Cambios: hoja catálogo en Pruebas, `APP_PROJECT_CATALOG_SHEET` en `.env`, orden por cliente tras sincronizar.
+Evidencia: ver RESULTADOS de la misma hora. Sin cambios en Proyectos, Tareas, Records, Revisiones ni PostgreSQL.
+
+## 2026-11-04 17:24 -05:00 Selector de Linked Tracking en operación (PEN-24, SPEC-B16)
+
+Estado: en operación en Pruebas; comprobación visual del filtrado pendiente del usuario.
+Pedido: el usuario vinculó el desplegable y autorizó crear lo necesario para probar.
+Cambios: fila de prueba `PRUEBA - catálogo automático` en Proyectos (Pruebas), identificable y desechable; consume `KMV-OT-26-002`.
+Evidencia: ver RESULTADOS de la misma hora.
+
+## 2026-11-04 17:31 -05:00 Prueba visual del selector de Linked Tracking (PEN-24, SPEC-B16)
+
+Estado: comportamiento esperado; resaltado en rojo pendiente de configurar en la interfaz.
+Pedido: el usuario eligió un proyecto CC en una fila BS y pidió marcarlo en rojo.
+Evidencia: fórmula `ERROR: DIFFERENT CUSTOMER` en la fila 4 y `other_customer` en `/api/catalogs/linked-tracking` (sólo lecturas). Sin escrituras.

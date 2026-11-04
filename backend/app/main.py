@@ -15,6 +15,7 @@ from app.core.config import Settings, get_settings
 from app.core.errors import AppError, app_error_handler
 from app.core.middleware import OriginMiddleware
 from app.frontend import DEFAULT_DIST, mount_frontend
+from app.services.catalog_sync import catalog_hook
 from app.services.ids.monitor import IdMonitor
 from app.services.ids.runtime import assign_factory
 
@@ -33,6 +34,7 @@ def create_app(
         settings.ids_monitor_interval_seconds,
         connector_factory=assign_factory(settings, services.client),
         max_rows=settings.ids_processor_max_rows,
+        after_cycle=catalog_hook(settings, services.client, services.sheets, services.quality),
     )
 
     @asynccontextmanager

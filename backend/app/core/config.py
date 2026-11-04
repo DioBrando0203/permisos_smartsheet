@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     # Procesador con asignación real: exige además las tres barreras anteriores.
     ids_processor_writes_enabled: bool = False
     ids_processor_max_rows: int = 5
+    # Hoja catálogo de proyectos en Pruebas, origen del desplegable vinculado de Linked Tracking.
+    app_project_catalog_sheet: str = ""
     app_allowed_hosts: str = _DEFAULT_HOSTS
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""

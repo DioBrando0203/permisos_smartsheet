@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api.routes.activity import router as activity_router
 from app.api.routes.automations import router as automations_router
 from app.api.routes.bulk import router as bulk_router
+from app.api.routes.catalogs import router as catalogs_router
 from app.api.routes.designers import router as designers_router
 from app.api.routes.export import router as export_router
 from app.api.routes.health import router as health_router
@@ -33,3 +34,4 @@ api_router.include_router(automations_router, tags=["automatizaciones de Smartsh
 api_router.include_router(references_router, tags=["calidad de datos"])
 api_router.include_router(designers_router, tags=["carga de diseñadores"])
 api_router.include_router(idsmart_router, prefix="/ids", tags=["Galp - ID Manager"])
+api_router.include_router(catalogs_router, tags=["Galp - Catálogo de proyectos"])

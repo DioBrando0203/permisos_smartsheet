@@ -248,3 +248,30 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Ciclo real del procesador (barreras sólo en el proceso, `.env` sin cambios): 4 `confirmed`: `KMV-LP-26-001`, `KMV-CC-26-721`, `KMV-CC-26-722` en Proyectos y `KMV-CC-26-720-01` en Tareas. Relectura: Stable y visible iguales en las cuatro filas.
 - PostgreSQL: 23 asignaciones confirmadas, 14 secuencias (`project:KMV-LP-26` 1, `project:KMV-CC-26` 722), auditoría con 4 `reservado` y 4 `confirmado` nuevos (eventos 20 a 27).
 - Segundo ciclo real: `outcomes` vacío, 23 `already_stable`; 23 asignaciones y 27 eventos sin cambios.
+
+# 2026-11-04 16:56 -05:00 Catálogo de proyectos y Linked Tracking (SPEC-B16, PEN-24)
+
+- 311 pruebas backend aprobadas (nuevas: `test_catalog_rules.py` y `test_project_catalog.py`, 8 casos); Ruff y formato correctos.
+- Lectura real de Proyectos (Piloto), sólo GET: BS 2 proyectos, CC 5 actuales y 2 históricos (`KMV-CC-26-563`, `KMV-CC-26-627`, opciones curadas del desplegable), OT 1, LP 1, ZY 0. Linked Tracking: 1 `current_valid`, 2 `historical_valid`, 6 vacíos; coincide con la fórmula `Control Linked Tracking`.
+- Plan de sincronización sin hoja catálogo: 11 `add`. `POST /api/catalogs/projects/sync` sin token: 401. Ninguna escritura.
+- ID Manager después de los cambios: 23 asignaciones confirmadas y 27 eventos sin cambios; DRY_RUN con 23 `already_stable`.
+
+# 2026-11-04 17:00 -05:00 Procesador automático de IDs en el servidor real (PEN-24)
+
+- Servidor reiniciado por el usuario con `python run.py` en 8710: `/api/ids/status` con `processor_mode` `assign`, `processor_active` true, intervalo 60 s y máximo 5 filas.
+- Primer ciclo automático: 23 `already_stable` y 1 `needs_reservation`; resultado 1 `confirmed`. Fila de Records: visible y Stable `KMV-CC-26-720-01-R1`; secuencia `record:KMV-CC-26-720-01` en 1.
+- PostgreSQL: 24 asignaciones confirmadas; eventos 28 `reservado` y 29 `confirmado`. DRY_RUN posterior: 24 `already_stable`, 0 pendientes, 0 conflictos.
+- Catálogo en el servidor real (GET): BS 2, CC 7 (2 históricos), OT 1; Linked Tracking: 1 actual válido, 2 históricos válidos, 6 vacíos.
+
+# 2026-11-04 17:07 -05:00 Hoja catálogo de proyectos en Pruebas (SPEC-B16, PEN-24)
+
+- Escritura autorizada por el usuario: hoja `Catálogo de Proyectos (Piloto)` (`8048198976491396`) creada en `Pruebas/Normalizacion de Datos - Piloto/01 Datos`; workspace comprobado `7965022790936452`.
+- Sincronización real: `add` 11, `update` 0, `unchanged` 0, `conflict` 0; filas ordenadas BS, CC (incluye históricos 563 y 627), LP y OT. Versión de Proyectos 126 antes y después. Plan posterior: todo `unchanged`.
+- 311 pruebas backend aprobadas (orden del catálogo incluido); Ruff y formato correctos. PostgreSQL: 24 asignaciones confirmadas, 29 eventos, sin cambios.
+
+# 2026-11-04 17:24 -05:00 Selector de Linked Tracking vinculado y flujo automático (SPEC-B16, PEN-24)
+
+- Linked Tracking vinculado por el usuario a `Catálogo de Proyectos (Piloto)`: opciones iguales a las 11 filas del catálogo y en el mismo orden; `validation` false; valores existentes conservados.
+- Procesador tras el reinicio: `last_catalog_sync` con 11 `unchanged` antes de la prueba.
+- Proyecto de prueba (OT-Others, 2026-11-04) creado por API: fórmula `KMV-OT-26-002`; Stable ID a los 45 s; catálogo a los 51 s (orden BS, CC, LP, OT); opción del desplegable a los 57 s. PostgreSQL: 25 asignaciones confirmadas.
+- Pendiente de comprobación visual por el usuario: filtrado al escribir el código del cliente y `ERROR: DIFFERENT CUSTOMER` al elegir otro cliente.

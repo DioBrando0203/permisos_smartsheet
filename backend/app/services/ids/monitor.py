@@ -1,7 +1,7 @@
 """Procesador periódico opcional: simula por defecto; asigna sólo con coordinador autorizado."""
 
 import asyncio
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 
 import psycopg
@@ -26,6 +26,7 @@ class IdMonitor:
         connector_factory: Callable[[], IdConnector] | None = None,
         max_rows: int = 5,
         dsn: str = DSN,
+        after_cycle: Callable[[], Awaitable[dict]] | None = None,
     ) -> None:
         self.client = client
         self.enabled = enabled
@@ -33,6 +34,9 @@ class IdMonitor:
         self.connector_factory = connector_factory
         self.max_rows = max(1, max_rows)
         self.dsn = dsn
+        # Paso opcional tras asignar (sincronizar el catálogo); sus fallos no afectan a los IDs.
+        self.after_cycle = after_cycle
+        self.last_catalog: dict | None = None
         self.active = False
         self.last_run: str | None = None
         self.last_error: str | None = None
@@ -64,6 +68,11 @@ class IdMonitor:
             outcomes = await process_report(
                 self.connector_factory(), report, limit=self.max_rows, results=results
             )
+            if self.after_cycle is not None:
+                try:
+                    self.last_catalog = await self.after_cycle()
+                except Exception:
+                    self.last_catalog = {"error": "catalog_sync_failed"}
         self.last_counts = report["counts"]
         self.last_outcomes = outcomes
         self.last_results = results

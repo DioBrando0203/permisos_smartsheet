@@ -111,6 +111,7 @@ def to_column(data: Json) -> RawColumn:
         index=int(data.get("index") or 0),
         primary=bool(data.get("primary")),
         type=data.get("type"),
+        options=tuple(str(item) for item in data.get("options") or ()),
     )
 
 

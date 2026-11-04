@@ -19,7 +19,7 @@ Antes de modificar, leer este archivo y la guía del lado afectado (metodología
 - El token es de un administrador de la cuenta: cada escritura es real e inmediata. Nunca se cambia el propietario ni se tocan permisos heredados del workspace desde una hoja (ADR-B04, ADR-B05).
 - Las pruebas automáticas no llaman a Smartsheet: usan respuestas simuladas. Las escrituras reales sólo se verifican a mano en una hoja de prueba acordada con el usuario.
 - Puertos propios: backend 8710, frontend 5710 (no usar 8000 ni 5173, los usan otros proyectos del usuario). Arranque sólo desde `backend`: activar `.venv` y `python run.py`; si el 8710 está ocupado elige uno libre al azar y lo informa (ADR-B14).
-- Modo solo lectura (`APP_READ_ONLY=true`) activo por decisión del usuario: no desactivarlo ni escribir en Smartsheet sin que lo pida (ADR-B11).
+- Modo solo lectura (`APP_READ_ONLY=true`) activo por decisión del usuario: no desactivarlo ni escribir en Smartsheet sin que lo pida (ADR-B11). Excepción vigente desde 2026-11-04 por decisión del usuario: `APP_READ_ONLY=false` y barreras del ID Manager activas para que el procesador asigne Stable IDs en Pruebas (SPEC-ID01 ID-36); el panel no se usa para cambiar permisos mientras tanto y se revisará al final. No revertirlo sin que lo pida.
 - Alcance de cambios en Smartsheet: sólo recursos dentro del workspace `Pruebas` (ID `7965022790936452`); los demás workspaces son exclusivamente de lectura. Toda escritura sigue sujeta al modo solo lectura y a una autorización expresa y hoja de prueba acordada; el futuro servicio debe verificar el workspace y la hoja antes de escribir.
 - Acceso por defecto sólo desde este equipo (loopback); el acceso desde la red es opcional y explícito por variables de entorno.
 

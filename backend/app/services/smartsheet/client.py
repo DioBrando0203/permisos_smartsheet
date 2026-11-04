@@ -177,6 +177,30 @@ class SmartsheetClient:
         body = [{"id": int(row_id), "cells": [{"columnId": int(matches[0]), "value": value}]}]
         await self._transport.request("PUT", f"/sheets/{sheet_id}/rows", json=body, retry=False)
 
+    async def upsert_catalog_rows(self, sheet_id: str, add: list[dict], update: list[dict]) -> None:
+        """Agrega o actualiza filas de la hoja catálogo; nunca borra. Barreras en el llamador."""
+        from app.core.errors import AppError
+
+        if self._settings.app_read_only:
+            raise AppError("CATALOG_WRITE_BLOCKED", "Escrituras del catálogo deshabilitadas.", 403)
+        if add:
+            await self._transport.request("POST", f"/sheets/{sheet_id}/rows", json=add, retry=False)
+        if update:
+            await self._transport.request(
+                "PUT", f"/sheets/{sheet_id}/rows", json=update, retry=False
+            )
+
+    async def sort_catalog_rows(self, sheet_id: str, column_ids: list[str]) -> None:
+        """Ordena la hoja catálogo (ascendente por esas columnas); no cambia valores."""
+        from app.core.errors import AppError
+
+        if self._settings.app_read_only:
+            raise AppError("CATALOG_WRITE_BLOCKED", "Escrituras del catálogo deshabilitadas.", 403)
+        criteria = [{"columnId": int(item), "direction": "ASCENDING"} for item in column_ids]
+        await self._transport.request(
+            "POST", f"/sheets/{sheet_id}/sort", json={"sortCriteria": criteria}, retry=False
+        )
+
     async def get_cell_history(
         self, sheet_id: str, row_id: str, column_id: str
     ) -> list[RawCellChange]:
