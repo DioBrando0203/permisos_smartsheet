@@ -173,9 +173,10 @@ async def test_preview_uses_date_received_for_project_year(database_fixture, mon
     monkeypatch.setattr(preview, "read_pilot", AsyncMock(return_value=[sheet]))
     report = await preview.build_dry_run_report(AsyncMock(), database_fixture)
     assert report["counts"]["already_stable"] == 1
+    # Un ID confirmado es permanente aunque después cambie la fecha de recepción.
     row.date_cells["received"] = date(2026, 12, 31)
     report = await preview.build_dry_run_report(AsyncMock(), database_fixture)
-    assert report["counts"]["conflict"] == 1
+    assert report["counts"] == {"already_stable": 1}
 
 
 async def test_preview_detects_project_before_formula_exists(database_fixture, monkeypatch) -> None:

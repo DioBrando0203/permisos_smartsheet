@@ -8,7 +8,7 @@ from typing import Protocol
 import psycopg
 
 from app.services.ids.dry_run import PILOT_WORKSPACE
-from app.services.ids.formats import EntityKind, parse_id
+from app.services.ids.formats import EntityKind, formula_number, parse_id
 from app.services.ids.pilot import SHEETS
 from app.services.ids.store import IdStore, Reservation
 
@@ -20,6 +20,7 @@ class Outcome(StrEnum):
     CONFLICT = "conflict"
     EXISTING = "existing"
     CONFIRMED = "confirmed"
+    REGISTERED = "registered"
 
 
 class WriteUncertain(Exception):
@@ -87,22 +88,28 @@ class IdConnector:
             except ValueError:
                 return Outcome.CONFLICT
         if current.stable:
+            if reservation is None:
+                return await self._register(target, current)
             return await self._reconcile(target, current, reservation)
-        if reservation and reservation.state == "confirmado":
-            return Outcome.CONFLICT
         if not current.parent_confirmed:
             return Outcome.PENDING
         if reservation is None:
+            # La fórmula propone el número; se adopta si es nuevo, si no, el siguiente libre.
+            preferred = formula_number(target.kind, target.parent, current.visible)
             reservation = await asyncio.to_thread(
-                self._store.reserve, target.sheet_id, target.row_id, target.kind, target.parent
+                self._store.reserve,
+                target.sheet_id,
+                target.row_id,
+                target.kind,
+                target.parent,
+                preferred,
             )
         current = await self._gateway.read(target)
         if not _valid(target, current) or not current.parent_confirmed:
             return Outcome.DENIED
         if current.stable:
             return await self._reconcile(target, current, reservation)
-        if current.visible and current.visible != reservation.value:
-            return Outcome.CONFLICT
+        # Una reserva confirmada con la celda vaciada se restaura: el ID es permanente.
         await asyncio.to_thread(lock.execute, "SELECT 1")
         try:
             if not await self._gateway.write_if_unchanged(target, current, reservation.value):
@@ -110,6 +117,24 @@ class IdConnector:
         except WriteUncertain:
             pass
         return await self._reconcile(target, await self._gateway.read(target), reservation)
+
+    async def _register(self, target: Target, current: Snapshot) -> Outcome:
+        """Stable ID presente sin rastro en PostgreSQL: se registra tal cual, nunca se cambia."""
+        if not current.parent_confirmed:
+            return Outcome.PENDING
+        try:
+            if parse_id(target.kind, current.stable).parent != target.parent:
+                return Outcome.CONFLICT
+            await asyncio.to_thread(
+                self._store.register_existing,
+                target.sheet_id,
+                target.row_id,
+                target.kind,
+                current.stable,
+            )
+        except ValueError:
+            return Outcome.CONFLICT
+        return Outcome.REGISTERED
 
     async def _reconcile(
         self, target: Target, current: Snapshot, reservation: Reservation | None

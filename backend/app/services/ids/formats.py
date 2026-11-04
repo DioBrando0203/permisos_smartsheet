@@ -59,6 +59,15 @@ def make_id(kind: EntityKind, parent: str, number: int) -> str:
     return value
 
 
+def formula_number(kind: EntityKind, parent: str, visible: str) -> int | None:
+    """Número que propone la fórmula de Smartsheet si es canónico y del mismo padre."""
+    try:
+        parts = parse_id(kind, visible.strip())
+    except ValueError:
+        return None
+    return parts.number if parts.parent == parent else None
+
+
 def parse_id(kind: EntityKind, value: str) -> IdParts:
     """Acepta sólo IDs canónicos para impedir colisiones por ceros o formato."""
     match = _PATTERNS[kind].fullmatch(value)

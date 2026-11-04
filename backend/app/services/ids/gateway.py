@@ -5,7 +5,7 @@ import asyncio
 from app.core.errors import AppError
 from app.services.ids.connector import Snapshot, Target, WriteUncertain
 from app.services.ids.dry_run import PILOT_WORKSPACE
-from app.services.ids.formats import EntityKind, parse_id, project_scope
+from app.services.ids.formats import EntityKind, project_scope
 from app.services.ids.pilot import SHEETS
 from app.services.ids.store import IdStore
 from app.services.smartsheet import RawRow, SmartsheetClient
@@ -37,17 +37,13 @@ class SmartsheetIdGateway:
                 raise ValueError("Columna de referencia ausente")
             parent = (row.cells.get(by_title[spec[4]]) or "").strip()
             if target.kind == EntityKind.TASK:
+                # Vacía (fila creada sin formulario) se acepta; distinta es ambigua.
                 reference = (row.cells.get(by_title.get("Reference", "")) or "").strip()
-                if reference != parent:
+                if reference and reference != parent:
                     return Snapshot(workspace, "", False, visible, stable)
         else:
+            # El ámbito sale de los datos de la fila; la fórmula sólo propone el número.
             parent = _project_scope(row, by_title)
-            if visible:
-                try:
-                    if parse_id(target.kind, visible).parent != parent:
-                        parent = ""
-                except ValueError:
-                    parent = ""
         confirmed = target.kind == EntityKind.PROJECT or await self._parent_confirmed(
             target, parent
         )

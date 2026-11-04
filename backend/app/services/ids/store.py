@@ -140,8 +140,19 @@ class IdStore:
             if not sequence or sequence[0] < parts.number:
                 raise ValueError("Máximo histórico no incorporado; requiere reconciliación")
 
-    def reserve(self, sheet_id: int, row_id: int, kind: EntityKind, parent: str) -> Reservation:
-        """Reserva sin reutilizar números; la misma fila y ámbito devuelve la misma reserva."""
+    def reserve(
+        self,
+        sheet_id: int,
+        row_id: int,
+        kind: EntityKind,
+        parent: str,
+        preferred: int | None = None,
+    ) -> Reservation:
+        """Reserva sin reutilizar números; la misma fila y ámbito devuelve la misma reserva.
+
+        `preferred` es el número de la fórmula: se adopta si supera el máximo registrado; si no,
+        se usa el siguiente libre. Nunca baja del máximo ni repite un número.
+        """
         if not self._allow_reservations:
             raise ValueError("Reservas deshabilitadas hasta resolver los máximos históricos")
         make_id(kind, parent, 1)
@@ -162,21 +173,18 @@ class IdStore:
                 if existing[0] != scope:
                     raise ValueError("La fila ya tiene un ID en otro ámbito")
                 return Reservation(existing[1], existing[2])
+            # Un inicio aprobado explícito prevalece; si no, la política crea el ámbito desde 1.
             start = self._approved_starts.get(scope)
-            if self._annual_policy_approved:
-                scope_exists = bool(
-                    conn.execute("SELECT 1 FROM secuencia_id WHERE ambito=%s", (scope,)).fetchone()
-                )
-                standard = standard_start(kind, parent, existing_scope=scope_exists)
-                if standard is not None:
-                    start = standard
+            if start is None and self._annual_policy_approved:
+                start = standard_start(kind, parent)
             if not isinstance(start, int) or isinstance(start, bool) or start < 1:
                 raise ValueError("Falta consecutivo inicial aprobado para este ámbito")
+            first = preferred if isinstance(preferred, int) and preferred >= start else start
             number = conn.execute(
                 "INSERT INTO secuencia_id VALUES (%s, %s) ON CONFLICT (ambito) "
                 "DO UPDATE SET ultimo_numero=GREATEST(secuencia_id.ultimo_numero+1, "
                 "EXCLUDED.ultimo_numero) RETURNING ultimo_numero",
-                (scope, start),
+                (scope, first),
             ).fetchone()[0]
             value = make_id(kind, parent, number)
             conn.execute(
@@ -185,6 +193,42 @@ class IdStore:
             )
             self._audit(conn, "reservado", sheet_id, row_id, value)
             return Reservation(value, "reservado")
+
+    def register_existing(
+        self, sheet_id: int, row_id: int, kind: EntityKind, value: str
+    ) -> Reservation:
+        """Registra un Stable ID que ya está en la hoja sin rastro en PostgreSQL; nunca lo cambia.
+
+        Rechaza el valor si su ID o su número ya pertenecen a otra fila.
+        """
+        if not self._allow_reservations:
+            raise ValueError("Registro deshabilitado sin escritura aprobada")
+        parts = parse_id(kind, value)
+        with psycopg.connect(self._dsn) as conn:
+            conn.execute("SELECT pg_advisory_xact_lock_shared(%s)", (_INIT_LOCK,))
+            if not conn.execute("SELECT 1 FROM estado_inicializacion_id").fetchone():
+                raise ValueError("Debe inicializar el inventario antes de registrar")
+            conn.execute(
+                "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))", (f"{sheet_id}:{row_id}",)
+            )
+            existing = conn.execute(
+                "SELECT id_generado, estado FROM asignacion_id WHERE hoja_id=%s AND fila_id=%s",
+                (sheet_id, row_id),
+            ).fetchone()
+            if existing:
+                if existing[0] != value:
+                    raise ValueError("La fila ya tiene otro ID registrado")
+                return Reservation(*existing)
+            self._advance(conn, parts.scope, parts.number)
+            try:
+                conn.execute(
+                    "INSERT INTO asignacion_id VALUES (%s, %s, %s, %s, %s, 'confirmado')",
+                    (sheet_id, row_id, parts.scope, parts.number, value),
+                )
+            except psycopg.errors.UniqueViolation:
+                raise ValueError("El Stable ID ya pertenece a otra fila") from None
+            self._audit(conn, "inicializado", sheet_id, row_id, value)
+            return Reservation(value, "confirmado")
 
     def confirm(self, sheet_id: int, row_id: int, value: str) -> None:
         """Confirma una reserva coincidente y audita una sola vez; no consulta Smartsheet."""

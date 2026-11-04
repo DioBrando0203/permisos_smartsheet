@@ -9,7 +9,7 @@ import psycopg
 
 from app.core.config import Settings
 from app.services.ids.dry_run import Candidate, plan
-from app.services.ids.formats import EntityKind, parse_id, project_scope
+from app.services.ids.formats import EntityKind, formula_number, parse_id, project_scope
 from app.services.ids.inventory import collect_inventory
 from app.services.ids.pilot import SHEETS, read_pilot
 from app.services.ids.simulation import Projector
@@ -70,7 +70,7 @@ async def _simulate(sheets, entries) -> None:
             )
             if sheet.extra_parent_column and parent:
                 reference = (row.cells.get(sheet.extra_parent_column) or "").strip()
-                if reference != parent:
+                if reference and reference != parent:
                     counts["conflict"] += 1
                     print(f"Hoja {sheet.sheet_id}, fila {row.id}: conflict")
                     continue
@@ -102,17 +102,19 @@ async def _simulate(sheets, entries) -> None:
             )
             action = plan(candidate, allowed)
             counts[action.value] += 1
-            if action.value in ("needs_reservation", "pending_formula") and parent:
+            if action.value in ("needs_reservation", "pending_formula", "would_write") and parent:
                 try:
-                    example = reservation[0] if reservation else projector.next(sheet.kind, parent)
+                    preferred = formula_number(sheet.kind, parent, visible)
+                    example = (
+                        reservation[0]
+                        if reservation
+                        else projector.next(sheet.kind, parent, preferred)
+                    )
                 except ValueError:
                     counts[action.value] -= 1
                     counts["conflict"] += 1
                     print(f"Hoja {sheet.sheet_id}, fila {row.id}: conflict")
                     continue
-                if visible and example != visible:
-                    counts[action.value] -= 1
-                    counts["conflict"] += 1
                 print(
                     f"Hoja {sheet.sheet_id}, fila {row.id}: estimado {example}; "
                     f"fórmula {visible or '(pendiente)'}; "

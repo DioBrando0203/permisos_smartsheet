@@ -12,7 +12,13 @@ from app.services.ids.formats import EntityKind
 logger = logging.getLogger("app.ids")
 
 _ELIGIBLE = frozenset(
-    {"needs_reservation", "pending_formula", "would_write", "confirm_reservation"}
+    {
+        "needs_reservation",
+        "pending_formula",
+        "would_write",
+        "confirm_reservation",
+        "register_existing",
+    }
 )
 _ORDER = {"project": 0, "task": 1, "record": 2, "revision": 3}
 
@@ -29,8 +35,13 @@ async def process_report(
     `limit` acota las filas intentadas por ciclo; las restantes quedan como `deferred`.
     """
     counts: Counter[str] = Counter()
+    # Registros antes que reservas del mismo tipo: así una reserva nunca toma su número.
     items = sorted(
-        report["pending_or_conflicting_rows"], key=lambda item: _ORDER.get(item["type"], 99)
+        report["pending_or_conflicting_rows"],
+        key=lambda item: (
+            _ORDER.get(item["type"], 99),
+            item["action"] != "register_existing",
+        ),
     )
     attempted = 0
     for item in items:

@@ -11,7 +11,7 @@ from app.services.ids.dry_run import (
     PlanAction,
     plan,
 )
-from app.services.ids.formats import EntityKind, parse_id, project_scope
+from app.services.ids.formats import EntityKind, formula_number, parse_id, project_scope
 from app.services.ids.inventory import InventorySheet
 from app.services.ids.pilot import SHEETS, read_pilot
 from app.services.ids.simulation import Projector
@@ -77,6 +77,12 @@ async def build_dry_run_report(
     details = []
 
     for sheet in sheets:
+        for row in sheet.rows:
+            stable = (row.cells.get(sheet.stable_column) or "").strip()
+            if stable and (sheet.sheet_id, int(row.id)) not in reservations:
+                projector.register(sheet.kind, stable)
+
+    for sheet in sheets:
         for row in sorted(sheet.rows, key=lambda item: _formula_order(sheet, item)):
             visible = (row.cells.get(sheet.visible_column) or "").strip()
 
@@ -107,12 +113,13 @@ async def build_dry_run_report(
                 continue
 
             reservation = reservations.get((sheet.sheet_id, int(row.id)))
-
-            extra_parent_conflict = bool(
-                sheet.extra_parent_column
-                and parent
-                and (row.cells.get(sheet.extra_parent_column) or "").strip() != parent
+            reference = (
+                (row.cells.get(sheet.extra_parent_column) or "").strip()
+                if sheet.extra_parent_column
+                else ""
             )
+            # Reference vacía (fila creada sin formulario) se acepta; distinta es ambigua.
+            extra_parent_conflict = bool(parent and reference and reference != parent)
 
             candidate = Candidate(
                 str(sheet.sheet_id),
@@ -127,30 +134,22 @@ async def build_dry_run_report(
             )
 
             action = PlanAction.CONFLICT if extra_parent_conflict else plan(candidate, allowed)
-            if action == PlanAction.ALREADY_STABLE and reservation is None:
-                # Stable ID ajeno a PostgreSQL: podría repetir un número futuro (ID-27).
-                action = PlanAction.CONFLICT
-
             proposed = None
-
-            if (
-                action
-                in (
-                    PlanAction.NEEDS_RESERVATION,
-                    PlanAction.PENDING_FORMULA,
-                )
-                and parent
-            ):
-                try:
-                    proposed = reservation[0] if reservation else projector.next(sheet.kind, parent)
-                except ValueError:
-                    action = PlanAction.CONFLICT
-                if visible and proposed and proposed != visible:
-                    action = PlanAction.CONFLICT
+            if action == PlanAction.WOULD_WRITE:
+                proposed = reservation[0]
+            elif action in (PlanAction.NEEDS_RESERVATION, PlanAction.PENDING_FORMULA):
+                if not parent:
+                    action = PlanAction.PENDING_DATA
+                else:
+                    try:
+                        preferred = formula_number(sheet.kind, parent, visible)
+                        proposed = projector.next(sheet.kind, parent, preferred)
+                    except ValueError:
+                        action = PlanAction.CONFLICT
 
             counts[action.value] += 1
 
-            if action == PlanAction.ALREADY_STABLE and reservation == (stable, "confirmado"):
+            if action == PlanAction.ALREADY_STABLE:
                 confirmed.add(stable)
 
             if action != PlanAction.ALREADY_STABLE:
@@ -164,6 +163,8 @@ async def build_dry_run_report(
                         "visible_id": visible,
                         "stable_id": stable,
                         "proposed_id": proposed,
+                        # La fórmula mostraba otro número ya usado: se escribirá el siguiente libre.
+                        "renumbered": bool(visible and proposed and proposed != visible),
                     }
                 )
 

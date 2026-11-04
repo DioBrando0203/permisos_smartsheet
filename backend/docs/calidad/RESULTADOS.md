@@ -240,3 +240,11 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - PostgreSQL real en solo lectura: 19 asignaciones confirmadas, 12 secuencias, 19 eventos; CHECK de auditoría con `confirmado` y `UPDATE(estado)` para `galp_ids`: migración 003 reconocida.
 - Servicio real con `python run.py` en 8710: `/docs` 200; diez rutas `/api/ids/*`; sin token 401; status con barreras apagadas y modo simulación; database 19/19/12/19; dry-run, processor/run y conflicts con 19 `already_stable` y 0 conflictos; recovery vacío; health correcto; `rows/assign` 403 en piloto y fuera de lista; origen ajeno 403.
 - Registro del servidor: 97 GET a Smartsheet, ningún PUT, POST ni DELETE, sin excepciones. Versiones de las cuatro hojas y conteos y secuencias de PostgreSQL idénticos antes y después.
+
+# 2026-11-04 16:36 -05:00 Política de numeración y primera escritura real del ID Manager (PEN-24)
+
+- 303 pruebas backend aprobadas; Ruff y formato correctos. Nuevos casos: registro de Stable ID sin rastro, renumeración al siguiente libre, `Reference` vacía, restauración de Stable vaciado, ámbito 2026 nuevo desde 001 y ID confirmado permanente ante cambio de fecha.
+- DRY_RUN real previo: 19 `already_stable` y 4 `needs_reservation` con `proposed_id` igual a la fórmula y sin renumerar.
+- Ciclo real del procesador (barreras sólo en el proceso, `.env` sin cambios): 4 `confirmed`: `KMV-LP-26-001`, `KMV-CC-26-721`, `KMV-CC-26-722` en Proyectos y `KMV-CC-26-720-01` en Tareas. Relectura: Stable y visible iguales en las cuatro filas.
+- PostgreSQL: 23 asignaciones confirmadas, 14 secuencias (`project:KMV-LP-26` 1, `project:KMV-CC-26` 722), auditoría con 4 `reservado` y 4 `confirmado` nuevos (eventos 20 a 27).
+- Segundo ciclo real: `outcomes` vacío, 23 `already_stable`; 23 asignaciones y 27 eventos sin cambios.

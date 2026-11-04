@@ -180,7 +180,7 @@ async def test_applied_write_with_server_error_confirms_after_reread(pilot, data
     assert len(pilot.puts) == 1
 
 
-async def test_conflicts_are_never_overwritten(pilot, database) -> None:
+async def test_automatic_resolution_never_overwrites(pilot, database) -> None:
     _seed(pilot, database)
     store = IdStore(database, allow_reservations=True, annual_policy_approved=True)
     store.reserve(TASKS, 11, EntityKind.TASK, PROJECT)
@@ -188,20 +188,69 @@ async def test_conflicts_are_never_overwritten(pilot, database) -> None:
     pilot.add(TASKS, 12, stable=f"{PROJECT}-05", tracking=PROJECT, reference=PROJECT)
     pilot.add(TASKS, 13, provisional=f"{PROJECT}-04", tracking=PROJECT, reference=PROJECT)
     pilot.add(TASKS, 14, provisional=f"{PROJECT}-09", tracking=PROJECT, reference="OTRO")
+    pilot.add(TASKS, 15, provisional=f"{PROJECT}-08", tracking=PROJECT, reference="")
+    settings = make_settings(**WRITE_FLAGS)
+    client = SmartsheetClient(settings)
+    try:
+        monitor = _monitor(client, settings, database)
+        report = await build_dry_run_report(client, database)
+        result = await monitor.run_cycle()
+        direct = await assign_row(settings, client, database, (TASKS, 11, PROJECT), True)
+    finally:
+        await client.aclose()
+    rows = {item["row_id"]: item for item in report["pending_or_conflicting_rows"]}
+    # Sin rastro se registra; número de fórmula ya ocupado se renumera; Reference vacía vale.
+    assert rows["13"]["proposed_id"] == f"{PROJECT}-06" and rows["13"]["renumbered"]
+    assert rows["15"]["proposed_id"] == f"{PROJECT}-08" and not rows["15"]["renumbered"]
+    assert result["counts"] == {
+        "already_stable": 2,
+        "conflict": 2,
+        "register_existing": 1,
+        "needs_reservation": 2,
+    }
+    assert result["outcomes"] == {"registered": 1, "confirmed": 2}
+    assert pilot.stable(TASKS, 12) == f"{PROJECT}-05"
+    assert pilot.stable(TASKS, 13) == f"{PROJECT}-06"
+    assert pilot.stable(TASKS, 15) == f"{PROJECT}-08"
+    # Únicos conflictos: Stable distinto de la reserva y Reference contradictoria; no se tocan.
+    assert direct["outcome"] == "conflict"
+    assert pilot.stable(TASKS, 11) == f"{PROJECT}-07"
+    assert pilot.stable(TASKS, 14) == ""
+    assert sorted(body[0]["id"] for _, body in pilot.puts) == [13, 15]
+
+
+async def test_cleared_stable_is_restored_and_new_scope_is_created(pilot, database) -> None:
+    _seed(pilot, database)
+    pilot.rows[TASKS][10]["Stable Task ID"] = ""
+    pilot.rows[TASKS][10]["_provisional"] = f"{PROJECT}-01"
+    pilot.add(
+        PROJECTS,
+        2,
+        provisional="KMV-LP-26-001",
+        company="KMV",
+        customer="LP",
+        received="2026-05-01",
+    )
+    pilot.add(
+        PROJECTS,
+        3,
+        provisional="KMV-BS-26-453",
+        company="KMV",
+        customer="BS",
+        received="2026-05-02",
+    )
     settings = make_settings(**WRITE_FLAGS)
     client = SmartsheetClient(settings)
     try:
         result = await _monitor(client, settings, database).run_cycle()
-        direct = await assign_row(settings, client, database, (TASKS, 11, PROJECT), True)
     finally:
         await client.aclose()
-    # Stable distinto, Stable sin registro, fórmula distinta y referencia inconsistente.
-    assert result["counts"] == {"already_stable": 2, "conflict": 4}
-    assert result["outcomes"] == {}
-    assert direct["outcome"] == "conflict"
-    assert pilot.puts == []
-    assert pilot.stable(TASKS, 11) == f"{PROJECT}-07"
-    assert _rows(database, "SELECT count(*) FROM asignacion_id") == [(3,)]
+    assert result["outcomes"] == {"confirmed": 3}
+    assert pilot.stable(TASKS, 10) == TASK
+    assert pilot.stable(PROJECTS, 2) == "KMV-LP-26-001"
+    assert pilot.stable(PROJECTS, 3) == "KMV-BS-26-453"
+    sequences = dict(_rows(database, "SELECT ambito, ultimo_numero FROM secuencia_id"))
+    assert sequences["project:KMV-LP-26"] == 1 and sequences["project:KMV-BS-26"] == 453
 
 
 async def test_workspace_change_blocks_cycle_and_row(pilot, database) -> None:

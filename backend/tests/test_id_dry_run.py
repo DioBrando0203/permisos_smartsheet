@@ -25,7 +25,10 @@ def test_simulation_refuses_untrusted_and_conflicting_data() -> None:
     assert plan(replace(candidate, workspace_id=None), allowed) == PlanAction.DENIED
     assert plan(candidate, frozenset()) == PlanAction.DENIED
     assert plan(replace(candidate, parent_confirmed=False), allowed) == PlanAction.PENDING_PARENT
-    assert plan(replace(candidate, reserved_id="KMV-BS-26-452-03"), allowed) == PlanAction.CONFLICT
+    # Una reserva sin escribir se escribe aunque la fórmula muestre otro número.
+    assert (
+        plan(replace(candidate, reserved_id="KMV-BS-26-452-03"), allowed) == PlanAction.WOULD_WRITE
+    )
     assert (
         plan(replace(candidate, reserved_id=candidate.visible_id), allowed)
         == PlanAction.WOULD_WRITE
@@ -33,8 +36,17 @@ def test_simulation_refuses_untrusted_and_conflicting_data() -> None:
     assert plan(replace(candidate, stable_id="other"), allowed) == PlanAction.CONFLICT
     assert (
         plan(replace(candidate, stable_id=candidate.visible_id), allowed)
-        == PlanAction.ALREADY_STABLE
+        == PlanAction.REGISTER_EXISTING
     )
+    confirmed = replace(
+        candidate,
+        stable_id=candidate.visible_id,
+        reserved_id=candidate.visible_id,
+        reserved_state="confirmado",
+    )
+    assert plan(confirmed, allowed) == PlanAction.ALREADY_STABLE
+    assert plan(replace(confirmed, parent="OTRO"), allowed) == PlanAction.ALREADY_STABLE
+    assert plan(replace(confirmed, reserved_id="KMV-BS-26-452-09"), allowed) == PlanAction.CONFLICT
     assert (
         plan(
             replace(
@@ -47,7 +59,12 @@ def test_simulation_refuses_untrusted_and_conflicting_data() -> None:
         )
         == PlanAction.CONFIRM_RESERVATION
     )
-    assert plan(replace(candidate, parent="KMV-CC-26-452"), allowed) == PlanAction.CONFLICT
+    # El padre manda; la fórmula de otro padre sólo deja de proponer el número.
+    assert plan(replace(candidate, parent="KMV-CC-26-452"), allowed) == PlanAction.NEEDS_RESERVATION
+    assert (
+        plan(replace(candidate, parent="KMV-CC-26-452", stable_id="KMV-BS-26-452-02"), allowed)
+        == PlanAction.CONFLICT
+    )
 
 
 def row(row_id: str, visible: str, stable: str) -> RawRow:
@@ -90,8 +107,12 @@ def test_hypothetical_ids_do_not_mutate_database_snapshot() -> None:
     assert projector.next(EntityKind.TASK, "KMV-BS-26-452") == "KMV-BS-26-452-04"
     assert projector.next(EntityKind.TASK, "KMV-BS-26-452") == "KMV-BS-26-452-05"
     assert scopes["task:KMV-BS-26-452"] == 2
-    with pytest.raises(ValueError):
-        projector.next(EntityKind.PROJECT, "KMV-OT-26")
+    assert projector.next(EntityKind.PROJECT, "KMV-OT-26") == "KMV-OT-26-001"
+    # La fórmula se adopta sólo por encima del máximo; si no, el siguiente libre.
+    assert projector.next(EntityKind.TASK, "KMV-BS-26-452", 9) == "KMV-BS-26-452-09"
+    assert projector.next(EntityKind.TASK, "KMV-BS-26-452", 4) == "KMV-BS-26-452-10"
+    projector.register(EntityKind.TASK, "KMV-BS-26-452-15")
+    assert projector.next(EntityKind.TASK, "KMV-BS-26-452", 15) == "KMV-BS-26-452-16"
 
 
 def test_transition_policy_requires_approval_and_valid_scope() -> None:

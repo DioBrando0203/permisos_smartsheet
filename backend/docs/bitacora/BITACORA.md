@@ -307,3 +307,17 @@ Estado: implementado y probado sin escrituras reales; prueba real preparada, pen
 Pedido: continuar el ID Manager: conector conectado al coordinador, recuperación, procesador periódico deshabilitado, endpoints de Swagger y prueba integral sin escrituras. El usuario confirmó que la migración 003 está aplicada y que OAuth no es requisito del piloto.
 Cambios: `runtime.py` con barreras y ensamblaje; prueba manual sin bloqueo OAuth y reutilizable desde `POST /rows/assign`; procesador con tope por ciclo, resultados por fila y ciclo a demanda con bloqueo global; `GET /audit` y `GET /recovery`; Stable ID sin registro en PostgreSQL ahora es conflicto (ID-27); DRY_RUN en orden de fórmula (ID-28). Riesgo de numeración por fórmulas que cuentan filas documentado para decisión (ID-31).
 Evidencia: ver RESULTADOS de la misma hora. Sin escrituras en Smartsheet ni cambios en PostgreSQL real; `APP_READ_ONLY=true`.
+
+## 2026-11-04 16:36 -05:00 Numeración desde Smartsheet y primera escritura real (PEN-24)
+
+Estado: terminado para el piloto; activación permanente del procesador pendiente de decisión del usuario.
+Pedido: el usuario indicó que todo el piloto es de prueba y autorizó ediciones; pidió conservar los IDs, evitar conflictos, que Smartsheet genere la numeración y que lo que no tenga rastro se cree o registre en la base.
+Cambios: reserva con número preferido de la fórmula, ámbito sin rastro desde 1, registro de Stable ID existente, restauración de Stable vaciado, ID confirmado permanente, `Reference` vacía aceptada, acción `pending_data` y campo `renumbered` (SPEC-ID01 ID-32 a ID-35).
+Evidencia: ver RESULTADOS de la misma hora. Escrituras sólo en la columna Stable ID de cuatro filas de Pruebas; `backend/.env` sin cambios y en solo lectura.
+
+## 2026-11-04 16:48 -05:00 Activación del procesador automático de IDs (PEN-24)
+
+Estado: configurado; pendiente de reinicio del backend por el usuario.
+Pedido: el usuario decidió activar el procesador tal como está; nadie usará el panel por ahora y la separación de `APP_READ_ONLY` se revisará al final.
+Cambios: `backend/.env` con `APP_READ_ONLY=false`, `IDS_WRITES_ENABLED`, `IDS_TRANSITION_APPROVED`, `IDS_PROCESSOR_WRITES_ENABLED` e `IDS_MONITOR_ENABLED` en `true`; intervalo 60 s y máximo 5 filas por ciclo. AGENTS.md y SPEC-ID01 ID-36 actualizados.
+Evidencia: `Settings` lee las cuatro barreras activas. Sin escrituras nuevas en Smartsheet al configurar.

@@ -309,8 +309,8 @@ def test_annual_policy_respects_existing_and_independent_scopes(database) -> Non
         ]
     )
     assert store.reserve(1, 2, EntityKind.PROJECT, "KMV-BS-26").value == "KMV-BS-26-453"
-    with pytest.raises(ValueError):
-        store.reserve(1, 3, EntityKind.PROJECT, "KMV-OT-26")
+    # Ámbito sin rastro: se crea desde 001 también en 2026 (decisión 2026-11-04).
+    assert store.reserve(1, 3, EntityKind.PROJECT, "KMV-OT-26").value == "KMV-OT-26-001"
     assert store.reserve(1, 4, EntityKind.PROJECT, "KMV-BS-27").value == "KMV-BS-27-001"
     assert store.reserve(1, 5, EntityKind.PROJECT, "KMV-BS-27").value == "KMV-BS-27-002"
     assert store.reserve(1, 6, EntityKind.PROJECT, "KMV-CC-27").value == "KMV-CC-27-001"
@@ -344,7 +344,7 @@ def test_confirmation_migration_is_repeatable_and_preserves_assignments(database
         assert conn.execute("SELECT count(*) FROM auditoria_id").fetchone()[0] == 1
 
 
-async def test_connector_rejects_wrong_workspace_and_formula(database) -> None:
+async def test_connector_rejects_wrong_workspace_and_adopts_formula(database) -> None:
     task_sheet = 73093952524164
     parent = "KMV-BS-26-452"
     store = IdStore(database, allow_reservations=True, approved_starts=TEST_STARTS)
@@ -356,8 +356,11 @@ async def test_connector_rejects_wrong_workspace_and_formula(database) -> None:
     assert await connector.process(target) == Outcome.DENIED
     assert store.lookup(task_sheet, 2) is None
     gateway.read.return_value = Snapshot(PILOT_WORKSPACE, parent, True, f"{parent}-05", "")
-    assert await connector.process(target) == Outcome.CONFLICT
-    gateway.write_if_unchanged.assert_not_called()
+    gateway.write_if_unchanged.return_value = True
+    # El número de la fórmula supera el máximo: se adopta y se escribe tal cual.
+    assert await connector.process(target) == Outcome.PENDING
+    assert store.lookup(task_sheet, 2).value == f"{parent}-05"
+    assert gateway.write_if_unchanged.await_args.args[2] == f"{parent}-05"
 
 
 async def test_connector_concurrent_calls_share_one_reservation(database) -> None:
