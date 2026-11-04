@@ -120,3 +120,9 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm run build`, `npm run lint` y `npm run format:check`: pasan. `npm test`: 14 archivos, 40 pruebas aprobadas (nueva: St. Johns en `MapResults.test.tsx`, CA-21).
 - `npm run test:e2e`: 11 aprobadas y 1 caso F0 omitido (1.3 min).
 - Sin revisión visual en navegador: el cambio visible es el texto de un campo existente ("Zona no incorporada (Nocatee)") y una fuente más en la lista.
+
+## 2026-11-03 19:09 -05:00 Calles por jurisdicción, calles del trazo y tipo de municipio (PEN-41)
+
+- `npm run build`, `npm run lint` y `npm run format:check`: pasan. `npm test`: 16 archivos, 47 pruebas aprobadas (nuevas: `lib/jurisdiction.test.ts`, `TraceStreets.test.tsx`, village en `MapResults.test.tsx`).
+- `npm run test:e2e` completo (2 workers): 12 aprobadas, 1 omitida (F0) y 1 falla por tiempo en la prueba nueva de la capa (recarga del mapa); con `test.slow()`, `e2e/map-streets.spec.ts` da 2 aprobadas. La suite completa no se repitió después: el backend del E2E no arranca por un `IndentationError` en `app/api/routes/idsmart.py` (edición del usuario en curso, ajena a este cambio).
+- Revisión con Playwright sobre `npm run dev` y el backend con GIS real (capturas sólo en el scratchpad de la sesión: la cabecera muestra la cuenta real): en CR 210 W y Beachwalk Blvd, 354 tramos coloreados, leyenda Estado (FDOT), County, Privada y Sin dueño claro; panel "St. Johns County · Confianza alta" con "Qué permiso pedir"; trazo con la lista County Road 210 W 0.476 mi y Beachwalk Blvd 0.097 mi. A 390 px, desborde horizontal 0.

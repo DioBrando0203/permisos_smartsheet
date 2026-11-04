@@ -328,7 +328,7 @@ Fuera de alcance: parcelas del condado (FDACS responde en St. Johns y su `PARCEL
 
 ### PEN-41 Mapa: calles coloreadas por jurisdicción y qué permiso pedir (St. Johns)
 
-Prioridad: alta. Alcance: backend y frontend. Estado: en curso (2026-11-03); SPEC-B14 punto 5, puntos 14 y 15 y CA-33 a CA-37, SPEC-11 puntos 11 y 12 y CA-22 a CA-24.
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-11-03); SPEC-B14 punto 5, puntos 14 y 15 y CA-33 a CA-37, SPEC-11 puntos 11 y 12 y CA-22 a CA-24.
 Tipo (ADR-B15): (a) ni el iMAP del condado ni el tasador colorean las calles por quién las mantiene ni dicen qué permiso pedir en un recorrido; el panel sólo consulta y no cambia cómo se pide el permiso.
 Situación: pedido del usuario con capturas de Google Earth (trazo rojo por CR 210 W hacia Harbor Chase of Beach Walk) y del iMAP del condado. GET reales del 2026-11-03: en esa zona la LRS del FDOT no tiene vías a 1,5 km y su capa de vías de condado ubica CR 210 (`78510000`) a más de 30 m del eje; el condado sí tiene CR 210 W (`St Johns County`) y Beachwalk Blvd. Una celda de 0,02 grados trae de 99 a 409 tramos en 1,2 a 2,8 s, sin pasar el límite de 1000.
 Hacer:

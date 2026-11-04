@@ -275,3 +275,10 @@ Pedido: el usuario vio limitada la información del mapa en St. Johns County. La
 Hallazgos (GET reales sin sesión): FDOT y FDACS sí responden en St. Johns (condado 78, Distrito 2, DOR 65), pero la LRS no trae calles locales y la capa 7 de `Admin_Boundaries` hacía pasar lugares censales (Nocatee, World Golf Village; `CLASSFP` U2) por ciudades. El condado publica `Road/MapServer/36` con `MAINTENANCE` (MJ-SJ-01 a MJ-SJ-10).
 Cambios: `services/county_roads.py` (adaptador M5), `gis/layers.stjohns_roads`, `gis_stjohns_roads_url`, `MapLocation.place`, ciudad sólo con `CLASSFP` C1, catálogo de fuentes en `services/map_sources.py`; SPEC-B14, REQUERIMIENTOS y `future_docs/MAPAS_JURISDICCION_PARCELAS.md` actualizados.
 Evidencia: ver RESULTADOS de la misma hora. Modo solo lectura sin cambios; sin escrituras en Smartsheet.
+
+## 2026-11-03 19:09 -05:00 Calles por jurisdicción y permisos (PEN-41)
+
+Estado: terminada.
+Pedido: el usuario mostró capturas de Google Earth (trazo por CR 210 W hacia Harbor Chase of Beach Walk) y del iMAP del condado: ni el GIS ni el tasador colorean las calles por responsable ni dicen qué permiso pedir. Después pidió separar en condado, village, city y Estado.
+Cambios: `GET /api/map/streets` y `GET /api/map/trace/streets` (`services/county_streets.py`, `services/trace_streets.py`), adaptador con rectángulo y `classify`, `valid_trace_path` y `trace_rules.kept_groups` reutilizables; `MapLocation.municipality_type` y autoridades `TOWN` y `VILLAGE` desde `LSAD`; el condado se nombra "X County". SPEC-B14, REQUERIMIENTOS y MJ-SJ-11 actualizados.
+Evidencia: ver RESULTADOS de la misma hora. Modo solo lectura sin cambios.

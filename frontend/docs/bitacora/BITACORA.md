@@ -155,3 +155,9 @@ Pendiente de producto: comparación con OSP usando idénticos vértices (OSP-PEN
 Estado: terminada
 Cambios: `location.place` en tipos y normalización; Ubicación muestra "Zona no incorporada (lugar)"; fuente `stjohns_roads` con nombre legible; nota de fuentes menciona al condado. SPEC-11 punto 4 y CA-21.
 Evidencia: ver RESULTADOS de la misma hora. Sin escrituras en Smartsheet.
+
+## 2026-11-03 19:09 -05:00 Jurisdicción de calles y permisos en el mapa (PEN-41)
+
+Estado: terminada
+Cambios: casilla "Jurisdicción de calles" (`useStreetLayer`, `StreetLegend`, capa `overlays` en `MapView` con `components/map/draw.ts`), sección "Calles y permisos (condado)" del trazo (`TraceStreets.tsx`), "Qué permiso pedir" y tipo con color en el punto, "Municipio" con City, Town o Village; tabla única en `lib/jurisdiction.ts`; estilos en `map-streets.css`. SPEC-11 puntos 4, 11 y 12 y CA-22 a CA-24.
+Evidencia: ver RESULTADOS de la misma hora. Sin escrituras en Smartsheet.

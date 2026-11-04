@@ -1,6 +1,6 @@
 
 import psycopg
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from app.core.config import get_settings
 from app.services.ids.cli import DSN
@@ -86,3 +86,9 @@ def get_ids_database():
             status_code=500,
             detail=f"Error al consultar la base de datos: {str(e)}"
         )
+        
+
+    @router.get("/assignments")
+    def get_id_assignments(
+        limit: int = Query(default=25, ge=1, le=100)
+    ):
