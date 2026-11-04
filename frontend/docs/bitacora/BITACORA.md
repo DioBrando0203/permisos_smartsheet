@@ -149,3 +149,9 @@ Estado: terminada
 Cambios: sin cambios de código; el frontend de PEN-38 (`TraceOptions`, `TraceAlignmentNote`, URL `snap`/`original`) llegó en el commit `d2c9999`. Plan de implementación y RESULTADOS actualizados.
 Evidencia: build, lint, formato, 39 unitarias y 11 E2E (1 omitida de F0). Revisión con Playwright contra el GIS real a 1440 y 320 px: dos líneas en la diagonal de Miami, Broward Blvd ajustado al eje, comparación con el dibujo original y sin desborde.
 Pendiente de producto: comparación con OSP usando idénticos vértices (OSP-PEN-01), adaptadores M5 y respaldos de parcelas Palm Beach/Martin (PEN-29). Sin escrituras en Smartsheet.
+
+## 2026-11-03 18:31 -05:00 Calles de St. Johns y lugares censales en el panel del mapa (PEN-40)
+
+Estado: terminada
+Cambios: `location.place` en tipos y normalización; Ubicación muestra "Zona no incorporada (lugar)"; fuente `stjohns_roads` con nombre legible; nota de fuentes menciona al condado. SPEC-11 punto 4 y CA-21.
+Evidencia: ver RESULTADOS de la misma hora. Sin escrituras en Smartsheet.

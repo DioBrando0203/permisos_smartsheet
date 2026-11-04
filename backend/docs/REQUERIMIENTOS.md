@@ -237,7 +237,7 @@ Hacer: exportar a CSV la matriz persona por hoja con niveles. El archivo contien
 
 ### PEN-29 Mapa de vías, milepost, jurisdicción y parcelas
 
-Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-31): M1 a M4, buscador, imagen HD, vías y parcelas implementadas. PEN-34 verificó búsquedas por zona y cruces; PEN-35 encuadra el trazo completo; PEN-38 ajusta el recorrido a la red LRS; PEN-39 encuentra cruces con nombre recortado. Pendientes: M5, comparación independiente con OSP usando idénticos vértices, respaldo de parcelas para Palm Beach/Martin y mapa base con clave opcional. ADR-B16 y ADR-B17 aprobadas por el usuario.
+Prioridad: media. Alcance: backend y frontend. Estado: en curso (2026-10-31): M1 a M4, buscador, imagen HD, vías y parcelas implementadas. PEN-34 verificó búsquedas por zona y cruces; PEN-35 encuadra el trazo completo; PEN-38 ajusta el recorrido a la red LRS; PEN-39 encuentra cruces con nombre recortado; PEN-40 suma el adaptador de St. Johns (M5) y separa lugares censales de ciudades. Pendientes: resto de M5, comparación independiente con OSP usando idénticos vértices, respaldo de parcelas para Palm Beach/Martin y mapa base con clave opcional. ADR-B16 y ADR-B17 aprobadas por el usuario.
 Tipo (ADR-B15): (a) ni Smartsheet ni OSP dicen el milepost, de quién es la calle y qué parcela hay en un punto sin dibujar una solicitud en OSP; el mapa sólo consulta y no cambia cómo se pide el permiso.
 Situación: verificado con GET reales que los servicios públicos del FDOT y de FDACS reproducen los valores de OSP (SR 953, vía 87281000, sección 281, milepost 3.124 a 3.839) y dan ciudad, condado, ZIP y parcela en Broward, Palm Beach, Martin y Miami-Dade. Investigación en `future_docs/`.
 Specs: SPEC-B14 (backend) y SPEC-11 (frontend); ADR-13 del frontend (Leaflet).
@@ -246,7 +246,7 @@ Fases:
 - M2 backend tramo: `GET /api/map/segment` con `osp_row` y geometría.
 - M3 frontend punto: destino "Mapa" en la navegación, `/mapa`, mapa base USGS, clic o coordenadas, panel con vía, jurisdicción, ubicación, parcela y fuentes.
 - M4 frontend tramo: dos clics, tramo resaltado y "Copiar para OSP".
-- M5 adaptadores de condado: Palm Beach (`RESP_AUTH`); Broward, Martin y Miami-Dade según MJ-PEN-01 a MJ-PEN-03.
+- M5 adaptadores de condado: St. Johns (`MAINTENANCE`, PEN-40); Palm Beach (`RESP_AUTH`); Broward, Martin y Miami-Dade según MJ-PEN-01 a MJ-PEN-03.
 - M6 extras: capas de vías dibujadas, búsqueda por dirección (hecha: buscador del mapa, SPEC-B14 punto 9), Turnpike (GIS-PEN-01) y mapa base de Esri con clave.
 Límites: la jurisdicción de calles locales es aproximada hasta M5; USGS sólo tiene teselas hasta el zoom 16 en Miami (verificado), por lo que el detalle de calle se ve ampliado y algo borroso hasta M6.
 
@@ -314,6 +314,29 @@ Prioridad: media. Alcance: backend. Estado: terminada (2026-10-31); SPEC-B14 CA-
 Evidencia: en Fort Lauderdale "Sunrise Blvd & Federal" encuentra el cruce, pero "Federal Hwy & Sunrise" no devuelve nada. La capa 6 de RCI recorta `INTSEC_ROA` a 20 caracteres ("US-1/SR-5/FEDERAL HW", "US-1/SR-5/N FEDERAL"), así que "FEDERAL HWY" no coincide.
 Hacer: si el nombre completo no da el cruce, reintentar una vez sin el tipo de vía final (HWY, BLVD, AVE…), en la calle que cruza y en la vía (la capa 13 también recorta: "US-1/SR-5/FEDERAL", vía 86020000), sólo si queda una palabra de 3 letras o más ("SE 3 AVE" no se recorta). Prueba pura del filtro y prueba con GIS simulado.
 Fuera de alcance: cruces que no existen a nivel (Federal Hwy pasa en túnel bajo Las Olas); esos dependen del punto más cercano de TIGER (B-15).
+
+### PEN-40 Mapa: de quién es la calle en St. Johns y zonas no incorporadas con nombre
+
+Prioridad: alta. Alcance: backend y frontend. Estado: terminada (2026-11-03); SPEC-B14 punto 5 y CA-30 a CA-32, SPEC-11 CA-21. Pendiente aparte: condiciones de uso del servicio del condado (MJ-PEN-06).
+Tipo (ADR-B15): (b) el mapa ya dice de quién es la calle; esto cambia la aproximación por el dato oficial del condado, sin escribir nada.
+Situación: pedido del usuario: en St. Johns County la respuesta es limitada. GET reales del 2026-11-03 con el servicio del panel: FDOT y FDACS responden (condado 78, Distrito 2, parcela DOR 65), pero las calles locales no están en la LRS del FDOT ("No hay vía cercana" en World Golf Village y St. Augustine Beach), y Nocatee y World Golf Village salen como ciudad (`CITY`, `inside_city`) aunque son lugares censales (CDP, `CLASSFP` U2), es decir, zona no incorporada del condado. El error de la ciudad afecta a todos los condados.
+Hacer:
+- adaptador de condado M5 para St. Johns: capa pública `https://www.gis.sjcfl.us/sjcgis/rest/services/Road/MapServer/36` con el campo `MAINTENANCE` (quién mantiene cada tramo; MJ-SJ-01 a MJ-SJ-04), sólo si el FDOT dice condado 78;
+- la ciudad del punto sólo si la capa 7 de `Admin_Boundaries` dice municipio (`CLASSFP` C1); un lugar censal pasa a `location.place` y la jurisdicción cae en `unincorporated`;
+- frontend: mostrar el lugar censal y la nueva fuente.
+Fuera de alcance: parcelas del condado (FDACS responde en St. Johns y su `PARCEL_ID` es el `STRAP` del condado) y el trazo de OSP, que sólo usa vías del FDOT.
+
+### PEN-41 Mapa: calles coloreadas por jurisdicción y qué permiso pedir (St. Johns)
+
+Prioridad: alta. Alcance: backend y frontend. Estado: en curso (2026-11-03); SPEC-B14 punto 5, puntos 14 y 15 y CA-33 a CA-37, SPEC-11 puntos 11 y 12 y CA-22 a CA-24.
+Tipo (ADR-B15): (a) ni el iMAP del condado ni el tasador colorean las calles por quién las mantiene ni dicen qué permiso pedir en un recorrido; el panel sólo consulta y no cambia cómo se pide el permiso.
+Situación: pedido del usuario con capturas de Google Earth (trazo rojo por CR 210 W hacia Harbor Chase of Beach Walk) y del iMAP del condado. GET reales del 2026-11-03: en esa zona la LRS del FDOT no tiene vías a 1,5 km y su capa de vías de condado ubica CR 210 (`78510000`) a más de 30 m del eje; el condado sí tiene CR 210 W (`St Johns County`) y Beachwalk Blvd. Una celda de 0,02 grados trae de 99 a 409 tramos en 1,2 a 2,8 s, sin pasar el límite de 1000.
+Hacer:
+- `GET /api/map/streets` por celda: tramos del condado con quién los mantiene, sólo donde hay adaptador (St. Johns);
+- `GET /api/map/trace/streets`: calles del condado que sigue un trazo, con su responsable y longitud;
+- separar la jurisdicción en Estado (FDOT), condado, city, town y village (pedido del usuario; `LSAD` del Censo: 25, 43 y 47);
+- frontend: casilla "Jurisdicción de calles" que colorea las calles por responsable con leyenda y nombre al pasar el cursor; en el punto y en el trazo, qué permiso corresponde según el responsable (OSP para el FDOT, derecho de vía del condado o de la ciudad, autorización del dueño o del CDD), como guía que hay que confirmar.
+Fuera de alcance: pedir o tramitar permisos, y otros condados (siguen sin fuente propia).
 
 ### PEN-33 Límites de parcelas en el mapa
 

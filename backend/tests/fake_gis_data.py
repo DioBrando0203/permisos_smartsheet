@@ -113,7 +113,7 @@ def _rectangle(west: float, south: float, east: float, north: float) -> list[lis
 # en consultas por punto cubren cualquier punto. La vía sintética no está en el Turnpike.
 BOUNDARIES: dict[int, Json] = {
     6: {"COUNTY": "Miami-Dade", "CNTYNO": "87", "DISTRICT": "6"},
-    7: {"NAME": "Miami"},
+    7: {"NAME": "Miami", "CLASSFP": "C1"},
     8: {"ZIP": "33126"},
     13: {"DVALUE": "D6", "SG_Distric": "District 6"},
 }

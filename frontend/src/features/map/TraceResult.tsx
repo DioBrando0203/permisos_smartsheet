@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Button, LoadingNotice, StatusAlert } from '../../components/ui'
 import { MapEmpty, MapError } from './MapResults'
 import { SourcesSection } from './MapSections'
@@ -15,10 +16,12 @@ type Props = {
   onUndo: () => void
   onClear: () => void
   onRetry: () => void
+  /** Debajo de Work Location: las calles y permisos del condado (PEN-41). */
+  children?: ReactNode
 }
 
 /** Panel del modo Trazo: controles del dibujo y, al terminar, la tabla Work Location. */
-export function TraceResult({ vertices, drawing, onFinish, onUndo, onClear, ...state }: Props) {
+export function TraceResult({ vertices, drawing, onFinish, onUndo, onClear, children, ...state }: Props) {
   return (
     <>
       <div className="map-trace-controls" role="group" aria-label="Trazo">
@@ -33,7 +36,14 @@ export function TraceResult({ vertices, drawing, onFinish, onUndo, onClear, ...s
           Borrar
         </Button>
       </div>
-      {drawing ? <DrawingHelp vertices={vertices} /> : <TraceBody {...state} />}
+      {drawing ? (
+        <DrawingHelp vertices={vertices} />
+      ) : (
+        <>
+          <TraceBody {...state} />
+          {children}
+        </>
+      )}
     </>
   )
 }

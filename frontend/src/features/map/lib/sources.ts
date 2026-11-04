@@ -9,6 +9,7 @@ export const sourceNames: Record<string, string> = {
   fdot_zip: 'Códigos ZIP (FDOT)',
   fdacs_parcels: 'Parcelas (FDACS)',
   broward_parcels: 'Parcelas de Broward (condado)',
+  stjohns_roads: 'Calles de St. Johns (condado)',
   fdot_turnpike: 'Distritos y Turnpike (FDOT)',
 }
 

@@ -1,7 +1,7 @@
 # SPEC-B14 Mapa: vía, milepost, jurisdicción y parcela de un punto o tramo
 
-Estado: implementada M1-M2, buscador, trazo con integridad y ajuste automático de recorrido (PEN-32, PEN-35 a PEN-38), límites de parcelas (PEN-33) (2026-10-31)
-Código: `api/routes/map.py`, `models/map.py`, `services/map.py`, `services/map_rules.py`, `services/map_mappers.py`, `services/map_query.py`, `services/map_search.py`, `services/map_places.py`, `services/map_streets.py`, `services/map_geometry.py`, `services/gis/`
+Estado: implementada M1-M2, buscador, trazo con integridad y ajuste automático de recorrido (PEN-32, PEN-35 a PEN-38), límites de parcelas (PEN-33) (2026-10-31); adaptador de St. Johns y lugares censales (PEN-40, 2026-11-03); calles por jurisdicción y calles del trazo (PEN-41, 2026-11-03)
+Código: `api/routes/map.py`, `models/map.py`, `services/map.py`, `services/map_rules.py`, `services/map_mappers.py`, `services/map_query.py`, `services/map_search.py`, `services/map_places.py`, `services/map_streets.py`, `services/map_geometry.py`, `services/county_roads.py`, `services/county_streets.py`, `services/trace_streets.py`, `services/map_sources.py`, `services/gis/`
 Relacionadas: PEN-29, RQ-26, ADR-B15, ADR-B16, ADR-B17, SPEC-11 del frontend; investigación en `future_docs/GIS_PUBLICO_FLORIDA.md` y `future_docs/MAPAS_JURISDICCION_PARCELAS.md`
 
 ## Objetivo
@@ -11,7 +11,7 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 ## Alcance
 
 - Incluye: consulta de punto, trazo con la tabla Work Location de OSP (y el tramo de dos puntos, que el panel ya no usa), buscador (dirección, calle, ruta con milepost o coordenadas), contornos de parcelas para dibujar y catálogo de fuentes, sólo lectura sobre servicios GIS públicos (ADR-B17).
-- Excluye: dibujar capas completas, Turnpike (GIS-PEN-01), adaptadores de condado distintos de la base estatal (fase M5) y cualquier escritura.
+- Excluye: dibujar capas completas, Turnpike (GIS-PEN-01), adaptadores de condado distintos de St. Johns (resto de la fase M5) y cualquier escritura.
 
 ## Fuentes verificadas (2026-10-30, GET sin sesión)
 
@@ -20,7 +20,8 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
   - capa 13 "Roadways with Local Names": `ROADWAY`, `NAME`, `BEGIN_POST`, `END_POST`;
   - capa 15 "State Roads": `ROADWAY`, `ROUTE` (con dobles espacios, "SR  953"), `ROUTENUM`, `DISTRICT`, `COUNTYDOT`, `COUNTY`;
   - capa 2 "County Roads": mismos campos; vacía para Broward.
-- FDOT `…/Admin_Boundaries/MapServer`: capa 6 condados (`COUNTY`, `CNTYNO`, `DISTRICT`), capa 7 ciudades (`NAME`), capa 8 ZIP (`ZIP`).
+- FDOT `…/Admin_Boundaries/MapServer`: capa 6 condados (`COUNTY`, `CNTYNO`, `DISTRICT`), capa 7 lugares del Censo (`NAME`, `CLASSFP`: C1 municipio; U1, U2, M2 y C9 no), capa 8 ZIP (`ZIP`).
+- St. Johns County `https://www.gis.sjcfl.us/sjcgis/rest/services/Road/MapServer/36` (verificado el 2026-11-03, PEN-40): eje de todas las calles del condado con `NAME`, `MAINTENANCE` (quién mantiene el tramo) y `GATED`; detalle en MJ-SJ-01 a MJ-SJ-10.
 - FDACS `https://gis.fdacs.gov/mapping/rest/services/GIO_Parcels_for_OAWP_Optimized/FeatureServer/0`: `CO_NO`, `PARCEL_ID`, `DOR_UC`, `OWN_NAME`.
 - Buscador: geocodificador público del Censo de EE. UU. `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress` (`address`, `benchmark=Public_AR_Current`, `format=json`, sin clave); responde `result.addressMatches[]` con `matchedAddress` y `coordinates` (`x` = lon, `y` = lat).
 - Ubicarse por zona y cruce (verificado el 2026-10-31 en Broward y Fort Lauderdale, PEN-34):
@@ -52,11 +53,19 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
    - PEN-37: proyección y distancia en plano local (longitud corregida por coseno de latitud). El recorte selecciona por M los segmentos de todas las trayectorias y sólo une extremos contiguos (tolerancia 2 m y 0.00051 mi de M por redondeo). Sin cobertura continua del rango, geometría vacía y aviso; no dibujar un puente artificial.
 5. Jurisdicción (`map_rules.jurisdiction`, tabla de reglas en orden):
    - vía en "State Roads": `FDOT`, base `state_road`, confianza `high`;
-   - vía en "County Roads": el condado, base `county_road`, confianza `medium` (CR no siempre significa mantenida por el condado);
-   - otra vía dentro de una ciudad: la ciudad, base `inside_city`, confianza `low`;
+   - vía en "County Roads": el condado ("St. Johns County"), base `county_road`, confianza `medium` (CR no siempre significa mantenida por el condado);
+   - otra vía dentro de un municipio: el municipio con su tipo (PEN-41, `LSAD` de la capa 7: 25 `CITY` "City of Miami", 43 `TOWN` "Town of Jupiter", 47 `VILLAGE` "Village of Wellington"; sin `LSAD`, `CITY`), base `inside_city`, confianza `low`;
    - otra vía fuera de toda ciudad: el condado, base `unincorporated`, confianza `low`;
    - sin vía cerca: `UNKNOWN`;
-   - siempre con `note` que explica que es una aproximación salvo en `high`; los adaptadores de condado (M5) podrán dar `high` con su propio campo (por ejemplo `RESP_AUTH` de Palm Beach).
+   - siempre con `note` que explica que es una aproximación salvo en `high`; los adaptadores de condado (M5) dan `high` con su propio campo (St. Johns, abajo; Palm Beach `RESP_AUTH`, pendiente);
+   - ciudad (PEN-40): sólo un municipio (`CLASSFP` C1 de la capa 7) cuenta como ciudad; un lugar censal (Nocatee, World Golf Village) va a `location.place` y la vía queda en `unincorporated`; si la capa no trae `CLASSFP`, el nombre se conserva como ciudad;
+   - adaptador de St. Johns (PEN-40, `services/county_roads.py`): si el FDOT dice condado `78`, se pide también `gis_stjohns_roads_url` con el mismo radio (`NAME`, `MAINTENANCE`, `GATED`, con geometría) después de las ocho capas; gana el tramo más cercano cuyo `MAINTENANCE` tiene dueño conocido:
+     - `St Johns County` y `Parks and Recreation`: `COUNTY` ("St. Johns County"); `City of St Augustine` y `City of St Augustine Beach`: `CITY` ("City of St. Augustine"); `Private`: `PRIVATE`; `Private CDD`: `SPECIAL_DISTRICT`; `State of Florida`: `FDOT`;
+     - `Proposed`, `Emergency Access`, `Out of County` y vacío no dicen quién la mantiene y no cuentan;
+     - base `county_maintenance`, confianza `high`, `note` con la calle y el valor del condado (y "con portón" si `GATED` es `Y`);
+     - `State of Florida` sin una vía estatal del FDOT en el radio: confianza `medium` y la nota lo dice (MJ-SJ-06);
+     - si la vía más cercana del FDOT es estatal y está igual o más cerca que un tramo del condado con otro dueño, gana la regla estatal (es la que usa OSP) y la nota agrega lo que dice el condado;
+     - fuente caída o sin tramo con dueño en el radio: la tabla de arriba; el estado de la fuente se agrega a `sources` (`stjohns_roads`) y una caída suma `SOURCE_FAILED`.
 6. Parcela: código de uso `DOR_UC` con etiqueta y tipo de dueño público (`map_rules.DOR_USES`): 086 condado, 087 estado, 088 federal, 089 municipal, 094 derecho de vía; el resto, `null`. Tabla por confirmar con la fuente oficial (MJ-PEN-05). Una parcela con `CO_NO` 0 y `PARCEL_ID` vacío es una vía, no un predio: se responde `parcel: null` y el aviso `PARCEL_IS_ROAD`. Respaldo (PEN-30): si FDACS falla y el condado del FDOT es Broward (`CNTYNO` 86), se pide la capa pública del condado (`gis_broward_parcels_url`, campo `FOLIO`) y la parcela llega con `parcel_id` = folio, `county_code_dor` 16, uso y propietario `null` y `source` = `broward_parcels`; su estado se agrega a `sources`. Otros condados, sin respaldo todavía.
 7. `owner_name` sale tal cual de FDACS (registro público), pero nunca se registra en logs ni en errores, y en pruebas y fixtures sólo hay nombres sintéticos (ADR-B17).
 8. Caché: clave `map:point:{lat:.5f}:{lon:.5f}:{radio}` y `map:segment:…` con `gis_cache_ttl_seconds` (3600 por defecto, ADR-B16); `refresh=true` la salta.
@@ -84,6 +93,17 @@ Que un clic en el mapa diga sobre qué vía cae, su milepost, de quién es la ca
 11. `GET /api/map/parcels?west=&south=&east=&north=&refresh=` (PEN-33): contornos de las parcelas que tocan una celda de hasta 0.006 grados por lado (si no, 422 `PARCEL_CELL_INVALID`); el condado del centro (capa 6) decide la fuente: Broward (`gis_broward_parcels_url`, `FOLIO`), Miami-Dade (`gis_miami_dade_parcels_url`, capa 26 de `MD_LandInformation`, `FOLIO`) y FDACS (`PARCEL_ID`) para el resto. Sólo se pide el ID, nunca el propietario; geometría simplificada a 0.000005 grados (~0,5 m) y hasta 1000 parcelas (`truncated` si se llega). Fuente caída: 502 `GIS_UNAVAILABLE`. Caché por celda.
 12. `GET /api/map/counties`: los 67 condados (`MapCounty[]`), en caché.
 13. `GET /api/map/area?county=&city=` (PEN-34): `MapArea` del condado (sin `city`) o de una de sus ciudades: límites, contorno simplificado a unos 50 m (`maxAllowableOffset` 0.0005) y los municipios del condado con sus límites; nombres sin distinguir mayúsculas; condado o ciudad que no están en la lista, 404 `MAP_AREA_NOT_FOUND`. Caché por condado (`map:county:{nombre}`).
+14. `GET /api/map/streets?west=&south=&east=&north=&refresh=` (PEN-41): tramos del eje de calles del condado que tocan una celda de hasta 0.02 grados por lado (si no, 422 `STREET_CELL_INVALID`; fuera de Florida, 422 `COORDINATES_OUT_OF_FLORIDA`):
+   - la fuente se elige por el rectángulo de cada adaptador (St. Johns: oeste -81.70, sur 29.61, este -81.20, norte 30.26, extensión del FDOT para `CNTYNO` 78 con margen); una celda que no toca ninguno responde 200 con `source: null` y sin consultar;
+   - campos `OBJECTID`, `NAME`, `MAINTENANCE`, `GATED`; geometría simplificada a 0.00001 grados (~1 m) y hasta 1000 tramos (`truncated` si se llega); se descartan `Out of County`;
+   - cada tramo trae `authority` y `authority_name` de la tabla del punto 5, o `null` si el valor no dice quién la mantiene (`Proposed`, `Emergency Access`, vacío);
+   - fuente caída: 502 `GIS_UNAVAILABLE`; caché por celda (`map:streets:{celda}`).
+15. `GET /api/map/trace/streets?path=lat,lon;…&radius_m=30&refresh=` (PEN-41): calles del condado que sigue un trazo, con la misma validación que el punto 10 (`TRACE_INVALID`, `COORDINATES_OUT_OF_FLORIDA`, `SEGMENT_TOO_LONG`):
+   - adaptador elegido por el rectángulo del trazo; sin adaptador, 200 con `county: null`, sin consultar y el aviso `NO_COUNTY_SOURCE`;
+   - tramos candidatos por los rectángulos del punto 10 (`trace_rules.envelopes`), sin repetir `OBJECTID`; una calle es el conjunto de tramos con el mismo `NAME` y `MAINTENANCE`;
+   - el trazo se recorre cada 10 m con la misma regla del punto 10 (`trace_rules.sticky_groups`): cada muestra queda en la calle más cercana dentro del radio y no cambia mientras la actual siga en el radio; tramos de menos de 20 m se descartan y una misma calle a ambos lados se une; dos filas seguidas de la misma calle con un hueco en medio son una sola fila (el hueco suma en `unmatched_length_mi`);
+   - por calle: `length_mi` (longitud del dibujo sobre ella; en una esquina el cambio de calle ocurre al salir del radio de la anterior, así que hasta un radio de longitud pasa de una a otra), `paths` (sus tramos que quedan a menos del radio de alguna muestra de la fila) y la autoridad del punto 5;
+   - `unmatched_length_mi` y `TRACE_PARTIAL` si parte del dibujo no tiene calle del condado; la fuente caída (cualquier rectángulo, como la capa 8 en el punto 10): 502 `GIS_UNAVAILABLE`; caché `map:trace-streets:{radio}:{vértices}`.
 
 ## Contrato
 
@@ -97,7 +117,7 @@ PEN-38: el punto 10 describe el modo estricto previo (`snap=false`, por compatib
 `MapPoint`:
 - `lat`, `lon`: los de la consulta, redondeados a 6 decimales.
 - `roads`: lista de `RoadMatch` ordenada por distancia; vacía si no hay vía en el radio.
-- `location`: `county` | null, `county_code_fdot` | null, `fdot_district` | null, `city` | null (null = zona no incorporada), `zip` | null.
+- `location`: `county` | null, `county_code_fdot` | null, `fdot_district` | null, `city` | null (sólo municipios; null = zona no incorporada), `municipality_type` (`city`, `town`, `village` | null; PEN-41), `place` | null (lugar censal que no es municipio, como "Nocatee"; PEN-40), `zip` | null.
 - `parcel`: `Parcel` | null.
 - `jurisdiction`: `Jurisdiction`.
 - `sources`: lista de `SourceStatus`.
@@ -110,11 +130,11 @@ PEN-38: el punto 10 describe el modo estricto previo (`snap=false`, por compatib
 - `local_name`: "LEJEUNE RD/NW 42 AVE" | null.
 - `milepost` (3 decimales), `distance_m` (1 decimal), `begin_post`, `end_post`.
 
-`Jurisdiction`: `authority` (`FDOT`, `COUNTY`, `CITY`, `PRIVATE`, `SPECIAL_DISTRICT`, `UNKNOWN`), `name` ("FDOT", "Palm Beach County", "Miami"), `basis`, `confidence` (`high`, `medium`, `low`), `note`.
+`Jurisdiction`: `authority` (`FDOT`, `COUNTY`, `CITY`, `TOWN`, `VILLAGE`, `PRIVATE`, `SPECIAL_DISTRICT`, `UNKNOWN`), `name` ("FDOT", "Palm Beach County", "City of Miami", "Village of Wellington"), `basis` (`state_road`, `county_road`, `inside_city`, `unincorporated`, `no_road`, `county_maintenance`), `confidence` (`high`, `medium`, `low`), `note`.
 
 `Parcel`: `parcel_id`, `county_code_dor`, `use_code`, `use_label` | null, `public_owner` (`state`, `county`, `federal`, `municipal`, `right_of_way`) | null, `owner_name` | null, `source` (`fdacs_parcels` o `broward_parcels`).
 
-`SourceStatus`: `id` (`fdot_lrs`, `fdot_state_roads`, `fdot_county_roads`, `fdot_local_names`, `fdot_counties`, `fdot_cities`, `fdot_zip`, `fdacs_parcels` y, sólo si se usó el respaldo, `broward_parcels`), `status` (`ok`, `error`, `timeout`), `ms`.
+`SourceStatus`: `id` (`fdot_lrs`, `fdot_state_roads`, `fdot_county_roads`, `fdot_local_names`, `fdot_counties`, `fdot_cities`, `fdot_zip`, `fdacs_parcels` y, sólo si se usaron, `broward_parcels` y `stjohns_roads`), `status` (`ok`, `error`, `timeout`), `ms`.
 
 `MapSegment`:
 - `start`, `end`: `MapPoint` de cada extremo.
@@ -138,6 +158,12 @@ Fuentes del buscador (`MapSearch.sources`): `fdot_milepost`, `fdot_streets`, `ce
 
 PEN-37: `MapTrace.matched_percent` y `unmatched_length_mi` describen la cobertura estimada del dibujo. `WorkLocation.length_mi` y `MapTrace.length_mi` son `number | null`: `null` si no se pudo reconstruir alguna geometría completa. `TRACE_PARTIAL` y `TRACE_GEOMETRY_INCOMPLETE` son avisos de revisión, independientes de `SOURCE_FAILED`. `adjustment` mide distancias calculadas por el backend, no una llamada de ajuste a OSP.
 
+`StreetLines` (PEN-41): `source` (`stjohns_roads` | null), `county` ("St. Johns" | null), `streets` (lista de `StreetLine`), `truncated`.
+
+`StreetLine`: `id` (OBJECTID como texto), `name` | null, `maintainer` (valor del condado tal cual), `authority` (`FDOT`, `COUNTY`, `CITY`, `TOWN`, `VILLAGE`, `PRIVATE`, `SPECIAL_DISTRICT` | null), `authority_name` | null, `gated`, `paths` ([[[lon, lat], …], …]).
+
+`TraceStreets` (PEN-41): `county` | null, `source` | null, `streets` (lista de `TraceStreet` en el orden del trazo), `unmatched_length_mi`, `sources` (`SourceStatus`), `warnings` (`NO_COUNTY_SOURCE`, `TRACE_PARTIAL`, `STREETS_TRUNCATED`). `TraceStreet`: los campos de `StreetLine` sin `id`, más `length_mi`.
+
 `ParcelOutlines`: `source` (`broward_parcels`, `miami_dade_parcels` o `fdacs_parcels`), `parcels` (`parcel_id`, `rings` [[[lon, lat], …], …]), `truncated`.
 
 `osp_row.state_road_id` del tramo también es la ruta ("SR 953") desde el 2026-10-30; antes era el ID de vía, distinto de OSP.
@@ -151,6 +177,7 @@ Errores nuevos (formato de `estilos/API.md`):
 - 422 `TRACE_INVALID`: el trazo no es `lat,lon;…` o no tiene de 2 a 100 vértices.
 - 422 `PARCEL_CELL_INVALID`: la celda pedida es vacía o mide más de 0.006 grados por lado.
 - 404 `MAP_AREA_NOT_FOUND`: el condado o la ciudad no están en la lista del FDOT.
+- 422 `STREET_CELL_INVALID`: la celda de calles es vacía o mide más de 0.02 grados por lado.
 
 ## Diseño
 
@@ -165,10 +192,12 @@ Errores nuevos (formato de `estilos/API.md`):
 - `services/trace_rules.py` (puro: `parse_path`, `densify`, `envelopes`, `runs`) y `services/map_trace.py` (`MapTraceService`): trazo del punto 10; `GisClient.query_box` (rectángulo).
 - `services/map_parcels.py` (`MapParcelsService`) y `gis/layers.parcel_outline_layer`: contornos del punto 11.
 - `services/map_places.py` (`MapPlacesService`: condados, zona y `Scope` para el buscador), `services/map_streets.py` (`StreetFinder`: calles TIGER y cruces del FDOT, del Censo y calculados) y `services/map_geometry.py` (puro: `contains`, `bounds_of`, `closest_points`, `nearest_vertex`): puntos 9, 12 y 13; `GisClient.query_where` acepta rectángulo y simplificación.
+- `services/county_roads.py` (puro: tabla `MAINTENANCE`, tramo más cercano y regla del punto 5) y `gis/layers.stjohns_roads`: adaptador de St. Johns (PEN-40); `services/map_sources.py`: catálogo del punto 3.
+- `services/county_streets.py` (`CountyStreetsService`, puntos 14 y 15) y `services/trace_streets.py` (puro: calles por `NAME` y `MAINTENANCE`, filas del trazo y tramos tocados); `trace_rules.sticky_groups` es la regla de agrupación del punto 10, ahora pública para reutilizarla.
 - `services/gis/timing.py` (`run_source`): mide cada fuente y la vuelve `SourceStatus` sin tumbar la respuesta; lo usan el buscador y el trazo.
 - Pruebas: `tests/fake_gis.py` es el GIS falso del E2E (CA-13) y `tests/e2e_backend.py` arranca el backend apuntado a él y al Smartsheet falso, sin leer el token de `.env`.
 - `models/map.py` y `api/routes/map.py`: contrato y ruta delgada, con etiqueta propia en Swagger ("mapa").
-- Configuración nueva en `core/config.py`: `app_gis_enabled` (true), `gis_fdot_base_url`, `gis_fdacs_parcels_url`, `gis_census_geocoder_url`, `gis_broward_parcels_url`, `gis_miami_dade_parcels_url`, `gis_tiger_roads_url`, `gis_trace_max_points` (100), `gis_timeout_seconds`, `gis_connect_timeout_seconds`, `gis_unreachable_cooldown_seconds`, `gis_max_concurrency`, `gis_max_retries`, `gis_cache_ttl_seconds`, `gis_max_segment_miles`.
+- Configuración nueva en `core/config.py`: `app_gis_enabled` (true), `gis_fdot_base_url`, `gis_fdacs_parcels_url`, `gis_census_geocoder_url`, `gis_broward_parcels_url`, `gis_miami_dade_parcels_url`, `gis_tiger_roads_url`, `gis_stjohns_roads_url`, `gis_trace_max_points` (100), `gis_timeout_seconds`, `gis_connect_timeout_seconds`, `gis_unreachable_cooldown_seconds`, `gis_max_concurrency`, `gis_max_retries`, `gis_cache_ttl_seconds`, `gis_max_segment_miles`.
 
 ## Criterios de aceptación
 
@@ -200,13 +229,21 @@ Errores nuevos (formato de `estilos/API.md`):
 - CA-27: con ajuste automático una curva se reconstruye aunque el dibujo corte por dentro; una línea torcida se acorta/desplaza a la vía; un recorrido por varias vías agrega las filas intermedias y termina/inicia cada una en el cruce. Prueba: `test_trace_alignment.py` y endpoint simulado.
 - CA-28: no unir redes desconectadas; advertir soluciones paralelas equivalentes y conexiones geométricas; inversión del dibujo conserva el mismo recorrido con MPs ordenados. Prueba: `test_trace_alignment.py`.
 - CA-29: un cruce cuyo nombre el FDOT recortó ("US-1/SR-5/FEDERAL HW") se encuentra escribiendo "Federal Hwy"; "SE 3 Ave" no se recorta. Prueba: `test_map_query.py`, `test_map.py`; manual 2026-10-31: "Federal Hwy & Sunrise" en Fort Lauderdale da `86020000` en los MP 1.975 y 1.027.
+- CA-30: un lugar censal (`CLASSFP` U2) no es ciudad: va a `place`, `city` queda `null` y una vía local da `unincorporated`; un municipio C1 sigue en `city`. Prueba: `test_county_roads.py`, `test_map.py`; manual 2026-11-03: Nocatee y World Golf Village.
+- CA-31: en St. Johns cada valor de `MAINTENANCE` da su autoridad con `county_maintenance` y confianza `high`; gana el tramo más cercano con dueño conocido; `Proposed` no cuenta; `State of Florida` sin vía estatal del FDOT da `medium`; una vía estatal del FDOT más cercana conserva `state_road`. Prueba: `test_county_roads.py`.
+- CA-32: la capa del condado sólo se pide en St. Johns; caída, la respuesta es 200 con la regla aproximada y `SOURCE_FAILED`. Prueba: `test_map_county.py`; manual 2026-11-03 con GET reales (King St, 8th St, Tidestone Dr, UF Health Way, Greyson Ct, SR 9B).
+- CA-37: el tipo del municipio separa `CITY`, `TOWN` y `VILLAGE` con su nombre oficial ("Village of Sample"); un lugar censal no tiene tipo y el condado se nombra "X County". Prueba: `test_county_roads.py`.
+- CA-33: una celda en St. Johns da los tramos con su autoridad (y `null` para `Proposed`), sin `Out of County`, y una celda fuera de todo adaptador responde sin consultar; celda grande, 422; fuente caída, 502. Prueba: `test_county_streets.py`; manual 2026-11-03 con GET reales.
+- CA-34: un trazo por dos calles da dos filas en orden con su longitud, sin cortar la fila en un cruce; un roce de menos de 20 m no da fila; lejos de toda calle, `TRACE_PARTIAL`. Prueba: `test_trace_streets.py`.
+- CA-35: el trazo fuera de St. Johns no consulta y avisa `NO_COUNTY_SOURCE`; con la fuente caída, 502 `GIS_UNAVAILABLE`. Prueba: `test_county_streets.py`.
+- CA-36: el trazo por CR 210 W hacia Beachwalk Blvd (zona de Harbor Chase of Beach Walk) da las calles del condado aunque la LRS del FDOT no tenga vías allí. Prueba: manual 2026-11-03 con GET reales.
 - CA-19: contornos por celda desde el condado y sin propietario. Prueba: `test_fake_gis.py`; manual 2026-10-30: Broward 41 parcelas (31 KB, 1,1 s) y Miami-Dade 121 (22 KB, 0,8 s).
 
 ## Fases
 
 - M1: punto (CA-01 a CA-06, CA-08 a CA-11).
 - M2: tramo (CA-07).
-- M5: pendiente: adaptadores de condado con su propia fuente de jurisdicción, empezando por Palm Beach (`ENG/CENTERLINE`, campo `RESP_AUTH`); cada uno con su spec o una sección nueva aquí.
+- M5: hecho St. Johns (`MAINTENANCE`, PEN-40); pendientes los demás adaptadores de condado con su propia fuente de jurisdicción, empezando por Palm Beach (`ENG/CENTERLINE`, campo `RESP_AUTH`); cada uno con su sección aquí.
 - M6: hechos el buscador (CA-12), las vías dibujadas y la imagen HD (PEN-31, en el frontend), el Turnpike (CA-18) y los límites de parcelas (CA-19); pendiente el mapa base con clave.
 
 ## Pendientes
@@ -214,5 +251,6 @@ Errores nuevos (formato de `estilos/API.md`):
 - Turnpike: resuelto en el trazo con la capa 13 de distritos (`D8`); falta compararlo con OSP en un tramo real del Turnpike (el `osp_row` del tramo de dos puntos no lo trae).
 - Respaldo de contornos para Palm Beach (`Parcels/Parcels/MapServer`) y Martin; hoy usan FDACS, que no responde desde el equipo Windows (B-13).
 - Confirmar la tabla `DOR_UC` (MJ-PEN-05).
+- Revisar las condiciones de uso del servicio de St. Johns antes de un uso continuo (MJ-PEN-06) y confirmar con el condado qué significan `Parks and Recreation` y los tramos `State of Florida` sueltos (MJ-SJ-06).
 - Confirmar con el usuario el geocodificador del Censo como fuente nueva del buscador: ADR-B17 sólo nombraba FDOT y FDACS para la fase base.
 - Verificación manual del buscador con GET reales (dirección, calle y ruta con milepost): no hay evidencia registrada.

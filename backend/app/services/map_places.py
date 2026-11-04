@@ -8,15 +8,13 @@ from app.core.errors import AppError
 from app.models.map import Bounds, MapArea, MapCity, MapCounty
 from app.services.cache import TtlCache
 from app.services.gis import GisClient
-from app.services.gis.layers import CITIES, COUNTIES, boundary_layer
+from app.services.gis.layers import CITIES, COUNTIES, INCORPORATED, boundary_layer
 from app.services.map_geometry import Box, Line, bounds_of, contains
 from app.services.map_mappers import feature_text, to_number
 from app.services.map_query import name_where
 
 # Contornos simplificados a unos 50 m: alcanzan para dibujar y para decidir pertenencia.
 SIMPLIFY_DEGREES = 0.0005
-# CLASSFP del Censo: C1 es municipio; U1 y U2 son zonas no incorporadas con nombre (CDP).
-INCORPORATED = "C1"
 
 
 @dataclass(frozen=True)

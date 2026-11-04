@@ -19,8 +19,17 @@ from app.models.map import (
     Parcel,
     ParcelOutlines,
     SourceStatus,
+    StreetLines,
+    TraceStreets,
 )
 from app.services.cache import TtlCache
+from app.services.county_roads import (
+    CountyStreet,
+    county_adapter,
+    nearest_street,
+    street_jurisdiction,
+)
+from app.services.county_streets import CountyStreetsService
 from app.services.gis import GisClient
 from app.services.gis.layers import BROWARD_DOR, BROWARD_FDOT, Layer, broward_parcels, layers
 from app.services.gis.transport import GisFailure
@@ -37,11 +46,11 @@ from app.services.map_rules import (
     RouteGeometry,
     haversine_miles,
     in_florida,
-    jurisdiction,
     pick_segment_road,
     slice_route,
 )
 from app.services.map_search import MapSearchService
+from app.services.map_sources import SOURCES
 from app.services.map_trace import MapTraceService
 
 
@@ -58,6 +67,7 @@ class MapService:
         self._search = MapSearchService(settings, client, cache, self._places)
         self._trace = MapTraceService(settings, client, cache)
         self._parcels = MapParcelsService(settings, client, cache)
+        self._streets = CountyStreetsService(settings, client, cache)
 
     async def aclose(self) -> None:
         await self._client.aclose()
@@ -87,6 +97,16 @@ class MapService:
     ) -> ParcelOutlines:
         self._ensure_enabled()
         return await self._parcels.outlines(box, refresh=refresh)
+
+    async def street_lines(
+        self, box: tuple[float, float, float, float], *, refresh: bool
+    ) -> StreetLines:
+        self._ensure_enabled()
+        return await self._streets.lines(box, refresh=refresh)
+
+    async def trace_streets(self, path: str, radius_m: float, *, refresh: bool) -> TraceStreets:
+        self._ensure_enabled()
+        return await self._streets.trace(path, radius_m, refresh=refresh)
 
     async def point(self, lat: float, lon: float, radius_m: float, *, refresh: bool) -> MapPoint:
         return (await self._resolve(lat, lon, radius_m, refresh=refresh)).point
@@ -151,44 +171,7 @@ class MapService:
         )
 
     def sources(self) -> list[MapSource]:
-        return [
-            MapSource(
-                id="fdot_lrs",
-                name="LRS Basemap Routes",
-                provider="FDOT",
-                url="https://gis.fdot.gov/",
-                provides="Vía y milepost",
-                update_frequency="Según FDOT",
-                license_note="Datos públicos.",
-            ),
-            MapSource(
-                id="fdot_boundaries",
-                name="Límites administrativos",
-                provider="FDOT",
-                url="https://gis.fdot.gov/",
-                provides="Condado, ciudad y ZIP",
-                update_frequency="Según FDOT",
-                license_note="Datos públicos.",
-            ),
-            MapSource(
-                id="fdacs_parcels",
-                name="Parcelas",
-                provider="FDACS",
-                url="https://gis.fdacs.gov/",
-                provides="Parcela y uso de suelo",
-                update_frequency="Según FDACS",
-                license_note="Registro público; confirmar con el tasador.",
-            ),
-            MapSource(
-                id="broward_parcels",
-                name="Parcelas de Broward (respaldo)",
-                provider="Broward County",
-                url="https://services.arcgis.com/JMAJrTsHNLrSsWf5/ArcGIS/rest/services/Parcels",
-                provides="Folio de la parcela cuando FDACS no responde",
-                update_frequency="Según el condado",
-                license_note="Datos públicos; condiciones de uso por revisar (MJ-PEN-06).",
-            ),
-        ]
+        return list(SOURCES)
 
     async def _resolve(
         self, lat: float, lon: float, radius_m: float, *, refresh: bool
@@ -216,13 +199,18 @@ class MapService:
         if statuses[-1].status != "ok" and location.county_code_fdot == BROWARD_FDOT:
             parcel, fallback = await self._broward_parcel(lat, lon, radius_m)
             statuses.append(fallback)
+        street, street_status = await self._county_street(
+            lat, lon, radius_m, location.county_code_fdot
+        )
+        if street_status:
+            statuses.append(street_status)
         point = MapPoint(
             lat=round(lat, 6),
             lon=round(lon, 6),
             roads=roads,
             location=location,
             parcel=parcel,
-            jurisdiction=jurisdiction(roads[0] if roads else None, location),
+            jurisdiction=street_jurisdiction(roads, location, street),
             sources=statuses,
             warnings=warnings(roads, statuses, parcel_warning),
         )
@@ -237,6 +225,16 @@ class MapService:
         )
         parcel = build_county_parcel(features, county_code_dor=BROWARD_DOR, source=layer.id)
         return parcel, status
+
+    async def _county_street(
+        self, lat: float, lon: float, radius_m: float, county_fdot: str | None
+    ) -> tuple[CountyStreet | None, SourceStatus | None]:
+        """M5: el eje de calles del condado dice quién mantiene la calle (PEN-40)."""
+        adapter = county_adapter(self._settings, county_fdot)
+        if adapter is None:
+            return None, None
+        _, features, status = await self._query(adapter.layer, lat, lon, radius_m)
+        return nearest_street(adapter, features, lat, lon), status
 
     async def _query(
         self, layer: Layer, lat: float, lon: float, radius_m: float

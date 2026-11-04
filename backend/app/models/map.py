@@ -23,7 +23,11 @@ class MapLocation(BaseModel):
     county: str | None = None
     county_code_fdot: str | None = None
     fdot_district: str | None = None
+    # Sólo municipios; un lugar censal no incorporado (Nocatee) va a `place` (PEN-40).
     city: str | None = None
+    # Tipo del municipio según el Censo (LSAD): city, town o village (PEN-41).
+    municipality_type: Literal["city", "town", "village"] | None = None
+    place: str | None = None
     zip: str | None = None
 
 
@@ -39,7 +43,9 @@ class Parcel(BaseModel):
 
 
 class Jurisdiction(BaseModel):
-    authority: Literal["FDOT", "COUNTY", "CITY", "PRIVATE", "SPECIAL_DISTRICT", "UNKNOWN"]
+    authority: Literal[
+        "FDOT", "COUNTY", "CITY", "TOWN", "VILLAGE", "PRIVATE", "SPECIAL_DISTRICT", "UNKNOWN"
+    ]
     name: str | None = None
     basis: str
     confidence: Literal["high", "medium", "low"]
@@ -194,3 +200,50 @@ class MapSource(BaseModel):
     provides: str
     update_frequency: str
     license_note: str
+
+
+StreetAuthority = Literal[
+    "FDOT", "COUNTY", "CITY", "TOWN", "VILLAGE", "PRIVATE", "SPECIAL_DISTRICT"
+]
+
+
+class StreetLine(BaseModel):
+    """Tramo del eje de calles de un condado con quién lo mantiene (PEN-41)."""
+
+    id: str
+    name: str | None = None
+    # Valor del condado tal cual ("St Johns County", "Private CDD"…).
+    maintainer: str
+    # Null si el valor no dice quién la mantiene (Proposed, Emergency Access, vacío).
+    authority: StreetAuthority | None = None
+    authority_name: str | None = None
+    gated: bool = False
+    paths: list[list[list[float]]]
+
+
+class StreetLines(BaseModel):
+    # Null si la celda no toca ningún condado con fuente propia.
+    source: str | None = None
+    county: str | None = None
+    streets: list[StreetLine]
+    truncated: bool = False
+
+
+class TraceStreet(BaseModel):
+    name: str | None = None
+    maintainer: str
+    authority: StreetAuthority | None = None
+    authority_name: str | None = None
+    gated: bool = False
+    # Longitud del dibujo sobre la calle; `paths`, sus tramos tocados por el trazo.
+    length_mi: float
+    paths: list[list[list[float]]]
+
+
+class TraceStreets(BaseModel):
+    county: str | None = None
+    source: str | None = None
+    streets: list[TraceStreet]
+    unmatched_length_mi: float
+    sources: list[SourceStatus]
+    warnings: list[str]

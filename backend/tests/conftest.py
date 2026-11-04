@@ -27,6 +27,7 @@ def make_settings(**overrides: object) -> Settings:
         "gis_broward_parcels_url": "https://broward.test/0",
         "gis_miami_dade_parcels_url": "https://miami-dade.test/26",
         "gis_tiger_roads_url": "https://tiger.test/Transportation/MapServer",
+        "gis_stjohns_roads_url": "https://stjohns.test/36",
         "gis_max_retries": 0,
     }
     values.update(overrides)

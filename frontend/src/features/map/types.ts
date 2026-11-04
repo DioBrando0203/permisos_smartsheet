@@ -19,7 +19,10 @@ export type MapPoint = {
     county: string | null
     countyCodeFdot: string | null
     fdotDistrict: string | null
+    /** Sólo municipios; un lugar censal no incorporado va en `place` (PEN-40). */
     city: string | null
+    municipalityType: 'city' | 'town' | 'village' | null
+    place: string | null
     zip: string | null
   }
   parcel: {
@@ -101,6 +104,8 @@ export type ApiMapPoint = {
     county_code_fdot?: string | null
     fdot_district?: string | null
     city?: string | null
+    municipality_type?: 'city' | 'town' | 'village' | null
+    place?: string | null
     zip?: string | null
   }
   parcel?: {

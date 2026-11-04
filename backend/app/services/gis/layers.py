@@ -12,6 +12,11 @@ TIGER_ROADS = (2, 6, 8)
 # Broward: código del FDOT (CNTYNO) y del DOR (CO_NO), que no coinciden (MJ-PE-02).
 BROWARD_FDOT, BROWARD_DOR = "86", "16"
 MIAMI_DADE_FDOT = "87"
+ST_JOHNS_FDOT = "78"
+# CLASSFP del Censo: C1 es municipio; U1 y U2 son zonas no incorporadas con nombre (CDP).
+INCORPORATED = "C1"
+# LSAD del Censo para municipios de Florida: 25 city, 43 town, 47 village (verificado 2026-11-03).
+MUNICIPALITY_TYPES = {"25": "city", "43": "town", "47": "village"}
 
 
 @dataclass(frozen=True)
@@ -22,6 +27,8 @@ class Layer:
     with_route: bool = False
     # Sólo las líneas usan radio: con `distance=0` FDOT y FDACS devuelven vacío en polígonos.
     radius: bool = False
+    # Geometría en WGS84 sin medida M, para elegir el tramo más cercano (calles del condado).
+    geometry: bool = False
 
 
 def road_layer(settings: Settings, number: int) -> str:
@@ -42,6 +49,13 @@ def boundary_layer(settings: Settings, number: int) -> str:
 def broward_parcels(settings: Settings) -> Layer:
     """Parcelas del condado de Broward: sólo el folio, sin datos del tasador (MJ-BR-01)."""
     return Layer("broward_parcels", settings.gis_broward_parcels_url.rstrip("/"), ("FOLIO",))
+
+
+def stjohns_roads(settings: Settings) -> Layer:
+    """Eje de calles de St. Johns: nombre, quién lo mantiene y si tiene portón (MJ-SJ-02)."""
+    url = settings.gis_stjohns_roads_url.rstrip("/")
+    fields = ("NAME", "MAINTENANCE", "GATED")
+    return Layer("stjohns_roads", url, fields, radius=True, geometry=True)
 
 
 def parcel_outline_layer(settings: Settings, county_fdot: str | None) -> Layer:
@@ -78,7 +92,7 @@ def layers(settings: Settings) -> tuple[Layer, ...]:
             radius=True,
         ),
         Layer("fdot_counties", f"{boundaries}/6", ("COUNTY", "CNTYNO", "DISTRICT")),
-        Layer("fdot_cities", f"{boundaries}/7", ("NAME",)),
+        Layer("fdot_cities", f"{boundaries}/7", ("NAME", "CLASSFP", "LSAD")),
         Layer("fdot_zip", f"{boundaries}/8", ("ZIP",)),
         Layer(
             "fdacs_parcels",

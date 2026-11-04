@@ -83,26 +83,31 @@ def envelopes(path: list[Point], radius_m: float, chunk_m: float = 300.0) -> lis
 def runs(samples: list[Point], routes: dict[str, RouteGeometry], radius_m: float) -> list[Run]:
     """Una fila por cada vía que sigue el trazo, en el orden en que se recorre."""
     near = [_near(point, routes, radius_m) for point in samples]
-    kept: list[tuple[str, int, int]] = []
-    for roadway, first, last in _groups(near):
-        if path_meters(samples[first : last + 1]) < MIN_RUN_METERS:
-            continue
-        if (
-            kept
-            and kept[-1][0] == roadway
-            and all(roadway in item for item in near[kept[-1][2] : first + 1])
-        ):
-            # Sólo unir si la propia vía cubre también las muestras intermedias.
-            kept[-1] = (roadway, kept[-1][1], last)
-        else:
-            kept.append((roadway, first, last))
     result = []
-    for roadway, first, last in kept:
+    for roadway, first, last in kept_groups(samples, near):
         mileposts = _mileposts(samples, near, roadway, first, last, routes[roadway])
         if mileposts:
             length = round(path_meters(samples[first : last + 1]), 1)
             result.append(Run(roadway, *mileposts, length))
     return result
+
+
+def kept_groups(samples: list[Point], near: list[dict[str, float]]) -> list[tuple[str, int, int]]:
+    """Grupos de `MIN_RUN_METERS` o más; la misma vía a ambos lados de un hueco se une."""
+    kept: list[tuple[str, int, int]] = []
+    for key, first, last in sticky_groups(near):
+        if path_meters(samples[first : last + 1]) < MIN_RUN_METERS:
+            continue
+        if (
+            kept
+            and kept[-1][0] == key
+            and all(key in item for item in near[kept[-1][2] : first + 1])
+        ):
+            # Sólo unir si la propia vía cubre también las muestras intermedias.
+            kept[-1] = (key, kept[-1][1], last)
+        else:
+            kept.append((key, first, last))
+    return kept
 
 
 def _near(point: Point, routes: dict[str, RouteGeometry], radius_m: float) -> dict[str, float]:
@@ -114,7 +119,7 @@ def _near(point: Point, routes: dict[str, RouteGeometry], radius_m: float) -> di
     return found
 
 
-def _groups(near: list[dict[str, float]]) -> list[tuple[str, int, int]]:
+def sticky_groups(near: list[dict[str, float]]) -> list[tuple[str, int, int]]:
     """Muestras consecutivas de una misma vía; se sigue en la actual mientras esté en el radio."""
     groups: list[tuple[str, int, int]] = []
     current: str | None = None

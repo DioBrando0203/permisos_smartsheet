@@ -7,6 +7,7 @@ import {
 } from '@fluentui/react-icons'
 import type { ReactNode } from 'react'
 import { Badge, CopyText } from '../../components/ui'
+import { permitGuide, streetTone, toneClass, toneLabels } from './lib/jurisdiction'
 import { parcelSources, sourceNames } from './lib/sources'
 import type { MapPoint, RoadMatch } from './types'
 
@@ -88,15 +89,40 @@ export function RoadSection({ road, nearby }: { road?: RoadMatch; nearby: RoadMa
 export function JurisdictionSection({ data }: { data: MapPoint['jurisdiction'] }) {
   const level = confidence[data.confidence]
   const name = data.authority === 'FDOT' ? 'FDOT (Estado de Florida)' : (data.name ?? 'No identificada')
+  const tone = streetTone(data.authority)
+  const permit = permitGuide(data.authority, data.name)
   return (
     <Section icon={<Building20Regular aria-hidden="true" />} title="De quién es la calle">
       <p className="map-road-title">
         <strong>{name}</strong>
         <Badge tone={level.tone}>{level.text}</Badge>
       </p>
+      {data.authority !== 'UNKNOWN' && (
+        <p className="map-street-kind">
+          <i className={`map-street-chip ${toneClass(tone)}`} aria-hidden="true" />
+          {toneLabels[tone]}
+        </p>
+      )}
       {data.note && <p className="map-note">{data.note}</p>}
+      {permit && (
+        <p className="map-permit">
+          <strong>Qué permiso pedir:</strong> {permit} Es una guía: confírmalo con la entidad.
+        </p>
+      )}
     </Section>
   )
+}
+
+const municipalityLabels = { city: 'City', town: 'Town', village: 'Village' }
+
+/** Municipio con su tipo; un lugar censal (Nocatee) es zona no incorporada (PEN-40, PEN-41). */
+function cityLabel(location: MapPoint['location']): string | null {
+  if (location.city)
+    return location.municipalityType
+      ? `${location.city} (${municipalityLabels[location.municipalityType]})`
+      : location.city
+  if (!location.county) return null
+  return location.place ? `Zona no incorporada (${location.place})` : 'Zona no incorporada'
 }
 
 export function LocationSection({ location }: { location: MapPoint['location'] }) {
@@ -104,7 +130,7 @@ export function LocationSection({ location }: { location: MapPoint['location'] }
     <Section icon={<Location20Regular aria-hidden="true" />} title="Ubicación">
       <dl className="map-fields">
         <Field label="Condado" value={location.county} />
-        <Field label="Ciudad" value={location.city ?? (location.county ? 'Zona no incorporada' : null)} />
+        <Field label="Municipio" value={cityLabel(location)} />
         <Field label="ZIP" value={location.zip} />
         {/* El backend sólo acepta puntos dentro de Florida (COORDINATES_OUT_OF_FLORIDA). */}
         <Field label="Estado" value="Florida" />
@@ -151,7 +177,8 @@ export function SourcesSection({ sources }: { sources: MapPoint['sources'] }) {
         ))}
       </ul>
       <p>
-        Datos públicos del FDOT y FDACS; se actualizan una vez al año. Confirma antes de pedir el permiso.
+        Datos públicos del FDOT, FDACS y del condado cuando tiene fuente propia; se actualizan una vez al año.
+        Confirma antes de pedir el permiso.
       </p>
     </details>
   )

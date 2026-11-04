@@ -28,7 +28,7 @@ class GisClient:
             "inSR": "4326",
             "spatialRel": "esriSpatialRelIntersects",
             "outFields": ",".join(layer.fields),
-            "returnGeometry": "true" if layer.with_route else "false",
+            "returnGeometry": "true" if layer.with_route or layer.geometry else "false",
             "outSR": "4326",
         }
         if layer.radius:

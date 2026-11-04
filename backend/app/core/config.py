@@ -65,6 +65,8 @@ class Settings(BaseSettings):
     gis_tiger_roads_url: str = (
         "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Transportation/MapServer"
     )
+    # Eje de calles de St. Johns con quién mantiene cada tramo (PEN-40, MJ-SJ-02).
+    gis_stjohns_roads_url: str = "https://www.gis.sjcfl.us/sjcgis/rest/services/Road/MapServer/36"
     gis_trace_max_points: int = 100
     gis_timeout_seconds: float = 20.0
     # Un servidor que no acepta la conexión no se reintenta: sólo alargaría la espera (PEN-30).

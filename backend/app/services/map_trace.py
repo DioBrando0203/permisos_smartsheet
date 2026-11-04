@@ -60,6 +60,20 @@ class _Lookups:
     counties: dict[str, str]
 
 
+def valid_trace_path(text: str, settings: Settings) -> list[Point]:
+    """Validación común del trazo (puntos 10 y 15 de SPEC-B14) antes de consultar fuentes."""
+    path = parse_path(text)
+    limit = settings.gis_trace_max_points
+    if path is None or not 2 <= len(path) <= limit:
+        message = f"El trazo necesita de 2 a {limit} puntos `lat,lon;lat,lon`."
+        raise AppError("TRACE_INVALID", message, 422)
+    if not all(in_florida(lat, lon) for lat, lon in path):
+        raise AppError("COORDINATES_OUT_OF_FLORIDA", "El trazo sale de Florida.", 422)
+    if path_meters(path) / METERS_PER_MILE > settings.gis_max_segment_miles:
+        raise AppError("SEGMENT_TOO_LONG", "El trazo supera la longitud máxima permitida.", 422)
+    return path
+
+
 class MapTraceService:
     def __init__(self, settings: Settings, client: GisClient, cache: TtlCache) -> None:
         self._settings, self._client, self._cache = settings, client, cache
@@ -76,16 +90,7 @@ class MapTraceService:
         )
 
     def _valid_path(self, text: str) -> list[Point]:
-        path = parse_path(text)
-        limit = self._settings.gis_trace_max_points
-        if path is None or not 2 <= len(path) <= limit:
-            message = f"El trazo necesita de 2 a {limit} puntos `lat,lon;lat,lon`."
-            raise AppError("TRACE_INVALID", message, 422)
-        if not all(in_florida(lat, lon) for lat, lon in path):
-            raise AppError("COORDINATES_OUT_OF_FLORIDA", "El trazo sale de Florida.", 422)
-        if path_meters(path) / METERS_PER_MILE > self._settings.gis_max_segment_miles:
-            raise AppError("SEGMENT_TOO_LONG", "El trazo supera la longitud máxima permitida.", 422)
-        return path
+        return valid_trace_path(text, self._settings)
 
     async def _load(self, path: list[Point], radius_m: float, snap: bool) -> MapTrace:
         corridor = corridor_radius(path, radius_m) if snap else radius_m

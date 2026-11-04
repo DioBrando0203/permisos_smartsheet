@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { MapView, type Basemap, type MapFocus, type MapViewState } from '../../components/map/MapView'
 import { basemapChoices } from '../../components/map/tileSources'
 import { Button } from '../../components/ui'
 import type { MapScope } from './area'
-import { useMapArea, useMapPoint, useMapTrace } from './hooks'
+import { useMapArea, useMapPoint, useMapTrace, useTraceStreets } from './hooks'
 import type { Coordinates } from './lib/coordinates'
 import { readMapUrl, writeMapUrl, type MapMode } from './lib/mapUrl'
 import { readChoice, readText, saveChoice } from './lib/preferences'
@@ -12,7 +12,9 @@ import { PointResult } from './MapResults'
 import { MapToolbar, type MapLayers } from './MapToolbar'
 import { TraceResult } from './TraceResult'
 import { TraceOptions } from './TraceOptions'
+import { TraceStreetsSection } from './TraceStreets'
 import { useParcelLayer } from './useParcelLayer'
+import { streetOverlays, useStreetLayer } from './useStreetLayer'
 import { useMapDrawing } from './useMapDrawing'
 import { useTraceDrawing } from './useTraceDrawing'
 
@@ -22,6 +24,7 @@ const onOff = ['on', 'off'] as const
 const savedLayers = (): MapLayers => ({
   roads: readChoice('map-roads', onOff, 'off') === 'on',
   parcels: readChoice('map-parcels', onOff, 'off') === 'on',
+  streets: readChoice('map-streets', onOff, 'off') === 'on',
 })
 
 export function MapPage() {
@@ -52,6 +55,16 @@ export function MapPage() {
   const reading = mode === 'point' ? point : result
   const drawing = useMapDrawing(mode, a, trace, result.data, options.original)
   const parcels = useParcelLayer(layers.parcels, view)
+  const streets = useStreetLayer(layers.streets, view)
+  const traceStreets = useTraceStreets(mode === 'trace' ? trace.finished : null)
+  // Las calles del trazo van encima de la capa y más gruesas (PEN-41).
+  const overlays = useMemo(
+    () => [
+      ...streets.overlays,
+      ...streetOverlays(mode === 'trace' ? (traceStreets.data?.streets ?? []) : [], 7),
+    ],
+    [streets.overlays, traceStreets.data, mode],
+  )
   useEffect(() => {
     setParams(writeMapUrl(mode, a, trace.finished, options), { replace: true })
   }, [a, trace.finished, mode, options, setParams])
@@ -68,6 +81,7 @@ export function MapPage() {
   useEffect(() => {
     saveChoice('map-roads', layers.roads ? 'on' : 'off')
     saveChoice('map-parcels', layers.parcels ? 'on' : 'off')
+    saveChoice('map-streets', layers.streets ? 'on' : 'off')
   }, [layers])
   useEffect(() => {
     const keys = (event: KeyboardEvent) => {
@@ -89,6 +103,7 @@ export function MapPage() {
           layers={layers}
           hint={hint(mode, trace.vertices.length, trace.drawing)}
           parcelHint={parcels.hint}
+          streets={streets}
           onMode={setMode}
           onScope={(next) => {
             fitArea.current = Boolean(next.county)
@@ -106,6 +121,7 @@ export function MapPage() {
           focus={drawing.focus ?? focus}
           markers={drawing.markers}
           lines={drawing.lines}
+          overlays={overlays}
           outlines={parcels.rings}
           area={(scope.county && area.data?.outline) || noArea}
           basemap={basemap}
@@ -124,7 +140,10 @@ export function MapPage() {
         <Button
           appearance="secondary"
           size="sm"
-          onClick={reading.refresh}
+          onClick={() => {
+            reading.refresh()
+            if (mode === 'trace') traceStreets.refresh()
+          }}
           disabled={reading.isFetching || (mode === 'point' ? !a : !trace.finished)}
         >
           {reading.isFetching ? 'Actualizando…' : 'Actualizar'}
@@ -148,7 +167,14 @@ export function MapPage() {
             onUndo={trace.undo}
             onClear={trace.clear}
             onRetry={result.refresh}
-          />
+          >
+            <TraceStreetsSection
+              result={traceStreets.data}
+              loading={traceStreets.isLoading}
+              error={traceStreets.error}
+              onRetry={traceStreets.refresh}
+            />
+          </TraceResult>
         )}
       </aside>
     </section>

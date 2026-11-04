@@ -44,6 +44,51 @@ describe('Resultados del mapa', () => {
     expect(screen.getByText(/Parcelas de Broward \(condado\)/)).not.toHaveTextContent('no respondió')
   })
 
+  it('en St. Johns dice quién mantiene la calle según el condado y el lugar censal (PEN-40)', () => {
+    const stJohns = {
+      ...mapPointFixture,
+      roads: [],
+      location: { county: 'St. Johns', county_code_fdot: '78', fdot_district: '2', place: 'Nocatee' },
+      jurisdiction: {
+        authority: 'PRIVATE',
+        name: 'Privada',
+        basis: 'county_maintenance',
+        confidence: 'high' as const,
+        note: 'Según el condado de St. Johns: Synthetic Way, mantenimiento «Private».',
+      },
+      sources: [{ id: 'stjohns_roads', status: 'ok' as const, ms: 400 }],
+    }
+    render(<PointResult result={normalizeMapPoint(stJohns)} loading={false} error={null} onRetry={noop} />)
+    expect(screen.getAllByText('Privada')).toHaveLength(2)
+    expect(screen.getByText('Confianza alta')).toBeInTheDocument()
+    expect(screen.getByText(/Synthetic Way, mantenimiento «Private»/)).toBeInTheDocument()
+    expect(screen.getByText('Municipio').nextElementSibling).toHaveTextContent(
+      'Zona no incorporada (Nocatee)',
+    )
+    expect(screen.getByText(/autorización del dueño o de la asociación/i)).toBeInTheDocument()
+    expect(screen.getByText(/Calles de St. Johns \(condado\)/)).not.toHaveTextContent('no respondió')
+  })
+
+  it('separa el municipio por tipo y dice qué permiso pedir (PEN-41)', () => {
+    const village = {
+      ...mapPointFixture,
+      roads: [],
+      location: { county: 'Palm Beach', city: 'Wellington', municipality_type: 'village' as const },
+      jurisdiction: {
+        authority: 'VILLAGE',
+        name: 'Village of Wellington',
+        basis: 'inside_city',
+        confidence: 'low' as const,
+        note: 'Aproximación: confirmar con el municipio.',
+      },
+    }
+    render(<PointResult result={normalizeMapPoint(village)} loading={false} error={null} onRetry={noop} />)
+    expect(screen.getByText('Village of Wellington')).toBeInTheDocument()
+    expect(screen.getByText('Village')).toBeInTheDocument()
+    expect(screen.getByText('Municipio').nextElementSibling).toHaveTextContent('Wellington (Village)')
+    expect(screen.getByText(/Permiso de derecho de vía de Village of Wellington/)).toBeInTheDocument()
+  })
+
   it('el trazo da la tabla Work Location de OSP y copia fila o tabla (PEN-32)', async () => {
     const user = userEvent.setup()
     render(<TraceResult {...traceProps} result={normalizeMapTrace(mapTraceFixture)} />)

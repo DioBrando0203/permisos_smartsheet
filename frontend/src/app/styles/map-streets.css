@@ -1,0 +1,84 @@
+/* Calles por responsable (PEN-41): el tono define --street para la línea y su muestra. */
+.street-tone--state {
+  --street: var(--map-road-state);
+}
+.street-tone--county {
+  --street: var(--map-road-county);
+}
+.street-tone--city {
+  --street: var(--map-street-city);
+}
+.street-tone--town {
+  --street: var(--map-street-town);
+}
+.street-tone--village {
+  --street: var(--map-street-village);
+}
+.street-tone--private {
+  --street: var(--map-street-private);
+}
+.street-tone--district {
+  --street: var(--map-street-district);
+}
+.street-tone--other {
+  --street: var(--map-street-other);
+}
+.map-street {
+  stroke: var(--street);
+  stroke-opacity: 0.9;
+  fill: none;
+}
+.map-street.street-tone--other {
+  stroke-dasharray: 6 5;
+}
+.map-street-chip {
+  display: inline-block;
+  flex: none;
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--street);
+}
+.map-street-kind {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+  margin: var(--space-xs) 0 0;
+  color: var(--fg-2);
+}
+.map-permit {
+  margin: var(--space-s) 0 0;
+  padding: var(--space-s);
+  border-left: 3px solid var(--brand-80);
+  background: var(--bg-2);
+}
+.map-streets {
+  display: grid;
+  gap: var(--space-s);
+  margin: 0 0 var(--space-s);
+  padding: 0;
+  list-style: none;
+}
+.map-streets__item {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-s);
+  border: 1px solid var(--stroke-2);
+  border-radius: var(--radius-md);
+}
+.map-streets__item p {
+  margin: 0;
+}
+.map-streets__name {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+}
+.map-streets__name span,
+.map-streets__item p:not(.map-streets__name) {
+  color: var(--fg-2);
+}
+.map-streets__permit {
+  font-weight: 600;
+}

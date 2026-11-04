@@ -1,16 +1,18 @@
 import { basemapChoices, type Basemap } from '../../components/map/tileSources'
 import { Button } from '../../components/ui'
 import type { MapScope } from './area'
+import type { StreetTone } from './lib/jurisdiction'
 import type { MapMode } from './lib/mapUrl'
 import { MapScopePicker } from './MapScopePicker'
 import { MapSearchBox, type MapSelect } from './MapSearchBox'
+import { StreetLegend } from './StreetLegend'
 
 const basemapLabels: Record<Basemap, string> = {
   streets: 'Calles (USGS)',
   satellite: 'Satélite (USGS)',
   hd: 'Satélite HD (NAIP, más zoom)',
 }
-export type MapLayers = { roads: boolean; parcels: boolean }
+export type MapLayers = { roads: boolean; parcels: boolean; streets: boolean }
 
 type Props = {
   mode: MapMode
@@ -19,6 +21,8 @@ type Props = {
   layers: MapLayers
   hint: string
   parcelHint: string | null
+  /** Capa "Jurisdicción de calles" (PEN-41): aviso y colores presentes en la vista. */
+  streets: { hint: string | null; tones: StreetTone[] }
   onMode: (mode: MapMode) => void
   onScope: (scope: MapScope) => void
   onBasemap: (basemap: Basemap) => void
@@ -26,7 +30,7 @@ type Props = {
   onSelect: MapSelect
 }
 
-export function MapToolbar({ mode, scope, basemap, layers, hint, parcelHint, ...on }: Props) {
+export function MapToolbar({ mode, scope, basemap, layers, hint, parcelHint, streets, ...on }: Props) {
   return (
     <div className="map-toolbar">
       <div className="map-toolbar__modes" role="group" aria-label="Modo de consulta">
@@ -79,6 +83,20 @@ export function MapToolbar({ mode, scope, basemap, layers, hint, parcelHint, ...
         {parcelHint && (
           <span className="map-legend" role="status">
             {parcelHint}
+          </span>
+        )}
+        <label>
+          <input
+            type="checkbox"
+            checked={layers.streets}
+            onChange={(event) => on.onLayers({ ...layers, streets: event.target.checked })}
+          />
+          Jurisdicción de calles
+        </label>
+        {layers.streets && <StreetLegend tones={streets.tones} />}
+        {streets.hint && (
+          <span className="map-legend" role="status">
+            {streets.hint}
           </span>
         )}
       </div>

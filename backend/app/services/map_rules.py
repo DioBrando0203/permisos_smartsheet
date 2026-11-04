@@ -2,6 +2,7 @@
 
 import math
 from dataclasses import dataclass
+from typing import Literal
 
 from app.models.map import Jurisdiction, MapLocation, RoadMatch
 from app.services.lrs_slicing import at_measure, slice_paths
@@ -101,26 +102,39 @@ def jurisdiction(road: RoadMatch | None, location: MapLocation) -> Jurisdiction:
     if road.kind == "county":
         return Jurisdiction(
             authority="COUNTY",
-            name=location.county,
+            name=county_name(location.county),
             basis="county_road",
             confidence="medium",
             note="Aproximación: confirmar con el condado.",
         )
     if location.city:
+        kind = location.municipality_type or "city"
         return Jurisdiction(
-            authority="CITY",
-            name=location.city,
+            authority=MUNICIPAL_AUTHORITIES[kind],
+            name=f"{kind.capitalize()} of {location.city}",
             basis="inside_city",
             confidence="low",
-            note="Aproximación: confirmar con la ciudad.",
+            note="Aproximación: confirmar con el municipio.",
         )
     return Jurisdiction(
         authority="COUNTY",
-        name=location.county,
+        name=county_name(location.county),
         basis="unincorporated",
         confidence="low",
         note="Aproximación: confirmar con el condado.",
     )
+
+
+MUNICIPAL_AUTHORITIES: dict[str, Literal["CITY", "TOWN", "VILLAGE"]] = {
+    "city": "CITY",
+    "town": "TOWN",
+    "village": "VILLAGE",
+}
+
+
+def county_name(county: str | None) -> str | None:
+    """Como lo nombra el condado: "St. Johns" es "St. Johns County"."""
+    return f"{county} County" if county else None
 
 
 def pick_segment_road(start: list[RoadMatch], end: list[RoadMatch]) -> RoadMatch | None:

@@ -216,3 +216,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 # 2026-11-03 11:15 -05:00 Simulación de tareas nuevas
 
 - 11 pruebas específicas y 234 pruebas backend aprobadas; Ruff y formato correctos. DRY_RUN real: 19 IDs ya estables; no hubo reservas nuevas ni escrituras en Smartsheet.
+
+# 2026-11-03 18:31 -05:00 Calles de St. Johns y lugares censales (PEN-40)
+
+- Backend: 255 pruebas aprobadas (17 nuevas en `test_county_roads.py` y `test_map_county.py`). Ruff y formato aprobados en los archivos de PEN-40; los 13 avisos de Ruff y el de formato que quedan son de `app/api/router.py` y `app/api/routes/idsmart.py` (commit `84c7478`, ID Manager), ajenos a este cambio.
+- GET reales con `python run.py` en 8710 (`/api/map/point?refresh=true`): King St, St. Augustine, `CITY` St. Augustine `high`; 8th St, St. Augustine Beach, `CITY` `high`; Tidestone Dr `COUNTY` St. Johns County `high`; UF Health Way `PRIVATE` `high`; Greyson Ct `SPECIAL_DISTRICT` `high`; US 1 S `FDOT` `high` con SR 5 del FDOT a 6,1 m; Nocatee pasa de `CITY` Nocatee a `place` Nocatee y `COUNTY` `unincorporated` `low` (sin calle del condado a 25 m). Caso de control SR 953 en Miami-Dade sin cambios y sin consultar al condado. `/api/map/sources` lista `stjohns_roads`.
+- Script de punto con el servicio del backend (sin servidor): SR 9B en su extremo sur da `FDOT` `medium` (el tramo estatal del FDOT está a más de 25 m); Hastings da `COUNTY` `high` aunque el Censo la siga como municipio. Sin escrituras en Smartsheet.

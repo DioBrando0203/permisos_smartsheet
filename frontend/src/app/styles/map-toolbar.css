@@ -191,3 +191,12 @@
   border-color: var(--brand-80);
   outline: 1px solid var(--brand-80);
 }
+.map-legend--streets {
+  flex-wrap: wrap;
+  column-gap: var(--space-s);
+}
+.map-legend__item {
+  display: inline-flex;
+  gap: var(--space-xs);
+  align-items: center;
+}

@@ -267,3 +267,11 @@ Evidencia: 11 pruebas específicas y 234 de backend aprobadas, Ruff y formato co
 Estado: coordinador probado con adaptador simulado; escritura real bloqueada.
 Cambios: confirmación idempotente auditada, migración 003 preparada y coordinador con verificación de workspace, lista de hojas, fórmula y reserva; relee tras respuesta incierta. Falta adaptador remoto con escritura condicional atómica comprobada y aplicar 003.
 Evidencia: 15 pruebas específicas aprobadas con PostgreSQL temporal, incluyendo concurrencia, fallos de red y recuperación; Ruff y formato correctos. Ninguna escritura en Smartsheet ni migración de la base real.
+
+## 2026-11-03 18:31 -05:00 Calles de St. Johns y lugares censales (PEN-40)
+
+Estado: terminada.
+Pedido: el usuario vio limitada la información del mapa en St. Johns County. La documentación de mapas sólo cubría Broward, Palm Beach, Martin y Miami-Dade.
+Hallazgos (GET reales sin sesión): FDOT y FDACS sí responden en St. Johns (condado 78, Distrito 2, DOR 65), pero la LRS no trae calles locales y la capa 7 de `Admin_Boundaries` hacía pasar lugares censales (Nocatee, World Golf Village; `CLASSFP` U2) por ciudades. El condado publica `Road/MapServer/36` con `MAINTENANCE` (MJ-SJ-01 a MJ-SJ-10).
+Cambios: `services/county_roads.py` (adaptador M5), `gis/layers.stjohns_roads`, `gis_stjohns_roads_url`, `MapLocation.place`, ciudad sólo con `CLASSFP` C1, catálogo de fuentes en `services/map_sources.py`; SPEC-B14, REQUERIMIENTOS y `future_docs/MAPAS_JURISDICCION_PARCELAS.md` actualizados.
+Evidencia: ver RESULTADOS de la misma hora. Modo solo lectura sin cambios; sin escrituras en Smartsheet.

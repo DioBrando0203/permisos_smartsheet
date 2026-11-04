@@ -14,6 +14,8 @@ from app.models.map import (
     MapSource,
     MapTrace,
     ParcelOutlines,
+    StreetLines,
+    TraceStreets,
 )
 
 router = APIRouter()
@@ -110,6 +112,30 @@ async def map_parcels(
 ) -> ParcelOutlines:
     """Contornos de parcelas de una celda pequeña, sólo con su ID (sin propietarios)."""
     return await services.maps.parcel_outlines((west, south, east, north), refresh=refresh)
+
+
+@router.get("/trace/streets")
+async def map_trace_streets(
+    services: ServicesDep,
+    path: TracePath,
+    radius_m: Radius = 30,
+    refresh: bool = False,
+) -> TraceStreets:
+    """Calles del condado que sigue el trazo, con quién las mantiene (sólo St. Johns por ahora)."""
+    return await services.maps.trace_streets(path, radius_m, refresh=refresh)
+
+
+@router.get("/streets")
+async def map_streets(
+    services: ServicesDep,
+    west: Longitude,
+    south: Latitude,
+    east: Longitude,
+    north: Latitude,
+    refresh: bool = False,
+) -> StreetLines:
+    """Calles del condado de una celda con quién las mantiene, para colorearlas en el mapa."""
+    return await services.maps.street_lines((west, south, east, north), refresh=refresh)
 
 
 @router.get("/sources")

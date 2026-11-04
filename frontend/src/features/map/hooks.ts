@@ -13,6 +13,14 @@ import type { Bounds } from './lib/cells'
 import { pathKey } from './lib/mapUrl'
 import { useMapReading } from './useMapReading'
 import {
+  normalizeStreetLines,
+  normalizeTraceStreets,
+  type ApiStreetLines,
+  type ApiTraceStreets,
+  type StreetLine,
+  type StreetLines,
+} from './streets'
+import {
   normalizeArea,
   normalizeCounties,
   scopeQuery,
@@ -78,6 +86,58 @@ export function useParcelOutlines(cells: Bounds[]): ParcelLayer {
       }
     }),
   })
+}
+
+export type StreetLayer = {
+  streets: StreetLine[]
+  loading: boolean
+  failed: number
+  truncated: boolean
+  /** Alguna celda tocó un condado con fuente propia (St. Johns). */
+  available: boolean
+}
+
+/** Une las celdas sin repetir tramos (un tramo largo toca varias celdas). */
+function combineStreets(results: UseQueryResult<StreetLines>[]): StreetLayer {
+  const seen = new Set<string>()
+  const layer: StreetLayer = { streets: [], loading: false, failed: 0, truncated: false, available: false }
+  for (const result of results) {
+    layer.loading ||= result.isLoading
+    layer.failed += result.isError ? 1 : 0
+    layer.truncated ||= Boolean(result.data?.truncated)
+    layer.available ||= Boolean(result.data?.source)
+    for (const street of result.data?.streets ?? []) {
+      if (seen.has(street.id)) continue
+      seen.add(street.id)
+      layer.streets.push(street)
+    }
+  }
+  return layer
+}
+
+/** Calles del condado por celda con quién las mantiene (PEN-41), como las parcelas. */
+export function useStreetLines(cells: Bounds[]): StreetLayer {
+  return useQueries({
+    combine: combineStreets,
+    queries: cells.map((cell) => {
+      const query = `west=${cell.west}&south=${cell.south}&east=${cell.east}&north=${cell.north}`
+      return {
+        queryKey: queryKeys.mapStreets(query),
+        queryFn: () => api<ApiStreetLines>(`/api/map/streets?${query}`).then(normalizeStreetLines),
+        staleTime,
+      }
+    }),
+  })
+}
+
+/** Calles del condado que sigue el trazo terminado, con su responsable (PEN-41). */
+export function useTraceStreets(path: Coordinates[] | null) {
+  const key = path ? pathKey(path) : ''
+  return useMapReading<ApiTraceStreets, ReturnType<typeof normalizeTraceStreets>>(
+    queryKeys.mapTraceStreets(key),
+    path ? `/api/map/trace/streets?path=${encodeURIComponent(key)}` : null,
+    normalizeTraceStreets,
+  )
 }
 
 /** Sugerencias del buscador, acotadas a la zona; `text` ya llega con espera (MapSearchBox). */

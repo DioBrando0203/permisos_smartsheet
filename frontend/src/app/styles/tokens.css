@@ -39,6 +39,13 @@
   --map-road-county: #0e8a46;
   /* Límites de parcelas (PEN-33): amarillo como en los mapas del tasador, visible sobre la foto. */
   --map-parcel: #e8b100;
+  /* Calles por quién las mantiene (PEN-41); estatal y condado reusan los colores del FDOT. */
+  --map-street-city: #0f6cbd;
+  --map-street-town: #e3008c;
+  --map-street-village: #c4314b;
+  --map-street-private: #8764b8;
+  --map-street-district: #00a3a6;
+  --map-street-other: #8a8886;
   --info-fg: #424242;
   --info-bg: #f5f5f5;
   --info-border: #e0e0e0;

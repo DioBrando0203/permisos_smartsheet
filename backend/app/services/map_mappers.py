@@ -3,6 +3,7 @@
 from typing import Any
 
 from app.models.map import MapLocation, Parcel, RoadMatch, SourceStatus
+from app.services.gis.layers import INCORPORATED, MUNICIPALITY_TYPES
 from app.services.map_rules import (
     DOR_USES,
     RouteGeometry,
@@ -58,11 +59,18 @@ def build_location(data: dict[str, list[dict[str, Any]]]) -> MapLocation:
         _attributes(_first(data.get(source, [])))
         for source in ("fdot_counties", "fdot_cities", "fdot_zip")
     )
+    name = _string(city.get("NAME"))
+    # Un lugar censal (CDP) no es ciudad: sus calles son del condado (PEN-40).
+    municipal = _string(city.get("CLASSFP")) in (None, INCORPORATED)
     return MapLocation(
         county=_string(county.get("COUNTY")),
         county_code_fdot=_string(county.get("CNTYNO")),
         fdot_district=_string(county.get("DISTRICT")),
-        city=_string(city.get("NAME")),
+        city=name if municipal else None,
+        municipality_type=MUNICIPALITY_TYPES.get(_string(city.get("LSAD")) or "")
+        if municipal and name
+        else None,
+        place=None if municipal else name,
         zip=_string(zip_code.get("ZIP")),
     )
 

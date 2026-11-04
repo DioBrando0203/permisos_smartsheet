@@ -1,12 +1,12 @@
-# Mapas gratuitos, dueños de calles y parcelas (Broward, Palm Beach, Martin, Miami-Dade)
+# Mapas gratuitos, dueños de calles y parcelas (Broward, Palm Beach, Martin, Miami-Dade, St. Johns)
 
-Estado (2026-10-30): investigación con consultas reales sin sesión; parte verificada y parte pendiente, marcada en cada punto. Nada implementado. Reglas comunes WS-xx en `README.md`; servicios del FDOT y cálculo de milepost en `GIS_PUBLICO_FLORIDA.md`.
+Estado (2026-10-30): investigación con consultas reales sin sesión; parte verificada y parte pendiente, marcada en cada punto. La fase 1, los respaldos de parcelas y el adaptador de St. Johns (2026-11-03, PEN-40) ya están en el panel (SPEC-B14); el resto está sin implementar. Reglas comunes WS-xx en `README.md`; servicios del FDOT y cálculo de milepost en `GIS_PUBLICO_FLORIDA.md`.
 
 ## Respuesta corta
 
 - MJ-R01: No hay una sola fuente que lo dé todo. La mejor base única para empezar es estatal y gratuita: FDOT para vías, milepost, ciudad, condado y ZIP, y FDACS para parcelas. Cubre todos los condados con el mismo formato.
 - MJ-R02: El detalle fino (quién responde por cada calle local, dirección y valores del predio, ventas) está en los servicios de cada condado, con formatos y calidad distintos. Se agrega después, condado por condado.
-- MJ-R03: Todos los condados del área están en el Distrito 4 del FDOT, salvo Miami-Dade (Distrito 6).
+- MJ-R03: Todos los condados del sur de Florida están en el Distrito 4 del FDOT, salvo Miami-Dade (Distrito 6). St. Johns está en el Distrito 2 (código FDOT 78, DOR 65).
 
 ## Fase 1: lo básico, una sola base estatal (recomendada para empezar)
 
@@ -51,6 +51,19 @@ Martin (sin fuente propia confirmada):
 Miami-Dade:
 - MJ-MD-01: No investigado en esta ronda (MJ-PEN-03).
 
+St. Johns (verificado el 2026-11-03 con GET sin sesión; implementado en PEN-40):
+- MJ-SJ-01: Directorio público `https://www.gis.sjcfl.us/sjcgis/rest/services` (ArcGIS 11.5, sin token). Responde JSON con `Access-Control-Allow-Origin` igual al origen (probado con `http://localhost:5710`) y tarda unos 0,4 s por consulta de punto.
+- MJ-SJ-02: `Road/MapServer/36` (escala 1:600 a 1:4800, la más detallada): eje de todas las calles del condado con `NAME`, rangos de direcciones, `CITYLFT`/`CITYRGT` (`St Augustine`, `St Augustine Beach`, `Unincorporated`), `GATED` (`Y`/`N`), `CLASS` y `MAINTENANCE`. `maxRecordCount` 1000. Las capas 4, 11, 19 y 27 son el mismo dato a escalas menores.
+- MJ-SJ-03: `MAINTENANCE` dice quién mantiene cada tramo. Conteo de tramos: `St Johns County` 8344, `Private` 6013, `City of St Augustine` 1202, `State of Florida` 922, `Proposed` 483, `Private CDD` 400, `City of St Augustine Beach` 284, `Out of County` 128, `Emergency Access` 19, vacío 11, `Parks and Recreation` 9.
+- MJ-SJ-04: Casos de prueba con el radio de 25 m: King St y Cordova St en St. Augustine dan `City of St Augustine` (el FDOT las tiene como vías locales); 8th St en St. Augustine Beach da `City of St Augustine Beach` (el FDOT no tiene vía); Tidestone Dr (30.010961, -81.516193) da `St Johns County`; UF Health Way (30.088861, -81.515803) da `Private`; Greyson Ct (30.015785, -81.568375) da `Private CDD`; State Road 9B (30.094993, -81.518816) da `State of Florida`.
+- MJ-SJ-05: Hastings sigue como municipio en el Censo (capa 7 de `Admin_Boundaries`, `CLASSFP` C1), pero el condado marca sus calles (N First St, E Cochran Ave) como `St Johns County` y la zona como `Unincorporated`; `MAINTENANCE` no tiene ningún valor de Hastings.
+- MJ-SJ-06: `State of Florida` aparece también en tramos cortos de calles de condado (por ejemplo, 6 de los 29 tramos de International Golf Pkwy, Double Gate Rd y Kling Rd), probablemente los accesos a un cruce con una vía estatal. Por eso el panel sólo da confianza alta a "estatal" si el FDOT también ve una vía estatal en el radio.
+- MJ-SJ-07: Los ejes del condado y la LRS del FDOT no coinciden al metro: en Nocatee (30.105, -81.42) el FDOT da la vía `78000805` a 22 m y el condado no tiene calle a 25 m (sí a 80 m: Marietta Dr, `Private`, y Preservation Trl, `St Johns County`).
+- MJ-SJ-08: Parcelas: `Parcel/MapServer/0` con `PIN` ("199570 0000"), `STRAP` ("1995700000", igual al `PARCEL_ID` de FDACS), `USE_CODE` ("8900"), `USE_DESC` ("Municipally Owned") y datos del propietario (dato personal, WS-07). FDACS responde en St. Johns, así que no se usa por ahora.
+- MJ-SJ-09: Otros servicios del condado: `Transportation` (conteos de tráfico), `iMap_Dynamic` (zonificación, distritos, ZIP, proyectos de ingeniería) y `Road_Survey`. No revisados.
+- MJ-SJ-10: Lugares censales: Nocatee y World Golf Village tienen `CLASSFP` U2 en la capa 7 de `Admin_Boundaries`; St. Augustine y St. Augustine Beach, C1. En Florida la capa 7 tiene 410 C1, 425 U1, 80 U2, 4 M2 (bases militares) y 1 C9 (Islandia, inactivo); Jacksonville también es C1.
+- MJ-SJ-11: Tipo de municipio (`LSAD` de la capa 7, verificado el 2026-11-03): 25 city (267), 43 town (124) y 47 village (19). Ejemplos: Miami y St. Augustine city; Jupiter, Davie y Palm Beach town; Wellington, Royal Palm Beach, Key Biscayne y Pinecrest village. Indiantown (Martin) se incorporó como village, pero el Censo todavía la tiene como CDP (`U1`, `LSAD` 57): el panel la muestra como zona no incorporada hasta que haya un adaptador de Martin.
+
 Ciudades:
 - MJ-CI-01: Algunas ciudades publican sus propios servicios, por ejemplo West Palm Beach (`wpbgisportal.wpb.org`, `Parcel/Parcels_New`, copia mensual de los datos del condado). No revisados.
 
@@ -68,5 +81,5 @@ Ciudades:
 - MJ-PEN-03: Miami-Dade: parcelas y jurisdicción de calles.
 - MJ-PEN-04: Palm Beach: revisar `ENG/EPERMITS`, `ENG/RIGHT_OF_WAY` y los campos de `Parcels/PARCEL_INFO`.
 - MJ-PEN-05: Confirmar los códigos `DOR_UC` con la tabla oficial del DOR.
-- MJ-PEN-06: Revisar las condiciones de uso de cada servicio de condado antes de un uso continuo.
+- MJ-PEN-06: Revisar las condiciones de uso de cada servicio de condado antes de un uso continuo (incluye St. Johns, MJ-SJ-01).
 - MJ-PEN-07: Ciudades de Broward con servicios propios.

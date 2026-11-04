@@ -1,14 +1,21 @@
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef, useState } from 'react'
 import type { Coordinates } from '../../features/map/lib/coordinates'
+import {
+  drawOverlays,
+  drawResults,
+  overlayPane,
+  toLatLng,
+  type MapLine,
+  type MapMarker,
+  type MapOverlay,
+} from './draw'
 import { basemaps, fdotRoads, maxZoom, type Basemap } from './tileSources'
 
-export type MapMarker = Coordinates & { label?: string; small?: boolean }
+export type { MapLine, MapMarker, MapOverlay }
 export type MapBounds = { west: number; south: number; east: number; north: number }
 /** Pedido de mover la vista: al buscar, al elegir una zona o al abrir una URL; un clic no la mueve. */
 export type MapFocus = (Coordinates & { zoom: number }) | { bounds: MapBounds }
-/** Línea [[lon, lat], …]: `draft` es un trazo a medias; `result`, lo que respondió el backend. */
-export type MapLine = { coordinates: [number, number][]; style: 'draft' | 'result' }
 export type MapViewState = { bounds: MapBounds; zoom: number }
 export type { Basemap }
 
@@ -16,6 +23,8 @@ type Props = {
   focus: MapFocus | null
   markers: MapMarker[]
   lines: MapLine[]
+  /** Capas temáticas (calles por responsable), debajo de los resultados y con texto al pasar. */
+  overlays: MapOverlay[]
   /** Contornos [[lon, lat], …] finos y sin clic, debajo de todo lo demás. */
   outlines: [number, number][][]
   /** Contorno punteado de la zona elegida (condado o ciudad), sin clic. */
@@ -31,10 +40,9 @@ type Props = {
 }
 type Handlers = Pick<Props, 'onMapClick' | 'onMapDoubleClick' | 'onViewChange'>
 const start = { lat: 26.1, lon: -80.25, zoom: 10 }
-const toLatLng = (line: [number, number][]) => line.map(([lon, lat]) => [lat, lon] as [number, number])
 
 export function MapView(props: Props) {
-  const { focus, markers, lines, outlines, area, basemap, roads, drawing } = props
+  const { focus, markers, lines, overlays, outlines, area, basemap, roads, drawing } = props
   const element = useRef<HTMLDivElement>(null)
   // Leaflet se importa una sola vez y los demás efectos esperan a `ready`: con una importación
   // por efecto, el orden en que se resuelven no está garantizado y un marcador podía perderse.
@@ -43,6 +51,7 @@ export function MapView(props: Props) {
   const layers = useRef<import('leaflet').LayerGroup | null>(null)
   const outlineLayer = useRef<import('leaflet').LayerGroup | null>(null)
   const areaLayer = useRef<import('leaflet').LayerGroup | null>(null)
+  const overlayLayer = useRef<import('leaflet').LayerGroup | null>(null)
   const tile = useRef<import('leaflet').TileLayer | null>(null)
   const [ready, setReady] = useState(false)
   const handlers = useRef<Handlers>(props)
@@ -63,6 +72,8 @@ export function MapView(props: Props) {
       leaflet.current = L
       map.current = instance
       areaLayer.current = L.layerGroup().addTo(instance)
+      instance.createPane(overlayPane).style.zIndex = '390'
+      overlayLayer.current = L.layerGroup().addTo(instance)
       outlineLayer.current = L.layerGroup().addTo(instance)
       layers.current = L.layerGroup().addTo(instance)
       const at = (event: import('leaflet').LeafletMouseEvent) => ({
@@ -94,6 +105,7 @@ export function MapView(props: Props) {
       layers.current = null
       outlineLayer.current = null
       areaLayer.current = null
+      overlayLayer.current = null
       tile.current = null
       setReady(false)
     }
@@ -135,30 +147,13 @@ export function MapView(props: Props) {
     const L = leaflet.current
     const group = layers.current
     if (!ready || !L || !group) return
-    // Todo se redibuja en cada cambio y sin clic propio (`interactive: false`): si el segundo
-    // clic de un doble clic cayera sobre un marcador recién borrado, el mapa no recibiría el
-    // doble clic y el trazo no terminaría.
-    group.clearLayers()
-    lines
-      .filter((line) => line.coordinates.length > 1)
-      .forEach((line) => {
-        const weight = line.style === 'draft' ? 3 : 6
-        L.polyline(toLatLng(line.coordinates), {
-          className: `map-line map-line--${line.style}`,
-          weight,
-          interactive: false,
-        }).addTo(group)
-      })
-    markers.forEach((item) => {
-      const marker = L.circleMarker([item.lat, item.lon], {
-        radius: item.small ? 5 : 8,
-        className: 'map-marker',
-        interactive: false,
-      })
-      if (item.label) marker.bindTooltip(item.label, { permanent: true, direction: 'top', offset: [0, -8] })
-      marker.addTo(group)
-    })
+    drawResults(L, group, lines, markers)
   }, [ready, lines, markers])
+  useEffect(() => {
+    const L = leaflet.current
+    const group = overlayLayer.current
+    if (ready && L && group) drawOverlays(L, group, overlays)
+  }, [ready, overlays])
   useEffect(() => {
     const L = leaflet.current
     const group = areaLayer.current

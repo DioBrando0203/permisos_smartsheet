@@ -114,3 +114,9 @@ Sólo ejecuciones reales, con fecha America/Lima (C-13).
 - `npm run build`, `npm run lint` y `npm run format:check`: pasan. `npm test`: 14 archivos, 39 pruebas aprobadas.
 - `npm run test:e2e`: 11 aprobadas y 1 caso F0 omitido (1.5 min), incluido `e2e/map-alignment.spec.ts`.
 - Revisión con Playwright sobre `npm run dev` y el backend con GIS real: diagonal LeJeune–Flagler dibuja dos líneas (SR 953 y SR 968) con "Inicio ajustado" y "Final ajustado"; Broward Blvd dibujado al norte queda sobre el eje; "Ver dibujo original" superpone el punteado y escribe `original=on`. A 320 px no hay desborde horizontal. Capturas sólo en el scratchpad de la sesión (la cabecera muestra la cuenta real).
+
+## 2026-11-03 18:31 -05:00 Calles de St. Johns y lugares censales (PEN-40)
+
+- `npm run build`, `npm run lint` y `npm run format:check`: pasan. `npm test`: 14 archivos, 40 pruebas aprobadas (nueva: St. Johns en `MapResults.test.tsx`, CA-21).
+- `npm run test:e2e`: 11 aprobadas y 1 caso F0 omitido (1.3 min).
+- Sin revisión visual en navegador: el cambio visible es el texto de un campo existente ("Zona no incorporada (Nocatee)") y una fuente más en la lista.

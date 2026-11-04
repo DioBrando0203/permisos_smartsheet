@@ -36,6 +36,8 @@ export function normalizeMapPoint(source: ApiMapPoint): MapPoint {
       countyCodeFdot: source.location?.county_code_fdot ?? null,
       fdotDistrict: source.location?.fdot_district ?? null,
       city: source.location?.city ?? null,
+      municipalityType: source.location?.municipality_type ?? null,
+      place: source.location?.place ?? null,
       zip: source.location?.zip ?? null,
     },
     parcel: source.parcel
