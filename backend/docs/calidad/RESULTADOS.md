@@ -228,3 +228,7 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Backend: 267 pruebas aprobadas (nuevas: `test_trace_streets.py`, `test_county_streets.py` y casos de city, town y village en `test_county_roads.py`); Ruff y formato aprobados fuera de `app/api/router.py` y `app/api/routes/idsmart.py` (ID Manager, ajenos a este cambio).
 - GET reales con el servicio del backend: celda (-81.48, 30.08, -81.46, 30.10) con 99 tramos (58 condado, 32 privada, 5 FDOT, 4 sin dueño); trazo CR 210 W y Beachwalk Blvd: County Road 210 W 0.476 mi y Beachwalk Blvd 0.097 mi, ambos St. Johns County, 0.036 mi sin calle, fuente en 1,0 s. En esa zona la LRS del FDOT no tiene vías a 1,5 km (CA-36).
 - GET reales por HTTP (`python run.py`, 8710): Jupiter `TOWN` "Town of Jupiter"; Wellington `VILLAGE` "Village of Wellington"; Miami y West Palm Beach `CITY`; St. Augustine `CITY` "City of St. Augustine" con `county_maintenance`. Sin escrituras en Smartsheet.
+# 2026-11-04 12:14 -05:00 Política anual del ID Manager
+
+- 289 pruebas backend aprobadas; Ruff y formato correctos. Pruebas de año desde fecha ISO, secuencias independientes, continuidad de 2026, procesamiento por dependencias y concurrencia con PostgreSQL temporal.
+- DRY_RUN contra el piloto real: 19 IDs ya estables; base: 19 asignaciones, 12 secuencias y 19 eventos. Solo lecturas. Migración 003 pendiente.

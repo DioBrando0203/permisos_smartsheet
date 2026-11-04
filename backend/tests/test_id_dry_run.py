@@ -90,6 +90,8 @@ def test_hypothetical_ids_do_not_mutate_database_snapshot() -> None:
     assert projector.next(EntityKind.TASK, "KMV-BS-26-452") == "KMV-BS-26-452-04"
     assert projector.next(EntityKind.TASK, "KMV-BS-26-452") == "KMV-BS-26-452-05"
     assert scopes["task:KMV-BS-26-452"] == 2
+    with pytest.raises(ValueError):
+        projector.next(EntityKind.PROJECT, "KMV-OT-26")
 
 
 def test_transition_policy_requires_approval_and_valid_scope() -> None:
@@ -111,6 +113,7 @@ async def test_pilot_rechecks_workspace_and_rejects_unknown() -> None:
         if name
     }
     titles.add("Reference")
+    titles.update(("KMV/GALP", "Customer Code", "Date Received"))
     client.list_columns.return_value = [
         RawColumn(str(number), title, number, False) for number, title in enumerate(titles, 1)
     ]

@@ -4,7 +4,7 @@
 texto, `name` ausente y fechas ISO con `Z`.
 """
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 from app.services.permissions import AccessLevel, ShareScope, ShareType
@@ -116,6 +116,14 @@ def to_column(data: Json) -> RawColumn:
 
 def to_row(data: Json, label_column_id: str | None = None) -> RawRow:
     cells = {_id(cell.get("columnId")): _cell_text(cell) for cell in data.get("cells") or []}
+    dates = {}
+    for cell in data.get("cells") or []:
+        value = cell.get("value")
+        if isinstance(value, str) and len(value) == 10:
+            try:
+                dates[_id(cell.get("columnId"))] = date.fromisoformat(value)
+            except ValueError:
+                continue
     label = cells.get(label_column_id) if label_column_id else None
     if label is None and label_column_id is None:
         label = next((text for text in cells.values() if text), None)
@@ -128,6 +136,7 @@ def to_row(data: Json, label_column_id: str | None = None) -> RawRow:
         modified_at=_date(data.get("modifiedAt")),
         modified_by=_author(data.get("modifiedBy")),
         cells=cells,
+        date_cells=dates,
     )
 
 

@@ -27,6 +27,8 @@ async def read_pilot(client: SmartsheetClient) -> list[InventorySheet]:
         names = [visible, stable] + ([parent] if parent else [])
         if extra_parent:
             names.append(extra_parent)
+        if kind == EntityKind.PROJECT:
+            names.extend(("KMV/GALP", "Customer Code", "Date Received"))
         ids = []
         for name in names:
             matches = [column.id for column in columns if column.title == name]
@@ -43,6 +45,7 @@ async def read_pilot(client: SmartsheetClient) -> list[InventorySheet]:
                 rows,
                 ids[2] if parent else None,
                 ids[3] if extra_parent else None,
+                (ids[2], ids[3], ids[4]) if kind == EntityKind.PROJECT else None,
             )
         )
     for sheet_id, *_ in SHEETS:

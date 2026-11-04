@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import psycopg
 
 from app.services.ids.formats import EntityKind, make_id, parse_id
+from app.services.ids.transition import standard_start
 
 _INIT_LOCK = 714382001
 
@@ -32,10 +33,12 @@ class IdStore:
         *,
         allow_reservations: bool = False,
         approved_starts: dict[str, int] | None = None,
+        annual_policy_approved: bool = False,
     ) -> None:
         self._dsn = dsn
         self._allow_reservations = allow_reservations
         self._approved_starts = dict(approved_starts or {})
+        self._annual_policy_approved = annual_policy_approved
 
     def lookup(self, sheet_id: int, row_id: int) -> Reservation | None:
         """Consulta la reserva de una fila sin modificarla."""
@@ -143,9 +146,6 @@ class IdStore:
             raise ValueError("Reservas deshabilitadas hasta resolver los máximos históricos")
         make_id(kind, parent, 1)
         scope = f"{kind.value}:{parent}"
-        start = self._approved_starts.get(scope)
-        if not isinstance(start, int) or isinstance(start, bool) or start < 1:
-            raise ValueError("Falta consecutivo inicial aprobado para este ámbito")
         with psycopg.connect(self._dsn) as conn:
             conn.execute("SELECT pg_advisory_xact_lock_shared(%s)", (_INIT_LOCK,))
             if not conn.execute("SELECT 1 FROM estado_inicializacion_id").fetchone():
@@ -162,6 +162,16 @@ class IdStore:
                 if existing[0] != scope:
                     raise ValueError("La fila ya tiene un ID en otro ámbito")
                 return Reservation(existing[1], existing[2])
+            start = self._approved_starts.get(scope)
+            if self._annual_policy_approved:
+                scope_exists = bool(
+                    conn.execute("SELECT 1 FROM secuencia_id WHERE ambito=%s", (scope,)).fetchone()
+                )
+                standard = standard_start(kind, parent, existing_scope=scope_exists)
+                if standard is not None:
+                    start = standard
+            if not isinstance(start, int) or isinstance(start, bool) or start < 1:
+                raise ValueError("Falta consecutivo inicial aprobado para este ámbito")
             number = conn.execute(
                 "INSERT INTO secuencia_id VALUES (%s, %s) ON CONFLICT (ambito) "
                 "DO UPDATE SET ultimo_numero=GREATEST(secuencia_id.ultimo_numero+1, "

@@ -1,5 +1,6 @@
 """Adaptador de Smartsheet: validación y barreras usando clientes simulados."""
 
+from datetime import date
 from unittest.mock import AsyncMock, Mock
 
 import pytest
@@ -64,6 +65,18 @@ async def test_manual_execution_is_blocked_by_default(monkeypatch) -> None:
         await manual.execute(73093952524164, 123, "KMV-BS-26-452", True)
 
 
+async def test_manual_execution_requires_oauth_even_if_flags_are_enabled(monkeypatch) -> None:
+    monkeypatch.setattr(
+        manual,
+        "Settings",
+        lambda: make_settings(
+            app_read_only=False, ids_writes_enabled=True, ids_transition_approved=True
+        ),
+    )
+    with pytest.raises(ValueError, match="OAuth"):
+        await manual.execute(73093952524164, 123, "KMV-BS-26-452", True)
+
+
 async def test_project_requires_company_customer_and_year() -> None:
     client = AsyncMock()
     client.sheet_workspace_id.return_value = PILOT_WORKSPACE
@@ -73,15 +86,34 @@ async def test_project_requires_company_customer_and_year() -> None:
         RawColumn("3", "KMV/GALP", 2, False),
         RawColumn("4", "Customer Code", 3, False),
         RawColumn("5", "Year", 4, False),
+        RawColumn("6", "Date Received", 5, False),
     ]
     client.get_row.return_value = RawRow(
-        "2", 1, None, None, None, None, None, {"3": "KMV", "4": "BS", "5": "2026"}
+        "2",
+        1,
+        None,
+        None,
+        None,
+        None,
+        None,
+        {"3": "KMV", "4": "BS", "5": "2099", "6": "03/02/2026"},
+        {"6": date(2026, 3, 2)},
     )
     gateway = SmartsheetIdGateway(client, Mock())
     target = Target(4365321059389316, 2, EntityKind.PROJECT, "KMV-BS-26")
     assert (await gateway.read(target)).parent == "KMV-BS-26"
     client.get_row.return_value.cells["4"] = ""
     assert (await gateway.read(target)).parent == ""
+
+
+def test_raw_date_uses_iso_value_not_localized_display() -> None:
+    from app.services.smartsheet.mappers import to_row
+
+    result = to_row(
+        {"id": 1, "cells": [{"columnId": 6, "value": "2027-02-03", "displayValue": "03/02/2027"}]}
+    )
+    assert result.cells["6"] == "03/02/2027"
+    assert result.date_cells["6"] == date(2027, 2, 3)
 
 
 async def test_client_checks_workspace_and_empty_stable_before_mock_write(smartsheet) -> None:

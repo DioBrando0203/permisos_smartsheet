@@ -268,6 +268,24 @@ Estado: coordinador probado con adaptador simulado; escritura real bloqueada.
 Cambios: confirmación idempotente auditada, migración 003 preparada y coordinador con verificación de workspace, lista de hojas, fórmula y reserva; relee tras respuesta incierta. Falta adaptador remoto con escritura condicional atómica comprobada y aplicar 003.
 Evidencia: 15 pruebas específicas aprobadas con PostgreSQL temporal, incluyendo concurrencia, fallos de red y recuperación; Ruff y formato correctos. Ninguna escritura en Smartsheet ni migración de la base real.
 
+## 2026-11-04 11:37 -05:00 Integración HTTP del ID Manager (PEN-24)
+
+Estado: consultas y simulación operativas; escritura real y procesador de escritura pendientes.
+Cambios: seis endpoints autenticados; monitor opcional de simulación con bloqueo PostgreSQL; adaptador, política configurable y prueba manual preparados con barreras de solo lectura. SQL 003 y script con respaldo y restauración preparados; falta sudo interactivo para aplicarlos. Sin prueba E2E de escritura ni OAuth (PEN-08). Riesgo residual de edición externa simultánea en Smartsheet.
+Evidencia: consultas HTTP y `/docs` reales, 19 IDs confirmados, 12 secuencias y 19 eventos. Monitor temporal activo en solo lectura revisó 19 IDs estables y se detuvo correctamente. Sin escrituras en Smartsheet ni aplicación de 003.
+
+## 2026-11-04 12:14 -05:00 Política anual de IDs (PEN-24)
+
+Estado: implementada y probada; reservas automáticas y escrituras reales deshabilitadas.
+Cambios: ámbito por empresa, cliente y año de `Date Received`; inicio 001 para años nuevos desde 2027, secuencias existentes preservadas, tareas y solicitudes por padre. Sin inicio implícito para ámbito histórico sin secuencia; fechas tomadas del valor ISO de Smartsheet (PY-21, SM-03).
+Evidencia: 289 pruebas backend aprobadas, Ruff y formato correctos; DRY_RUN real reconoció 19 IDs estables. Base real: 19 asignaciones, 12 secuencias, 19 eventos; migración 003 pendiente. Sin escritura en Smartsheet. Historial de filas eliminadas previo a la adopción sigue incompleto.
+
+## 2026-11-04 12:17 -05:00 Preparación del procesador secuencial (PEN-24)
+
+Estado: reglas de procesamiento probadas, ejecución real bloqueada por OAuth y autorización.
+Cambios: los candidatos se ordenan por dependencia, el DRY_RUN detecta proyectos sin fórmula y usa la política histórica, y la prueba manual rechaza escrituras mientras falte OAuth. No se conecta el procesador de escritura ni se habilita el modo de escritura.
+Evidencia: 289 pruebas backend aprobadas con Smartsheet simulado, PostgreSQL temporal, Ruff y formato. DRY_RUN real de lectura: 19 IDs estables. Sin nuevas reservas ni escrituras en Smartsheet.
+
 ## 2026-11-03 18:31 -05:00 Calles de St. Johns y lugares censales (PEN-40)
 
 Estado: terminada.

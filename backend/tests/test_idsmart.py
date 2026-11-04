@@ -125,3 +125,80 @@ async def test_preview_reports_conflicting_stable_cell(database_fixture, monkeyp
     monkeypatch.setattr(preview, "read_pilot", AsyncMock(return_value=[sheet]))
     report = await preview.build_dry_run_report(AsyncMock(), database_fixture)
     assert report["counts"]["conflict"] == 1
+
+
+async def test_preview_uses_date_received_for_project_year(database_fixture, monkeypatch) -> None:
+    from datetime import date
+
+    import psycopg
+
+    import app.services.ids.preview as preview
+    from app.services.ids.formats import EntityKind
+    from app.services.ids.inventory import InventorySheet
+    from app.services.smartsheet import RawRow
+
+    project = "KMV-BS-27-001"
+    row = RawRow(
+        "1",
+        1,
+        None,
+        None,
+        None,
+        None,
+        None,
+        {"v": project, "s": project, "company": "KMV", "customer": "BS"},
+        {"received": date(2027, 1, 5)},
+    )
+    sheet = InventorySheet(
+        4365321059389316,
+        EntityKind.PROJECT,
+        "v",
+        "s",
+        [row],
+        project_columns=("company", "customer", "received"),
+    )
+    with psycopg.connect(database_fixture) as conn:
+        conn.execute("INSERT INTO secuencia_id VALUES ('project:KMV-BS-27', 1)")
+        conn.execute(
+            "INSERT INTO asignacion_id VALUES "
+            "(4365321059389316, 1, 'project:KMV-BS-27', 1, %s, 'confirmado')",
+            (project,),
+        )
+    monkeypatch.setattr(preview, "read_pilot", AsyncMock(return_value=[sheet]))
+    report = await preview.build_dry_run_report(AsyncMock(), database_fixture)
+    assert report["counts"]["already_stable"] == 1
+    row.date_cells["received"] = date(2026, 12, 31)
+    report = await preview.build_dry_run_report(AsyncMock(), database_fixture)
+    assert report["counts"]["conflict"] == 1
+
+
+async def test_preview_detects_project_before_formula_exists(database_fixture, monkeypatch) -> None:
+    from datetime import date
+
+    import app.services.ids.preview as preview
+    from app.services.ids.formats import EntityKind
+    from app.services.ids.inventory import InventorySheet
+    from app.services.smartsheet import RawRow
+
+    row = RawRow(
+        "1",
+        1,
+        None,
+        None,
+        None,
+        None,
+        None,
+        {"company": "KMV", "customer": "BS"},
+        {"received": date(2027, 1, 5)},
+    )
+    sheet = InventorySheet(
+        4365321059389316,
+        EntityKind.PROJECT,
+        "v",
+        "s",
+        [row],
+        project_columns=("company", "customer", "received"),
+    )
+    monkeypatch.setattr(preview, "read_pilot", AsyncMock(return_value=[sheet]))
+    report = await preview.build_dry_run_report(AsyncMock(), database_fixture)
+    assert report["pending_or_conflicting_rows"][0]["proposed_id"] == "KMV-BS-27-001"

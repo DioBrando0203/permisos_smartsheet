@@ -300,6 +300,40 @@ def test_reservations_require_approved_scope_and_respect_start(database) -> None
     assert approved.reserve(1, 3, EntityKind.PROJECT, "KMV-BS-26").value == "KMV-BS-26-901"
 
 
+def test_annual_policy_respects_existing_and_independent_scopes(database) -> None:
+    store = IdStore(database, allow_reservations=True, annual_policy_approved=True)
+    store.initialize(
+        [
+            ExistingId(1, 1, EntityKind.PROJECT, "KMV-BS-26-452"),
+            ExistingId(2, 1, EntityKind.TASK, "KMV-BS-26-452-02"),
+        ]
+    )
+    assert store.reserve(1, 2, EntityKind.PROJECT, "KMV-BS-26").value == "KMV-BS-26-453"
+    with pytest.raises(ValueError):
+        store.reserve(1, 3, EntityKind.PROJECT, "KMV-OT-26")
+    assert store.reserve(1, 4, EntityKind.PROJECT, "KMV-BS-27").value == "KMV-BS-27-001"
+    assert store.reserve(1, 5, EntityKind.PROJECT, "KMV-BS-27").value == "KMV-BS-27-002"
+    assert store.reserve(1, 6, EntityKind.PROJECT, "KMV-CC-27").value == "KMV-CC-27-001"
+    assert store.reserve(1, 7, EntityKind.PROJECT, "KMV-BS-28").value == "KMV-BS-28-001"
+    assert store.reserve(2, 2, EntityKind.TASK, "KMV-BS-26-452").value.endswith("-03")
+    assert store.reserve(2, 3, EntityKind.TASK, "KMV-BS-27-001").value.endswith("-01")
+    assert store.reserve(3, 1, EntityKind.RECORD, "KMV-BS-27-001-01").value.endswith("-R1")
+    assert store.reserve(4, 1, EntityKind.REVISION, "KMV-BS-27-001-01").value.endswith("-V1")
+
+
+def test_annual_policy_concurrent_new_scope(database) -> None:
+    store = IdStore(database, allow_reservations=True, annual_policy_approved=True)
+    store.initialize([ExistingId(1, 1, EntityKind.PROJECT, "KMV-BS-26-452")])
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(
+            pool.map(
+                lambda row: store.reserve(1, row, EntityKind.PROJECT, "KMV-BS-27"), range(2, 12)
+            )
+        )
+    assert len({reservation.value for reservation in results}) == 10
+    assert {item.value for item in results} == {f"KMV-BS-27-{i:03d}" for i in range(1, 11)}
+
+
 def test_confirmation_migration_is_repeatable_and_preserves_assignments(database) -> None:
     store = IdStore(database)
     store.initialize([ExistingId(1, 1, EntityKind.PROJECT, "KMV-BS-26-452")])

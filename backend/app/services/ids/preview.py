@@ -11,7 +11,7 @@ from app.services.ids.dry_run import (
     PlanAction,
     plan,
 )
-from app.services.ids.formats import EntityKind, parse_id
+from app.services.ids.formats import EntityKind, parse_id, project_scope
 from app.services.ids.pilot import SHEETS, read_pilot
 from app.services.ids.simulation import Projector
 from app.services.smartsheet import SmartsheetClient
@@ -72,10 +72,14 @@ async def build_dry_run_report(
                 (row.cells.get(sheet.parent_column) or "").strip() if sheet.parent_column else ""
             )
 
-            if not visible and not stable and not parent:
-                continue
-
-            if sheet.kind == EntityKind.PROJECT and visible:
+            if sheet.kind == EntityKind.PROJECT and sheet.project_columns:
+                company, customer, received = sheet.project_columns
+                parent = project_scope(
+                    row.cells.get(company) or "",
+                    row.cells.get(customer) or "",
+                    row.date_cells.get(received),
+                )
+            elif sheet.kind == EntityKind.PROJECT and visible:
                 try:
                     parent = parse_id(
                         sheet.kind,
@@ -84,6 +88,9 @@ async def build_dry_run_report(
 
                 except ValueError:
                     pass
+
+            if not visible and not stable and not parent:
+                continue
 
             reservation = reservations.get((sheet.sheet_id, int(row.id)))
 
@@ -135,6 +142,7 @@ async def build_dry_run_report(
                         "sheet_id": str(sheet.sheet_id),
                         "row_id": str(row.id),
                         "type": sheet.kind.value,
+                        "parent": parent,
                         "action": action.value,
                         "visible_id": visible,
                         "stable_id": stable,

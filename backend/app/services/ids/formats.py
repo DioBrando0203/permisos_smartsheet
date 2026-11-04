@@ -2,6 +2,7 @@
 
 import re
 from dataclasses import dataclass
+from datetime import date
 from enum import StrEnum
 
 
@@ -20,6 +21,14 @@ _PATTERNS = {
     EntityKind.RECORD: re.compile(rf"(?P<parent>{_TASK})-R(?P<num>[0-9]+)"),
     EntityKind.REVISION: re.compile(rf"(?P<parent>{_TASK})-V(?P<num>[0-9]+)"),
 }
+
+
+def project_scope(company: str, customer: str, received: date | None) -> str:
+    """Ámbito usando exclusivamente el año de recepción del proyecto."""
+    company, customer = company.strip(), customer.strip()
+    if not company or not customer or not received or not 2000 <= received.year <= 2099:
+        return ""
+    return f"{company}-{customer}-{received.year % 100:02d}"
 
 
 @dataclass(frozen=True)

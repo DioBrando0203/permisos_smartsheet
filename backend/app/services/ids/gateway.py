@@ -5,10 +5,10 @@ import asyncio
 from app.core.errors import AppError
 from app.services.ids.connector import Snapshot, Target, WriteUncertain
 from app.services.ids.dry_run import PILOT_WORKSPACE
-from app.services.ids.formats import EntityKind, parse_id
+from app.services.ids.formats import EntityKind, parse_id, project_scope
 from app.services.ids.pilot import SHEETS
 from app.services.ids.store import IdStore
-from app.services.smartsheet import SmartsheetClient
+from app.services.smartsheet import RawRow, SmartsheetClient
 
 
 class SmartsheetIdGateway:
@@ -41,7 +41,7 @@ class SmartsheetIdGateway:
                 if reference != parent:
                     return Snapshot(workspace, "", False, visible, stable)
         else:
-            parent = _project_scope(row.cells, by_title)
+            parent = _project_scope(row, by_title)
             if visible:
                 try:
                     if parse_id(target.kind, visible).parent != parent:
@@ -86,11 +86,9 @@ class SmartsheetIdGateway:
         return True
 
 
-def _project_scope(cells: dict[str, str | None], columns: dict[str, str]) -> str:
-    """Exige empresa, cliente y año antes de reservar un proyecto."""
-    company = (cells.get(columns.get("KMV/GALP", "")) or "").strip()
-    customer = (cells.get(columns.get("Customer Code", "")) or "").strip()
-    year = (cells.get(columns.get("Year", "")) or "").strip()
-    if not company or not customer or not year.isdigit() or len(year) not in (2, 4):
-        return ""
-    return f"{company}-{customer}-{year[-2:]}"
+def _project_scope(row: RawRow, columns: dict[str, str]) -> str:
+    """Obtiene el año del valor ISO de Date Received, no de su texto localizado."""
+    company = (row.cells.get(columns.get("KMV/GALP", "")) or "").strip()
+    customer = (row.cells.get(columns.get("Customer Code", "")) or "").strip()
+    received = row.date_cells.get(columns.get("Date Received", ""))
+    return project_scope(company, customer, received)

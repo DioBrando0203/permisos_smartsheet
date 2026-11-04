@@ -1,7 +1,7 @@
 """Datos internos ya mapeados desde Smartsheet. Ids siempre como texto (ADR-B07)."""
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import date, datetime
 
 from app.services.permissions import AccessLevel, ShareScope, ShareType
 
@@ -109,6 +109,7 @@ class RawRow:
     modified_by: RawAuthor | None
     # Texto visible por id de columna, sólo de las columnas pedidas.
     cells: dict[str, str | None] = field(default_factory=dict)
+    date_cells: dict[str, date] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

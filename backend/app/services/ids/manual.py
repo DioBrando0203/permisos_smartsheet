@@ -24,13 +24,20 @@ async def execute(sheet_id: int, row_id: int, parent: str, authorized: bool) -> 
         or not settings.ids_transition_approved
     ):
         raise ValueError("Prueba real no autorizada o escritura deshabilitada")
+    # PEN-08 exige identidad OAuth antes de habilitar escrituras con la cuenta administradora.
+    raise ValueError("Prueba real bloqueada: OAuth aún no está implementado")
     spec = next((item for item in SHEETS if item[0] == str(sheet_id)), None)
     if spec is None or row_id <= 0:
         raise ValueError("Hoja o fila no autorizada")
     starts = approved_starts(
         settings.ids_approved_starts, approved=settings.ids_transition_approved
     )
-    store = IdStore(DSN, allow_reservations=True, approved_starts=starts)
+    store = IdStore(
+        DSN,
+        allow_reservations=True,
+        approved_starts=starts,
+        annual_policy_approved=settings.ids_transition_approved,
+    )
     existing = await asyncio.to_thread(store.lookup, sheet_id, row_id)
     if existing and not await asyncio.to_thread(store.is_service_reservation, sheet_id, row_id):
         raise ValueError("La fila corresponde a un ID importado; no es una prueba desechable")

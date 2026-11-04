@@ -9,7 +9,7 @@ import psycopg
 
 from app.core.config import Settings
 from app.services.ids.dry_run import Candidate, plan
-from app.services.ids.formats import EntityKind, parse_id
+from app.services.ids.formats import EntityKind, parse_id, project_scope
 from app.services.ids.inventory import collect_inventory
 from app.services.ids.pilot import SHEETS, read_pilot
 from app.services.ids.simulation import Projector
@@ -68,19 +68,26 @@ async def _simulate(sheets, entries) -> None:
             parent = (
                 (row.cells.get(sheet.parent_column) or "").strip() if sheet.parent_column else ""
             )
-            if not visible and not stable and not parent:
-                continue
             if sheet.extra_parent_column and parent:
                 reference = (row.cells.get(sheet.extra_parent_column) or "").strip()
                 if reference != parent:
                     counts["conflict"] += 1
                     print(f"Hoja {sheet.sheet_id}, fila {row.id}: conflict")
                     continue
-            if sheet.kind == EntityKind.PROJECT and visible:
+            if sheet.kind == EntityKind.PROJECT and sheet.project_columns:
+                company, customer, received = sheet.project_columns
+                parent = project_scope(
+                    row.cells.get(company) or "",
+                    row.cells.get(customer) or "",
+                    row.date_cells.get(received),
+                )
+            elif sheet.kind == EntityKind.PROJECT and visible:
                 try:
                     parent = parse_id(sheet.kind, visible).parent
                 except ValueError:
                     pass
+            if not visible and not stable and not parent:
+                continue
             reservation = reservations.get((sheet.sheet_id, int(row.id)))
             candidate = Candidate(
                 str(sheet.sheet_id),
@@ -96,7 +103,13 @@ async def _simulate(sheets, entries) -> None:
             action = plan(candidate, allowed)
             counts[action.value] += 1
             if action.value in ("needs_reservation", "pending_formula") and parent:
-                example = reservation[0] if reservation else projector.next(sheet.kind, parent)
+                try:
+                    example = reservation[0] if reservation else projector.next(sheet.kind, parent)
+                except ValueError:
+                    counts[action.value] -= 1
+                    counts["conflict"] += 1
+                    print(f"Hoja {sheet.sheet_id}, fila {row.id}: conflict")
+                    continue
                 if visible and example != visible:
                     counts[action.value] -= 1
                     counts["conflict"] += 1

@@ -16,6 +16,7 @@ class InventorySheet:
     rows: list[RawRow]
     parent_column: str | None = None
     extra_parent_column: str | None = None
+    project_columns: tuple[str, str, str] | None = None
 
 
 def collect_inventory(
