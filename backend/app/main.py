@@ -16,6 +16,7 @@ from app.core.errors import AppError, app_error_handler
 from app.core.middleware import OriginMiddleware
 from app.frontend import DEFAULT_DIST, mount_frontend
 from app.services.ids.monitor import IdMonitor
+from app.services.ids.runtime import assign_factory
 
 
 def create_app(
@@ -25,8 +26,13 @@ def create_app(
 ) -> FastAPI:
     settings = settings or get_settings()
     services = services or build_services(settings)
+    # Sin todas las barreras de escritura el procesador sólo simula (SPEC-ID01 ID-26).
     monitor = IdMonitor(
-        services.client, settings.ids_monitor_enabled, settings.ids_monitor_interval_seconds
+        services.client,
+        settings.ids_monitor_enabled,
+        settings.ids_monitor_interval_seconds,
+        connector_factory=assign_factory(settings, services.client),
+        max_rows=settings.ids_processor_max_rows,
     )
 
     @asynccontextmanager

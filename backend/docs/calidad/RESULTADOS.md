@@ -232,3 +232,11 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - 289 pruebas backend aprobadas; Ruff y formato correctos. Pruebas de año desde fecha ISO, secuencias independientes, continuidad de 2026, procesamiento por dependencias y concurrencia con PostgreSQL temporal.
 - DRY_RUN contra el piloto real: 19 IDs ya estables; base: 19 asignaciones, 12 secuencias y 19 eventos. Solo lecturas. Migración 003 pendiente.
+
+# 2026-11-04 15:29 -05:00 Integración de escritura y procesador del ID Manager (PEN-24)
+
+- Línea base antes de cambios: 289 pruebas aprobadas, Ruff y formato correctos.
+- Después: 302 pruebas backend aprobadas (nuevas: `test_id_e2e.py` con 9 casos, tope del procesador y rutas `/audit`, `/recovery`, `/rows/assign`, `/processor/run`); Ruff y formato correctos.
+- PostgreSQL real en solo lectura: 19 asignaciones confirmadas, 12 secuencias, 19 eventos; CHECK de auditoría con `confirmado` y `UPDATE(estado)` para `galp_ids`: migración 003 reconocida.
+- Servicio real con `python run.py` en 8710: `/docs` 200; diez rutas `/api/ids/*`; sin token 401; status con barreras apagadas y modo simulación; database 19/19/12/19; dry-run, processor/run y conflicts con 19 `already_stable` y 0 conflictos; recovery vacío; health correcto; `rows/assign` 403 en piloto y fuera de lista; origen ajeno 403.
+- Registro del servidor: 97 GET a Smartsheet, ningún PUT, POST ni DELETE, sin excepciones. Versiones de las cuatro hojas y conteos y secuencias de PostgreSQL idénticos antes y después.

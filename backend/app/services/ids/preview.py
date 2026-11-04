@@ -12,9 +12,10 @@ from app.services.ids.dry_run import (
     plan,
 )
 from app.services.ids.formats import EntityKind, parse_id, project_scope
+from app.services.ids.inventory import InventorySheet
 from app.services.ids.pilot import SHEETS, read_pilot
 from app.services.ids.simulation import Projector
-from app.services.smartsheet import SmartsheetClient
+from app.services.smartsheet import RawRow, SmartsheetClient
 
 
 def _db_snapshot(dsn: str) -> tuple[dict, dict]:
@@ -35,6 +36,19 @@ def _db_snapshot(dsn: str) -> tuple[dict, dict]:
         sequences = dict(conn.execute("SELECT ambito, ultimo_numero FROM secuencia_id").fetchall())
 
     return reservations, sequences
+
+
+def _formula_order(sheet: InventorySheet, row: RawRow) -> tuple[int, int]:
+    """Orden del número que muestra la fórmula (autonumérico), no el orden en pantalla.
+
+    Un formulario puede insertar filas arriba; proyectar en orden de pantalla haría que
+    dos filas nuevas del mismo padre se bloquearan mutuamente por conflicto (ID-28).
+    """
+    try:
+        visible = (row.cells.get(sheet.visible_column) or "").strip()
+        return (0, parse_id(sheet.kind, visible).number)
+    except ValueError:
+        return (1, 0)
 
 
 async def build_dry_run_report(
@@ -63,7 +77,7 @@ async def build_dry_run_report(
     details = []
 
     for sheet in sheets:
-        for row in sheet.rows:
+        for row in sorted(sheet.rows, key=lambda item: _formula_order(sheet, item)):
             visible = (row.cells.get(sheet.visible_column) or "").strip()
 
             stable = (row.cells.get(sheet.stable_column) or "").strip()
@@ -113,6 +127,9 @@ async def build_dry_run_report(
             )
 
             action = PlanAction.CONFLICT if extra_parent_conflict else plan(candidate, allowed)
+            if action == PlanAction.ALREADY_STABLE and reservation is None:
+                # Stable ID ajeno a PostgreSQL: podría repetir un número futuro (ID-27).
+                action = PlanAction.CONFLICT
 
             proposed = None
 

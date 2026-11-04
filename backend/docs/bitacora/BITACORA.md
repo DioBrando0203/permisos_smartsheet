@@ -300,3 +300,10 @@ Estado: terminada.
 Pedido: el usuario mostró capturas de Google Earth (trazo por CR 210 W hacia Harbor Chase of Beach Walk) y del iMAP del condado: ni el GIS ni el tasador colorean las calles por responsable ni dicen qué permiso pedir. Después pidió separar en condado, village, city y Estado.
 Cambios: `GET /api/map/streets` y `GET /api/map/trace/streets` (`services/county_streets.py`, `services/trace_streets.py`), adaptador con rectángulo y `classify`, `valid_trace_path` y `trace_rules.kept_groups` reutilizables; `MapLocation.municipality_type` y autoridades `TOWN` y `VILLAGE` desde `LSAD`; el condado se nombra "X County". SPEC-B14, REQUERIMIENTOS y MJ-SJ-11 actualizados.
 Evidencia: ver RESULTADOS de la misma hora. Modo solo lectura sin cambios.
+
+## 2026-11-04 15:29 -05:00 Escritura controlada y procesador del ID Manager (PEN-24)
+
+Estado: implementado y probado sin escrituras reales; prueba real preparada, pendiente de autorización.
+Pedido: continuar el ID Manager: conector conectado al coordinador, recuperación, procesador periódico deshabilitado, endpoints de Swagger y prueba integral sin escrituras. El usuario confirmó que la migración 003 está aplicada y que OAuth no es requisito del piloto.
+Cambios: `runtime.py` con barreras y ensamblaje; prueba manual sin bloqueo OAuth y reutilizable desde `POST /rows/assign`; procesador con tope por ciclo, resultados por fila y ciclo a demanda con bloqueo global; `GET /audit` y `GET /recovery`; Stable ID sin registro en PostgreSQL ahora es conflicto (ID-27); DRY_RUN en orden de fórmula (ID-28). Riesgo de numeración por fórmulas que cuentan filas documentado para decisión (ID-31).
+Evidencia: ver RESULTADOS de la misma hora. Sin escrituras en Smartsheet ni cambios en PostgreSQL real; `APP_READ_ONLY=true`.

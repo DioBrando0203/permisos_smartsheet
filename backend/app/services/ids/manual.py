@@ -5,49 +5,55 @@ import asyncio
 
 from app.core.config import Settings
 from app.services.ids.cli import DSN
-from app.services.ids.connector import IdConnector, Target
+from app.services.ids.connector import Target
 from app.services.ids.formats import EntityKind
-from app.services.ids.gateway import SmartsheetIdGateway
 from app.services.ids.pilot import SHEETS
-from app.services.ids.store import IdStore
-from app.services.ids.transition import approved_starts
+from app.services.ids.runtime import build_connector, build_store, writes_allowed
 from app.services.smartsheet import SmartsheetClient
 
 
-async def execute(sheet_id: int, row_id: int, parent: str, authorized: bool) -> str:
-    """Procesa sólo la fila indicada después de comprobar barreras de activación."""
-    settings = Settings()
-    if (
-        not authorized
-        or settings.app_read_only
-        or not settings.ids_writes_enabled
-        or not settings.ids_transition_approved
-    ):
+def _check(settings: Settings, authorized: bool) -> None:
+    # Por decisión del usuario (2026-11-04) el piloto usa el token máquina a máquina, sin OAuth.
+    if not authorized or not writes_allowed(settings):
         raise ValueError("Prueba real no autorizada o escritura deshabilitada")
-    # PEN-08 exige identidad OAuth antes de habilitar escrituras con la cuenta administradora.
-    raise ValueError("Prueba real bloqueada: OAuth aún no está implementado")
+
+
+async def assign_row(
+    settings: Settings,
+    client: SmartsheetClient,
+    dsn: str,
+    target: tuple[int, int, str],
+    authorized: bool,
+) -> dict:
+    """Procesa sólo la fila indicada (hoja, fila, padre) después de comprobar las barreras."""
+    _check(settings, authorized)
+    sheet_id, row_id, parent = target
     spec = next((item for item in SHEETS if item[0] == str(sheet_id)), None)
-    if spec is None or row_id <= 0:
-        raise ValueError("Hoja o fila no autorizada")
-    starts = approved_starts(
-        settings.ids_approved_starts, approved=settings.ids_transition_approved
-    )
-    store = IdStore(
-        DSN,
-        allow_reservations=True,
-        approved_starts=starts,
-        annual_policy_approved=settings.ids_transition_approved,
-    )
+    if spec is None or row_id <= 0 or not parent.strip():
+        raise ValueError("Hoja, fila o padre no autorizados")
+    store = build_store(settings, dsn)
     existing = await asyncio.to_thread(store.lookup, sheet_id, row_id)
     if existing and not await asyncio.to_thread(store.is_service_reservation, sheet_id, row_id):
         raise ValueError("La fila corresponde a un ID importado; no es una prueba desechable")
+    connector = build_connector(settings, client, store)
+    outcome = await connector.process(Target(sheet_id, row_id, EntityKind(spec[1]), parent.strip()))
+    reservation = await asyncio.to_thread(store.lookup, sheet_id, row_id)
+    return {
+        "sheet_id": str(sheet_id),
+        "row_id": str(row_id),
+        "outcome": outcome.value,
+        "id": reservation.value if reservation else None,
+        "state": reservation.state if reservation else None,
+    }
+
+
+async def execute(sheet_id: int, row_id: int, parent: str, authorized: bool) -> dict:
+    """Variante de consola: comprueba barreras antes de abrir el cliente."""
+    settings = Settings()
+    _check(settings, authorized)
     client = SmartsheetClient(settings)
     try:
-        gateway = SmartsheetIdGateway(client, store)
-        connector = IdConnector(store, gateway, read_only=settings.app_read_only)
-        return (
-            await connector.process(Target(sheet_id, row_id, EntityKind(spec[1]), parent))
-        ).value
+        return await assign_row(settings, client, DSN, (sheet_id, row_id, parent), authorized)
     finally:
         await client.aclose()
 

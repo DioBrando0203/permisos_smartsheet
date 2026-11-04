@@ -65,7 +65,8 @@ async def test_manual_execution_is_blocked_by_default(monkeypatch) -> None:
         await manual.execute(73093952524164, 123, "KMV-BS-26-452", True)
 
 
-async def test_manual_execution_requires_oauth_even_if_flags_are_enabled(monkeypatch) -> None:
+async def test_manual_execution_requires_explicit_authorization(monkeypatch) -> None:
+    # Sin OAuth por decisión del usuario, pero la bandera expresa sigue siendo obligatoria.
     monkeypatch.setattr(
         manual,
         "Settings",
@@ -73,8 +74,11 @@ async def test_manual_execution_requires_oauth_even_if_flags_are_enabled(monkeyp
             app_read_only=False, ids_writes_enabled=True, ids_transition_approved=True
         ),
     )
-    with pytest.raises(ValueError, match="OAuth"):
-        await manual.execute(73093952524164, 123, "KMV-BS-26-452", True)
+    client = Mock()
+    monkeypatch.setattr(manual, "SmartsheetClient", client)
+    with pytest.raises(ValueError, match="no autorizada"):
+        await manual.execute(73093952524164, 123, "KMV-BS-26-452", False)
+    client.assert_not_called()
 
 
 async def test_project_requires_company_customer_and_year() -> None:

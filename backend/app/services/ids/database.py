@@ -71,3 +71,47 @@ def assignments(
         raise AppError(
             "IDS_DATABASE_UNAVAILABLE", "No se pudo consultar PostgreSQL.", 503
         ) from None
+
+
+def _read_only(**kwargs: object) -> psycopg.Connection:
+    return psycopg.connect(
+        DSN, connect_timeout=5, options="-c default_transaction_read_only=on", **kwargs
+    )
+
+
+def pending_reservations() -> list[tuple[int, int, str]]:
+    """Reservas sin confirmar: operaciones incompletas que el procesador puede retomar."""
+    try:
+        with _read_only() as c:
+            return c.execute(
+                "SELECT hoja_id, fila_id, id_generado FROM asignacion_id "
+                "WHERE estado='reservado' ORDER BY hoja_id, fila_id"
+            ).fetchall()
+    except psycopg.Error:
+        raise AppError(
+            "IDS_DATABASE_UNAVAILABLE", "No se pudo consultar PostgreSQL.", 503
+        ) from None
+
+
+def audit_events(limit: int, offset: int, action: str | None) -> dict:
+    """Eventos de auditoría más recientes primero; no contienen nombres ni correos."""
+    where, params = (" WHERE accion = %s", [action]) if action else ("", [])
+    try:
+        with _read_only(row_factory=dict_row) as c:
+            count = c.execute("SELECT count(*) AS n FROM auditoria_id" + where, params).fetchone()
+            rows = c.execute(
+                "SELECT evento_id, fecha, accion, hoja_id, fila_id, id_generado FROM auditoria_id"
+                + where
+                + " ORDER BY evento_id DESC LIMIT %s OFFSET %s",
+                [*params, limit, offset],
+            ).fetchall()
+    except psycopg.Error:
+        raise AppError(
+            "IDS_DATABASE_UNAVAILABLE", "No se pudo consultar PostgreSQL.", 503
+        ) from None
+    for row in rows:
+        row["evento_id"] = str(row["evento_id"])
+        row["fecha"] = row["fecha"].isoformat()
+        row["hoja_id"] = str(row["hoja_id"]) if row["hoja_id"] else None
+        row["fila_id"] = str(row["fila_id"]) if row["fila_id"] else None
+    return {"items": rows, "total": count["n"], "limit": limit, "offset": offset}

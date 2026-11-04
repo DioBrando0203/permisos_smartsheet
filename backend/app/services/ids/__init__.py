@@ -1,4 +1,4 @@
-"""Asignación local de IDs; no contiene integración de escritura en Smartsheet."""
+"""ID Manager: formatos y reservas; la escritura en Smartsheet exige las barreras de `runtime`."""
 
 from app.services.ids.formats import EntityKind, IdParts, make_id, parse_id
 from app.services.ids.store import ExistingId, IdStore, Reservation

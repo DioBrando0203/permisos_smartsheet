@@ -24,8 +24,14 @@ async def test_auth_and_swagger(make_client, smartsheet) -> None:
     assert response.json()["read_only"] is True
     assert response.json()["automatic_generation_enabled"] is False
     paths = (await client.get("/openapi.json")).json()["paths"]
-    for name in ("status", "database", "assignments", "dry-run", "conflicts", "health"):
+    for name in ("status", "database", "assignments", "audit", "dry-run", "conflicts"):
         assert f"/api/ids/{name}" in paths
+    for name in ("recovery", "health", "rows/assign", "processor/run"):
+        assert f"/api/ids/{name}" in paths
+    status = response.json()
+    assert status["smartsheet_writes_enabled"] is False
+    assert status["processor_mode"] == "simulation"
+    assert status["write_barriers"]["app_read_only_disabled"] is False
 
 
 async def test_database_and_assignments(
@@ -202,3 +208,61 @@ async def test_preview_detects_project_before_formula_exists(database_fixture, m
     monkeypatch.setattr(preview, "read_pilot", AsyncMock(return_value=[sheet]))
     report = await preview.build_dry_run_report(AsyncMock(), database_fixture)
     assert report["pending_or_conflicting_rows"][0]["proposed_id"] == "KMV-BS-27-001"
+
+
+async def test_assign_route_is_blocked_without_all_barriers(make_client, smartsheet) -> None:
+    body = {"sheet_id": 73093952524164, "row_id": 2, "parent": "KMV-BS-26-452"}
+    client = make_client(ids_admin_token=SecretStr(TOKEN), app_read_only=True)
+    blocked = await client.post(
+        "/api/ids/rows/assign", json=body | {"authorize_test_write": True}, headers=HEADERS
+    )
+    assert blocked.status_code == 403
+    assert blocked.json()["detail"]["code"] == "IDS_ASSIGN_BLOCKED"
+    flags = {"app_read_only": False, "ids_writes_enabled": True, "ids_transition_approved": True}
+    client = make_client(ids_admin_token=SecretStr(TOKEN), **flags)
+    unauthorized = await client.post("/api/ids/rows/assign", json=body, headers=HEADERS)
+    assert unauthorized.status_code == 403
+    assert not smartsheet.calls
+
+
+async def test_processor_route_uses_shared_cycle(make_client, smartsheet, monkeypatch) -> None:
+    from app.core.errors import AppError
+    from app.services.ids.monitor import IdMonitor
+
+    cycle = AsyncMock(return_value={"mode": "simulation", "counts": {}, "outcomes": {}})
+    monkeypatch.setattr(IdMonitor, "run_once", cycle)
+    client = make_client(ids_admin_token=SecretStr(TOKEN))
+    response = await client.post("/api/ids/processor/run", headers=HEADERS)
+    assert response.json()["mode"] == "simulation"
+    cycle.side_effect = AppError("IDS_PROCESSOR_BUSY", "ocupado", 409)
+    assert (await client.post("/api/ids/processor/run", headers=HEADERS)).status_code == 409
+
+
+async def test_audit_and_recovery_routes(
+    make_client, smartsheet, database_fixture, monkeypatch
+) -> None:
+    import psycopg
+
+    import app.api.routes.idsmart as routes
+
+    monkeypatch.setattr(database, "DSN", database_fixture)
+    with psycopg.connect(database_fixture) as conn:
+        conn.execute("INSERT INTO secuencia_id VALUES ('task:P', 2)")
+        conn.execute("INSERT INTO asignacion_id VALUES (7, 2, 'task:P', 1, 'P-01', 'reservado')")
+        conn.execute("INSERT INTO asignacion_id VALUES (7, 3, 'task:P', 2, 'P-02', 'reservado')")
+        conn.execute(
+            "INSERT INTO auditoria_id (accion, hoja_id, fila_id, id_generado) "
+            "VALUES ('reservado', 7, 2, 'P-01')"
+        )
+    report = {
+        "counts": {},
+        "pending_or_conflicting_rows": [
+            {"sheet_id": "7", "row_id": "2", "action": "confirm_reservation", "stable_id": "P-01"}
+        ],
+    }
+    monkeypatch.setattr(routes, "build_dry_run_report", AsyncMock(return_value=report))
+    client = make_client(ids_admin_token=SecretStr(TOKEN))
+    audit = (await client.get("/api/ids/audit?action=reservado", headers=HEADERS)).json()
+    assert audit["total"] == 1 and audit["items"][0]["fila_id"] == "2"
+    pending = (await client.get("/api/ids/recovery", headers=HEADERS)).json()["pending"]
+    assert [item["recovery"] for item in pending] == ["confirm", "row_missing"]

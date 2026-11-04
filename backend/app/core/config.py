@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     ids_writes_enabled: bool = False
     ids_transition_approved: bool = False
     ids_approved_starts: str = "{}"
+    # Procesador con asignación real: exige además las tres barreras anteriores.
+    ids_processor_writes_enabled: bool = False
+    ids_processor_max_rows: int = 5
     app_allowed_hosts: str = _DEFAULT_HOSTS
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""

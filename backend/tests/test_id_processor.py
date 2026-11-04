@@ -47,3 +47,19 @@ async def test_processor_orders_dependencies_and_skips_pending() -> None:
         "task",
         "record",
     ]
+
+
+async def test_processor_limit_defers_rows_and_reports_results() -> None:
+    connector = AsyncMock()
+    connector.process.side_effect = [Outcome.CONFIRMED, ValueError("sin rango")]
+    rows = [
+        {"sheet_id": "2", "row_id": str(n), "type": "task", "parent": "P", "action": "would_write"}
+        for n in range(4)
+    ]
+    results: list[dict] = []
+    counts = await process_report(
+        connector, {"pending_or_conflicting_rows": rows}, limit=2, results=results
+    )
+    assert counts == {"confirmed": 1, "error": 1, "deferred": 2}
+    assert [item["outcome"] for item in results] == ["confirmed", "error"]
+    assert connector.process.await_count == 2

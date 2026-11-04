@@ -1,4 +1,4 @@
-"""Coordinador de reservas y escritura condicional; no tiene adaptador real habilitado."""
+"""Coordinador de reservas y escritura comprobada; el adaptador real vive en `gateway.py`."""
 
 import asyncio
 from dataclasses import dataclass
@@ -54,7 +54,7 @@ class ConditionalGateway(Protocol):
 
 
 class IdConnector:
-    """Procesa una fila; el adaptador real condicional aún no existe."""
+    """Procesa una fila: reserva, relee, escribe sólo celdas vacías y confirma tras releer."""
 
     def __init__(self, store: IdStore, gateway: ConditionalGateway, *, read_only: bool) -> None:
         self._store = store
