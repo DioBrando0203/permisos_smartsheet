@@ -1,6 +1,6 @@
 # SPEC-B16 Catálogo de proyectos y selector de Linked Tracking
 
-Estado: en operación en Pruebas (2026-11-04): catálogo sincronizado y Linked Tracking vinculado por el usuario; flujo completo comprobado por API. Falta que el usuario confirme en la interfaz el filtrado al escribir el código del cliente y cree el resaltado en rojo (LB-14) (PEN-24).
+Estado: en operación en Pruebas (2026-11-04): catálogo sincronizado y Linked Tracking vinculado por el usuario; flujo completo comprobado por API. Resaltado en rojo creado y comprobado por el usuario (LB-16). Falta que confirme en la interfaz el filtrado al escribir el código del cliente (PEN-24).
 
 ## Capacidades nativas verificadas (documentación oficial, 2026-11-04)
 
@@ -46,3 +46,4 @@ Estado: en operación en Pruebas (2026-11-04): catálogo sincronizado y Linked T
 - LB-13: Prueba visual del usuario (2026-11-04 17:31 -05:00): en una fila BS el desplegable permitió elegir `KMV-CC-26-627` (CC), como predice LD-09. Se detectó en ambas capas: `Control Linked Tracking` = `ERROR: DIFFERENT CUSTOMER` y backend `other_customer`. No se corrige automáticamente.
 - LB-14: El resaltado en rojo es un formato condicional que se crea en la interfaz: ni la API ni el conector de Smartsheet lo exponen. No se pinta por API porque exigiría reenviar el valor de la celda y podría pisar una edición simultánea.
 - LB-15: Verificación del 2026-11-04 19:33 -05:00 desde el equipo Windows (sólo GET, procesador apagado en ese proceso): catálogo con 16 filas (14 actuales y 2 históricas, sin duplicados) y plan todo `unchanged`, así que la sincronización automática siguió al día. Linked Tracking: 2 `current_valid`, 2 `historical_valid`, 9 vacíos y la fila 4 de LB-13 aún `other_customer`.
+- LB-16: Resaltado creado por el usuario en Proyectos (Piloto) el 2026-11-05 00:09 -05:00: formato condicional con condición en `Control Linked Tracking` = `ERROR: DIFFERENT CUSTOMER` y relleno rojo sólo en la celda Linked Tracking. El usuario confirmó que funciona; la fila 4 queda en rojo. Configuración sólo en la interfaz (LB-14); sin escrituras del servicio.

@@ -1,12 +1,12 @@
 # Servicios futuros sobre Smartsheet: persistencia mínima
 
-Estado: base y tablas iniciales creadas en Linux según salida compartida por el usuario; motor local de reservas probado, sin integración de escritura. Complementa PEN-24; no autoriza escrituras ni despliegue.
+Estado (2026-11-05): ID Manager en operación automática en Pruebas desde el equipo Linux (SPEC-ID01 ID-36) y selector de Linked Tracking probado (SPEC-B16). Fases F01 a F04 cumplidas en el piloto; F05 hecha para Linked Tracking; F06 y el resto de F05 pendientes. Complementa PEN-24; no autoriza escrituras fuera de Pruebas ni despliegue.
 
 ## Alcance
 
 - SBD-01: El equipo sigue trabajando en Smartsheet y Dynamic View. Un servicio futuro en Windows podría consultar periódicamente las hojas autorizadas, asignar IDs permanentes y validar referencias. Bridge no forma parte de esta propuesta.
 - SBD-02: Smartsheet conserva los datos de negocio y los IDs visibles. La base propuesta guarda sólo el estado técnico indispensable para asignarlos sin reutilizar consecutivos; no replica proyectos, tareas, personas, permisos ni catálogos.
-- SBD-03: La mejora futura incorpora PostgreSQL con estado operativo mínimo para un servicio separado (ADR-B18); el panel actual sigue sin base de datos. Antes de escribir, resolver el requisito de OAuth indicado en PEN-24. Sigue vigente `APP_READ_ONLY=true`.
+- SBD-03: La mejora futura incorpora PostgreSQL con estado operativo mínimo para un servicio separado (ADR-B18); el panel actual sigue sin base de datos. OAuth no es requisito del piloto (SPEC-ID01 ID-29); desde 2026-11-04 `APP_READ_ONLY=false` por decisión del usuario mientras opera el procesador (ID-36).
 - SBD-04: La sincronización del catálogo y la validación de Linked Tracking leerían sus datos desde Smartsheet. No necesitan tablas propias en esta propuesta. Sus reglas, hojas y columnas concretas aún deben definirse.
 
 ## Modelo propuesto
@@ -26,7 +26,7 @@ Estado: base y tablas iniciales creadas en Linux según salida compartida por el
 ## Límites y decisiones pendientes
 
 - SBD-13: Confirmar las cuatro hojas del piloto, sus columnas, formatos, ámbitos de consecutivos, relaciones entre entidades y tratamiento de filas movidas o copiadas. No asumir que los IDs actuales son únicos o que los códigos de proyecto son inmutables.
-- SBD-14: Verificado en documentación el 2026-11-04 (SPEC-B16 LD-01 a LD-08); falta la prueba en la interfaz. Texto original: verificar con documentación y una prueba acordada las capacidades reales de Linked Dropdowns y Dynamic View, sus licencias y el diseño de selectores por cliente. La afirmación del texto original sobre filtros y columnas auxiliares es una hipótesis, no una capacidad comprobada aquí. Mantener referencias históricas aunque el proyecto deje de estar activo; no sustituirlas automáticamente.
+- SBD-14: Verificado en documentación el 2026-11-04 (SPEC-B16 LD-01 a LD-08) y probado en la interfaz el 2026-11-04 y 2026-11-05 (LB-11 a LB-16): desplegable vinculado a la hoja catálogo y error de cliente resaltado en rojo. Texto original: verificar con documentación y una prueba acordada las capacidades reales de Linked Dropdowns y Dynamic View, sus licencias y el diseño de selectores por cliente. La afirmación del texto original sobre filtros y columnas auxiliares es una hipótesis, no una capacidad comprobada aquí. Mantener referencias históricas aunque el proyecto deje de estar activo; no sustituirlas automáticamente.
 - SBD-15: El usuario eligió PostgreSQL; creó `galp_servicios` y sus dos tablas en Linux para comenzar. El esquema y la guía para Windows están en `servicios/ids/`; faltan usuario de aplicación, respaldo, reconciliación con Smartsheet e instalación futura en Windows.
 - SBD-16: Definir cómo se detectan y presentan las validaciones y conflictos; una consulta periódica detecta problemas después de guardar y no impide por sí sola asociaciones erróneas. Webhooks, historial persistente, facturación e integraciones adicionales quedan fuera de esta propuesta mínima.
 - SBD-17: Pruebas automáticas con respuestas simuladas. Cualquier escritura real requiere que el usuario la solicite y acuerde una hoja de prueba; no se cambia el modo de sólo lectura por esta documentación.
