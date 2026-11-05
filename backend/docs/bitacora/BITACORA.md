@@ -355,3 +355,11 @@ Evidencia: ver RESULTADOS de la misma hora.
 Estado: comportamiento esperado; resaltado en rojo pendiente de configurar en la interfaz.
 Pedido: el usuario eligió un proyecto CC en una fila BS y pidió marcarlo en rojo.
 Evidencia: fórmula `ERROR: DIFFERENT CUSTOMER` en la fila 4 y `other_customer` en `/api/catalogs/linked-tracking` (sólo lecturas). Sin escrituras.
+
+## 2026-11-04 19:33 -05:00 Puesta al día del equipo Windows (PEN-24)
+
+Estado: terminada.
+Pedido: el usuario pidió `git pull`, retomar y hacer desde el equipo Windows todo lo posible; actualizó el `.env` de este equipo.
+Hallazgos: el `.env` de Windows tiene las barreras del ID Manager y la hoja catálogo, pero este equipo no tiene PostgreSQL (B-16). Varias líneas de REQUERIMIENTOS, AGENTS y `servicios/ids/README.md` seguían describiendo el ID Manager sin escrituras ni OAuth resuelto.
+Cambios: dependencias del entorno local; B-16; estado de PEN-06 y PEN-24 y resumen de pendientes; estado en AGENTS; README del servicio con la regla de un solo procesador; SPEC-B16 LB-15.
+Evidencia: ver RESULTADOS de la misma hora. Sin escrituras en Smartsheet ni en PostgreSQL.

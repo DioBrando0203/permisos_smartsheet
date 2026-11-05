@@ -117,3 +117,11 @@ Síntoma: `/api/map/search` respondía 500 en Fort Lauderdale; TIGERweb y el geo
 Causa: unas decenas de consultas seguidas desde el equipo (cada búsqueda con zona y cruce pide hasta seis a TIGER, una por pausa al escribir, más las pruebas manuales). El transporte llamaba a `response.json()` sin protección y el HTML tumbaba la búsqueda.
 Solución: el HTML cuenta como fuente caída y el host se salta `gis_unreachable_cooldown_seconds`; las líneas TIGER se cachean por zona y filtro; el buscador espera 500 ms en vez de 350 (SPEC-B14 CA-22). Prevención: no hacer ráfagas de pruebas contra census.gov; el bloqueo se levanta solo, sin plazo publicado.
 
+## B-16 El ID Manager sólo corre en el equipo Linux
+
+Fecha: 2026-11-04. Estado: abierto (limitación de entorno).
+Síntoma: en el equipo Windows, tras el pull, el entorno no tenía `psycopg` (ahora dependencia obligatoria de `pyproject.toml`) y 29 pruebas se omiten con "Se requiere PostgreSQL 18 local". No hay servicio PostgreSQL, puerto 5432 ni `~/.config/galp_servicios/pgpass`.
+Causa: la base `galp_servicios` y el usuario `galp_ids` existen sólo en Linux; el DSN de `services/ids/cli.py` apunta a `127.0.0.1`.
+Efecto: según `monitor.py`, con las barreras activas en el `.env` de Windows el procesador falla al conectar y queda en `database_unavailable` antes de leer o escribir en Smartsheet; la sincronización del catálogo sólo corre dentro de un ciclo. No comprobado arrancando con esas barreras. Con `APP_READ_ONLY=false` el panel de Windows sí puede escribir permisos.
+Prevención: un solo procesador y una sola base. No crear otra `galp_servicios` en Windows mientras opere la de Linux: el bloqueo asesor es por base y no evitaría dos numeraciones. Mover el servicio exige respaldo, restauración y apagar antes el de Linux (`servicios/ids/README.md`).
+

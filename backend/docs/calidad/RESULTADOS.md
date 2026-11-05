@@ -275,3 +275,13 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Procesador tras el reinicio: `last_catalog_sync` con 11 `unchanged` antes de la prueba.
 - Proyecto de prueba (OT-Others, 2026-11-04) creado por API: fórmula `KMV-OT-26-002`; Stable ID a los 45 s; catálogo a los 51 s (orden BS, CC, LP, OT); opción del desplegable a los 57 s. PostgreSQL: 25 asignaciones confirmadas.
 - Pendiente de comprobación visual por el usuario: filtrado al escribir el código del cliente y `ERROR: DIFFERENT CUSTOMER` al elegir otro cliente.
+
+# 2026-11-04 19:33 -05:00 Verificación desde el equipo Windows (PEN-24, SPEC-B16)
+
+- Entorno: `pip install -c requirements.lock -e ".[dev]"` instaló `psycopg` 3.3.7, ahora dependencia obligatoria.
+- 282 pruebas backend aprobadas y 29 omitidas por falta de PostgreSQL 18 local (B-16); Ruff y formato correctos (174 archivos).
+- Backend local con `APP_READ_ONLY=true` y procesador apagado por variables del proceso, `.env` sin cambios: `/api/health` con `read_only` true. Detenido al terminar; 8710 libre.
+- Catálogo (GET con `refresh`): 16 proyectos, BS 3, CC 10 (2 históricos), LP 1 y OT 2; sin duplicados. Plan de sincronización: 16 `unchanged`.
+- Linked Tracking: 2 `current_valid`, 2 `historical_valid`, 9 vacíos y 1 `other_customer` (fila 4, BS con `KMV-CC-26-627`, la de la prueba visual).
+- Piloto con `read_pilot` (sólo GET): Proyectos 14, Tareas 7, Records 6 y Revisiones 2 filas con ID; todas con Stable ID igual al visible, ninguna pendiente ni distinta.
+- Sin acceso a PostgreSQL desde este equipo: no se consultaron asignaciones ni auditoría. Sin escrituras en Smartsheet.
