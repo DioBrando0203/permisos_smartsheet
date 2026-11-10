@@ -414,3 +414,17 @@ Estado: terminado; pendiente que el usuario mida el tiempo con una nueva copia.
 Pedido: reaccionar al instante al copiar y pegar una madre.
 Cambios: consulta de versión entre ciclos y ciclo inmediato tras escribir (SPEC-ID01 ID-43); `IDS_MONITOR_POLL_SECONDS`.
 Evidencia: ver RESULTADOS de la misma hora.
+
+## 2026-11-10 12:47 -05:00 Reportes de Presentable (PEN-42)
+
+Estado: terminado; filtros deducidos pendientes de confirmar por el usuario.
+Pedido: reportes por persona (todo el equipo), MOT y paquetes de Carlos y German, invoices y All Records Request, enlazados a Presentable.
+Cambios: cuatro reportes en `Pruebas/Producto` y columna `Invoice Status` en Presentable. Todo en Pruebas.
+Evidencia: ver RESULTADOS de la misma hora.
+
+## 2026-11-10 12:52 -05:00 Hojas de soporte movidas a Producto (PEN-24, PEN-42)
+
+Estado: terminado.
+Pedido: el usuario renombró Presentable a `PROJECT KMV` y los reportes (All Records Request, Invoices, MOT y Paquetes, Permitting) y pidió traer el catálogo y la lista de contactos a la carpeta.
+Cambios: `Catálogo de Proyectos (Piloto)` (8048198976491396) y `Contact List` (8285254227021700) movidos a `Pruebas/Producto`; se movieron en lugar de copiarse para conservar sus IDs.
+Evidencia: las tres hojas en `Pruebas/Producto`; referencias `Directorio Correo`, `Directorio Nombre` y `Directorio Activo` de PROJECT KMV en estado OK; desplegable Linked Tracking con las opciones del catálogo; correos de Designer1 resueltos en 4 de 4 filas. El ID Manager identifica la hoja por ID (5254686035890052), así que el cambio de nombre no lo afecta.
