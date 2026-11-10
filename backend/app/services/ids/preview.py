@@ -5,6 +5,7 @@ from collections import Counter
 
 import psycopg
 
+from app.services.ids import pilot
 from app.services.ids.dry_run import (
     PILOT_WORKSPACE,
     Candidate,
@@ -13,7 +14,7 @@ from app.services.ids.dry_run import (
 )
 from app.services.ids.formats import EntityKind, formula_number, parse_id, project_scope
 from app.services.ids.inventory import InventorySheet
-from app.services.ids.pilot import SHEETS, read_pilot
+from app.services.ids.pilot import read_pilot
 from app.services.ids.simulation import Projector
 from app.services.smartsheet import RawRow, SmartsheetClient
 
@@ -71,7 +72,10 @@ async def build_dry_run_report(
         {value for value, _ in reservations.values()},
     )
 
-    allowed = frozenset(sheet_id for sheet_id, *_ in SHEETS)
+    allowed = frozenset(sheet_id for sheet_id, *_ in pilot.SHEETS)
+    used = {value for value, _ in reservations.values()}
+    # Fila dueña de cada ID registrado: permite reconocer madres copiadas (ID-42).
+    owners = {value: key for key, (value, _) in reservations.items()}
 
     counts = Counter()
     details = []
@@ -83,6 +87,7 @@ async def build_dry_run_report(
                 projector.register(sheet.kind, stable)
 
     for sheet in sheets:
+        current = {row.id: (row.cells.get(sheet.stable_column) or "").strip() for row in sheet.rows}
         for row in sorted(sheet.rows, key=lambda item: _formula_order(sheet, item)):
             visible = (row.cells.get(sheet.visible_column) or "").strip()
 
@@ -95,7 +100,7 @@ async def build_dry_run_report(
             if sheet.kind == EntityKind.PROJECT and sheet.project_columns:
                 company, customer, received = sheet.project_columns
                 parent = project_scope(
-                    row.cells.get(company) or "",
+                    (row.cells.get(company) or "") if company else pilot.DEFAULT_COMPANY,
                     row.cells.get(customer) or "",
                     row.date_cells.get(received),
                 )
@@ -134,9 +139,20 @@ async def build_dry_run_report(
             )
 
             action = PlanAction.CONFLICT if extra_parent_conflict else plan(candidate, allowed)
+            if action == PlanAction.REGISTER_EXISTING and stable in used:
+                # Ese ID ya está registrado para otra fila: no se puede registrar dos veces.
+                action = PlanAction.CONFLICT
+            original = _copied_from(sheet.sheet_id, row.id, stable, reservation, owners, current)
+            if original:
+                action = PlanAction.RENUMBER_COPY if parent else PlanAction.PENDING_DATA
             proposed = None
             if action == PlanAction.WOULD_WRITE:
                 proposed = reservation[0]
+            elif action == PlanAction.RENUMBER_COPY:
+                try:
+                    proposed = reservation[0] if reservation else projector.next(sheet.kind, parent)
+                except ValueError:
+                    action = PlanAction.CONFLICT
             elif action in (PlanAction.NEEDS_RESERVATION, PlanAction.PENDING_FORMULA):
                 if not parent:
                     action = PlanAction.PENDING_DATA
@@ -166,7 +182,11 @@ async def build_dry_run_report(
                         # La fórmula mostraba otro número ya usado: se escribirá el siguiente libre.
                         "renumbered": bool(visible and proposed and proposed != visible),
                     }
+                    | ({"original_row_id": original} if original else {})
                 )
+
+    for sheet in sheets:
+        _children(sheet, confirmed, counts, details)
 
     return {
         "mode": "dry_run",
@@ -175,3 +195,51 @@ async def build_dry_run_report(
         "pending_or_conflicting_rows": details,
         "warning": ("Estimaciones orientativas. No reservan IDs ni garantizan máximos históricos."),
     }
+
+
+def _children(sheet: InventorySheet, confirmed: set[str], counts: Counter, details: list) -> None:
+    """Filas hijas: llevan el ID de su madre; se completan sólo con la madre confirmada."""
+    mothers = {row.id: (row.cells.get(sheet.stable_column) or "").strip() for row in sheet.rows}
+    for child, root in sheet.children:
+        stable = (child.cells.get(sheet.stable_column) or "").strip()
+        mother = mothers.get(root, "")
+        if mother and stable == mother:
+            counts["child_inherited"] += 1
+            continue
+        if not mother:
+            action = PlanAction.PENDING_PARENT
+        elif stable:
+            action = PlanAction.CONFLICT  # la hija dice pertenecer a otro proyecto
+        elif mother in confirmed:
+            action = PlanAction.CHILD_FILL
+        else:
+            action = PlanAction.PENDING_PARENT
+        counts[action.value] += 1
+        details.append(
+            {
+                "sheet_id": str(sheet.sheet_id),
+                "row_id": str(child.id),
+                "type": sheet.kind.value,
+                "parent": mother,
+                "action": action.value,
+                "visible_id": (child.cells.get(sheet.visible_column) or "").strip(),
+                "stable_id": stable,
+                "proposed_id": mother if action == PlanAction.CHILD_FILL else None,
+                "mother_row_id": root,
+                "renumbered": False,
+            }
+        )
+
+
+def _copied_from(
+    sheet_id: int, row_id: str, stable: str, reservation, owners: dict, current: dict
+) -> str | None:
+    """Fila original si esta madre es copia: su ID pertenece a otra fila que aún lo tiene."""
+    owner = owners.get(stable) if stable else None
+    if owner is None or owner[0] != sheet_id or str(owner[1]) == str(row_id):
+        return None
+    if current.get(str(owner[1])) != stable:
+        return None  # la original ya no lo tiene o no existe: conflicto para revisión humana
+    if reservation and (reservation[1] != "reservado" or reservation[0] == stable):
+        return None
+    return str(owner[1])

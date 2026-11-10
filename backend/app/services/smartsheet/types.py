@@ -112,6 +112,8 @@ class RawRow:
     # Texto visible por id de columna, sólo de las columnas pedidas.
     cells: dict[str, str | None] = field(default_factory=dict)
     date_cells: dict[str, date] = field(default_factory=dict)
+    # Fila madre en hojas con jerarquía (indentación); None en filas de primer nivel.
+    parent_id: str | None = None
 
 
 @dataclass(frozen=True)

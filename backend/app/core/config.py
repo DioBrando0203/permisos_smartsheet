@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     ids_admin_token: SecretStr | None = None
     ids_monitor_enabled: bool = False
     ids_monitor_interval_seconds: int = 60
+    # Consulta liviana de cambios entre ciclos (segundos); 0 la desactiva.
+    ids_monitor_poll_seconds: int = 5
     ids_writes_enabled: bool = False
     ids_transition_approved: bool = False
     ids_approved_starts: str = "{}"

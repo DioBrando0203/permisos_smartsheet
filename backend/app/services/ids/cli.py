@@ -8,10 +8,11 @@ from pathlib import Path
 import psycopg
 
 from app.core.config import Settings
+from app.services.ids import pilot
 from app.services.ids.dry_run import Candidate, plan
 from app.services.ids.formats import EntityKind, formula_number, parse_id, project_scope
 from app.services.ids.inventory import collect_inventory
-from app.services.ids.pilot import SHEETS, read_pilot
+from app.services.ids.pilot import read_pilot
 from app.services.ids.simulation import Projector
 from app.services.ids.store import IdStore
 from app.services.smartsheet import SmartsheetClient
@@ -59,7 +60,7 @@ async def _simulate(sheets, entries) -> None:
         for entry in entries
         if reservations.get((entry.sheet_id, entry.row_id)) == (entry.value, "confirmado")
     }
-    allowed = frozenset(item[0] for item in SHEETS)
+    allowed = frozenset(item[0] for item in pilot.SHEETS)
     counts = Counter()
     for sheet in sheets:
         for row in sheet.rows:
@@ -77,7 +78,7 @@ async def _simulate(sheets, entries) -> None:
             if sheet.kind == EntityKind.PROJECT and sheet.project_columns:
                 company, customer, received = sheet.project_columns
                 parent = project_scope(
-                    row.cells.get(company) or "",
+                    (row.cells.get(company) or "") if company else pilot.DEFAULT_COMPANY,
                     row.cells.get(customer) or "",
                     row.date_cells.get(received),
                 )

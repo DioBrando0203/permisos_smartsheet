@@ -4,7 +4,7 @@
 
 Si el usuario pregunta qué sigue, qué falta o qué podemos continuar: leer `backend/docs/REQUERIMIENTOS.md`, sección "Pendientes" (IDs PEN-xx), y responder con esa lista en orden de prioridad, con su estado y qué haría falta. No inventar pendientes fuera de esa lista; si aparece uno nuevo, agregarlo allí con su ID antes de trabajarlo. Al terminar uno, actualizar su estado y la bitácora.
 
-Estado (2026-11-04): backend y frontend en uso. En curso PEN-24: ID Manager automático y selector de Linked Tracking en Pruebas (SPEC-ID01, SPEC-B16); el procesador y su PostgreSQL sólo existen en el equipo Linux (B-16). Frontend por fases en `frontend/docs/PLAN_IMPLEMENTACION.md`.
+Estado (2026-11-10): backend y frontend en uso. En curso PEN-24: ID Manager automático y selector de Linked Tracking sobre la hoja Presentable de Pruebas, con filas madre y filas hijas que llevan el ID de su madre (SPEC-ID01 ID-37 a ID-40, SPEC-B16); el procesador y su PostgreSQL sólo existen en el equipo Linux (B-16). Frontend por fases en `frontend/docs/PLAN_IMPLEMENTACION.md`.
 
 Antes de modificar, leer este archivo y la guía del lado afectado (metodología SDD: spec, plan, código, prueba, registro):
 - Backend: `backend/docs/README.md` y `backend/docs/GUIA_IA.md`; reglas `PY-xx`, `SM-xx` y `patrones/PATRONES.md`.

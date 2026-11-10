@@ -31,6 +31,8 @@ from app.services.ids.inventory import InventorySheet  # noqa: E402
 from app.services.smartsheet import RawRow  # noqa: E402
 from tests.conftest import make_settings  # noqa: E402
 
+pytestmark = pytest.mark.usefixtures("legacy_pilot")
+
 ROOT = Path(__file__).resolve().parents[2]
 BIN = Path("/usr/lib/postgresql/18/bin")
 TEST_STARTS = {

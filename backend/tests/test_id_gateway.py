@@ -15,6 +15,8 @@ from app.services.smartsheet import RawColumn, RawRow, SmartsheetClient
 from tests.conftest import make_settings
 from tests.factories import sheet_json
 
+pytestmark = pytest.mark.usefixtures("legacy_pilot")
+
 
 async def test_gateway_reads_parent_and_rechecks_before_write() -> None:
     client = AsyncMock()

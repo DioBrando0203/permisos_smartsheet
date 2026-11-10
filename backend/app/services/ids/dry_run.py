@@ -17,6 +17,8 @@ class PlanAction(StrEnum):
     ALREADY_STABLE = "already_stable"
     CONFIRM_RESERVATION = "confirm_reservation"
     REGISTER_EXISTING = "register_existing"
+    CHILD_FILL = "child_fill"  # fila hija: copiar el ID ya confirmado de su madre
+    RENUMBER_COPY = "renumber_copy"  # madre copiada: la copia recibe el siguiente número
     NEEDS_RESERVATION = "needs_reservation"
     WOULD_WRITE = "would_write"
 

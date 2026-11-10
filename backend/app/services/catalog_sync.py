@@ -4,8 +4,8 @@ from collections.abc import Awaitable, Callable
 
 from app.core.config import Settings
 from app.services.catalog_plan import CatalogAction
+from app.services.ids import pilot
 from app.services.ids.dry_run import PILOT_WORKSPACE
-from app.services.ids.pilot import SHEETS
 from app.services.ids.runtime import writes_allowed
 from app.services.project_catalog import (
     CATALOG_COLUMNS,
@@ -23,7 +23,7 @@ async def check_catalog_target(settings: Settings, client: SmartsheetClient, she
     """Barreras: escritura aprobada, hoja configurada, distinta del piloto y dentro de Pruebas."""
     if not writes_allowed(settings):
         raise ValueError("Escritura deshabilitada por las barreras del servicio")
-    if not sheet.isdigit() or sheet in {item[0] for item in SHEETS}:
+    if not sheet.isdigit() or sheet in {item[0] for item in pilot.SHEETS}:
         raise ValueError("Hoja catálogo no configurada o reservada para el piloto")
     if await client.sheet_workspace_id(sheet) != PILOT_WORKSPACE:
         raise ValueError("La hoja catálogo no pertenece al workspace Pruebas")

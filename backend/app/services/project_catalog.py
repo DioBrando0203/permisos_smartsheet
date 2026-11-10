@@ -13,11 +13,11 @@ from app.services.catalog_rules import (
     classify_link,
     id_parts,
 )
-from app.services.ids.pilot import SHEETS
+from app.services.ids import pilot
 from app.services.quality import QualityService, find_column
 from app.services.sheets import SheetService
 
-PROJECTS_SHEET = SHEETS[0][0]
+# En este orden se arma `ProjectRow`; la empresa es opcional (sin ella, la de la fórmula).
 SOURCE_COLUMNS = (
     "Stable Tracking Project",
     "Tracking Project",
@@ -26,6 +26,7 @@ SOURCE_COLUMNS = (
     "KMV/GALP",
     "Linked Tracking",
 )
+COMPANY_INDEX = 4
 # Columnas de la hoja catálogo (Pruebas); la primera es el valor del desplegable vinculado.
 CATALOG_COLUMNS = ("Tracking Project", "Customer Code", "Customer", "Company", "Origin")
 ORIGIN_LABELS = {Origin.CURRENT: "Actual", Origin.HISTORICAL: "Histórico"}
@@ -48,26 +49,36 @@ class ProjectCatalogService:
         self.catalog_sheet = catalog_sheet.strip()
 
     async def snapshot(self, *, refresh: bool) -> CatalogSnapshot:
-        rows, customers, options = await self._source(refresh)
+        rows, customers = await self._source(refresh)
         destination, columns = await self._destination(refresh)
-        known = list(options) + [
+        # Históricos sólo desde la hoja catálogo: el desplegable vinculado ya es su copia.
+        known = [
             entry.tracking_project for _, entry in destination if entry.origin == Origin.HISTORICAL
         ]
         entries, duplicates = build_catalog(rows, known, customers)
         return CatalogSnapshot(rows, entries, duplicates, destination, columns)
 
-    async def _source(self, refresh: bool) -> tuple[list[ProjectRow], tuple, tuple]:
-        columns = await self._sheets.columns(PROJECTS_SHEET)
-        found = [find_column(name, columns) for name in SOURCE_COLUMNS]
-        raw = await self._quality.rows(
-            PROJECTS_SHEET, [column.id for column in found], refresh=refresh
-        )
-        ids = [column.id for column in found]
-        rows = [
-            ProjectRow(row.id, row.row_number, *((row.cells.get(i) or "").strip() for i in ids))
-            for row in raw
+    async def _source(self, refresh: bool) -> tuple[list[ProjectRow], tuple]:
+        sheet = pilot.project_sheet()
+        columns = await self._sheets.columns(sheet)
+        titles = {column.title for column in columns}
+        found = [
+            find_column(name, columns) if name in titles or i != COMPANY_INDEX else None
+            for i, name in enumerate(SOURCE_COLUMNS)
         ]
-        return rows, found[2].options, found[5].options
+        ids = [column.id if column else None for column in found]
+        raw = await self._quality.rows(sheet, [i for i in ids if i], refresh=refresh)
+        rows = [
+            ProjectRow(
+                row.id,
+                row.row_number,
+                *((row.cells.get(i) or "").strip() if i else pilot.DEFAULT_COMPANY for i in ids),
+            )
+            # Sólo filas madre: las hijas repiten el ID de su proyecto.
+            for row in raw
+            if not row.parent_id
+        ]
+        return rows, found[2].options
 
     async def _destination(self, refresh: bool) -> tuple[list[tuple[str, CatalogEntry]], dict]:
         if not self.catalog_sheet:

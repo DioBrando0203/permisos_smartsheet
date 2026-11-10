@@ -6,6 +6,7 @@ _RECOVERY = {
     "would_write": "write",  # Stable ID vacío: se escribe la misma reserva
     "pending_formula": "write",
     "pending_parent": "wait_parent",  # se retoma cuando el padre esté confirmado
+    "renumber_copy": "write",  # copia de una madre: se escribe la misma reserva
 }
 
 

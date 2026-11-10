@@ -80,7 +80,7 @@ app/
   services/references.py         ReferenceService: valores de una columna que no están en un catálogo
   services/associations.py       AssociationService: consulta configurable de proyecto y cliente entre hojas
   services/association_rules.py reglas puras de asociaciones y ambigüedad del catálogo
-  services/ids/                 formatos, importación manual y simulación del piloto, reservas transaccionales deshabilitadas por defecto; no conectado al panel
+  services/ids/                 formatos, reservas, simulación y procesador de IDs; hoja configurada en `pilot.py` (Presentable, madres e hijas)
   services/ids/monitor.py       procesador periódico y ciclo a demanda: simula por defecto; asigna sólo con coordinador de runtime.py
   services/ids/runtime.py       barreras de escritura y ensamblaje del coordinador real
   services/ids/recovery.py      plan de recuperación de reservas sin confirmar (puro)

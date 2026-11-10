@@ -370,3 +370,47 @@ Estado: terminada.
 Pedido: crear en la interfaz el formato condicional del error de cliente (LB-14).
 Cambios: el usuario creó la regla en Proyectos (Piloto) con condición en `Control Linked Tracking`, tras corregir la columna de la condición (había elegido Linked Tracking). SPEC-B16 LB-16, REQUERIMIENTOS y SBD-14 actualizados.
 Evidencia: confirmación del usuario de que funciona; no se volvió a leer la hoja. Sin escrituras del servicio.
+
+## 2026-11-10 10:00 -05:00 ID Manager sobre Presentable (PEN-24)
+
+Estado: código y pruebas listos; reinicio a 001 pendiente de ejecución por el usuario (sudo).
+Pedido: trabajar sólo en Presentable, olvidar las hojas anteriores, tolerar cambios de nombre o carpeta, sin IDs propios para filas hijas y renumerar los ejemplos desde 001. El usuario aclaró que las filas hijas llevan el mismo ID que su madre.
+Cambios: `parent_id` en filas; `pilot.py` con Presentable y consulta en cada llamada; madres numeradas, hijas con el ID de su madre (`child_fill`), catálogo sólo con madres y empresa por defecto; conflicto anticipado para IDs ya registrados; `servicios/ids/reiniciar_registro.py`.
+Evidencia: ver RESULTADOS de la misma hora. Sin escrituras.
+
+## 2026-11-10 10:07 -05:00 Reinicio a 001 en Presentable (PEN-24)
+
+Estado: preparado; falta encender el backend para asignar.
+Pedido: renumerar el ejemplo de Presentable desde 001 olvidando las hojas anteriores.
+Cambios: el usuario reinició el registro con sudo; luego se vaciaron los Stable IDs de Presentable, se limpió el catálogo y se agregó `Control Linked Tracking`.
+Evidencia: ver RESULTADOS de la misma hora.
+
+## 2026-11-10 10:14 -05:00 Ejemplo de Presentable desde 001 (PEN-24)
+
+Estado: IDs y catálogo terminados; vínculo del desplegable y regla roja pendientes en la interfaz.
+Evidencia: ver RESULTADOS de la misma hora. Hallazgo: el desplegable de Presentable es una lista fija copiada, no vinculada.
+
+## 2026-11-10 10:20 -05:00 Desplegable de Presentable vinculado (PEN-24, SPEC-B16)
+
+Estado: terminado; regla roja pendiente de confirmar por el usuario.
+Evidencia: ver RESULTADOS de la misma hora. Sin escrituras del servicio.
+
+## 2026-11-10 10:52 -05:00 Flujo madre/hija comprobado en Presentable (PEN-24)
+
+Estado: terminado.
+Pedido: el usuario pidió confirmar y probar el flujo de crear madre, insertar hija e indentar.
+Evidencia: ver RESULTADOS de la misma hora. Quedan tres filas `PRUEBA` en Presentable; el ID `KMV-BS-26-003` queda consumido.
+
+## 2026-11-10 11:38 -05:00 Madres copiadas reciben el siguiente número (PEN-24)
+
+Estado: implementado y probado con simulación; pendiente la prueba en vivo del usuario.
+Pedido: que copiar y pegar una madre continúe la numeración sin repetir IDs.
+Cambios: `update_stable_id_once` con valor esperado; detección `renumber_copy` en el DRY_RUN; `IdConnector.renumber_copy`; procesador y recuperación (SPEC-ID01 ID-42).
+Evidencia: ver RESULTADOS de la misma hora.
+
+## 2026-11-10 12:26 -05:00 Copia en vivo y reacción en segundos (PEN-24)
+
+Estado: terminado; pendiente que el usuario mida el tiempo con una nueva copia.
+Pedido: reaccionar al instante al copiar y pegar una madre.
+Cambios: consulta de versión entre ciclos y ciclo inmediato tras escribir (SPEC-ID01 ID-43); `IDS_MONITOR_POLL_SECONDS`.
+Evidencia: ver RESULTADOS de la misma hora.

@@ -18,6 +18,8 @@ _ELIGIBLE = frozenset(
         "would_write",
         "confirm_reservation",
         "register_existing",
+        "child_fill",
+        "renumber_copy",
     }
 )
 _ORDER = {"project": 0, "task": 1, "record": 2, "revision": 3}
@@ -41,6 +43,7 @@ async def process_report(
         key=lambda item: (
             _ORDER.get(item["type"], 99),
             item["action"] != "register_existing",
+            item["action"] == "child_fill",
         ),
     )
     attempted = 0
@@ -55,7 +58,13 @@ async def process_report(
             target = Target(
                 int(item["sheet_id"]), int(item["row_id"]), EntityKind(item["type"]), item["parent"]
             )
-            outcome = (await connector.process(target)).value
+            if item["action"] == "child_fill":
+                result = await connector.inherit(target, int(item["mother_row_id"]))
+            elif item["action"] == "renumber_copy":
+                result = await connector.renumber_copy(target, int(item["original_row_id"]))
+            else:
+                result = await connector.process(target)
+            outcome = result.value
         except (ValueError, RuntimeError, AppError, psycopg.Error):
             outcome = "error"
         counts[outcome] += 1

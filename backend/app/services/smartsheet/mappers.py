@@ -138,6 +138,7 @@ def to_row(data: Json, label_column_id: str | None = None) -> RawRow:
         modified_by=_author(data.get("modifiedBy")),
         cells=cells,
         date_cells=dates,
+        parent_id=_optional_id(data.get("parentId")),
     )
 
 

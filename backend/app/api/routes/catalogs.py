@@ -9,8 +9,8 @@ from app.api.routes.idsmart import require_admin
 from app.core.errors import AppError
 from app.services.catalog_rules import Origin, filter_catalog
 from app.services.catalog_sync import sync_catalog
+from app.services.ids import pilot
 from app.services.project_catalog import (
-    PROJECTS_SHEET,
     ProjectCatalogService,
     entry_json,
     sync_plan,
@@ -43,7 +43,7 @@ async def catalog_projects(
     return {
         "customer_code": customer_code.upper() if customer_code else None,
         "company": company.upper() if company else None,
-        "source_sheet": PROJECTS_SHEET,
+        "source_sheet": pilot.project_sheet(),
         "catalog_sheet": _catalog(services).catalog_sheet or None,
         "projects": [entry_json(entry) for entry in entries],
         "duplicates": snapshot.duplicates,

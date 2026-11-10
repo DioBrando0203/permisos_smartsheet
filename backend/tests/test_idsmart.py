@@ -3,10 +3,13 @@
 import asyncio
 from unittest.mock import AsyncMock, Mock
 
+import pytest
 from pydantic import SecretStr
 
 from app.services.ids import database
 from tests.test_ids import database as database_fixture
+
+pytestmark = pytest.mark.usefixtures("legacy_pilot")
 
 TOKEN = "clave-sintetica-de-prueba"
 HEADERS = {"Authorization": f"Bearer {TOKEN}"}
@@ -267,3 +270,43 @@ async def test_audit_and_recovery_routes(
     assert audit["total"] == 1 and audit["items"][0]["fila_id"] == "2"
     pending = (await client.get("/api/ids/recovery", headers=HEADERS)).json()["pending"]
     assert [item["recovery"] for item in pending] == ["confirm", "row_missing"]
+
+
+async def test_monitor_sheet_change_brings_next_cycle_forward(monkeypatch) -> None:
+    import app.services.ids.monitor as module
+
+    conn = Mock()
+    conn.execute.return_value.fetchone.return_value = (True,)
+    monkeypatch.setattr(module.psycopg, "connect", Mock(return_value=conn))
+    report = AsyncMock(return_value={"counts": {}, "pending_or_conflicting_rows": []})
+    monkeypatch.setattr(module, "build_dry_run_report", report)
+    client = AsyncMock()
+    versions = iter(range(10_000))
+    client.sheet_version.side_effect = lambda _sheet: next(versions)
+    # Intervalo de 60 s: sólo el cambio de versión puede traer el segundo ciclo tan pronto.
+    monitor = module.IdMonitor(client, True, 60, poll_seconds=0.01)
+    monitor.start()
+    for _ in range(300):
+        if report.await_count >= 2:
+            break
+        await asyncio.sleep(0.01)
+    await monitor.stop()
+    assert report.await_count >= 2
+
+
+async def test_monitor_without_changes_waits_full_interval(monkeypatch) -> None:
+    import app.services.ids.monitor as module
+
+    conn = Mock()
+    conn.execute.return_value.fetchone.return_value = (True,)
+    monkeypatch.setattr(module.psycopg, "connect", Mock(return_value=conn))
+    report = AsyncMock(return_value={"counts": {}, "pending_or_conflicting_rows": []})
+    monkeypatch.setattr(module, "build_dry_run_report", report)
+    client = AsyncMock()
+    client.sheet_version.return_value = 7
+    monitor = module.IdMonitor(client, True, 60, poll_seconds=0.01)
+    monitor.start()
+    await asyncio.sleep(0.2)
+    await monitor.stop()
+    assert report.await_count == 1
+    assert client.sheet_version.await_count > 4

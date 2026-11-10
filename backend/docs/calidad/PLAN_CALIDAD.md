@@ -62,3 +62,6 @@ Desde `backend/`:
 - Regla nueva de permisos: todos los niveles y scopes (QB-05).
 - Cambio de contrato: actualizar `estilos/API.md` y, si existe, los tipos del frontend.
 - `test_catalog_rules.py` y `test_project_catalog.py` (SPEC-B16): filtros BS, CC, OT y empresa, históricos, duplicados, siete clasificaciones de Linked Tracking, cliente cambiado, sincronización bloqueada por token, barreras, hoja del piloto o workspace ajeno, alta y actualización sin borrados ni escrituras en Proyectos, y aislamiento de fallos del catálogo en el procesador.
+- `test_id_presentable.py` (ID-37 a ID-39): madres numeradas en un registro vacío, hijas que heredan el ID en el ciclo siguiente sin gastar número, hija con otro proyecto en conflicto y sin escritura, hija nunca numerada aunque se pida, e ID ya registrado para otra fila informado como conflicto. Las pruebas del motor de cuatro hojas usan el fixture `legacy_pilot`.
+- `test_id_presentable.py` (ID-42): copia de madre con siguiente número del mismo cliente y del cliente cambiado, reintento con la misma reserva tras escritura perdida y copia de una original inexistente como conflicto.
+- `test_idsmart.py` (ID-43): un cambio de versión adelanta el siguiente ciclo sin esperar el intervalo y, sin cambios, sólo se consulta la versión.

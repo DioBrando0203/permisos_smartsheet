@@ -16,7 +16,10 @@ class InventorySheet:
     rows: list[RawRow]
     parent_column: str | None = None
     extra_parent_column: str | None = None
-    project_columns: tuple[str, str, str] | None = None
+    # (empresa o None, cliente, fecha); sin columna de empresa se usa la de la fórmula.
+    project_columns: tuple[str | None, str, str] | None = None
+    # Filas hijas y la fila de primer nivel de la que heredan el ID (Presentable).
+    children: tuple[tuple[RawRow, str], ...] = ()
 
 
 def collect_inventory(

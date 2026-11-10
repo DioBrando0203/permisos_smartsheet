@@ -7,13 +7,18 @@ import pytest
 
 pytest.importorskip("psycopg")
 
-from app.services.ids import EntityKind  # noqa: E402
+from app.services.ids import (
+    EntityKind,  # noqa: E402
+    pilot,  # noqa: E402
+)
 from app.services.ids.dry_run import PILOT_WORKSPACE, Candidate, PlanAction, plan  # noqa: E402
 from app.services.ids.inventory import InventorySheet, collect_inventory  # noqa: E402
-from app.services.ids.pilot import SHEETS, read_pilot  # noqa: E402
+from app.services.ids.pilot import read_pilot  # noqa: E402
 from app.services.ids.simulation import Projector  # noqa: E402
 from app.services.ids.transition import approved_starts  # noqa: E402
 from app.services.smartsheet import RawColumn, RawRow  # noqa: E402
+
+pytestmark = pytest.mark.usefixtures("legacy_pilot")
 
 
 def test_simulation_refuses_untrusted_and_conflicting_data() -> None:
@@ -129,7 +134,7 @@ async def test_pilot_rechecks_workspace_and_rejects_unknown() -> None:
     client.sheet_version.return_value = 1
     titles = {
         name
-        for _, _, visible, stable, parent in SHEETS
+        for _, _, visible, stable, parent in pilot.SHEETS
         for name in (visible, stable, parent)
         if name
     }

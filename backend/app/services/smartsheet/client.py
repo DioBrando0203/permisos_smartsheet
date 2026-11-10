@@ -142,17 +142,20 @@ class SmartsheetClient:
         data = await self._transport.request("GET", f"/sheets/{sheet_id}/rows/{row_id}")
         return mappers.to_row(data)
 
-    async def update_stable_id_once(self, sheet_id: str, row_id: str, value: str) -> None:
-        """Escritura de una celda con barreras explícitas; no es atómica frente a otros editores."""
+    async def update_stable_id_once(
+        self, sheet_id: str, row_id: str, value: str, expected: str = ""
+    ) -> None:
+        """Escribe una celda Stable ID con barreras; no es atómica frente a otros editores.
+
+        Sólo escribe si la celda contiene `expected`: vacía por defecto; el ID copiado de otra
+        madre cuando se renumera una copia (SPEC-ID01 ID-42).
+        """
         from app.core.errors import AppError
+        from app.services.ids import pilot
         from app.services.permissions import AccessLevel
 
-        allowed = {
-            "4365321059389316": "Stable Tracking Project",
-            "73093952524164": "Stable Task ID",
-            "8140679218941828": "Stable Request ID",
-            "5463681132613508": "Stable Revision ID",
-        }
+        # Sólo las hojas configuradas del ID Manager y su columna Stable ID.
+        allowed = {item[0]: item[3] for item in pilot.SHEETS}
         if (
             self._settings.app_read_only
             or not self._settings.ids_writes_enabled
@@ -172,8 +175,9 @@ class SmartsheetClient:
                 "IDS_COLUMN_INVALID", "Columna Stable ID no encontrada o duplicada.", 409
             )
         row = await self.get_row(sheet_id, row_id)
-        if (row.cells.get(matches[0]) or "").strip():
-            raise AppError("IDS_STABLE_EXISTS", "El Stable ID ya contiene un valor.", 409)
+        if (row.cells.get(matches[0]) or "").strip() != expected:
+            code = "IDS_STABLE_CHANGED" if expected else "IDS_STABLE_EXISTS"
+            raise AppError(code, "El Stable ID contiene otro valor.", 409)
         body = [{"id": int(row_id), "cells": [{"columnId": int(matches[0]), "value": value}]}]
         await self._transport.request("PUT", f"/sheets/{sheet_id}/rows", json=body, retry=False)
 

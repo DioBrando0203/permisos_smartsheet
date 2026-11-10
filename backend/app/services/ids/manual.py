@@ -4,10 +4,10 @@ import argparse
 import asyncio
 
 from app.core.config import Settings
+from app.services.ids import pilot
 from app.services.ids.cli import DSN
 from app.services.ids.connector import Target
 from app.services.ids.formats import EntityKind
-from app.services.ids.pilot import SHEETS
 from app.services.ids.runtime import build_connector, build_store, writes_allowed
 from app.services.smartsheet import SmartsheetClient
 
@@ -28,7 +28,7 @@ async def assign_row(
     """Procesa sólo la fila indicada (hoja, fila, padre) después de comprobar las barreras."""
     _check(settings, authorized)
     sheet_id, row_id, parent = target
-    spec = next((item for item in SHEETS if item[0] == str(sheet_id)), None)
+    spec = pilot.sheet_spec(sheet_id)
     if spec is None or row_id <= 0 or not parent.strip():
         raise ValueError("Hoja, fila o padre no autorizados")
     store = build_store(settings, dsn)

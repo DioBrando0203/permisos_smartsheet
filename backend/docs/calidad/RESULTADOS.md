@@ -285,3 +285,42 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Linked Tracking: 2 `current_valid`, 2 `historical_valid`, 9 vacíos y 1 `other_customer` (fila 4, BS con `KMV-CC-26-627`, la de la prueba visual).
 - Piloto con `read_pilot` (sólo GET): Proyectos 14, Tareas 7, Records 6 y Revisiones 2 filas con ID; todas con Stable ID igual al visible, ninguna pendiente ni distinta.
 - Sin acceso a PostgreSQL desde este equipo: no se consultaron asignaciones ni auditoría. Sin escrituras en Smartsheet.
+
+# 2026-11-10 10:00 -05:00 ID Manager sobre Presentable (PEN-24)
+
+- 315 pruebas backend aprobadas (nuevas: `test_id_presentable.py`, 3 casos; catálogo con hija repetida y sin columna de empresa); Ruff y formato correctos.
+- Lectura real de Presentable (sólo GET): 4 madres y 3 hijas; las 3 hijas ya llevan el ID de su madre (`child_inherited`). DRY_RUN: 3 `conflict` (`KMV-BS-26-460`, `KMV-BS-26-461`, `KMV-CC-26-719` ya registrados para filas de las hojas anteriores) y 1 `register_existing` (`KMV-CC-26-718`). Automatizaciones de la hoja: 4, todas desactivadas.
+- Sin escrituras en Smartsheet ni en PostgreSQL; el reinicio a 001 queda preparado.
+
+# 2026-11-10 10:07 -05:00 Reinicio a 001 en Presentable (PEN-24)
+
+- El usuario ejecutó `servicios/ids/reiniciar_registro.py --confirmar`: antes 34 asignaciones, 15 secuencias y 49 eventos; después 0, 0 y 0; registro inicializado; respaldo `~/galp_backups/galp_antes_reinicio_20261110_100532.dump`.
+- Escrituras autorizadas en Pruebas: 7 Stable IDs de Presentable vaciados (versión 269 a 270, ninguno con valor después); 21 filas quitadas de la hoja catálogo (queda vacía); columna `Control Linked Tracking` agregada al final de Presentable con fórmula.
+- DRY_RUN real posterior: 4 madres `needs_reservation` con propuesta igual a la fórmula (`KMV-BS-26-001`, `KMV-BS-26-002`, `KMV-CC-26-001`, `KMV-CC-26-002`) y 3 hijas `pending_parent`. Control: las 7 filas `LEGACY: NOT LOADED`.
+
+# 2026-11-10 10:14 -05:00 Ejemplo de Presentable asignado desde 001 (PEN-24)
+
+- Backend encendido por el usuario. Verificación de espera: DRY_RUN con 4 `already_stable` y 3 `child_inherited`; sincronización del catálogo `add` 4.
+- Lectura independiente: madres `KMV-BS-26-001`, `KMV-BS-26-002`, `KMV-CC-26-001`, `KMV-CC-26-002`; hijas de las filas 1, 4 y 6 con el ID de su madre; visible igual a estable en las 7 filas. PostgreSQL: 4 asignaciones confirmadas, auditoría 4 `reservado` y 4 `confirmado`. Hoja catálogo: los 4 proyectos como `Actual`.
+- Linked Tracking de Presentable conserva 21 opciones antiguas: no está vinculado al catálogo (SPEC-B16 LB-18).
+
+# 2026-11-10 10:20 -05:00 Desplegable de Presentable vinculado (SPEC-B16, PEN-24)
+
+- GET de columna: Linked Tracking (`6316483826978692`) PICKLIST con opciones `KMV-BS-26-001`, `KMV-BS-26-002`, `KMV-CC-26-001`, `KMV-CC-26-002`; `validation` false; descripción actualizada por el usuario.
+- Celdas conservadas (296, 461, 638, 627); `Control Linked Tracking` = `LEGACY: NOT LOADED` en las 7 filas. La regla roja no es visible por API.
+
+# 2026-11-10 10:52 -05:00 Flujo madre/hija real en Presentable (PEN-24)
+
+- Filas de prueba creadas por API en Presentable (Pruebas): madre `PRUEBA - flujo madre/hija` (BS, 2026-11-10), hija creada ya indentada y `PRUEBA - fila suelta` sin Customer ni fecha.
+- Madre: fórmula `KMV-BS-26-003` al crearla; Stable ID a los 61 s. Hija: muestra el ID de la madre al crearla; Stable ID igual a los 136 s. Fila suelta: sin número tras un ciclo completo; indentada a los 206 s, muestra el ID de la madre al instante y lo fija a los 270 s.
+- Desplegable con `KMV-BS-26-003` agrupado con BS. DRY_RUN: 5 `already_stable`, 5 `child_inherited`; sin conflictos. PostgreSQL: 5 asignaciones (BS 001 a 003, CC 001 y 002).
+
+# 2026-11-10 11:38 -05:00 Renumeración de madres copiadas (PEN-24)
+
+- 317 pruebas backend aprobadas (nuevas: copia de madre con siguiente número, cliente cambiado y reintento con la misma reserva); Ruff y formato correctos.
+- DRY_RUN real de Presentable: 6 `already_stable` y 11 `child_inherited`; ninguna fila detectada como copia. El servidor del usuario recargó el código a las 11:36:43.
+
+# 2026-11-10 12:26 -05:00 Copia en vivo y reacción rápida del procesador (PEN-24)
+
+- Prueba del usuario: pegó una copia de la madre `KMV-BS-26-003` (fila 21); el procesador le asignó `KMV-BS-26-004` unos 40 s después; la original y sus hijas conservaron `003`.
+- Sondeo de versión cada 5 s implementado: 319 pruebas backend aprobadas; Ruff y formato correctos. El servidor del usuario recargó el código y `/api/ids/status` informa `processor_poll_seconds` 5.

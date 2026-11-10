@@ -12,6 +12,7 @@ import pytest
 import respx
 
 from app.services.ids.dry_run import PILOT_WORKSPACE
+from app.services.ids.formats import EntityKind
 from tests.conftest import BASE
 
 PROJECTS, TASKS, RECORDS, REVISIONS = (
@@ -33,6 +34,13 @@ COLUMNS = {
     REVISIONS: ("Revision ID", "Stable Revision ID", "Task ID"),
 }
 _BASE_COLUMN = {PROJECTS: 100, TASKS: 200, RECORDS: 300, REVISIONS: 400}
+# Formato anterior de cuatro hojas (sin uso real desde 2026-11-10); prueba el motor completo.
+LEGACY_SHEETS = (
+    (str(PROJECTS), EntityKind.PROJECT, "Tracking Project", "Stable Tracking Project", None),
+    (str(TASKS), EntityKind.TASK, "Task ID", "Stable Task ID", "Tracking Project"),
+    (str(RECORDS), EntityKind.RECORD, "Request ID", "Stable Request ID", "Task ID"),
+    (str(REVISIONS), EntityKind.REVISION, "Revision ID", "Stable Revision ID", "Task ID"),
+)
 
 
 def column_id(sheet: int, title: str) -> int:

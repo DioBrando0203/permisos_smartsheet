@@ -65,6 +65,7 @@ async def get_ids_status(request: Request, services: ServicesDep) -> dict:
         "processor_mode": monitor.mode,
         "processor_active": monitor.active,
         "processor_interval_seconds": monitor.interval,
+        "processor_poll_seconds": monitor.poll_seconds,
         "processor_max_rows": monitor.max_rows,
         "last_run": monitor.last_run,
         "last_error": monitor.last_error,

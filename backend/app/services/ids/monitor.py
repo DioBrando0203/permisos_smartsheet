@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 import psycopg
 
 from app.core.errors import AppError
+from app.services.ids import pilot
 from app.services.ids.cli import DSN
 from app.services.ids.connector import IdConnector
 from app.services.ids.preview import build_dry_run_report
@@ -14,6 +15,8 @@ from app.services.ids.processor import process_report
 from app.services.smartsheet import SmartsheetClient
 
 _LOCK = 714382002
+# Resultados con escritura: pueden habilitar hijas, así que el siguiente ciclo va enseguida.
+_WROTE = frozenset({"confirmed", "registered", "inherited"})
 
 
 class IdMonitor:
@@ -27,6 +30,7 @@ class IdMonitor:
         max_rows: int = 5,
         dsn: str = DSN,
         after_cycle: Callable[[], Awaitable[dict]] | None = None,
+        poll_seconds: float | None = None,
     ) -> None:
         self.client = client
         self.enabled = enabled
@@ -36,6 +40,8 @@ class IdMonitor:
         self.dsn = dsn
         # Paso opcional tras asignar (sincronizar el catálogo); sus fallos no afectan a los IDs.
         self.after_cycle = after_cycle
+        # Entre ciclos se consulta la versión de la hoja; un cambio adelanta el ciclo (ID-43).
+        self.poll_seconds = poll_seconds
         self.last_catalog: dict | None = None
         self.active = False
         self.last_run: str | None = None
@@ -100,6 +106,32 @@ class IdMonitor:
         finally:
             await asyncio.to_thread(conn.close)
 
+    async def _wait(self, *, quick: bool) -> None:
+        """Hasta `interval` segundos; un cambio en la hoja o una escritura acortan la espera."""
+        if not self.poll_seconds:
+            await asyncio.sleep(self.interval)
+            return
+        if quick:
+            await asyncio.sleep(self.poll_seconds)
+            return
+        baseline = await self._versions()
+        waited = 0.0
+        while waited < self.interval:
+            await asyncio.sleep(self.poll_seconds)
+            waited += self.poll_seconds
+            current = await self._versions()
+            if baseline is None:
+                baseline = current
+            elif current is not None and current != baseline:
+                return
+
+    async def _versions(self) -> tuple[int, ...] | None:
+        """Versión de cada hoja configurada; None si Smartsheet no responde (se espera más)."""
+        try:
+            return tuple([await self.client.sheet_version(item[0]) for item in pilot.SHEETS])
+        except AppError:
+            return None
+
     async def _run(self) -> None:
         conn = None
         try:
@@ -122,7 +154,7 @@ class IdMonitor:
                 except Exception:
                     self.last_error = f"{self.mode}_failed"
                     self.last_run = datetime.now(UTC).isoformat()
-                await asyncio.sleep(self.interval)
+                await self._wait(quick=bool(_WROTE & self.last_outcomes.keys()))
         except psycopg.Error:
             self.last_error = "database_unavailable"
         finally:

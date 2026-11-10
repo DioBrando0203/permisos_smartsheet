@@ -78,3 +78,12 @@ def client(make_client: AppFactory, smartsheet: respx.MockRouter) -> httpx.Async
 def writes(router: respx.MockRouter) -> list[httpx.Request]:
     """Solicitudes de escritura que llegaron a Smartsheet simulado."""
     return [call.request for call in router.calls if call.request.method != "GET"]
+
+
+@pytest.fixture
+def legacy_pilot(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Configura el formato anterior de cuatro hojas para las pruebas del motor de IDs."""
+    from app.services.ids import pilot
+    from tests.fake_pilot import LEGACY_SHEETS
+
+    monkeypatch.setattr(pilot, "SHEETS", LEGACY_SHEETS)

@@ -35,6 +35,9 @@ def create_app(
         connector_factory=assign_factory(settings, services.client),
         max_rows=settings.ids_processor_max_rows,
         after_cycle=catalog_hook(settings, services.client, services.sheets, services.quality),
+        poll_seconds=max(2, settings.ids_monitor_poll_seconds)
+        if settings.ids_monitor_poll_seconds
+        else None,
     )
 
     @asynccontextmanager

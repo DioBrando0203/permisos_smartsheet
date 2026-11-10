@@ -21,6 +21,8 @@ from tests.conftest import make_settings  # noqa: E402
 from tests.fake_pilot import PROJECTS, RECORDS, REVISIONS, TASKS, pilot, stable_column  # noqa: E402
 from tests.test_ids import database  # noqa: E402
 
+pytestmark = pytest.mark.usefixtures("legacy_pilot")
+
 pilot = pilot
 database = database
 PROJECT = "KMV-BS-26-452"

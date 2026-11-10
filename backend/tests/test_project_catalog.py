@@ -10,7 +10,8 @@ import respx
 from pydantic import SecretStr
 
 from app.services.ids.dry_run import PILOT_WORKSPACE
-from app.services.project_catalog import CATALOG_COLUMNS, PROJECTS_SHEET, SOURCE_COLUMNS
+from app.services.ids.pilot import PRESENTABLE as PROJECTS_SHEET
+from app.services.project_catalog import CATALOG_COLUMNS, SOURCE_COLUMNS
 from tests.conftest import BASE
 
 TOKEN = "clave-sintetica-de-prueba"
@@ -39,8 +40,11 @@ class FakeSheets:
                 ("KMV-CC-27-001", "CC-Crown Castle", "CC", "KMV-CC-26-563"),
                 ("KMV-CC-27-002", "CC-Crown Castle", "CC", "KMV-BS-27-001"),
                 ("KMV-OT-27-001", "OT-Others", "OT", "dato libre"),
+                # Fila hija: repite el ID de su madre (fila 1) y no es otro proyecto.
+                ("KMV-BS-27-001", "BS-Blue Stream", "BS", "", 1),
             ],
-            CATALOG: [],
+            # Histórico agregado a mano en la hoja catálogo.
+            CATALOG: [("KMV-CC-26-563", "CC", "CC-Crown Castle", "KMV", "Histórico")],
         }
         self.writes: list[tuple[str, str, list]] = []
 
@@ -56,7 +60,8 @@ class FakeSheets:
             data = [
                 {"id": self.column_id(sheet, i), "title": title, "index": i, "type": "PICKLIST"}
                 | ({"options": CUSTOMERS} if title == "Customer" else {})
-                | ({"options": ["KMV-CC-26-563"]} if title == "Linked Tracking" else {})
+                # Opciones del desplegable vinculado: copia del catálogo, no son una fuente.
+                | ({"options": ["KMV-ZZ-20-999"]} if title == "Linked Tracking" else {})
                 for i, title in enumerate(self.columns[sheet])
             ]
             return httpx.Response(200, json={"data": data, "pageNumber": 1, "totalPages": 1})
@@ -73,14 +78,19 @@ class FakeSheets:
         )
 
     def _row(self, sheet: str, number: int, values: tuple) -> dict:
+        parent = None
         if sheet == PROJECTS_SHEET:
-            stable, customer, code, linked = values
-            values = (stable, stable, customer, code, stable.split("-")[0], linked)
+            stable, customer, code, linked, *mother = values
+            parent = mother[0] if mother else None
+            values = (stable, stable, customer, code, "KMV", linked)
+            by_title = dict(zip(SOURCE_COLUMNS, values, strict=True))
+            values = tuple(by_title[title] for title in self.columns[sheet])
         cells = [
             {"columnId": self.column_id(sheet, i), "value": value or None}
             for i, value in enumerate(values)
         ]
-        return {"id": number + 1, "rowNumber": number + 1, "cells": cells}
+        row = {"id": number + 1, "rowNumber": number + 1, "cells": cells}
+        return row | ({"parentId": parent} if parent else {})
 
 
 @pytest.fixture
@@ -92,9 +102,13 @@ def fake():
 
 
 async def test_catalog_filters_bs_cc_ot_with_historical(make_client, fake) -> None:
-    client = make_client()
+    client = make_client(app_project_catalog_sheet=CATALOG)
     bs = (await client.get("/api/catalogs/projects?customer_code=BS")).json()
+    # La hija con el mismo ID no duplica al proyecto; las opciones no crean históricos.
     assert [p["tracking_project"] for p in bs["projects"]] == ["KMV-BS-27-001", "KMV-BS-27-002"]
+    assert bs["duplicates"] == []
+    zz = await client.get("/api/catalogs/projects?customer_code=ZZ")
+    assert zz.json()["projects"] == []
     cc = (await client.get("/api/catalogs/projects?customer_code=cc")).json()["projects"]
     assert [(p["tracking_project"], p["origin"]) for p in cc] == [
         ("KMV-CC-26-563", "historical"),
@@ -109,7 +123,7 @@ async def test_catalog_filters_bs_cc_ot_with_historical(make_client, fake) -> No
 
 
 async def test_linked_tracking_validation(make_client, fake) -> None:
-    client = make_client()
+    client = make_client(app_project_catalog_sheet=CATALOG)
     report = (await client.get("/api/catalogs/linked-tracking")).json()
     assert report["counts"] == {
         "empty": 1,
@@ -149,7 +163,7 @@ async def test_sync_adds_updates_and_never_deletes(make_client, fake) -> None:
         ("KMV-BS-20-100", "BS", "BS-Blue Stream", "KMV", "Histórico"),
     ]
     response = await make_client(**WRITES).post("/api/catalogs/projects/sync", headers=HEADERS)
-    assert response.json()["counts"] == {"add": 4, "update": 1, "unchanged": 2, "conflict": 0}
+    assert response.json()["counts"] == {"add": 3, "update": 1, "unchanged": 2, "conflict": 0}
     methods = {(method, sheet) for method, sheet, _ in fake.writes}
     # Sólo la hoja catálogo; nunca DELETE ni escrituras en Proyectos (Stable IDs intactos).
     assert methods == {("POST", CATALOG), ("PUT", CATALOG)}
@@ -157,9 +171,8 @@ async def test_sync_adds_updates_and_never_deletes(make_client, fake) -> None:
     assert [item["columnId"] for item in sort["sortCriteria"]] == [1001, 1003, 1000]
     added = next(body for method, _, body in fake.writes if method == "POST")
     values = sorted(row["cells"][0]["value"] for row in added)
-    assert values == ["KMV-BS-27-002", "KMV-CC-26-563", "KMV-CC-27-002", "KMV-OT-27-001"]
-    historical = next(row for row in added if row["cells"][0]["value"] == "KMV-CC-26-563")
-    assert historical["cells"][4]["value"] == "Histórico"
+    assert values == ["KMV-BS-27-002", "KMV-CC-27-002", "KMV-OT-27-001"]
+    assert all(row["cells"][4]["value"] == "Actual" for row in added)
     updated = next(body for method, _, body in fake.writes if method == "PUT")
     assert updated == [
         {
@@ -187,3 +200,9 @@ async def test_processor_runs_catalog_hook_and_isolates_failures(monkeypatch) ->
     simulation = module.IdMonitor(AsyncMock(), True, 60, after_cycle=hook)
     await simulation.run_cycle()
     assert hook.await_count == 1
+
+
+async def test_catalog_without_company_column_uses_formula_company(make_client, fake) -> None:
+    fake.columns[PROJECTS_SHEET] = tuple(c for c in SOURCE_COLUMNS if c != "KMV/GALP")
+    projects = (await make_client().get("/api/catalogs/projects?company=KMV")).json()["projects"]
+    assert len(projects) == 5 and {p["company"] for p in projects} == {"KMV"}
