@@ -428,3 +428,10 @@ Estado: terminado.
 Pedido: el usuario renombró Presentable a `PROJECT KMV` y los reportes (All Records Request, Invoices, MOT y Paquetes, Permitting) y pidió traer el catálogo y la lista de contactos a la carpeta.
 Cambios: `Catálogo de Proyectos (Piloto)` (8048198976491396) y `Contact List` (8285254227021700) movidos a `Pruebas/Producto`; se movieron en lugar de copiarse para conservar sus IDs.
 Evidencia: las tres hojas en `Pruebas/Producto`; referencias `Directorio Correo`, `Directorio Nombre` y `Directorio Activo` de PROJECT KMV en estado OK; desplegable Linked Tracking con las opciones del catálogo; correos de Designer1 resueltos en 4 de 4 filas. El ID Manager identifica la hoja por ID (5254686035890052), así que el cambio de nombre no lo afecta.
+
+## 2026-11-10 13:06 -05:00 Lista de clientes para el desplegable Customer (PEN-42)
+
+Estado: hoja creada; vínculo del desplegable pendiente en la interfaz.
+Pedido: dejar de usar "Others" y elegir el cliente desde una lista mantenida a mano, vinculada de forma nativa.
+Cambios: `Customer List` en `Pruebas/Producto` con los 11 clientes actuales, todos activos. Incidente: la primera creación falló al agregar dos columnas con fórmula en una sola solicitud, pero la hoja ya estaba creada; el reintento creó un duplicado vacío (8890058024374148), que se borró tras comprobar que estaba vacío. Las columnas se agregaron de a una.
+Evidencia: 11 filas con `Code` calculado, `Active` marcado y `Check` vacío.
