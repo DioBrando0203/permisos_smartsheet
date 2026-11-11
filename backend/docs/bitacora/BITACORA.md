@@ -456,3 +456,16 @@ Evidencia: en las filas actuales se resuelve el correo de Carlos Lopez; Daniel Z
 Estado: configurado por el usuario; prueba visual con una fila cerrada pendiente.
 Cambios (interfaz, por el usuario): filtro de hoja `Open` en PROJECT KMV (compartido, `Closed` sin marcar) y `Settings > General > Restrict view by sheet filter` de la vista KMV - PERMITS apuntando a ese filtro. Automatizaciones `DV | New Task Designer1`, `Designer2` y `Permitting Team` creadas por el usuario, desactivadas al revisarlas.
 Evidencia: por API (`include=filterDefinitions`) el filtro `Open` es SHARED, AND, `Closed` IS_UNCHECKED. Hallazgo: el filtro de filas de Dynamic View no está en `View Display` ni en `Details Panel`, sino en `General` y se basa en un filtro compartido de la hoja.
+
+## 2026-11-11 16:18 -05:00 Revisión de Project Status Catalog y Closed en PROJECT KMV (PEN-27)
+
+Estado: Dynamic View KMV - PERMITS comprobada por el usuario (la fila cerrada desaparece); revisión sólo con GET, sin escrituras.
+Evidencia: catálogo `Project Status Catalog` (6541648290074500) con 61 estados, sin repetidos ni espacios sobrantes, compartido sólo con su propietario. PROJECT KMV: `Phase` y `Closed` son fórmulas de columna con `@row` (cada fila depende sólo de su propio `Project Status`); las 3 referencias al catálogo en estado OK; filtro `Open` SHARED, `Closed` IS_UNCHECKED, sin incluir madres. Las 60 opciones reales de `Project Status` están en el catálogo; las 9 opciones separadoras (`----`) no, y quedan abiertas; `4. Permit-Awaiting Payment` está en el catálogo pero no en el desplegable. Fila hija con `COMPLETE` marcada como cerrada y su madre abierta: cada fila se filtra por separado. Automatizaciones `DV | New Task` (Designer1, Designer2, Permitting Team) ahora activas. Del equipo de Permitting Team, 6 de 13 opciones tienen correo activo en Contact List.
+Pendiente: los reportes de PEN-42 siguen filtrando con la lista `APP_CLOSED_STATUSES` y no coinciden con `Closed` (cambiarlos a `Closed` sin marcar en el Report Builder); `Phase` vacía para estados sin número; aprobación de la clasificación (PEN-27); correos faltantes del directorio; opcional: vincular el desplegable `Project Status` al catálogo para mantener una sola lista.
+
+## 2026-11-11 16:45 -05:00 Project Status vinculado al catálogo y cierre de sesión (PEN-27, PEN-43, PEN-44)
+
+Estado: PEN-27 en curso; PEN-43 propuesta en espera del reparto de estados; PEN-44 consulta respondida sin decisión.
+Cambios: el usuario vinculó `Project Status` de PROJECT KMV a `Project Status Catalog` / `Status` (sin filtro, "Limit to list values only") y quitó del catálogo `4. Permit-Awaiting Payment`. Backend detenido a pedido del usuario (puerto 8710 libre); lo encenderá él desde su terminal. Docs: PEN-27 con hecho y faltantes, nuevas PEN-43 y PEN-44, resumen del backlog y estado de AGENTS.md.
+Evidencia (sólo GET): columna `Project Status` con 60 opciones iguales a los 60 estados del catálogo, `validation` true y sin separadores; valores de las 9 filas conservados y `Closed` coherente (`8. Process completed` marcado).
+Siguiente: que el usuario confirme el reparto de estados por equipo y que gane el estado de permisos (PEN-43); después, con autorización expresa, crear casillas y columnas por API.

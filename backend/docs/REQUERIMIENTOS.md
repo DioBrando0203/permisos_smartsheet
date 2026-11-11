@@ -59,11 +59,11 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 
 Cada pendiente se cita por su ID. Al tomar uno: crear o actualizar la spec con sus criterios de aceptación y mover aquí su estado.
 
-Resumen al 2026-11-04:
-- Terminadas: PEN-00 a PEN-03, PEN-05, PEN-12, PEN-14 a PEN-16, PEN-23, PEN-25, PEN-31, PEN-32 y PEN-34 a PEN-41; PEN-30 y PEN-33 en los condados que indican.
-- En curso: PEN-24 (ID Manager y selector de Linked Tracking en operación en Pruebas), PEN-06 (frontend por fases), PEN-28 y PEN-29.
+Resumen al 2026-11-04 (actualizado el 2026-11-11 para PEN-27 y PEN-42 a PEN-44):
+- Terminadas: PEN-00 a PEN-03, PEN-05, PEN-12, PEN-14 a PEN-16, PEN-23, PEN-25, PEN-31, PEN-32, PEN-34 a PEN-41 y PEN-42; PEN-30 y PEN-33 en los condados que indican.
+- En curso: PEN-24 (ID Manager y selector de Linked Tracking en operación en Pruebas), PEN-06 (frontend por fases), PEN-27 (catálogo de estados y vista por `Closed`; falta aprobar la clasificación), PEN-28 y PEN-29.
 - Parciales: PEN-04 y PEN-11 (falta PEN-07), PEN-17, PEN-18 y PEN-21.
-- Requieren decisión del usuario: PEN-07, PEN-08, PEN-13 y PEN-27. Sin empezar: PEN-09, PEN-10, PEN-19 y PEN-20. Propuesta: PEN-26. Bloqueada por el plan: PEN-22.
+- Requieren decisión del usuario: PEN-07, PEN-08, PEN-13 y PEN-43 (reparto de estados por equipo). Sin empezar: PEN-09, PEN-10, PEN-19 y PEN-20. Propuesta: PEN-26. Consulta sin decisión: PEN-44. Bloqueada por el plan: PEN-22.
 
 ### PEN-00 Documentación inicial
 
@@ -226,9 +226,17 @@ Tipo (ADR-B15): Smartsheet ya asigna; el panel sólo vale si es mejor: asignar m
 
 ### PEN-27 Estados cerrados confirmados por el usuario
 
-Prioridad: media. Alcance: configuración. Estado: pendiente; requiere decisión del usuario.
+Prioridad: media. Alcance: configuración en Smartsheet y backend. Estado: en curso (2026-11-11 16:45 -05:00); falta la aprobación de la clasificación.
 Situación: `APP_CLOSED_STATUSES` usa una lista inicial supuesta. En la cuenta real la fase 4 (Permit) concentra el trabajo "abierto"; si estados como "4. Permit Approved" significan trabajo terminado para el diseñador, la carga está inflada.
-Hacer: que el usuario indique qué estados son cerrados para el diseñador; actualizar `.env` y RESULTADOS.
+Hecho (2026-11-11): `Project Status Catalog` (6541648290074500, `Pruebas/Producto`, 60 estados, sólo su propietario lo edita) define `Phase` y `Closed` de cada estado. PROJECT KMV los calcula con fórmulas de columna (cada fila depende sólo de su propio `Project Status`). Filtro compartido `Open` (`Closed` sin marcar) aplicado a la Dynamic View KMV - PERMITS en `Settings > General > Restrict view by sheet filter`; el usuario comprobó que una fila cerrada desaparece. `Project Status` vinculado por el usuario al catálogo (`Status`, sin filtro, "Limit to list values only"): 60 opciones, sin separadores; un estado nuevo se agrega como fila del catálogo con su `Phase` y `Closed`, sin tocar PROJECT KMV. Automatizaciones `DV | New Task` (Designer1, Designer2, Permitting Team) activas.
+Falta, en orden:
+- Aprobación de la clasificación por la jefa del usuario: dudosos `4. Permit Approved` y `6. Permit - MOT Approved` (hoy abiertos) y `7. As-Built Completed` (hoy cerrado).
+- Reportes de PEN-42: filtran abiertos con la lista `APP_CLOSED_STATUSES` y no coinciden con la vista (por ejemplo `4. Permit Expired` y `8. Close - Permit Process`); cambiar su filtro a `Closed` sin marcar en el Report Builder.
+- Correos en `Contact List`: de 13 opciones de `Permitting Team`, 6 tienen correo activo; las demás no reciben el aviso `New Task`.
+- `Phase` vacía para `IN PERMITTING`, `IN PROGRESS`, `COMPLETE`, `CANCELLED` y `NO PERMIT REQUIRED`: decidir si llevan fase.
+- Opcional: condición `Closed` sin marcar en las automatizaciones `DV | New Task` (sus condiciones no se ven por API).
+- Backend, tras la aprobación: que la carga de diseñadores (SPEC-B12) lea `Closed` del catálogo en vez de `APP_CLOSED_STATUSES`.
+- Estados por equipo en el desplegable: PEN-43.
 
 ### PEN-28 Activos asociados a personas y contactos
 
@@ -359,3 +367,26 @@ Pedido: reportes en `Pruebas/Producto` con Presentable como origen, a partir de 
 Hecho: creados con el conector de Smartsheet (`create_report`): `Presentable | Permitting por persona` (columnas del de Diego, todo el equipo agrupado por Permitting Team, sólo proyectos abiertos según `APP_CLOSED_STATUSES`), `Presentable | MOT y Paquetes (Carlos / German)` (Permitting Team Carlos Carrillo o Designer1/Designer2 Carlos Carrillo o German Quiñe, abiertos), `Presentable | Invoices` (filas con PM Approval Date o alguna fecha de factura, agrupado por Invoice Status y Customer) y `Presentable | All Records Request` (Primary = KMV-P, como el original). Se agregó a Presentable la columna fórmula `Invoice Status` (misma lógica que `Invoices (Piloto)`).
 Avance 2026-11-11 09:50 -05:00: columna `Email Permitting` (CONTACT_LIST, fórmula contra el Directorio de `Contact List`, igual que `Correo Designer1`) agregada después de `Permitting Team` en PROJECT KMV. De los 12 nombres de Permitting Team, 5 tienen correo activo en el Directorio; faltan 2 personas, 3 sin correo y 2 inactivas. La automatización de aviso no se puede crear por API (`POST automationrules` no existe); se crea en la interfaz.
 Límites: los filtros de los reportes originales no son visibles por API y se dedujeron de sus datos; se ajustan en el Report Builder o con `update_report_definition`. Smartsheet no tiene filtro de persona elegible por quien mira: se agrupa por persona.
+
+### PEN-43 Estados por equipo en el desplegable
+
+Prioridad: media. Alcance: Smartsheet (PROJECT KMV y Project Status Catalog). Estado: propuesta (2026-11-11 16:45 -05:00); espera que el usuario confirme el reparto de estados y la regla de precedencia.
+Pedido: que Designer1, por un lado, y Permitting Team y Designer2 (mismo equipo), por otro, sólo vean y elijan en el desplegable los estados que les tocan.
+Límite nativo: el filtro de un desplegable vinculado es uno por columna y vale para todos; Dynamic View y formularios usan la lista de la columna (SPEC-B16 LD-03, LD-07). No hay listas por persona ni por vista.
+Diseño propuesto:
+- Catálogo: casillas `Design` y `Permitting` por estado; un estado puede tener las dos.
+- PROJECT KMV: desplegables `Design Status` (vinculado a `Status`, filtro `Design` marcada) y `Permit Status` (filtro `Permitting` marcada), ambos con "Limit to list values only".
+- `Project Status` pasa a fórmula: `=IF(NOT(ISBLANK([Permit Status]@row)), [Permit Status]@row, [Design Status]@row)`. `Phase`, `Closed`, la vista, los reportes y las automatizaciones siguen leyéndolo; deja de editarse a mano y reemplaza su vínculo actual con el catálogo.
+- Cada Dynamic View edita sólo la columna de su equipo y muestra `Project Status` de sólo lectura.
+Reparto propuesto por el nombre de los estados, sin confirmar: Design = fases 1, 2, 5 y 7; Permitting = fases 3, 4, 6, 8 y 9, `IN PERMITTING` y `NO PERMIT REQUIRED`; ambos = `IN PROGRESS`, `COMPLETE` y `CANCELLED`.
+Costo: si el proyecto vuelve a diseño después de permisos, `Project Status` muestra el estado de permisos. Que gane el último cambio sólo es posible con el servicio propio y depende del backend encendido.
+Trabajo por API (sólo Pruebas, con autorización expresa): casillas del catálogo, columnas nuevas, traslado de los estados actuales de las filas y fórmula de `Project Status`, comprobando `Phase` y `Closed`. En la interfaz, el usuario: vincular las dos columnas con su filtro, ajustar cada Dynamic View y revisar automatizaciones que se disparen por cambios de `Project Status`.
+
+### PEN-44 Hoja hija sincronizada con PROJECT KMV (consulta)
+
+Prioridad: baja. Alcance: Smartsheet o backend. Estado: consulta respondida (2026-11-11); sin decisión, falta saber para qué se necesita.
+Pedido: una hoja derivada de la general que reciba sus cambios y también los devuelva.
+Nativo (verificado 2026-11-11 en la ayuda y la comunidad de Smartsheet): no hay sincronización bidireccional entre hojas. Ida y vuelta sólo con Dynamic View y reportes, que no son hojas (sin columnas ni fórmulas propias). Hacia la hija, un solo sentido: cell linking (celda por celda, celdas destino no editables, filas nuevas no llegan solas), fórmulas entre hojas, "Copy rows" (copia única) y DataTable (plan Advance). Bidireccional: Bridge (complemento de pago) o herramientas externas.
+Con el servicio propio: posible, porque ya vigila la hoja y escribe, pero exige una llave única por fila (el Tracking ID se repite en las hijas), resolver conflictos, evitar bucles, elegir columnas (las de fórmula no se copian), evitar avisos duplicados de automatizaciones y aceptar 5 a 15 s de demora; además duplica la fuente de verdad (ADR-B15).
+Recomendación: Dynamic View si basta con ver y editar filas y columnas; hoja sincronizada sólo si el equipo necesita columnas, automatizaciones o permisos propios.
+Comparación con Bridge: el servicio cumple el papel reactivo de Bridge y añade registro transaccional (IDs sin repetirse, auditoría, recuperación) y pruebas automáticas; Bridge corre en la nube de Smartsheet, reacciona por eventos y no necesita servidor. Para producción el backend debe ir a un servidor siempre encendido (B-16).
