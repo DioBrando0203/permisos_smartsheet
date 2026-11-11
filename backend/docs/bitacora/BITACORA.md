@@ -435,3 +435,24 @@ Estado: hoja creada; vínculo del desplegable pendiente en la interfaz.
 Pedido: dejar de usar "Others" y elegir el cliente desde una lista mantenida a mano, vinculada de forma nativa.
 Cambios: `Customer List` en `Pruebas/Producto` con los 11 clientes actuales, todos activos. Incidente: la primera creación falló al agregar dos columnas con fórmula en una sola solicitud, pero la hoja ya estaba creada; el reintento creó un duplicado vacío (8890058024374148), que se borró tras comprobar que estaba vacío. Las columnas se agregaron de a una.
 Evidencia: 11 filas con `Code` calculado, `Active` marcado y `Check` vacío.
+
+## 2026-11-11 09:32 -05:00 Columna Closed dinámica en PROJECT KMV (PEN-27)
+
+Estado: terminado; filtro de la Dynamic View pendiente en la interfaz y clasificación pendiente de aprobación.
+Pedido: retomar el trabajo de otro chat (pull) y que la vista de Permitting Team / Permit Coordinator cambie sola según el estado.
+Hallazgo: la referencia `Project Status Catalog Closed` no existía; `Closed` quedaba en falso para todo estado.
+Cambios: referencia creada por API en PROJECT KMV (Pruebas). Prueba con cambios temporales de `Project Status` en una fila hija vacía, restaurada al final.
+Evidencia: cerrados `COMPLETE` y `4. Permit Expired`; abiertos `4. Permit is Required`, `4. Permit Approved` y vacío; tras crear la referencia el cálculo es inmediato.
+
+## 2026-11-11 09:50 -05:00 Email Permitting y aviso de asignación (PEN-42)
+
+Estado: columna creada; automatización pendiente en la interfaz.
+Pedido: columna y automatización para Permitting Team, con nombres en inglés.
+Cambios: `Email Permitting` en PROJECT KMV (índice 67) con la misma fórmula del Directorio que `Correo Designer1`. Intento de crear la regla desactivada por API: rechazado (422, el método POST no existe); no se creó nada.
+Evidencia: en las filas actuales se resuelve el correo de Carlos Lopez; Daniel Zuñiga y Giuliano Leon Jr. quedan vacíos por faltar en el Directorio.
+
+## 2026-11-11 12:20 -05:00 Dynamic View KMV - PERMITS filtrada por Closed (PEN-27)
+
+Estado: configurado por el usuario; prueba visual con una fila cerrada pendiente.
+Cambios (interfaz, por el usuario): filtro de hoja `Open` en PROJECT KMV (compartido, `Closed` sin marcar) y `Settings > General > Restrict view by sheet filter` de la vista KMV - PERMITS apuntando a ese filtro. Automatizaciones `DV | New Task Designer1`, `Designer2` y `Permitting Team` creadas por el usuario, desactivadas al revisarlas.
+Evidencia: por API (`include=filterDefinitions`) el filtro `Open` es SHARED, AND, `Closed` IS_UNCHECKED. Hallazgo: el filtro de filas de Dynamic View no está en `View Display` ni en `Details Panel`, sino en `General` y se basa en un filtro compartido de la hoja.
