@@ -59,11 +59,11 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 
 Cada pendiente se cita por su ID. Al tomar uno: crear o actualizar la spec con sus criterios de aceptación y mover aquí su estado.
 
-Resumen al 2026-11-04 (actualizado el 2026-11-11 para PEN-27 y PEN-42 a PEN-45):
+Resumen al 2026-11-04 (actualizado el 2026-11-12 para PEN-27 y PEN-42 a PEN-47; estado de la hoja en `HOJA_PROJECT_KMV.md`):
 - Terminadas: PEN-00 a PEN-03, PEN-05, PEN-12, PEN-14 a PEN-16, PEN-23, PEN-25, PEN-31, PEN-32, PEN-34 a PEN-41 y PEN-42; PEN-30 y PEN-33 en los condados que indican.
 - En curso: PEN-24 (ID Manager y selector de Linked Tracking en operación en Pruebas), PEN-06 (frontend por fases), PEN-27 (catálogo de estados y vista por `Closed`; falta aprobar la clasificación), PEN-28 y PEN-29.
 - Parciales: PEN-04 y PEN-11 (falta PEN-07), PEN-17, PEN-18 y PEN-21.
-- Requieren decisión del usuario: PEN-07, PEN-08, PEN-13, PEN-43 (reparto de estados por equipo). Decidida, por planificar: PEN-45 (una maestra por año). Sin empezar: PEN-09, PEN-10, PEN-19 y PEN-20. Propuesta: PEN-26. Consulta sin decisión: PEN-44. Implementada y comprobada en Pruebas: PEN-47 (Tracking Project cambia con Customer). En uso en Pruebas: PEN-46 (conversaciones compiladas en Obs). Bloqueada por el plan: PEN-22.
+- Requieren decisión del usuario: PEN-07, PEN-08, PEN-13, PEN-43 (reparto de estados por equipo). Decidida, por planificar: PEN-45 (una maestra por año). Sin empezar: PEN-09, PEN-10, PEN-19 y PEN-20. Propuesta: PEN-26. En curso: PEN-44 (separación por cliente: vista restringida por `Client Access`, reporte KMV - Customers y aviso `Client | Status Update`; falta probar la vista con otra cuenta y el primer envío real). Implementada y comprobada en Pruebas: PEN-47 (Tracking Project cambia con Customer). En uso en Pruebas: PEN-46 (conversaciones compiladas en Obs). Bloqueada por el plan: PEN-22.
 
 ### PEN-00 Documentación inicial
 
@@ -384,7 +384,7 @@ Trabajo por API (sólo Pruebas, con autorización expresa): casillas del catálo
 
 ### PEN-44 Hoja hija sincronizada con PROJECT KMV (consulta)
 
-Prioridad: baja. Alcance: Smartsheet o backend. Estado: consulta respondida (2026-11-11); sin decisión, falta saber para qué se necesita.
+Prioridad: media. Alcance: Smartsheet. Estado: en curso (2026-11-12). La hoja hija sincronizada se descartó; el usuario eligió separar por cliente con la Dynamic View restringida por `Client Access`, el reporte KMV - Customers para el Excel y el aviso `Client | Status Update` (detalle abajo y en `HOJA_PROJECT_KMV.md` HK-21 y HK-32 a HK-34). Falta configurar y probar la vista con una cuenta que no sea la dueña y el primer envío real del aviso.
 Pedido: una hoja derivada de la general que reciba sus cambios y también los devuelva.
 Nativo (verificado 2026-11-11 en la ayuda y la comunidad de Smartsheet): no hay sincronización bidireccional entre hojas. Ida y vuelta sólo con Dynamic View y reportes, que no son hojas (sin columnas ni fórmulas propias). Hacia la hija, un solo sentido: cell linking (celda por celda, celdas destino no editables, filas nuevas no llegan solas), fórmulas entre hojas, "Copy rows" (copia única) y DataTable (plan Advance). Bidireccional: Bridge (complemento de pago) o herramientas externas.
 Con el servicio propio: posible, porque ya vigila la hoja y escribe, pero exige una llave única por fila (el Tracking ID se repite en las hijas), resolver conflictos, evitar bucles, elegir columnas (las de fórmula no se copian), evitar avisos duplicados de automatizaciones y aceptar 5 a 15 s de demora; además duplica la fuente de verdad (ADR-B15).

@@ -570,3 +570,9 @@ Evidencia (PostgreSQL y API): el usuario copió la madre `KMV-BS-26-009`; la cop
 Estado: fórmula aplicada en PROJECT KMV; falta que el usuario lo vea en un cambio real.
 Cambios: fórmula de `Tracking Project` con comprobación de cliente, de copia (por `Row Order`) y de hija de otro cliente; las hijas muestran el ID de su madre. Fórmula anterior en SPEC-ID01 ID-49.
 Evidencia: relectura por API con los 14 valores iguales antes y después y sin errores.
+
+## 2026-11-12 18:36 -05:00 Documentación del estado de PROJECT KMV
+
+Estado: hecho.
+Cambios: nuevo `HOJA_PROJECT_KMV.md` (HK-01 a HK-41) con ubicación, catálogos, columnas y fórmulas, automatizaciones, vistas, reportes, lo que hace el servicio, separación por cliente, incoherencias de datos y pendientes; README del backend, AGENTS.md y resumen y estado de PEN-44 en `REQUERIMIENTOS.md` actualizados.
+Evidencia (sólo GET): 14 filas (8 madres, 6 hijas), 140 columnas, 8 referencias OK, filtros `Open` y uno personal, catálogos movidos por el usuario a `Producto/List Tools` (Project Status Catalog renombrado a Project Status List) y reportes en `Producto/Reports`.

@@ -38,7 +38,7 @@ Estado: en operación en Pruebas (2026-11-04): catálogo sincronizado y Linked T
 
 ## Puesta en marcha
 
-- LB-08: Hoja `Catálogo de Proyectos (Piloto)`, id `8048198976491396`, en `Pruebas/Normalizacion de Datos - Piloto/01 Datos`, configurada en `APP_PROJECT_CATALOG_SHEET`. Primera sincronización: 11 filas (9 actuales y 2 históricas), Proyectos sin cambios de versión, segunda pasada sin cambios.
+- LB-08: Hoja `Catálogo de Proyectos (Piloto)`, id `8048198976491396`, en `Pruebas/Normalizacion de Datos - Piloto/01 Datos`, configurada en `APP_PROJECT_CATALOG_SHEET`. Desde el 2026-11-12 se llama `Project List` y está en `Pruebas/Producto/List Tools` (renombrada y movida por el usuario; el id y la configuración no cambian). Primera sincronización: 11 filas (9 actuales y 2 históricas), Proyectos sin cambios de versión, segunda pasada sin cambios.
 - LB-09: Tras agregar o actualizar, la sincronización ordena la hoja por `Customer Code`, `Company` y `Tracking Project`, porque el desplegable vinculado muestra el orden de la hoja fuente.
 - LB-10: Ni la API documentada ni el conector de Smartsheet exponen el vínculo de desplegables; lo configura una persona con Admin en la vista de tabla. Después se comprobará con GET de columnas qué expone la API.
 - LB-11: Vínculo comprobado (2026-11-04 17:24 -05:00): las opciones de Linked Tracking pasaron de 7 estáticas a las 11 del catálogo, en su orden; `validation` false; valores de celda 563, 627 y 715 conservados. El GET de columna sólo expone `options` y `validation`, no el vínculo: el servicio nunca escribe opciones en esa columna.
