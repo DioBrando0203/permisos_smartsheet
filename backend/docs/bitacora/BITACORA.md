@@ -591,3 +591,8 @@ Cambios: PEN-45 con la revisión de capacidad (un año no entra con 140 columnas
 
 Estado: respondida; sin decisión ni cambios en Smartsheet.
 Resumen: opciones, costos y recomendación registrados en PEN-45 (quitar columnas primero; Facturación como primera hoja auxiliar si hace falta).
+
+## 2026-11-12 18:59 -05:00 Vista de tabla y hojas a gran escala (PEN-45)
+
+Estado: consulta respondida con la ayuda oficial; sin cambios en Smartsheet.
+Resumen en PEN-45: la vista de tabla no amplía el límite; el millón de celdas exige hoja a gran escala (Enterprise), que desactiva grid, automatizaciones y endpoints de la API que usa el servicio. Pista para PEN-43 y SPEC-B16: filtrado dinámico de desplegables vinculados en la vista de tabla, por probar en una copia.
