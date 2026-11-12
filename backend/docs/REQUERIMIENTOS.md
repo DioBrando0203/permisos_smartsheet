@@ -63,7 +63,7 @@ Resumen al 2026-11-04 (actualizado el 2026-11-12 para PEN-27 y PEN-42 a PEN-47; 
 - Terminadas: PEN-00 a PEN-03, PEN-05, PEN-12, PEN-14 a PEN-16, PEN-23, PEN-25, PEN-31, PEN-32, PEN-34 a PEN-41 y PEN-42; PEN-30 y PEN-33 en los condados que indican.
 - En curso: PEN-24 (ID Manager y selector de Linked Tracking en operación en Pruebas), PEN-06 (frontend por fases), PEN-27 (catálogo de estados y vista por `Closed`; falta aprobar la clasificación), PEN-28 y PEN-29.
 - Parciales: PEN-04 y PEN-11 (falta PEN-07), PEN-17, PEN-18 y PEN-21.
-- Requieren decisión del usuario: PEN-07, PEN-08, PEN-13, PEN-43 (reparto de estados por equipo). Decidida, por planificar: PEN-45 (una maestra por año). Sin empezar: PEN-09, PEN-10, PEN-19 y PEN-20. Propuesta: PEN-26. En curso: PEN-44 (separación por cliente: vista restringida por `Client Access`, reporte KMV - Customers y aviso `Client | Status Update`; falta probar la vista con otra cuenta y el primer envío real). Implementada y comprobada en Pruebas: PEN-47 (Tracking Project cambia con Customer). En uso en Pruebas: PEN-46 (conversaciones compiladas en Obs). Bloqueada por el plan: PEN-22.
+- Requieren decisión del usuario: PEN-07, PEN-08, PEN-13, PEN-43 (reparto de estados por equipo). Decidida, por planificar: PEN-45 (una maestra por año; con 140 columnas un año ya no entra: falta decidir qué columnas quitar). Sin empezar: PEN-09, PEN-10, PEN-19 y PEN-20. Propuesta: PEN-26. En curso: PEN-44 (separación por cliente: vista restringida por `Client Access`, reporte KMV - Customers y aviso `Client | Status Update`; falta probar la vista con otra cuenta y el primer envío real). Implementada y comprobada en Pruebas: PEN-47 (Tracking Project cambia con Customer). En uso en Pruebas: PEN-46 (conversaciones compiladas en Obs). Bloqueada por el plan: PEN-22.
 
 ### PEN-00 Documentación inicial
 
@@ -405,7 +405,7 @@ Comparación con Bridge: el servicio cumple el papel reactivo de Bridge y añade
 
 ### PEN-45 Capacidad de la hoja maestra y una maestra por año
 
-Prioridad: alta. Alcance: Smartsheet y ID Manager. Estado: decidido por el usuario (2026-11-12 12:14 -05:00): una hoja maestra por año con todos los clientes; falta planificar e implementar.
+Prioridad: alta. Alcance: Smartsheet y ID Manager. Estado: decidido por el usuario (2026-11-12 12:14 -05:00): una hoja maestra por año con todos los clientes; falta planificar e implementar. Revisión (2026-11-12 19:10): medido con los originales, un año completo (unas 4 074 filas de Crown Castle y Blue Stream en 2026) no entra con 140 columnas; hay que quitar columnas (análisis abajo, falta la decisión del usuario) o revisar la decisión.
 Situación: el límite de una hoja es 500 000 celdas contando filas por columnas, vacías incluidas, con un máximo de 20 000 filas y 400 columnas (ayuda oficial de Smartsheet). PROJECT KMV tiene 140 columnas desde el 2026-11-12 (139 antes de `Client Access`): caben unas 3 571 filas. Con la estimación del usuario de unas 3 000 filas por año, todos los clientes, un año ocupa unas 420 000 celdas (84 %), así que no caben varios años en una hoja. No se encontró fuente oficial para un límite de 1 millón en "tablas"; el usuario las descarta por lentitud en equipos antiguos.
 Opciones:
 - Una maestra por año con todos los clientes: coincide con el año del ID, pero queda justa (84 %) y cada año hay que rehacer Dynamic Views, automatizaciones, referencias entre hojas, desplegables vinculados y formatos; los proyectos abiertos que cruzan de año obligan a trabajar en dos hojas.
