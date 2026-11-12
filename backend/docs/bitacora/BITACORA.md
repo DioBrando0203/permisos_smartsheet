@@ -586,3 +586,8 @@ Evidencia (sólo GET, conteos sin contenido): originales CC y BS 2026 con 117 co
 
 Estado: hecho.
 Cambios: PEN-45 con la revisión de capacidad (un año no entra con 140 columnas) en su estado y en el resumen del backlog; `HOJA_PROJECT_KMV.md` HK-40 y HK-41 al día; AGENTS.md con el estado de PEN-45 y tres reglas del usuario de esta sesión: todo en inglés en Smartsheet, nada técnico a la vista y commit al terminar cada tarea con push a cargo del usuario.
+
+## 2026-11-12 18:55 -05:00 Consulta: hojas auxiliares para bajar columnas (PEN-45)
+
+Estado: respondida; sin decisión ni cambios en Smartsheet.
+Resumen: opciones, costos y recomendación registrados en PEN-45 (quitar columnas primero; Facturación como primera hoja auxiliar si hace falta).
