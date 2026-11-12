@@ -72,6 +72,7 @@ async def get_ids_status(request: Request, services: ServicesDep) -> dict:
         "last_counts": monitor.last_counts,
         "last_outcomes": monitor.last_outcomes,
         "last_catalog_sync": monitor.last_catalog,
+        "last_obs_sync": monitor.last_obs,
     }
 
 
@@ -102,7 +103,11 @@ async def get_ids_audit(
 
 async def _report(services: ServicesDep) -> dict:
     try:
-        return await build_dry_run_report(services.client, DSN)
+        return await build_dry_run_report(
+            services.client,
+            DSN,
+            customer_change=services.settings.ids_customer_change_enabled,
+        )
     except psycopg.Error:
         raise AppError(*_DB_ERROR) from None
     except ValueError:

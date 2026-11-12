@@ -39,8 +39,16 @@ class Settings(BaseSettings):
     # Procesador con asignación real: exige además las tres barreras anteriores.
     ids_processor_writes_enabled: bool = False
     ids_processor_max_rows: int = 5
+    # Cambio de cliente (SPEC-ID01 ID-44 a ID-47): ID nuevo, hijas ajenas fuera y hijas al día.
+    ids_customer_change_enabled: bool = False
     # Hoja catálogo de proyectos en Pruebas, origen del desplegable vinculado de Linked Tracking.
     app_project_catalog_sheet: str = ""
+    # Conversaciones de cada fila copiadas a Obs (SPEC-B17); exige las barreras de escritura.
+    app_obs_sync_enabled: bool = False
+    app_obs_column: str = "Obs"
+    app_obs_timezone: str = "America/Lima"
+    app_obs_interval_seconds: int = 30
+    app_obs_max_rows: int = 20
     app_allowed_hosts: str = _DEFAULT_HOSTS
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""

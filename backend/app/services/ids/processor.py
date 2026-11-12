@@ -20,8 +20,12 @@ _ELIGIBLE = frozenset(
         "register_existing",
         "child_fill",
         "renumber_copy",
+        "rescope",
+        "detach_child",
+        "child_follow",
     }
 )
+_CUSTOMER_CHANGE = frozenset({"rescope", "detach_child", "child_follow"})
 _ORDER = {"project": 0, "task": 1, "record": 2, "revision": 3}
 
 
@@ -59,7 +63,12 @@ async def process_report(
                 int(item["sheet_id"]), int(item["row_id"]), EntityKind(item["type"]), item["parent"]
             )
             if item["action"] == "child_fill":
-                result = await connector.inherit(target, int(item["mother_row_id"]))
+                result = await connector.inherit(
+                    target, int(item["mother_row_id"]), replace=bool(item.get("replace"))
+                )
+            elif item["action"] in _CUSTOMER_CHANGE:
+                mother = int(item.get("mother_row_id") or 0)
+                result = await connector.customer_change(item["action"], target, mother)
             elif item["action"] == "renumber_copy":
                 result = await connector.renumber_copy(target, int(item["original_row_id"]))
             else:

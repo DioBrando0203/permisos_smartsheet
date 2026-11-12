@@ -13,6 +13,7 @@ from app.services.smartsheet.types import (
     RawAutomation,
     RawCellChange,
     RawColumn,
+    RawComment,
     RawContact,
     RawGroup,
     RawMe,
@@ -149,6 +150,22 @@ def to_cell_change(data: Json) -> RawCellChange:
         modified_at=_date(data.get("modifiedAt")),
         modified_by=_author(data.get("modifiedBy")),
     )
+
+
+def to_row_comments(data: Json) -> list[RawComment]:
+    """Comentarios de una conversación de fila; las conversaciones de la hoja no cuentan."""
+    if data.get("parentType") != "ROW" or data.get("parentId") is None:
+        return []
+    return [
+        RawComment(
+            id=_id(item["id"]),
+            row_id=_id(data["parentId"]),
+            text=str(item.get("text") or ""),
+            created_at=_date(item.get("createdAt")),
+        )
+        for item in data.get("comments") or []
+        if item.get("id") is not None
+    ]
 
 
 def to_automation(data: Json) -> RawAutomation:

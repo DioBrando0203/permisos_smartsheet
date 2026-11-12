@@ -76,6 +76,8 @@ def database(tmp_path):
                 "001_esquema.sql",
                 "002_auditoria_inicializacion.sql",
                 "003_confirmacion.sql",
+                "004_obs_comentario.sql",
+                "005_cambio_cliente.sql",
             ):
                 sql = (ROOT / "servicios/ids/sql" / filename).read_text()
                 conn.execute(sql)

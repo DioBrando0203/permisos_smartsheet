@@ -22,6 +22,9 @@ class Outcome(StrEnum):
     CONFIRMED = "confirmed"
     REGISTERED = "registered"
     INHERITED = "inherited"  # fila hija con el ID de su madre
+    RESCOPED = "rescoped"  # madre con otro cliente: ID nuevo, el anterior retirado (ID-44)
+    DETACHED = "detached"  # hija de otro cliente: pasó a primer nivel (ID-45)
+    FOLLOWED = "followed"  # hija con el cliente y el ID nuevos de su madre (ID-46)
 
 
 class WriteUncertain(Exception):
@@ -72,6 +75,14 @@ class ConditionalGateway(Protocol):
 
     async def read_stable(self, target: Target, row_id: int) -> str: ...
 
+    async def customer_codes(self, target: Target, mother_row: int) -> tuple[str, str]: ...
+
+    async def move_out(self, target: Target, mother_row: int) -> None: ...
+
+    async def copy_customer(self, target: Target, mother_row: int) -> None: ...
+
+    async def relink(self, target: Target, old: str, new: str) -> int: ...
+
 
 class IdConnector:
     """Procesa una fila: reserva, relee, escribe sólo celdas vacías y confirma tras releer."""
@@ -95,8 +106,11 @@ class IdConnector:
         finally:
             await asyncio.to_thread(lock.close)
 
-    async def inherit(self, target: Target, mother_row: int) -> Outcome:
-        """Fila hija: escribe el ID ya confirmado de su madre; no reserva ni gasta número."""
+    async def inherit(self, target: Target, mother_row: int, *, replace: bool = False) -> Outcome:
+        """Fila hija: escribe el ID ya confirmado de su madre; no reserva ni gasta número.
+
+        Con `replace` (ID-47) también corrige una hija que tiene otro ID: la madre manda.
+        """
         if self._read_only:
             return Outcome.READ_ONLY
         if pilot.sheet_spec(target.sheet_id) is None:
@@ -106,20 +120,33 @@ class IdConnector:
             return Outcome.PENDING
         try:
             current = await self._gateway.read_child(target)
-            blocked = await self._check_child(target, current, mother_row)
+            blocked = await self._check_child(target, current, mother_row, replace)
             if blocked is not None:
                 return blocked
             await asyncio.to_thread(lock.execute, "SELECT 1")
             try:
-                await self._gateway.write_child(target, current.root_stable)
+                if current.stable:
+                    await self._gateway.replace_copy(target, current.stable, current.root_stable)
+                else:
+                    await self._gateway.write_child(target, current.root_stable)
             except WriteUncertain:
                 pass
             after = await self._gateway.read_child(target)
             if after.stable == current.root_stable:
                 return Outcome.INHERITED
-            return Outcome.CONFLICT if after.stable else Outcome.PENDING
+            return Outcome.CONFLICT if after.stable != current.stable else Outcome.PENDING
         finally:
             await asyncio.to_thread(lock.close)
+
+    async def customer_change(self, action: str, target: Target, mother_row: int) -> Outcome:
+        """ID-44 a ID-46: madre con otro cliente, hija de otro cliente o que sigue a su madre."""
+        from app.services.ids import customer_change
+
+        if self._read_only:
+            return Outcome.READ_ONLY
+        if pilot.sheet_spec(target.sheet_id) is None:
+            return Outcome.DENIED
+        return await customer_change.run(action, self._store, self._gateway, target, mother_row)
 
     async def renumber_copy(self, target: Target, original_row: int) -> Outcome:
         """Copia de una madre: la original conserva su ID y la copia recibe el siguiente."""
@@ -162,7 +189,7 @@ class IdConnector:
             await asyncio.to_thread(lock.close)
 
     async def _check_child(
-        self, target: Target, current: ChildSnapshot, mother_row: int
+        self, target: Target, current: ChildSnapshot, mother_row: int, replace: bool = False
     ) -> Outcome | None:
         """None si se puede escribir; si no, el resultado sin tocar la hoja."""
         if current.workspace_id != PILOT_WORKSPACE:
@@ -176,7 +203,7 @@ class IdConnector:
             return Outcome.PENDING
         if current.stable == current.root_stable:
             return Outcome.INHERITED
-        return Outcome.CONFLICT if current.stable else None
+        return Outcome.CONFLICT if current.stable and not replace else None
 
     async def _process_locked(self, target: Target, lock: psycopg.Connection) -> Outcome:
         current = await self._gateway.read(target)

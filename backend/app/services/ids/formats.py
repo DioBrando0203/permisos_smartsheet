@@ -31,6 +31,12 @@ def project_scope(company: str, customer: str, received: date | None) -> str:
     return f"{company}-{customer}-{received.year % 100:02d}"
 
 
+def customer_code(scope: str) -> str:
+    """Código de cliente de un ámbito de proyecto (`KMV-CC-26` -> `CC`); vacío si no aplica."""
+    parts = scope.split("-")
+    return parts[1] if len(parts) == 3 else ""
+
+
 @dataclass(frozen=True)
 class IdParts:
     kind: EntityKind

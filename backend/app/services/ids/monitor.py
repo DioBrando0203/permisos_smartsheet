@@ -16,7 +16,7 @@ from app.services.smartsheet import SmartsheetClient
 
 _LOCK = 714382002
 # Resultados con escritura: pueden habilitar hijas, así que el siguiente ciclo va enseguida.
-_WROTE = frozenset({"confirmed", "registered", "inherited"})
+_WROTE = frozenset({"confirmed", "registered", "inherited", "rescoped", "detached", "followed"})
 
 
 class IdMonitor:
@@ -31,6 +31,8 @@ class IdMonitor:
         dsn: str = DSN,
         after_cycle: Callable[[], Awaitable[dict]] | None = None,
         poll_seconds: float | None = None,
+        obs_sync: Callable[[], Awaitable[dict]] | None = None,
+        customer_change: bool = False,
     ) -> None:
         self.client = client
         self.enabled = enabled
@@ -43,6 +45,11 @@ class IdMonitor:
         # Entre ciclos se consulta la versión de la hoja; un cambio adelanta el ciclo (ID-43).
         self.poll_seconds = poll_seconds
         self.last_catalog: dict | None = None
+        # Copia de conversaciones a Obs (SPEC-B17); aislada como el catálogo.
+        self.obs_sync = obs_sync
+        # Cambio de cliente y hijas al día (SPEC-ID01 ID-44 a ID-47); apagado por defecto.
+        self.customer_change = customer_change
+        self.last_obs: dict | None = None
         self.active = False
         self.last_run: str | None = None
         self.last_error: str | None = None
@@ -67,7 +74,9 @@ class IdMonitor:
 
     async def run_cycle(self) -> dict:
         """Un ciclo: DRY_RUN y, en modo asignación, procesamiento secuencial acotado."""
-        report = await build_dry_run_report(self.client, self.dsn)
+        report = await build_dry_run_report(
+            self.client, self.dsn, customer_change=self.customer_change
+        )
         results: list[dict] = []
         outcomes: dict[str, int] = {}
         if self.connector_factory is not None:
@@ -79,6 +88,11 @@ class IdMonitor:
                     self.last_catalog = await self.after_cycle()
                 except Exception:
                     self.last_catalog = {"error": "catalog_sync_failed"}
+            if self.obs_sync is not None:
+                try:
+                    self.last_obs = await self.obs_sync()
+                except Exception as error:
+                    self.last_obs = {"error": "obs_sync_failed", "type": type(error).__name__}
         self.last_counts = report["counts"]
         self.last_outcomes = outcomes
         self.last_results = results

@@ -18,6 +18,7 @@ from app.frontend import DEFAULT_DIST, mount_frontend
 from app.services.catalog_sync import catalog_hook
 from app.services.ids.monitor import IdMonitor
 from app.services.ids.runtime import assign_factory
+from app.services.obs.sync import obs_hook
 
 
 def create_app(
@@ -38,6 +39,8 @@ def create_app(
         poll_seconds=max(2, settings.ids_monitor_poll_seconds)
         if settings.ids_monitor_poll_seconds
         else None,
+        obs_sync=obs_hook(settings, services.client),
+        customer_change=settings.ids_customer_change_enabled,
     )
 
     @asynccontextmanager

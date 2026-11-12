@@ -16,6 +16,7 @@ from app.services.smartsheet.types import (
     RawAutomation,
     RawCellChange,
     RawColumn,
+    RawComment,
     RawContact,
     RawGroup,
     RawMe,
@@ -210,6 +211,44 @@ class SmartsheetClient:
     ) -> list[RawCellChange]:
         path = f"/sheets/{sheet_id}/rows/{row_id}/columns/{column_id}/history"
         return [mappers.to_cell_change(item) for item in await self._transport.get_all(path)]
+
+    async def list_row_comments(self, sheet_id: str) -> list[RawComment]:
+        """Comentarios de las conversaciones de filas de la hoja (SPEC-B17 OB-14)."""
+        items = await self._transport.get_all(
+            f"/sheets/{sheet_id}/discussions", {"include": "comments"}
+        )
+        return [comment for item in items for comment in mappers.to_row_comments(item)]
+
+    async def update_row_text(self, sheet_id: str, row_id: str, column_id: str, text: str) -> None:
+        """Reescribe una celda de texto de una fila; barreras de hoja en el llamador."""
+        self._require_writes()
+        body = [{"id": int(row_id), "cells": [{"columnId": int(column_id), "value": text}]}]
+        await self._transport.request("PUT", f"/sheets/{sheet_id}/rows", json=body, retry=False)
+
+    async def add_row_comment(self, sheet_id: str, row_id: str, text: str) -> str | None:
+        """Conversación nueva en una fila; devuelve el id del comentario creado."""
+        self._require_writes()
+        data = await self._transport.request(
+            "POST",
+            f"/sheets/{sheet_id}/rows/{row_id}/discussions",
+            json={"comment": {"text": text}},
+            retry=False,
+        )
+        comments = (data.get("result") or {}).get("comments") or [{}]
+        created = comments[0].get("id")
+        return None if created is None else str(created)
+
+    async def move_row_after(self, sheet_id: str, row_id: str, sibling_id: str) -> None:
+        """Mueve una fila al mismo nivel que `sibling_id`, debajo de ella y de sus hijas."""
+        self._require_writes()
+        body = [{"id": int(row_id), "siblingId": int(sibling_id)}]
+        await self._transport.request("PUT", f"/sheets/{sheet_id}/rows", json=body, retry=False)
+
+    def _require_writes(self) -> None:
+        from app.core.errors import AppError
+
+        if self._settings.app_read_only:
+            raise AppError("WRITE_BLOCKED", "Escrituras deshabilitadas (solo lectura).", 403)
 
     # Escrituras (bloqueadas antes de llegar aquí en modo solo lectura)
 

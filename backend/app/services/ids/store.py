@@ -219,6 +219,8 @@ class IdStore:
                 if existing[0] != value:
                     raise ValueError("La fila ya tiene otro ID registrado")
                 return Reservation(*existing)
+            if conn.execute("SELECT 1 FROM id_retirado WHERE id_generado=%s", (value,)).fetchone():
+                raise ValueError("El Stable ID fue retirado y no se reutiliza")
             self._advance(conn, parts.scope, parts.number)
             try:
                 conn.execute(
@@ -247,6 +249,28 @@ class IdStore:
                 (sheet_id, row_id),
             )
             self._audit(conn, "confirmado", sheet_id, row_id, value)
+
+    def retire(self, sheet_id: int, row_id: int, value: str, reason: str) -> None:
+        """Retira el ID de una fila (cambio de cliente): queda en `id_retirado`, nunca vuelve."""
+        if not self._allow_reservations:
+            raise ValueError("Retiro deshabilitado sin escritura aprobada")
+        with psycopg.connect(self._dsn) as conn:
+            row = conn.execute(
+                "SELECT ambito, numero, id_generado FROM asignacion_id "
+                "WHERE hoja_id=%s AND fila_id=%s FOR UPDATE",
+                (sheet_id, row_id),
+            ).fetchone()
+            if not row or row[2] != value:
+                raise ValueError("Asignación inexistente o diferente")
+            conn.execute(
+                "INSERT INTO id_retirado (id_generado, hoja_id, fila_id, ambito, numero, motivo) "
+                "VALUES (%s, %s, %s, %s, %s, %s)",
+                (value, sheet_id, row_id, row[0], row[1], reason),
+            )
+            conn.execute(
+                "DELETE FROM asignacion_id WHERE hoja_id=%s AND fila_id=%s", (sheet_id, row_id)
+            )
+            self._audit(conn, "retirado", sheet_id, row_id, value)
 
     @staticmethod
     def _advance(conn: psycopg.Connection, scope: str, number: int) -> None:

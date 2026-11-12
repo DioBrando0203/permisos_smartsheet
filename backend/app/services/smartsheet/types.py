@@ -125,6 +125,16 @@ class RawCellChange:
 
 
 @dataclass(frozen=True)
+class RawComment:
+    """Comentario de la conversación de una fila (SPEC-B17); texto tal cual, fecha en UTC."""
+
+    id: str
+    row_id: str
+    text: str
+    created_at: datetime | None
+
+
+@dataclass(frozen=True)
 class RawAutomation:
     id: str
     name: str

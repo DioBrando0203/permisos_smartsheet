@@ -474,3 +474,99 @@ Siguiente: que el usuario confirme el reparto de estados por equipo y que gane e
 
 Estado: consulta respondida; decisión pendiente del usuario.
 Evidencia: límites oficiales de Smartsheet (500 000 celdas, 20 000 filas, 400 columnas; reportes hasta 50 000 filas). PROJECT KMV tiene 139 columnas (lectura por API de esta sesión): unas 3 597 filas como máximo. Con 3 000 filas por año, un año ocupa el 83 %. Recomendación registrada en PEN-45: hoja activa más archivo por año.
+
+## 2026-11-12 12:14 -05:00 Decisión: una maestra por año (PEN-45)
+
+Estado: decidido por el usuario; falta planificar e implementar.
+Cambios: PEN-45 con la decisión y la lista de tareas (regla de ubicación por `Date Received`, creación anual, ID Manager con varias maestras, `Control Linked Tracking` contra `Project List`, capacidad).
+Hallazgo: el repositorio git local tiene 7 objetos vacíos, entre ellos el commit de HEAD (`67bc4fa`, del 2026-11-11 19:09, ya enviado a origin), por un apagado inesperado del equipo; los archivos de trabajo están intactos. No se reparó sin autorización del usuario.
+
+## 2026-11-12 13:30 -05:00 Reparación de git y conversaciones copiadas a Obs (PEN-46)
+
+Estado: implementado y probado con simulación; falta la migración 004 (sudo, la ejecuta el usuario) y la prueba real en PROJECT KMV.
+Git: 7 objetos vacíos movidos a un respaldo fuera del repositorio, `git fetch origin` los recuperó y `git fsck` quedó limpio; HEAD `67bc4fa` sano.
+Cambios: SPEC-B17; `services/obs/` (reglas, registro y paso del procesador); lectura de conversaciones y escrituras de celda y comentario en el cliente; `last_obs_sync` en `/api/ids/status`; migración `004_obs_comentario.sql` y `aplicar_migracion_004.sh`; `APP_OBS_*` en configuración y `.env.example`; `APP_OBS_SYNC_ENABLED=true` en `.env` por autorización del usuario.
+Evidencia: 335 pruebas aprobadas, Ruff y formato correctos; vista previa real sólo con GET (7 filas vigentes con comentarios). Hallazgo: la API lista conversaciones de filas borradas; se filtran con la lista de filas vigentes.
+
+## 2026-11-12 14:41 -05:00 Prueba real de Obs (PEN-46)
+
+Estado: en uso en Pruebas.
+Cambios: el usuario aplicó la migración 004 y reinició el backend. PEN-46, SPEC-B17, RESULTADOS y AGENTS.md actualizados.
+Evidencia: primera pasada con 61 comentarios copiados en 7 filas de PROJECT KMV y 0 errores; la pasada siguiente no escribió nada; `obs_comentario` con 61 registros; `Obs` leído por API con el texto previo conservado.
+Siguiente: el usuario revisa la hoja y limpia los `Obs` con chats de prueba; después PEN-43 (reparto de estados) o PEN-45 (maestras por año).
+
+## 2026-11-12 15:02 -05:00 Títulos de sección `**` en Obs (PEN-46)
+
+Estado: implementado y probado con simulación; falta la prueba real con un chat `**`.
+Consulta: `** Renewal` en una fila de PROJECT KMV no lo escribió el servicio; el historial de la celda muestra que se escribió a mano el 2026-11-10 y el servicio sólo agregó las líneas `11.12` y `11.11` encima. En el reporte Tracker 2026 - KMV, 79 de 265 `Obs` tienen `**`, en 76 en la primera línea (lectura por API).
+Cambios: SPEC-B17 OB-04, OB-16 y CA-08; `rules.compose` reemplaza `daily_entries` y `merge` (aplica los comentarios uno a uno); pruebas nuevas.
+Evidencia: 337 pruebas aprobadas, Ruff y formato correctos; backend recargado sin errores.
+
+## 2026-11-12 15:20 -05:00 Prueba real de títulos `**` y filtro por cliente (PEN-46, PEN-44)
+
+Estado: títulos `**` en uso en Pruebas; guía de filtro por cliente entregada, sin cambios en Smartsheet.
+Evidencia: el usuario reinició el backend y escribió un chat `**` y otro normal; la API muestra `Obs` con el título arriba, el mensaje debajo y la sección anterior separada por una línea en blanco. PROJECT KMV: `Customer` desplegable con 11 opciones; un filtro compartido (`Open`).
+Siguiente: el usuario arma los filtros por cliente y las Dynamic Views; PEN-43 y PEN-45.
+
+## 2026-11-12 16:05 -05:00 Columnas de contactos para la Dynamic View de clientes (PEN-44)
+
+Estado: columnas y fórmula creadas en Pruebas; falta que el usuario cargue correos reales y configure la vista.
+Decisión del usuario: Dynamic View restringida por contactos para clientes y un solo reporte para enviar Excel a pedido, cambiando el `Customer Code`. Todo lo que se cree en Smartsheet va en inglés.
+Cambios (API, autorizado por el usuario, hojas comprobadas en Pruebas): `Client Contacts` en `Customer List`; referencias `Customer List Customer` y `Customer List Client Contacts`; `Client Access` con fórmula `INDEX`/`MATCH` en PROJECT KMV (140 columnas). PEN-45 con la capacidad nueva (84 %).
+Evidencia: relectura con `level=2`: ambas columnas `MULTI_CONTACT_LIST`, fórmula guardada, 9 filas sin contactos todavía. Automatizaciones leídas: 3 avisos activos en PROJECT KMV, ninguna en `Customer List`; por eso no se probó con correos ficticios.
+
+## 2026-11-12 16:41 -05:00 Separación por cliente: contactos verificados (PEN-44)
+
+Estado: columnas y fórmula funcionando; falta configurar y probar la Dynamic View.
+Evidencia (sólo GET, sin imprimir correos): `Customer List` con 2 contactos en BS y 2 en CC; PROJECT KMV: 4 filas BS y 5 filas CC con `Client Access` igual al catálogo; reporte `KMV - Customers` con una sola fuente (PROJECT KMV).
+Siguiente: restricción por `Client Access` en la vista de clientes y prueba con otra cuenta.
+
+## 2026-11-12 16:45 -05:00 Vista de clientes sin filtro Open (PEN-44)
+
+Estado: decidido por el usuario.
+Cambios: la Dynamic View de clientes sólo se restringe por `Client Access`, sin el filtro compartido `Open` (que oculta las filas con `Closed` marcado); el cliente ve también lo cerrado. PEN-44 actualizada.
+
+## 2026-11-12 16:53 -05:00 Aviso automático al cliente y corrección de New Task Permitting (PEN-44)
+
+Estado: automatizaciones creadas y verificadas; falta la prueba real de envío.
+Cambios (conector de Smartsheet, autorizado por el usuario, PROJECT KMV en Pruebas): creada `Client | Status Update` (cambio de `Project Status` a 21 estados del tracker de cliente, condición `Client Access` no vacío, correo en inglés con enlace a la vista de clientes); `DV | New Task Permitting Team` pasa a vigilar `Permitting Team` y `Email Permitting`.
+Evidencia: `get_workflows` muestra ambas activas con el árbol esperado; los marcadores `{{Columna}}` quedaron como referencias de columna. Estados tomados del reporte `Tracker 2026 - KMV` (265 filas, 20 estados, 19 en el desplegable; falta `4. Permit-Awaiting Payment`, retirado del catálogo).
+
+## 2026-11-12 17:25 -05:00 Asuntos dinámicos en New Task Designer1 y Designer2 (PEN-44)
+
+Estado: hecho y verificado.
+Cambios (conector de Smartsheet, pedido del usuario): asunto `New Task: {Tracking Project} – {Project Name}` en Designer1 y `New Task: {Tracking Project} – {Project Name} – {Agency}` en Designer2; las mismas líneas al inicio del mensaje. Resto del árbol igual.
+Evidencia: `get_workflows` muestra ambas activas con los marcadores convertidos en referencias de columna.
+
+## 2026-11-12 17:30 -05:00 Revisión de madres e hijas en PROJECT KMV y requisito de ID por cliente (PEN-47)
+
+Estado: revisión hecha; requisito registrado como PEN-47, pendiente de decisiones.
+Evidencia (sólo GET, sin imprimir correos): 12 filas (4 madres, 8 hijas), sin errores de fórmula; ID Manager con 4 `already_stable` y 8 `child_inherited`. Hallazgos en PEN-47: dos hijas de una madre Blue Stream con cliente Hotwire y Crown Castle (heredan ID BS y dan acceso a otro cliente), madre sin nombre, hijas con estados de madre sin `Phase` y un `Linked Tracking` a un ID inexistente de otro cliente.
+
+## 2026-11-12 17:50 -05:00 Tracking Project cambia con el cliente (PEN-47)
+
+Estado: implementado y probado con simulación; falta la migración 005 (sudo, la ejecuta el usuario), el reinicio del backend y la prueba real.
+Cambios: SPEC-ID01 ID-44 a ID-48; `services/ids/family.py` y `customer_change.py`; retiro de IDs en `store.py`; acciones `rescope`, `detach_child` y `child_follow`; hija con otro ID toma el de su madre; nota `#internal` y `Linked Tracking` actualizados; `move_row_after` en el cliente; interruptor `IDS_CUSTOMER_CHANGE_ENABLED` (apagado por defecto, activado en `.env`); migración 005 y su script; fórmula `Pending ID` aplicada en PROJECT KMV (la anterior quedó en SPEC-ID01 ID-48).
+Evidencia: 342 pruebas aprobadas, Ruff y formato correctos; relectura de la columna `Tracking Project` con la fórmula nueva y valores sin cambios; procesador activo sin errores tras la recarga.
+
+## 2026-11-12 17:58 -05:00 Prueba real: hijas de otro cliente fuera de la jerarquía (PEN-47)
+
+Estado: salida de hijas comprobada; falta el cambio de cliente de una madre.
+Evidencia (sólo lectura): las hijas Crown Castle y Hotwire de `KMV-BS-26-008` quedaron como madres con `KMV-CC-26-004` y `KMV-HC-26-001`, nota `#internal` en cada una; `id_retirado` disponible y vacía (migración 005 aplicada); procesador sin errores.
+
+## 2026-11-12 18:04 -05:00 Madre con otro cliente comprobada y notas retiradas (PEN-47)
+
+Estado: PEN-47 comprobada en Pruebas.
+Evidencia (lectura por API y PostgreSQL): `KMV-BS-26-008` pasó a `KMV-LP-26-001` con auditoría `retirado`, `reservado` y `confirmado`; las hijas siguieron a su madre (cliente LP e ID nuevo).
+Cambios: por pedido del usuario no se escribe nada técnico en la hoja; el servicio ya no deja comentarios `#internal` y se borraron las 3 conversaciones que había creado (filas de `KMV-LP-26-001`, `KMV-CC-26-004` y `KMV-HC-26-001`); relectura sin ninguna. 342 pruebas aprobadas, Ruff y formato correctos.
+
+## 2026-11-12 18:28 -05:00 Prueba real: madre copiada y luego cambiada de cliente (PEN-47)
+
+Estado: correcto según ID-42 e ID-44.
+Evidencia (PostgreSQL y API): el usuario copió la madre `KMV-BS-26-009`; la copia recibió `KMV-BS-26-010` (18:21:54 a 18:22:02) porque aún era Blue Stream; al cambiarla a Hotwire se retiró `KMV-BS-26-010` y quedó `KMV-HC-26-002` (18:27:37 a 18:27:45). La captura del usuario era anterior al segundo paso o sin refrescar. Efecto esperado: `KMV-BS-26-010` queda como hueco en la numeración (nunca se reutiliza).
+
+## 2026-11-12 18:32 -05:00 Pending ID inmediato ante IDs que ya no corresponden (PEN-47, ID-49)
+
+Estado: fórmula aplicada en PROJECT KMV; falta que el usuario lo vea en un cambio real.
+Cambios: fórmula de `Tracking Project` con comprobación de cliente, de copia (por `Row Order`) y de hija de otro cliente; las hijas muestran el ID de su madre. Fórmula anterior en SPEC-ID01 ID-49.
+Evidencia: relectura por API con los 14 valores iguales antes y después y sin errores.

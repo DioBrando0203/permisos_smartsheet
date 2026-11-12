@@ -121,6 +121,45 @@ class SmartsheetIdGateway:
             raise
         return (row.cells.get(ids[0]) or "").strip() if len(ids) == 1 else ""
 
+    async def customer_codes(self, target: Target, mother_row: int) -> tuple[str, str]:
+        """`Customer Code` de la fila y de su madre (ID-45)."""
+        sheet_id = str(target.sheet_id)
+        column = await self._column(sheet_id, "Customer Code")
+        row = await self._client.get_row(sheet_id, str(target.row_id))
+        mother = await self._client.get_row(sheet_id, str(mother_row))
+        return (row.cells.get(column) or "").strip(), (mother.cells.get(column) or "").strip()
+
+    async def move_out(self, target: Target, mother_row: int) -> None:
+        """Saca la fila de la jerarquía: queda en primer nivel, debajo de la familia de su madre."""
+        await self._client.move_row_after(str(target.sheet_id), str(target.row_id), str(mother_row))
+
+    async def copy_customer(self, target: Target, mother_row: int) -> None:
+        """La hija toma el `Customer` de su madre (ID-46)."""
+        sheet_id = str(target.sheet_id)
+        column = await self._column(sheet_id, "Customer")
+        mother = await self._client.get_row(sheet_id, str(mother_row))
+        value = (mother.cells.get(column) or "").strip()
+        if not value:
+            raise ValueError("Madre sin cliente")
+        await self._client.update_row_text(sheet_id, str(target.row_id), column, value)
+
+    async def relink(self, target: Target, old: str, new: str) -> int:
+        """`Linked Tracking` que apuntaban al ID anterior pasan al nuevo (ID-46)."""
+        sheet_id = str(target.sheet_id)
+        column = await self._column(sheet_id, "Linked Tracking")
+        changed = 0
+        for row in await self._client.list_rows(sheet_id, [column]):
+            if (row.cells.get(column) or "").strip() == old:
+                await self._client.update_row_text(sheet_id, row.id, column, new)
+                changed += 1
+        return changed
+
+    async def _column(self, sheet_id: str, title: str) -> str:
+        ids = [c.id for c in await self._client.list_columns(sheet_id) if c.title == title]
+        if len(ids) != 1:
+            raise ValueError("Columna ausente o duplicada")
+        return ids[0]
+
     async def _put(self, target: Target, value: str, expected: str = "") -> bool:
         """Escribe sólo si la celda contiene `expected`; respuesta incierta -> WriteUncertain."""
         try:

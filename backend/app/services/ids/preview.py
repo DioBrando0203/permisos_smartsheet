@@ -12,6 +12,7 @@ from app.services.ids.dry_run import (
     PlanAction,
     plan,
 )
+from app.services.ids.family import children_plan, customer_changed
 from app.services.ids.formats import EntityKind, formula_number, parse_id, project_scope
 from app.services.ids.inventory import InventorySheet
 from app.services.ids.pilot import read_pilot
@@ -55,8 +56,14 @@ def _formula_order(sheet: InventorySheet, row: RawRow) -> tuple[int, int]:
 async def build_dry_run_report(
     client: SmartsheetClient,
     dsn: str,
+    *,
+    customer_change: bool = False,
 ) -> dict:
-    """Generar un reporte sin reservar ni escribir IDs."""
+    """Generar un reporte sin reservar ni escribir IDs.
+
+    `customer_change` activa ID-44 a ID-47: madre con otro cliente, hija de otro cliente e hija
+    con otro ID que su madre.
+    """
 
     sheets = await read_pilot(client)
 
@@ -145,12 +152,24 @@ async def build_dry_run_report(
             original = _copied_from(sheet.sheet_id, row.id, stable, reservation, owners, current)
             if original:
                 action = PlanAction.RENUMBER_COPY if parent else PlanAction.PENDING_DATA
+            elif customer_change and action != PlanAction.DENIED:
+                if customer_changed(sheet.kind, stable, parent):
+                    action = PlanAction.RESCOPE
             proposed = None
             if action == PlanAction.WOULD_WRITE:
                 proposed = reservation[0]
             elif action == PlanAction.RENUMBER_COPY:
                 try:
                     proposed = reservation[0] if reservation else projector.next(sheet.kind, parent)
+                except ValueError:
+                    action = PlanAction.CONFLICT
+            elif action == PlanAction.RESCOPE:
+                fresh = reservation and reservation[1] == "reservado"
+                try:
+                    if fresh and parse_id(sheet.kind, reservation[0]).parent == parent:
+                        proposed = reservation[0]
+                    else:
+                        proposed = projector.next(sheet.kind, parent)
                 except ValueError:
                     action = PlanAction.CONFLICT
             elif action in (PlanAction.NEEDS_RESERVATION, PlanAction.PENDING_FORMULA):
@@ -186,7 +205,7 @@ async def build_dry_run_report(
                 )
 
     for sheet in sheets:
-        _children(sheet, confirmed, counts, details)
+        children_plan(sheet, confirmed, counts, details, customer_change)
 
     return {
         "mode": "dry_run",
@@ -195,40 +214,6 @@ async def build_dry_run_report(
         "pending_or_conflicting_rows": details,
         "warning": ("Estimaciones orientativas. No reservan IDs ni garantizan máximos históricos."),
     }
-
-
-def _children(sheet: InventorySheet, confirmed: set[str], counts: Counter, details: list) -> None:
-    """Filas hijas: llevan el ID de su madre; se completan sólo con la madre confirmada."""
-    mothers = {row.id: (row.cells.get(sheet.stable_column) or "").strip() for row in sheet.rows}
-    for child, root in sheet.children:
-        stable = (child.cells.get(sheet.stable_column) or "").strip()
-        mother = mothers.get(root, "")
-        if mother and stable == mother:
-            counts["child_inherited"] += 1
-            continue
-        if not mother:
-            action = PlanAction.PENDING_PARENT
-        elif stable:
-            action = PlanAction.CONFLICT  # la hija dice pertenecer a otro proyecto
-        elif mother in confirmed:
-            action = PlanAction.CHILD_FILL
-        else:
-            action = PlanAction.PENDING_PARENT
-        counts[action.value] += 1
-        details.append(
-            {
-                "sheet_id": str(sheet.sheet_id),
-                "row_id": str(child.id),
-                "type": sheet.kind.value,
-                "parent": mother,
-                "action": action.value,
-                "visible_id": (child.cells.get(sheet.visible_column) or "").strip(),
-                "stable_id": stable,
-                "proposed_id": mother if action == PlanAction.CHILD_FILL else None,
-                "mother_row_id": root,
-                "renumbered": False,
-            }
-        )
 
 
 def _copied_from(

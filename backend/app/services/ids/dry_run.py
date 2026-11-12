@@ -19,6 +19,9 @@ class PlanAction(StrEnum):
     REGISTER_EXISTING = "register_existing"
     CHILD_FILL = "child_fill"  # fila hija: copiar el ID ya confirmado de su madre
     RENUMBER_COPY = "renumber_copy"  # madre copiada: la copia recibe el siguiente número
+    RESCOPE = "rescope"  # madre con otro cliente: ID nuevo del cliente actual (ID-44)
+    DETACH_CHILD = "detach_child"  # hija de otro cliente: sale de la jerarquía (ID-45)
+    CHILD_FOLLOW = "child_follow"  # hija que sigue a su madre tras cambiar de cliente (ID-46)
     NEEDS_RESERVATION = "needs_reservation"
     WOULD_WRITE = "would_write"
 

@@ -85,12 +85,17 @@ app/
   services/ids/runtime.py       barreras de escritura y ensamblaje del coordinador real
   services/ids/recovery.py      plan de recuperación de reservas sin confirmar (puro)
   services/ids/gateway.py       adaptador de Stable IDs con comprobaciones y riesgo residual de edición externa
+  services/ids/family.py        decisiones puras de madre e hijas: cambio de cliente, hija ajena o copiada (ID-44 a ID-47)
+  services/ids/customer_change.py  retiro e ID nuevo de la madre, salida de hijas ajenas y hijas que siguen a su madre
   api/routes/idsmart.py         ID Manager con token independiente: consultas, simulación, recuperación y escrituras con barreras
   services/catalog_plan.py      comparación pura de catálogos; no ejecuta sincronización
   services/catalog_rules.py     reglas puras del catálogo de proyectos y de Linked Tracking (SPEC-B16)
   services/project_catalog.py   lectura del catálogo desde Proyectos y la hoja catálogo, validación y plan
   services/catalog_sync.py      escritura de la hoja catálogo en Pruebas con barreras; nunca borra
   api/routes/catalogs.py        /api/catalogs: consultas y sincronización protegida
+  services/obs/rules.py         reglas puras de Obs: formato MM.DD, unión del mismo día, límite y archivo (SPEC-B17)
+  services/obs/store.py         comentarios ya copiados a Obs en PostgreSQL (migración 004)
+  services/obs/sync.py          paso del procesador que copia comentarios nuevos a Obs con barreras; nunca borra texto
   models/associations.py         contrato de la revisión de asociaciones
   services/export.py             CSV para Excel de permisos por hoja (sin guardar en el servidor)
   services/automation_rules.py   diagnóstico puro de una automatización (tabla PROBLEMS)

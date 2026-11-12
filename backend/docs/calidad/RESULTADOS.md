@@ -329,3 +329,27 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - Reportes creados en `Pruebas/Producto` (ids 8203968674221956, 3413810976345988, 8762864178515844, 8910360334782340). Lectura posterior: Permitting por persona 8 filas en 4 grupos; Invoices 5 filas (PM APPROVED); All Records Request 10 filas; MOT y Paquetes 0 filas porque hoy ninguna fila tiene a Carlos Carrillo ni a German Quiñe.
 - Columna `Invoice Status` agregada al final de Presentable; valores actuales NOT INVOICED y PM APPROVED.
+
+# 2026-11-12 13:30 -05:00 Conversaciones copiadas a Obs (PEN-46, SPEC-B17)
+
+- 335 pruebas backend aprobadas (16 nuevas en `test_obs_rules.py` y `test_obs_sync.py`); Ruff y formato correctos.
+- Vista previa real sin escrituras (sólo GET): 106 comentarios de filas en 49 filas, 7 vigentes; resultado en formato `11.12 - texto // texto`, con el texto previo de Obs conservado debajo y sin superar 4 000 caracteres.
+
+# 2026-11-12 14:41 -05:00 Prueba real de Obs (PEN-46, SPEC-B17)
+
+- Migración 004 aplicada por el usuario (con respaldo previo del script); backend reiniciado por el usuario con `APP_OBS_SYNC_ENABLED=true`.
+- `/api/ids/status` (modo assign): primera pasada `last_obs_sync` = 7 filas, 61 comentarios, 0 archivados, 0 en espera, 0 errores; pasada siguiente (19:40:40 UTC) 0 filas, sin escrituras.
+- PostgreSQL `obs_comentario`: 61 comentarios de 7 filas, registrados entre 14:39:13 y 14:39:29.
+- Lectura de PROJECT KMV (sólo GET): las 7 filas vigentes con comentarios tienen `Obs` con la línea `11.12 - texto // texto` arriba y el texto anterior debajo (por ejemplo `10.08 - Awaiting confirmation...`, `** Renewal`, `Related to ...`); la más larga tiene 167 caracteres.
+
+# 2026-11-12 15:02 -05:00 Títulos `**` en Obs (PEN-46, SPEC-B17 OB-16)
+
+- 337 pruebas backend aprobadas (2 nuevas en `test_obs_rules.py`: secciones con títulos de chat y títulos escritos a mano); Ruff y formato correctos.
+- El backend del usuario (con `--reload`) recargó el cambio: `/api/ids/status` con el procesador activo, ciclo 20:01:04 UTC sin errores y `last_obs_sync` sin filas pendientes.
+- Prueba real con un chat `**` (2026-11-12 15:20, lectura por API): la fila quedó con `** Titulo nueva seccion`, debajo `11.12 - nueva seccion`, una línea en blanco y la sección anterior con su texto intacto; se ve igual en la Dynamic View KMV - CUSTOMERS.
+
+# 2026-11-12 17:50 -05:00 Cambio de cliente y familia coherente (PEN-47, SPEC-ID01 ID-44 a ID-48)
+
+- 342 pruebas backend aprobadas (5 nuevas en `test_id_customer_change.py`; las 66 de IDs existentes sin cambios con el interruptor apagado); Ruff y formato correctos.
+- Fórmula de `Tracking Project` en PROJECT KMV cambiada por API a `Pending ID` (ID-48); relectura: fórmula aplicada y los 12 valores sin cambios.
+- Prueba real (2026-11-12 17:58): migración 005 aplicada y backend reiniciado por el usuario; dos hijas de otro cliente pasaron a primer nivel con `KMV-CC-26-004` y `KMV-HC-26-001`, nota `#internal` en cada una, auditoría `reservado` y `confirmado`; ciclo siguiente sin acciones (6 `already_stable`, 6 `child_inherited`). Cambio de cliente de una madre (2026-11-12 18:04): `KMV-BS-26-008` retirado y `KMV-LP-26-001` confirmado; sus dos hijas con cliente LP y ese ID. Notas `#internal` quitadas del código y borradas de la hoja (3); 342 pruebas aprobadas tras el cambio.
