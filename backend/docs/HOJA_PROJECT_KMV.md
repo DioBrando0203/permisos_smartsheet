@@ -33,7 +33,7 @@ Foto del 2026-11-12 18:45 -05:00, leída por API (sólo GET) y cruzada con las s
 - HK-17: Equipo: `Designer1` (62), `Designer2` (63) y `Permitting Team` (67) son desplegables; `Email Designer1` (65), `Email Designer2` (66) y `Email Permitting` (68) toman el correo desde Contact List por fórmula.
 - HK-18: Referencias entre hojas (8, todas en estado OK y por columna completa): `Directorio Correo`, `Directorio Nombre`, `Directorio Activo` (Contact List); `Project Status Catalog Phase`, `Project Status Catalog Status`, `Project Status Catalog Closed` (Project Status List; conservan el nombre anterior); `Customer List Customer` y `Customer List Client Contacts`.
 - HK-19: Filtros: `Open` (compartido, `Closed` sin marcar) y `Filter By Costumer` (personal del usuario).
-- HK-20: Capacidad: 140 columnas, unas 3 571 filas como máximo por hoja (500 000 celdas); unas 3 000 filas por año ocupan el 84 % (PEN-45).
+- HK-20: Capacidad: 140 columnas, unas 3 571 filas como máximo por hoja (500 000 celdas). Medido el 2026-11-12: Crown Castle y Blue Stream suman 3 656 filas en 2025 y van 3 527 en 2026 (proyección 4 074), así que un año completo no entra con 140 columnas. Análisis de columnas a quitar en PEN-45.
 
 ## Automatizaciones de la hoja
 

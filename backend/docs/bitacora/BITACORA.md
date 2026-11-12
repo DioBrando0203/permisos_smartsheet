@@ -576,3 +576,8 @@ Evidencia: relectura por API con los 14 valores iguales antes y después y sin e
 Estado: hecho.
 Cambios: nuevo `HOJA_PROJECT_KMV.md` (HK-01 a HK-41) con ubicación, catálogos, columnas y fórmulas, automatizaciones, vistas, reportes, lo que hace el servicio, separación por cliente, incoherencias de datos y pendientes; README del backend, AGENTS.md y resumen y estado de PEN-44 en `REQUERIMIENTOS.md` actualizados.
 Evidencia (sólo GET): 14 filas (8 madres, 6 hijas), 140 columnas, 8 referencias OK, filtros `Open` y uno personal, catálogos movidos por el usuario a `Producto/List Tools` (Project Status Catalog renombrado a Project Status List) y reportes en `Producto/Reports`.
+
+## 2026-11-12 18:51 -05:00 Análisis de columnas de PROJECT KMV frente a los originales (PEN-45)
+
+Estado: análisis entregado; sin cambios en Smartsheet; falta la decisión del usuario.
+Evidencia (sólo GET, conteos sin contenido): originales CC y BS 2026 con 117 columnas, 2 233 y 1 294 filas; 2025 con 2 380 y 1 276; 2024 con 1 378 y 871. Dependencias revisadas: fórmulas de columna, automatizaciones, 5 reportes de `Producto/Reports` y código del backend. 11 columnas sin uso real, 11 de uso mínimo y 6 nuevas por confirmar (detalle en PEN-45).

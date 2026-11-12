@@ -420,6 +420,14 @@ Hacer:
 - `Control Linked Tracking`: validar contra `Project List` con referencias entre hojas, para que un vínculo a un proyecto de otro año no quede como `LEGACY: NOT LOADED`.
 - Capacidad: unas 420 000 celdas por año (84 %) con 3 000 filas y 140 columnas; quitar columnas sin uso para ganar margen.
 
+Análisis de columnas (2026-11-12 18:51, sólo lectura por API, sin contenido de celdas): los originales `8. Crown Castle Fiber - Engineering Plan 2026` y `8. Blue Stream - Engineering Plan 2026` tienen 117 columnas cada uno; PROJECT KMV tiene 140 (las 117 menos `Record ID`, que en KMV es `PRR #`, más 24 nuevas). Filas por año (CC + BS): 2024 2 249, 2025 3 656 y 2026 3 527 al 12-nov (proyección 4 074). Con 140 columnas caben 3 571 filas: un año completo ya no entra; la estimación de 3 000 filas quedó corta.
+- Sin uso real (≤0,2 % en 2024 a 2026) y sin dependencias: `CAD Update`, `CADDING`, `Bond?`, `Bond Fee Application`, `Runner Pick up`, `Inspection Date`, `Inspection Pass`, `Invoice GALP # Days` y `PM Approval Invoices Days` (vacías y sin fórmula); más `Project Number` y `Frozen Number`, que dejaron de usarse con ID-48 e ID-49 (quitarlas impide volver a la fórmula provisional). 11 columnas: quedarían 129 (3 875 filas).
+- Uso mínimo (≤2 %, pocas filas al año): `Aerial` (columna del reporte Invoices), `Tone Locating`, `Runner Submitting`, `Survey Certified`, `Additional Site Survey`, `Sonde FTG`, `GPR`, `Permit Coordinator Approved Date (QC)` y el grupo `Sonde Request`, `Sonde Received` y `Sonde # Days`. 11 más: 118 (4 237 filas).
+- Nuevas en KMV sin dependencias detectadas, por confirmar con el usuario: `Security Key`, `Future Project #`, `Reminder Sent`, `Mile Post`, `DT Owner` y `Designers List`. 6 más: 112 (4 464 filas).
+- Se conservan: `Phase`, `Closed` y `Control Linked Tracking` (filtro `Open`, vistas y formato condicional, que la API no muestra), los grupos de segunda revisión (1,5 a 6,8 %) y as-built (5 a 13 %) y todo lo que usan fórmulas, automatizaciones, reportes o el backend.
+- Siguiente palanca si no alcanza: las 18 columnas de días por fórmula (`... # Days`, `Days in ...`).
+- Antes de borrar: el usuario revisa que ninguna Dynamic View ni formato condicional use la columna; borrar es irreversible para los datos de la columna.
+
 ### PEN-46 Conversaciones de cada fila compiladas en una columna (reemplazo de Obs)
 
 Prioridad: media. Alcance: backend. Estado: en uso en Pruebas (2026-11-12, SPEC-B17); prueba real correcta en PROJECT KMV.
