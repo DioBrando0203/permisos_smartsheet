@@ -59,11 +59,11 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 
 Cada pendiente se cita por su ID. Al tomar uno: crear o actualizar la spec con sus criterios de aceptación y mover aquí su estado.
 
-Resumen al 2026-11-04 (actualizado el 2026-11-11 para PEN-27 y PEN-42 a PEN-44):
+Resumen al 2026-11-04 (actualizado el 2026-11-11 para PEN-27 y PEN-42 a PEN-45):
 - Terminadas: PEN-00 a PEN-03, PEN-05, PEN-12, PEN-14 a PEN-16, PEN-23, PEN-25, PEN-31, PEN-32, PEN-34 a PEN-41 y PEN-42; PEN-30 y PEN-33 en los condados que indican.
 - En curso: PEN-24 (ID Manager y selector de Linked Tracking en operación en Pruebas), PEN-06 (frontend por fases), PEN-27 (catálogo de estados y vista por `Closed`; falta aprobar la clasificación), PEN-28 y PEN-29.
 - Parciales: PEN-04 y PEN-11 (falta PEN-07), PEN-17, PEN-18 y PEN-21.
-- Requieren decisión del usuario: PEN-07, PEN-08, PEN-13 y PEN-43 (reparto de estados por equipo). Sin empezar: PEN-09, PEN-10, PEN-19 y PEN-20. Propuesta: PEN-26. Consulta sin decisión: PEN-44. Bloqueada por el plan: PEN-22.
+- Requieren decisión del usuario: PEN-07, PEN-08, PEN-13, PEN-43 (reparto de estados por equipo) y PEN-45 (hoja activa y archivo por año). Sin empezar: PEN-09, PEN-10, PEN-19 y PEN-20. Propuesta: PEN-26. Consulta sin decisión: PEN-44. Bloqueada por el plan: PEN-22.
 
 ### PEN-00 Documentación inicial
 
@@ -390,3 +390,13 @@ Nativo (verificado 2026-11-11 en la ayuda y la comunidad de Smartsheet): no hay 
 Con el servicio propio: posible, porque ya vigila la hoja y escribe, pero exige una llave única por fila (el Tracking ID se repite en las hijas), resolver conflictos, evitar bucles, elegir columnas (las de fórmula no se copian), evitar avisos duplicados de automatizaciones y aceptar 5 a 15 s de demora; además duplica la fuente de verdad (ADR-B15).
 Recomendación: Dynamic View si basta con ver y editar filas y columnas; hoja sincronizada sólo si el equipo necesita columnas, automatizaciones o permisos propios.
 Comparación con Bridge: el servicio cumple el papel reactivo de Bridge y añade registro transaccional (IDs sin repetirse, auditoría, recuperación) y pruebas automáticas; Bridge corre en la nube de Smartsheet, reacciona por eventos y no necesita servidor. Para producción el backend debe ir a un servidor siempre encendido (B-16).
+
+### PEN-45 Capacidad de la hoja maestra y archivo por año
+
+Prioridad: alta. Alcance: Smartsheet y ID Manager. Estado: decisión pendiente del usuario (2026-11-11 17:47 -05:00).
+Situación: el límite de una hoja es 500 000 celdas contando filas por columnas, vacías incluidas, con un máximo de 20 000 filas y 400 columnas (ayuda oficial de Smartsheet). PROJECT KMV tiene 139 columnas: caben unas 3 597 filas. Con la estimación del usuario de unas 3 000 filas por año, todos los clientes, un año ocupa unas 417 000 celdas (83 %), así que no caben varios años en una hoja. No se encontró fuente oficial para un límite de 1 millón en "tablas"; el usuario las descarta por lentitud en equipos antiguos.
+Opciones:
+- Una maestra por año con todos los clientes: coincide con el año del ID, pero queda justa (83 %) y cada año hay que rehacer Dynamic Views, automatizaciones, referencias entre hojas, desplegables vinculados y formatos; los proyectos abiertos que cruzan de año obligan a trabajar en dos hojas.
+- Recomendada: una hoja activa con los proyectos abiertos de todos los años y un archivo por año con los cerrados. La activa queda pequeña y rápida, y las vistas y automatizaciones se configuran una sola vez.
+Riesgos de la recomendada: la automatización nativa "Move rows" pierde la jerarquía en la hoja destino (comunidad de Smartsheet); los IDs se conservan porque el servicio escribe el Stable ID también en las hijas. Hay que definir cuándo se archiva un proyecto (madre e hijas cerradas), qué pasa al reabrir (fase 9) y adaptar el ID Manager para que reconozca filas archivadas y la fórmula provisional no proponga números ya usados en el archivo.
+Métricas: los dashboards toman datos de reportes que combinan varias hojas (hasta 50 000 filas por reporte; los agrupados se ven por páginas de 2 500) y de hojas de métricas con fórmulas entre hojas. Las columnas de días con `TODAY()` siguen contando en proyectos cerrados sin fecha final y distorsionan los promedios.

@@ -469,3 +469,8 @@ Estado: PEN-27 en curso; PEN-43 propuesta en espera del reparto de estados; PEN-
 Cambios: el usuario vinculó `Project Status` de PROJECT KMV a `Project Status Catalog` / `Status` (sin filtro, "Limit to list values only") y quitó del catálogo `4. Permit-Awaiting Payment`. Backend detenido a pedido del usuario (puerto 8710 libre); lo encenderá él desde su terminal. Docs: PEN-27 con hecho y faltantes, nuevas PEN-43 y PEN-44, resumen del backlog y estado de AGENTS.md.
 Evidencia (sólo GET): columna `Project Status` con 60 opciones iguales a los 60 estados del catálogo, `validation` true y sin separadores; valores de las 9 filas conservados y `Closed` coherente (`8. Process completed` marcado).
 Siguiente: que el usuario confirme el reparto de estados por equipo y que gane el estado de permisos (PEN-43); después, con autorización expresa, crear casillas y columnas por API.
+
+## 2026-11-11 17:47 -05:00 Capacidad de la hoja maestra (PEN-45)
+
+Estado: consulta respondida; decisión pendiente del usuario.
+Evidencia: límites oficiales de Smartsheet (500 000 celdas, 20 000 filas, 400 columnas; reportes hasta 50 000 filas). PROJECT KMV tiene 139 columnas (lectura por API de esta sesión): unas 3 597 filas como máximo. Con 3 000 filas por año, un año ocupa el 83 %. Recomendación registrada en PEN-45: hoja activa más archivo por año.
