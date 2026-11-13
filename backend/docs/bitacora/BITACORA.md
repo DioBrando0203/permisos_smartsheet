@@ -689,3 +689,8 @@ Evidencia: 352 pruebas aprobadas; Records en vivo sin errores tras la recarga; v
 
 Estado: correcta; falta reporte para facturación, colores y migración de la maestra.
 Evidencia (sólo lectura): 14 filas en `Billing` (8 madres, 6 hijas), contexto y 5 filas con datos de factura iguales a la maestra; `last_billing_sync` y `last_records_sync` en reposo.
+
+## 2026-11-13 12:25 -05:00 Columnas de factura borradas de la maestra (PEN-49, SPEC-B19)
+
+Estado: hecho.
+Evidencia: copia en `Billing` comprobada antes de borrar; 9 columnas borradas por API; `Invoice Status` sin fórmula e igual a `Billing` en 14 filas tras dos ciclos; 113 columnas; procesador, Records y Facturación sin errores.

@@ -1,6 +1,6 @@
 # SPEC-B19 Hoja hija de Facturación
 
-Estado: en uso en Pruebas (prueba real correcta el 2026-11-13 12:11, PEN-49); falta la migración de la maestra. Mismo mecanismo que Records (SPEC-B18), en `services/childsheets/`.
+Estado: en uso en Pruebas (prueba real correcta el 2026-11-13 12:11, PEN-49); maestra migrada el 2026-11-13 12:25: sin las columnas de factura e `Invoice Status` como resumen escrito por el servicio (FH-06 activo). Mismo mecanismo que Records (SPEC-B18), en `services/childsheets/`.
 
 ## Objetivo
 
