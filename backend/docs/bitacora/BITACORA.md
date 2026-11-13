@@ -627,3 +627,4 @@ Evidencia (sólo GET, conteos): 12 hojas originales 2025 y 2026 (2025: 3 939 fil
 
 Estado: medición y opinión entregadas; sin cambios en Smartsheet; falta la decisión del usuario.
 Evidencia (sólo GET, conteos): 2026 de CC, BS y Others, 3 552 filas reales; la fila 1 de cada hoja es de ejemplo (114 a 117 columnas llenas) y se excluyó; 9 columnas sin ningún valor real. Detalle en AC-29 a AC-32.
+- Propuesta adicional del usuario (2026-11-13 09:25): Facturación en hoja aparte con un aviso en la maestra; registrada en AC-33 y AC-34.
