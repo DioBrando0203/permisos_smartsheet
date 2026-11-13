@@ -712,3 +712,9 @@ Estado: hecho; falta crear en la interfaz el aviso al asignado.
 Motivo: el usuario señaló que borrar `Designer2` y llamarlo `Permitting Team` en Records mezclaba dos funciones distintas.
 Cambios: columna de contacto `Record Request Assignment` en la maestra con las 4 asignaciones devueltas; Records con la misma columna como contexto bloqueado; disparo de Records por casilla o asignación; contactos leídos y escritos por correo.
 Evidencia: 353 pruebas aprobadas; 4 asignaciones iguales en las dos hojas; sin errores en el procesador.
+
+## 2026-11-13 16:30 -05:00 Asignaciones como columnas de contacto (PEN-50)
+
+Estado: hecho; faltan los avisos por proceso.
+Cambios: el usuario (interfaz, 16:09) convirtió `Designer1` en `Designers` (contactos múltiples) y `Permitting Team` en contacto, y borró `Email Designer1` y `Email Permitting`. Completado por API: correo de Contact List en las opciones (sólo activos con correo) y 12 filas de texto a contacto; pasada de Billing para `Invoice Status`.
+Evidencia: 106 columnas; `Designers` 8 de 18 opciones con correo, `Permitting Team` 7 de 12; 12 filas con contacto y correo; sin celdas con error; Records y Billing sin diferencias (plan en seco); el guardado de las 16:09 no tocó columnas del servicio salvo 9 celdas de `Invoice Status` con la fórmula vieja, corregidas. Los avisos `DV | New Task ...` ya no aparecen en la lista de automatizaciones (dependían de las columnas `Email`).
