@@ -666,3 +666,8 @@ Evidencia: 14 columnas borradas por API en PROJECT KMV 1.0.0 (Pruebas); 122 colu
 
 Estado: revisión entregada; sin cambios en Smartsheet.
 Evidencia (sólo GET): columnas, fórmulas y automatizaciones de PROJECT KMV 1.0.0 y de los originales CC y BS 2026; formato condicional aplicado por fila y paleta de `/serverinfo`; columnas del reporte Invoices. Detalle en PEN-49.
+
+## 2026-11-13 11:36 -05:00 Facturación en los originales: fórmulas, colores y estado (PEN-49)
+
+Estado: análisis entregado; sin cambios; el usuario revisará las columnas.
+Evidencia (sólo GET, todas las filas de CC y BS 2026, sólo conteos y fórmulas normalizadas): fórmula de celda de `Invoice # Days`; formato condicional por fila deducido del formato aplicado; cruce de estado y etapa de facturación. Detalle en PEN-49.
