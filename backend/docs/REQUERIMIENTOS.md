@@ -438,6 +438,7 @@ Análisis de columnas (2026-11-12 18:51; superado por `ANALISIS_COLUMNAS_KMV.md`
 Decisiones y propuesta (2026-11-13 09:25): las 6 columnas nuevas y las cantidades de servicios se quedan (AC-29); 9 columnas nunca usadas en 2026 (AC-30); propuesta del usuario de Records en hoja aparte con `Records Needed` en la maestra (AC-31) y cuentas de capacidad (AC-32). Sin decisión de borrar.
 
 Avance (2026-11-13 18:20, pedido del usuario): borradas de la maestra `Created`, `Created By` y `Designers List`; 103 columnas (4 854 filas). Pendientes de decisión: las 6 fórmulas de días sin reporte (AC-11), `Runner` ×2, Sonde ×3 y `Stamp & Seal`.
+Decisión del usuario (2026-11-13 18:30): las columnas de días se quedan todas (son los contadores de cuánto dura cada etapa y se usan aunque no estén en reportes); tampoco se borran `Runner`, Sonde ni `Stamp & Seal`. `QC # Days` funciona: cuenta de `QC IN` a `QC OUT`, o hasta hoy si falta `QC OUT`; en Pruebas muestra `Add date ``QC IN``` porque ninguna fila tiene `QC IN`.
 
 ### PEN-46 Conversaciones de cada fila compiladas en una columna (reemplazo de Obs)
 
