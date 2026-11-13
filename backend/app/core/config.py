@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     # Procesador con asignación real: exige además las tres barreras anteriores.
     ids_processor_writes_enabled: bool = False
     ids_processor_max_rows: int = 5
+    # Hoja maestra del ID Manager, Obs y catálogo (PEN-48). Cambiarla exige trasladar antes el
+    # registro con `servicios/ids/mover_hoja_maestra.py`, con el backend detenido.
+    ids_master_sheet_id: str = "5254686035890052"
     # Cambio de cliente (SPEC-ID01 ID-44 a ID-47): ID nuevo, hijas ajenas fuera y hijas al día.
     ids_customer_change_enabled: bool = False
     # Hoja catálogo de proyectos en Pruebas, origen del desplegable vinculado de Linked Tracking.

@@ -1,13 +1,14 @@
 """Hojas del ID Manager y su lectura: workspace comprobado en vivo, sin caché ni escrituras."""
 
+from app.core.config import get_settings
 from app.services.ids.dry_run import PILOT_WORKSPACE
 from app.services.ids.formats import EntityKind
 from app.services.ids.inventory import InventorySheet
 from app.services.smartsheet import RawRow, SmartsheetClient
 
-# Presentable (Pruebas), desde 2026-11-10: cada fila madre es un proyecto y sus filas hijas
-# llevan el mismo ID. Se identifica por ID: renombrarla o moverla de carpeta no la afecta.
-PRESENTABLE = "5254686035890052"
+# Hoja maestra en Pruebas (`IDS_MASTER_SHEET_ID`, PEN-48): cada fila madre es un proyecto y sus
+# hijas llevan el mismo ID. Se identifica por ID: renombrarla o moverla de carpeta no la afecta.
+PRESENTABLE = get_settings().ids_master_sheet_id
 # Sin columna de empresa, la fórmula de Tracking Project fija "KMV".
 DEFAULT_COMPANY = "KMV"
 SHEETS = ((PRESENTABLE, EntityKind.PROJECT, "Tracking Project", "Stable Tracking Project", None),)

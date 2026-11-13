@@ -85,6 +85,7 @@ app/
   services/ids/runtime.py       barreras de escritura y ensamblaje del coordinador real
   services/ids/recovery.py      plan de recuperación de reservas sin confirmar (puro)
   services/ids/gateway.py       adaptador de Stable IDs con comprobaciones y riesgo residual de edición externa
+  services/ids/rehome.py        traslado del registro de IDs a otra hoja maestra con los mismos Stable IDs (ID-50)
   services/ids/family.py        decisiones puras de madre e hijas: cambio de cliente, hija ajena o copiada (ID-44 a ID-47)
   services/ids/customer_change.py  retiro e ID nuevo de la madre, salida de hijas ajenas y hijas que siguen a su madre
   api/routes/idsmart.py         ID Manager con token independiente: consultas, simulación, recuperación y escrituras con barreras

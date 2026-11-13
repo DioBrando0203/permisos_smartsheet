@@ -353,3 +353,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - 342 pruebas backend aprobadas (5 nuevas en `test_id_customer_change.py`; las 66 de IDs existentes sin cambios con el interruptor apagado); Ruff y formato correctos.
 - Fórmula de `Tracking Project` en PROJECT KMV cambiada por API a `Pending ID` (ID-48); relectura: fórmula aplicada y los 12 valores sin cambios.
 - Prueba real (2026-11-12 17:58): migración 005 aplicada y backend reiniciado por el usuario; dos hijas de otro cliente pasaron a primer nivel con `KMV-CC-26-004` y `KMV-HC-26-001`, nota `#internal` en cada una, auditoría `reservado` y `confirmado`; ciclo siguiente sin acciones (6 `already_stable`, 6 `child_inherited`). Cambio de cliente de una madre (2026-11-12 18:04): `KMV-BS-26-008` retirado y `KMV-LP-26-001` confirmado; sus dos hijas con cliente LP y ese ID. Notas `#internal` quitadas del código y borradas de la hoja (3); 342 pruebas aprobadas tras el cambio.
+
+# 2026-11-13 09:59 -05:00 Hoja maestra configurable y traslado a PROJECT KMV 1.0.0 (PEN-48, SPEC-ID01 ID-50)
+
+- 346 pruebas backend aprobadas (4 nuevas en `test_id_rehome.py`); Ruff y formato correctos.
+- Traslado real: simulación y `--confirmar` con 8 madres, 68 comentarios y 7 asignaciones que siguen en la hoja anterior; base: 8 asignaciones en la copia y 7 en la anterior; simulación del procesador sobre la copia sin pendientes (8 `already_stable`, 6 `child_inherited`) y Obs sin pendientes.

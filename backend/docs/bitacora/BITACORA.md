@@ -633,3 +633,9 @@ Evidencia (sólo GET, conteos): 2026 de CC, BS y Others, 3 552 filas reales; la 
 
 Estado: pendientes registrados; plan propuesto; sin cambios en Smartsheet ni en el servicio.
 Evidencia (sólo GET): copia `PROJECT KMV 1.0.0` en Pruebas con 140 columnas, 14 filas y los mismos Stable IDs; faltan 2 automatizaciones de `LT Records`; 68 comentarios copiados con ids nuevos (la original tiene 113 en 50 filas, contando filas borradas). Las de uso mínimo se quedan por ahora (decisión del usuario).
+
+## 2026-11-13 09:59 -05:00 Hoja maestra trasladada a PROJECT KMV 1.0.0 (PEN-48)
+
+Estado: hecho en el servicio; falta que el usuario arranque el backend y apunte reportes y vistas a la copia.
+Cambios: `IDS_MASTER_SHEET_ID` (SPEC-ID01 ID-50), `services/ids/rehome.py`, `servicios/ids/mover_hoja_maestra.py`, 4 pruebas nuevas; backend detenido por el asistente; traslado con respaldo `~/galp_backups/mover_hoja_20261113_095906.json`; `.env` con la hoja nueva. PEN-49: `Designer2` pasa a Records; se suman `Date Received` y `Record # Days`.
+Evidencia: 346 pruebas aprobadas, Ruff y formato correctos; base con 8 asignaciones en la copia y 7 en la anterior, 68 comentarios marcados; simulación del procesador sobre la copia sin pendientes; Obs sin pendientes.

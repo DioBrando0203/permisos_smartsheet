@@ -1,5 +1,7 @@
 # Estado de la hoja de trabajo PROJECT KMV
 
+Desde el 2026-11-13 09:59 la hoja maestra del servicio es la copia PROJECT KMV 1.0.0 (`8346710503018372`, `Producto/PROJECT KMV`), con las mismas columnas, filas e IDs que la foto de abajo (PEN-48, ID-50). Diferencias: no tiene las automatizaciones `Auto | LT Records ...`; los 5 reportes de `Producto/Reports` y las Dynamic Views siguen apuntando a la hoja anterior hasta que el usuario los cambie; el usuario borrará allí las columnas sin uso. La hoja anterior (`5254686035890052`) ya no la vigila el servicio.
+
 Foto del 2026-11-12 18:45 -05:00, leída por API (sólo GET) y cruzada con las specs y decisiones. Sin correos ni nombres de personas. Para el porqué de cada decisión, ver los PEN y specs citados; para el detalle cronológico, `bitacora/BITACORA.md`. Al cambiar la hoja o el servicio, actualizar este archivo.
 
 ## Ubicación y hojas relacionadas
