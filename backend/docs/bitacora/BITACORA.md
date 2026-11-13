@@ -661,3 +661,8 @@ Evidencia: 4 filas (KMV-CC-26-001 hija, KMV-CC-26-002 madre y 2 hijas) marcadas 
 
 Estado: hecho; `Designer2` y `Email Designer2` se quedan por ahora; el usuario revisará las 4 sin uso restantes.
 Evidencia: 14 columnas borradas por API en PROJECT KMV 1.0.0 (Pruebas); 122 columnas; automatizaciones activas sin cambios; IDs y fórmulas sin errores; un `assign_failed` pasajero (hoja cambiada durante la lectura) y el ciclo siguiente correcto.
+
+## 2026-11-13 10:55 -05:00 Revisión de facturación antes de diseñar su hoja hija (PEN-49)
+
+Estado: revisión entregada; sin cambios en Smartsheet.
+Evidencia (sólo GET): columnas, fórmulas y automatizaciones de PROJECT KMV 1.0.0 y de los originales CC y BS 2026; formato condicional aplicado por fila y paleta de `/serverinfo`; columnas del reporte Invoices. Detalle en PEN-49.
