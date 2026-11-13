@@ -671,3 +671,8 @@ Evidencia (sólo GET): columnas, fórmulas y automatizaciones de PROJECT KMV 1.0
 
 Estado: análisis entregado; sin cambios; el usuario revisará las columnas.
 Evidencia (sólo GET, todas las filas de CC y BS 2026, sólo conteos y fórmulas normalizadas): fórmula de celda de `Invoice # Days`; formato condicional por fila deducido del formato aplicado; cruce de estado y etapa de facturación. Detalle en PEN-49.
+
+## 2026-11-13 11:44 -05:00 Hoja generadora de facturación identificada (PEN-49)
+
+Estado: análisis entregado; sin cambios.
+Evidencia (sólo GET): búsqueda en las 132 hojas y los reportes de la cuenta; alcance y columnas de 4 reportes `Generator`; filas de BS, CC y Others Generator (todas con `Invoice? GALP` sin marcar); `Payment Request` y `Alerta_factura` sin vínculos.
