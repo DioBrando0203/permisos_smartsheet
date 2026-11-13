@@ -94,6 +94,8 @@ app/
   services/project_catalog.py   lectura del catálogo desde Proyectos y la hoja catálogo, validación y plan
   services/catalog_sync.py      escritura de la hoja catálogo en Pruebas con barreras; nunca borra
   api/routes/catalogs.py        /api/catalogs: consultas y sincronización protegida
+  services/records/rules.py     reglas puras de la hoja hija de Records: crear, esperar y actualizar contexto (SPEC-B18)
+  services/records/sync.py      paso del procesador que crea y mantiene la hoja de Records con barreras; nunca borra
   services/obs/rules.py         reglas puras de Obs: formato MM.DD, unión del mismo día, límite y archivo (SPEC-B17)
   services/obs/store.py         comentarios ya copiados a Obs en PostgreSQL (migración 004)
   services/obs/sync.py          paso del procesador que copia comentarios nuevos a Obs con barreras; nunca borra texto

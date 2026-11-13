@@ -52,6 +52,11 @@ class Settings(BaseSettings):
     app_obs_timezone: str = "America/Lima"
     app_obs_interval_seconds: int = 30
     app_obs_max_rows: int = 20
+    # Hoja hija de Records (SPEC-B18): exige las barreras de escritura del ID Manager.
+    app_records_sync_enabled: bool = False
+    app_records_sheet_id: str = ""
+    app_records_interval_seconds: int = 30
+    app_records_max_rows: int = 20
     app_allowed_hosts: str = _DEFAULT_HOSTS
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""

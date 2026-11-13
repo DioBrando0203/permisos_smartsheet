@@ -358,3 +358,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - 346 pruebas backend aprobadas (4 nuevas en `test_id_rehome.py`); Ruff y formato correctos.
 - Traslado real: simulación y `--confirmar` con 8 madres, 68 comentarios y 7 asignaciones que siguen en la hoja anterior; base: 8 asignaciones en la copia y 7 en la anterior; simulación del procesador sobre la copia sin pendientes (8 `already_stable`, 6 `child_inherited`) y Obs sin pendientes.
+
+# 2026-11-13 10:10 -05:00 Hoja hija de Records (PEN-49, SPEC-B18)
+
+- 352 pruebas backend aprobadas (6 nuevas en `test_records_sync.py`); Ruff y formato correctos.
+- Hoja `Records Requests` creada por API en Pruebas y releída: 23 columnas, contexto bloqueado, `Master Row` oculta, fórmulas y 3 referencias OK; casilla `Records Needed` en la maestra.
+- Vista previa real sin escrituras: 14 filas, ninguna marcada, nada que crear. Prueba real pendiente del reinicio.
