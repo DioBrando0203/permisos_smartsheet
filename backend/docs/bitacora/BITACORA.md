@@ -596,3 +596,8 @@ Resumen: opciones, costos y recomendación registrados en PEN-45 (quitar columna
 
 Estado: consulta respondida con la ayuda oficial; sin cambios en Smartsheet.
 Resumen en PEN-45: la vista de tabla no amplía el límite; el millón de celdas exige hoja a gran escala (Enterprise), que desactiva grid, automatizaciones y endpoints de la API que usa el servicio. Pista para PEN-43 y SPEC-B16: filtrado dinámico de desplegables vinculados en la vista de tabla, por probar en una copia.
+
+## 2026-11-12 19:00 -05:00 Hoja a gran escala: impacto en la API del servicio (PEN-45)
+
+Estado: consulta respondida; sin cambios.
+Evidencia: el cliente implementa `list_columns` con `GET /sheets/{id}/columns` y `get_row` con `GET /sheets/{id}/rows/{rowId}`, los dos no admitidos en hojas a gran escala; búsqueda en `app/`: unas 20 llamadas en 5 módulos. Usuario con plan Enterprise. Registrado en PEN-45 y HK-20.
