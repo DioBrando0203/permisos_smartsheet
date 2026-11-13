@@ -15,7 +15,7 @@ Estado: en uso en Pruebas (prueba real correcta el 2026-11-13 10:20, PEN-49). Pr
 ## Reglas
 
 - RH-05: una fila de la maestra con `Records Needed` marcada y un Tracking Project canónico (no vacío ni `Pending ID`) recibe una fila en la hoja hija, una sola vez: el vínculo es `Master Row`. Madres e hijas por igual. Sin ID todavía, espera.
-- RH-06: al crearla se copian el contexto y, una sola vez, los valores de Records que ya tenga la fila de la maestra (las columnas de RH-04 con el mismo título que existan en ella); desde entonces la hoja hija es la fuente de esos datos.
+- RH-06 (desde el 2026-11-13 la maestra ya no tiene las columnas de Records salvo `Designer2`, así que sólo se copian el contexto y `Designer2`): al crearla se copian el contexto y, una sola vez, los valores de Records que ya tenga la fila de la maestra (las columnas de RH-04 con el mismo título que existan en ella); desde entonces la hoja hija es la fuente de esos datos.
 - RH-07: el contexto se mantiene al día: si cambia en la maestra (por ejemplo, el Tracking Project tras un cambio de cliente, o el nombre del proyecto), se reescribe en la hoja hija, aunque la casilla ya no esté marcada.
 - RH-08: nunca borra. Desmarcar la casilla o borrar la fila de la maestra no toca la fila de Records; volver a marcar reutiliza la misma fila. Una fila copiada en la maestra es otra fila: si lleva la casilla marcada, recibe su propia fila de Records.
 - RH-09: nada técnico a la vista: `Master Row` va oculta; el servicio no escribe notas ni comentarios.

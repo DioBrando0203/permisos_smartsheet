@@ -365,3 +365,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Hoja `Records Requests` creada por API en Pruebas y releída: 23 columnas, contexto bloqueado, `Master Row` oculta, fórmulas y 3 referencias OK; casilla `Records Needed` en la maestra.
 - Vista previa real sin escrituras: 14 filas, ninguna marcada, nada que crear. Prueba real pendiente del reinicio.
 - Prueba real (2026-11-13 10:20): 9 filas marcadas en la maestra y 9 en Records, sin duplicados ni faltantes, contexto igual; valores iniciales copiados donde la hoja hija no se editó después.
+
+# 2026-11-13 10:48 -05:00 Columnas de Records y numeración provisional borradas de la maestra (PEN-49)
+
+- Migración previa: 4 filas con datos sin marcar, marcadas por API; 4 filas creadas en Records con los datos iguales.
+- Borrado de 14 columnas por API, sin fallos; maestra con 122 columnas; ninguna otra fórmula las usaba; 4 automatizaciones activas sin cambio de estado; 14 Tracking Project iguales y sin errores de fórmula; procesador sin errores en el ciclo siguiente; Records, Obs y catálogo sin pendientes.

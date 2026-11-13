@@ -656,3 +656,8 @@ Evidencia (sólo lectura): 9 filas marcadas, 9 filas en `Records Requests` enlaz
 
 Estado: hecha; falta la confirmación del usuario para borrar las 14 columnas de Records de la maestra.
 Evidencia: 4 filas (KMV-CC-26-001 hija, KMV-CC-26-002 madre y 2 hijas) marcadas por API; el procesador creó sus 4 filas en `Records Requests` en menos de un minuto con los datos iguales (`Designer2`, `LT Records`, `Records Status`, `Record Box`); la hoja hija tiene 13 filas.
+
+## 2026-11-13 10:48 -05:00 Columnas de Records y de numeración provisional borradas (PEN-49, PEN-45)
+
+Estado: hecho; `Designer2` y `Email Designer2` se quedan por ahora; el usuario revisará las 4 sin uso restantes.
+Evidencia: 14 columnas borradas por API en PROJECT KMV 1.0.0 (Pruebas); 122 columnas; automatizaciones activas sin cambios; IDs y fórmulas sin errores; un `assign_failed` pasajero (hoja cambiada durante la lectura) y el ciclo siguiente correcto.
