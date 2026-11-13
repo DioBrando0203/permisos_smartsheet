@@ -32,7 +32,6 @@ RECORDS = ChildSpec(
         "Date Received",
     ),
     initial=(
-        "Designer2",
         "Request Type",
         "Send Method",
         "Record Request",

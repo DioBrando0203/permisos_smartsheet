@@ -10,7 +10,7 @@ Estado: en uso en Pruebas (prueba real correcta el 2026-11-13 10:20, PEN-49). Pr
 ## Hojas
 
 - RH-03: maestra: `IDS_MASTER_SHEET_ID` (hoy PROJECT KMV 1.0.0), con la casilla `Records Needed`. Hoja hija: `APP_RECORDS_SHEET_ID`.
-- RH-04: columnas de la hoja hija. Contexto, bloqueadas y escritas por el servicio: `Tracking Project` (principal), `Customer`, `Agency`, `Project Name`, `Project Address`, `City`, `County`, `Date Received`. Trabajo de Records, editadas por el equipo: `Designer2` (responsable; se renombrará), `Email Designer2` (fórmula desde Contact List), `Request Type`, `Send Method`, `Record Request`, `Reminder Sent`, `LT Records`, `Future Project #`, `PRR #`, `Security Key`, `Record Received`, `Records Status`, `Record Box`, `Record # Days` (fórmula). Técnica, oculta y bloqueada: `Master Row` (id de la fila de la maestra).
+- RH-04: columnas de la hoja hija. Contexto, bloqueadas y escritas por el servicio: `Tracking Project` (principal), `Customer`, `Agency`, `Project Name`, `Project Address`, `City`, `County`, `Date Received`. Trabajo de Records, editadas por el equipo: `Permitting Team` (responsable; antes `Designer2`, desde el 2026-11-13 columna de contacto con las personas activas con correo del directorio, sin columna de correo aparte), `Request Type`, `Send Method`, `Record Request`, `Reminder Sent`, `LT Records`, `Future Project #`, `PRR #`, `Security Key`, `Record Received`, `Records Status`, `Record Box`, `Record # Days` (fórmula). Técnica, oculta y bloqueada: `Master Row` (id de la fila de la maestra).
 
 ## Reglas
 

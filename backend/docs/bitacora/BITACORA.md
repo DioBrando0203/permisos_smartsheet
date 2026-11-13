@@ -699,3 +699,9 @@ Evidencia: copia en `Billing` comprobada antes de borrar; 9 columnas borradas po
 
 Estado: registrada; sin cambios; falta la decisión del usuario.
 Resumen: motivo de las columnas `Email` (avisos sólo a contactos, directorio con `Activo`), propuesta de columnas de contacto con lista fija, migración de nombres a contactos y nombre de `Designer2` en Records.
+
+## 2026-11-13 12:53 -05:00 Designer2 a Records como Permitting Team y limpieza de la maestra (PEN-49, PEN-50)
+
+Estado: hecho.
+Cambios (API, autorizado por el usuario): `Designers List` sólo con `Designer1`; 6 columnas borradas de la maestra; en Records, `Designer2` renombrada `Permitting Team` y convertida en contacto, `Email Designer2` borrada; `Designer2` fuera de los valores iniciales de Records en el código.
+Evidencia: datos de `Designer2` comprobados en Records antes de borrar; 107 columnas en la maestra; sin errores de fórmula; procesador sin errores; 352 pruebas aprobadas. Avisos `New Task` encontrados apagados desde la interfaz (no por estos cambios).

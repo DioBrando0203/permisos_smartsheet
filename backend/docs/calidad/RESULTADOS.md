@@ -377,3 +377,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Records en vivo tras la generalización: `last_records_sync` sin errores. Hoja `Billing` creada y releída; vista previa real: 14 filas, 8 columnas iniciales, sin resumen sobre la fórmula de la maestra.
 - Prueba real (2026-11-13 12:11): 14 filas en `Billing`, contexto y datos de factura iguales a la maestra, sin duplicados ni errores.
 - Migración de la maestra (2026-11-13 12:25): 9 columnas de factura borradas tras comprobar la copia en `Billing`; fórmula de `Invoice Status` quitada; 113 columnas; `Invoice Status` igual a `Billing` en 14 de 14 filas; sin errores de fórmula; automatizaciones sin cambios; procesador sin errores.
+
+# 2026-11-13 12:53 -05:00 Designer2 a Records como Permitting Team y limpieza de la maestra (PEN-49, PEN-50)
+
+- 352 pruebas backend aprobadas; una corrida previa dio 35 errores pasajeros al arrancar el PostgreSQL temporal de las pruebas y la siguiente pasó completa sin cambios de código. Ruff y formato correctos.
+- Maestra 107 columnas, Records 22, Billing 40, sin errores de fórmula; procesador y hojas hijas sin errores; 4 asignaciones de Records convertidas a contacto con correo.

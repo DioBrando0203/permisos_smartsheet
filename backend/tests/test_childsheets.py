@@ -134,8 +134,8 @@ def _sheets(router, master_titles: list[str], child_titles: list[str]) -> TwoShe
     return fake
 
 
-RECORDS_MASTER = [*RECORDS.context, "Records Needed", "Designer2", "PRR #", "Record Request"]
-RECORDS_CHILD = [*RECORDS.context, "Master Row", "Designer2", "PRR #", "Record Request"]
+RECORDS_MASTER = [*RECORDS.context, "Records Needed", "PRR #", "Record Request"]
+RECORDS_CHILD = [*RECORDS.context, "Master Row", "PRR #", "Record Request"]
 
 
 async def test_records_creates_once_and_follows_context(router) -> None:
@@ -146,7 +146,7 @@ async def test_records_creates_once_and_follows_context(router) -> None:
             "City": "Doral",
             "Date Received": "2026-10-12",
             "Records Needed": True,
-            "Designer2": "Persona Uno",
+            "PRR #": "PRR-7",
             "Record Request": "2026-11-01",
         },
         "2": {"Tracking Project": "Pending ID", "Records Needed": True},
@@ -166,7 +166,7 @@ async def test_records_creates_once_and_follows_context(router) -> None:
     assert second["created"] == 0 and second["updated"] == 0
     assert third["updated"] == 1
     (row,) = sheets.rows[CHILD].values()
-    assert row["Master Row"] == "1" and row["Designer2"] == "Persona Uno"
+    assert row["Master Row"] == "1" and row["PRR #"] == "PRR-7"
     assert row["Record Request"] == "2026-11-01" and row["City"] == ""
 
 
