@@ -611,3 +611,8 @@ Evidencia (sólo GET, desde el equipo Windows): hojas 2026 de Breezeline (38 fil
 
 Estado: respondida; sin cambios en Smartsheet ni decisión.
 Resumen en PEN-45: ida y vuelta completa no ahorra celdas; diseño en estrella (cada grupo en su hoja, contexto por fórmula en la hija, como mucho una columna resumen en la maestra) y limpiar las 33 columnas primero.
+
+## 2026-11-13 00:30 -05:00 Análisis de uso de columnas con todos los clientes (PEN-45)
+
+Estado: análisis entregado en `ANALISIS_COLUMNAS_KMV.md`; sin cambios en Smartsheet; el usuario decide antes de quitar nada.
+Evidencia (sólo GET, sólo conteos, script temporal fuera del repo con el cliente del backend): 12 hojas originales (2025: 3 938 filas con datos; 2026: 3 634 al 12-nov, 1 423 madres y 2 211 hijas), 140 columnas de PROJECT KMV con fórmulas, 5 reportes, 6 automatizaciones y búsqueda en el código del backend (`Project Number`, `Frozen Number` y `Designers List` no se usan). El usuario indicó que el metraje lo llena diseño, o facturación si los jefes lo deciden.

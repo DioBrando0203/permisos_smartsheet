@@ -1,0 +1,52 @@
+# Análisis de columnas de PROJECT KMV para la maestra anual (PEN-45)
+
+Medido el 2026-11-13 00:30 -05:00 desde el equipo Windows, sólo con GET y guardando sólo conteos (sin contenido de celdas). Sin cambios en Smartsheet: nada se borra hasta que el usuario lo decida.
+
+## Método
+
+- AC-01: fuentes: las 12 hojas originales `Engineering Plan` de 2025 y 2026 de los 6 clientes (Crown Castle, Blue Stream, Breezeline, Lightpath, Hotwire, Others), las 140 columnas de PROJECT KMV con sus fórmulas, los 5 reportes de `Producto/Reports`, las 6 automatizaciones de PROJECT KMV y el código del backend.
+- AC-02: porcentaje = celdas con valor ÷ filas con datos de las hojas que tienen la columna; las casillas cuentan sólo marcadas; filas totalmente vacías excluidas. En 2026 se separa madre (proyecto) e hija (permiso). Las columnas calculadas no se miden por llenado.
+- AC-03: formato de las cifras: `2025 % / 2026 madres % / 2026 hijas %`. 2026 está incompleto: para columnas de fin de proceso (facturas pagadas, as-built) 2025 es la mejor referencia.
+- AC-04: no se ven por API las Dynamic Views ni los formatos condicionales; antes de borrar, el usuario los revisa.
+
+## Filas y capacidad
+
+- AC-05: 2025 cerró con 3 938 filas con datos (CC 2 377, BS 1 275, BZ 147, OT 94, LP 30, HC 15), casi sin jerarquía.
+- AC-06: 2026 lleva 3 634 al 12-nov (CC 2 221, BS 1 284, OT 48, LP 35, BZ 31, HC 15): 1 423 madres y 2 211 hijas. Proyección a fin de año: unas 4 200 (+6,6 % sobre 2025). Con el mismo crecimiento, 2027: unas 4 470.
+- AC-07: capacidad = 500 000 celdas ÷ columnas: 140 → 3 571 filas (no entra 2026); 107 → 4 672; 99 → 5 050; 98 → 5 102; 89 → 5 617.
+
+## Para quitar o unir (33 columnas, de 140 a 107)
+
+- AC-08: sin uso real (13): `CAD Update` 0,0/0,4/0,0; `CADDING` 0,0/0,4/0,0; `Bond?` 0,2/0,4/0,0; `Bond Fee Application` 0,2/0,4/0,0; `Inspection Date` 0,2/0,4/0,0; `Inspection Pass` 0,2/0,4/0,0; `Runner Pick up` 0,2/0,4/0,1; `Runner Submitting` 0,3/0,5/0,2; `Permit Coordinator Approved Date (QC)` 0,7/0,4/0,0; `Invoice GALP # Days` –/0,4/0,0; `PM Approval Invoices Days` –/0,5/0,1; `Project Number` y `Frozen Number` (ocultas; desde ID-48 nada las usa, tampoco el backend). Las tres de "Runner"/"Permit Coordinator" están en el reporte `Permitting`, casi siempre vacías.
+- AC-09: cantidades de servicios raros (6 → 1, quita 5): `Aerial` 1,7/1,0/0,0 (reporte Invoices); `Additional Site Survey` 1,2/3,0/0,1; `Sonde FTG` 0,3/1,6/0,1; `GPR` 0,8/1,3/0,0; `Survey Certified` 0,5/0,8/0,4; `Tone Locating` 0,3/0,8/0,0. Las llena diseño a nivel de proyecto. Propuesta: una columna de texto `Other Services` (por ejemplo `GPR: 300 ft`). Costo: deja de sumarse como número; si facturación necesita totales, conservarlas.
+- AC-10: proceso Sonde (3): `Sonde Request` 0,2/1,1/0,8; `Sonde Received` 0,2/1,1/0,8; `Sonde # Days` (calculada). El dato puede ir en la conversación de la fila, que el servicio copia a `Obs`.
+- AC-11: días calculados que ningún reporte usa (6): `Project # Days`, `QC # Days`, `PM Approval Days`, `Design Completed Days`, `Design MOT # Days`, `As-built # Days`. Sus fechas de origen se quedan; se pueden recalcular cuando haga falta.
+- AC-12: nuevas en KMV sin datos en ninguna hoja original, por confirmar con el usuario (6): `Security Key`, `Future Project #`, `Reminder Sent`, `Mile Post`, `DT Owner` y `Designers List` (oculta, ninguna fórmula, reporte, automatización ni código la usa). `Request Type` y `Send Method` también son nuevas sin datos, pero están en el reporte All Records Request: se quedan salvo que se descarte el nuevo flujo de Records.
+
+## Se quedan (107)
+
+- AC-13: identificación y cliente, 86 a 100 % en ambos años: `Primary`, `Type of Project`, `Priority`, `Task`, `Tracking Project`, `Linked Tracking`, `Project Name`, `Project Address`, `City`, `County`, `Customer`, `Client Access`, `Date Received`, `Drawing Due Date`. `CC System` casi no se usaba en 2025 (0,2 %) pero en 2026 va en 38 % de madres y 33 % de hijas.
+- AC-14: diseño (sobre todo en madres): `Survey Completed`, `Survey Check`, `Design Completed`, `PM Approval Date`, `Surveyor`, `Engineer`, `Designer1`, `Designer2`, `QC IN` y `QC OUT` (49 % de madres 2026), `Design Ticket` (28 %), metraje `Total Footage` (52 %), `UG` (24 %), `UG + Profile` (28 %), `ISP` (31 %), `TYPICAL MOT` (11 %), `Custom MOT`, diseño de MOT (6 a 8 %), Prepare Packages (28 %), as-built (6 %). El metraje lo llena diseño: se queda en la maestra.
+- AC-15: permisos (sobre todo en hijas): `Agency` 79 %, `LT` 86 %, `Submitted Date` 48 %, `Permit #` 37 %, `Permit Approved` 19 %, `Permit Expires` 17 %, `Stamp & Seal` 13 %, `Stamp And Signatures #` 12 %, `Permit Fee` 10 %, primera revisión 10 a 12 %, segunda 2 a 4 %, envío y retorno de aplicación al contratista 6 a 8 %, `Permitting Team`, `Contractor`, `Construction Manager`, `Obs`.
+- AC-16: Records (en hijas): `Records Status` 81 %, `PRR #` 27 %, `Record Request` 26 %, `Record Received`, `Record Box` y `LT Records` unos 21 %, `Record # Days`, `Request Type`, `Send Method`.
+- AC-17: facturación (en madres y en hijas): `Invoice? GALP` y `Invoice? KMV` 85 a 89 %, `Invoice Completed (Galp)` y `PM Approval Invoice Date` 86 a 89 %, `Purchase Orden` 74 a 76 %, `Invoice Sent` 70 a 72 % (95 % en 2025), `Customer invoice?` 69 a 72 %, `Invoice Paid` 54 % (89 % en 2025), `Invoice # Days`, `Invoice Status`.
+- AC-18: días calculados en reportes (`Permitting` e `Invoices`): `Invoice # Days`, `Record # Days`, `Process # Days`, `Permit - Days in Submitted`, `Prepare Packages # Days`, `App Delay Days from Contractor`, `Permit # Days` y los cuatro de revisiones.
+- AC-19: técnicas y de sistema: `Customer Code`, `Year`, `Row Order`, `Row Level`, `Stable Tracking Project`, `Control Linked Tracking`, `Phase`, `Closed`, `Email Designer1`, `Email Designer2`, `Email Permitting`, `Modified`, `Modified By`, `Created`, `Created By`.
+
+## Hojas hijas (consulta del usuario)
+
+- AC-20: una celda ocupa espacio en la hoja donde está, aunque su valor venga de otra; sólo ahorra mover un grupo de columnas que viva únicamente en la hoja hija. Sincronizar todo en los dos sentidos no ahorra nada.
+- AC-21: hallazgo: la facturación no es sólo por proyecto; 85 a 89 % de las hijas también tienen datos de factura. Una hoja de Facturación, igual que una de Records, necesita una fila por cada fila de la maestra y una llave por fila (una columna oculta escrita por el servicio, que suma 1 columna a la maestra), no sólo el `Tracking Project`.
+- AC-22: candidatas: Records (9 columnas, sobre todo en hijas; 4 están en el reporte `Permitting` y 2 automatizaciones `LT Records` se mudarían; ya existe `Solicitudes de Records` en el piloto y hay columnas nuevas de un flujo rediseñado) y Facturación (10 columnas; se mudan el reporte `Invoices` y la fórmula `Invoice Status`). El metraje no se muda porque lo llena diseño; si los jefes deciden que lo llene facturación, se mudaría con Facturación (4 a 5 columnas más).
+- AC-23: escenarios (columnas, filas que caben):
+  - sólo hojas hijas, sin limpiar (Records y Facturación, más la llave): 122 columnas, 4 098 filas; no entra 2026.
+  - sólo limpiar: 107 columnas, 4 672 filas; 11 % sobre 2026 y 4 % sobre 2027.
+  - limpiar y Records aparte: 99 columnas, 5 050 filas.
+  - limpiar y Facturación aparte: 98 columnas, 5 102 filas.
+  - limpiar y las dos aparte: 89 columnas, 5 617 filas.
+
+## Recomendación (sin decisión)
+
+- AC-24: primero limpiar (AC-08 a AC-12): no requiere infraestructura nueva y alcanza para 2026 y, con el crecimiento actual, para 2027.
+- AC-25: plan B si el crecimiento pasa de unos 10 % o si se rediseña Records: separar Records primero. Facturación sólo si la llenaría otro equipo (decisión de los jefes), porque obliga a trabajar en dos hojas.
+- AC-26: pendiente del usuario: confirmar AC-12, decidir `Other Services` (AC-09) y revisar Dynamic Views y formatos condicionales. En producción "quitar" significa crear la maestra anual sin esas columnas; los datos históricos siguen en las hojas de cada cliente, que no se tocan.

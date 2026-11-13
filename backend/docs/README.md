@@ -16,6 +16,7 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `ARQUITECTURA.md`: estructura y límites entre módulos.
 - `REQUERIMIENTOS.md`: requisitos verificables (RQ-xx), límites honestos y backlog priorizado (PEN-xx) con su estado.
 - `HOJA_PROJECT_KMV.md`: estado actual de la hoja de trabajo PROJECT KMV y sus catálogos, columnas, fórmulas, automatizaciones, vistas, reportes y lo que el servicio hace sobre ella (HK-xx).
+- `ANALISIS_COLUMNAS_KMV.md`: uso medido de cada columna en las hojas originales 2025 y 2026, capacidad de la maestra anual, columnas a quitar y hojas hijas (AC-xx, PEN-45).
 - `specs/SPEC-B01-hojas.md`: listado y detalle de hojas.
 - `specs/SPEC-B02-permisos.md`: CRUD de permisos de una hoja.
 - `specs/SPEC-B03-usuarios.md`: personas con acceso y sus hojas (vista por usuario).

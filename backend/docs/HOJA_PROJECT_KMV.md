@@ -68,5 +68,5 @@ Foto del 2026-11-12 18:45 -05:00, leída por API (sólo GET) y cruzada con las s
 
 - HK-38: PEN-44: configurar y probar la vista de clientes con otra cuenta; primer envío real de `Client | Status Update`.
 - HK-39: PEN-27: aprobación de la clasificación de estados, `Phase` de los estados en mayúsculas y reportes filtrados por `Closed`.
-- HK-40: PEN-43: estados por equipo en el desplegable (falta decisión). PEN-45: decidir qué columnas quitar (11 sin uso real, 11 de uso mínimo y 6 nuevas por confirmar) y luego planificar las maestras por año (creación anual, ID Manager con varias hojas, vistas y reportes por año).
+- HK-40: PEN-43: estados por equipo en el desplegable (falta decisión). PEN-45: decidir qué columnas quitar (propuesta de 33, de 140 a 107, en `ANALISIS_COLUMNAS_KMV.md`) y luego planificar las maestras por año (creación anual, ID Manager con varias hojas, vistas y reportes por año).
 - HK-41: Todo está en git en `main`: código de PEN-46 y PEN-47 en `57b7191`, este archivo en `97f513a` y el análisis de columnas en `9ad8a7e`. El asistente hace commit al terminar cada tarea y el usuario hace push.
