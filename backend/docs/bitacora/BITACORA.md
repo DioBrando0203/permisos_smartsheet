@@ -628,3 +628,8 @@ Evidencia (sólo GET, conteos): 12 hojas originales 2025 y 2026 (2025: 3 939 fil
 Estado: medición y opinión entregadas; sin cambios en Smartsheet; falta la decisión del usuario.
 Evidencia (sólo GET, conteos): 2026 de CC, BS y Others, 3 552 filas reales; la fila 1 de cada hoja es de ejemplo (114 a 117 columnas llenas) y se excluyó; 9 columnas sin ningún valor real. Detalle en AC-29 a AC-32.
 - Propuesta adicional del usuario (2026-11-13 09:25): Facturación en hoja aparte con un aviso en la maestra; registrada en AC-33 y AC-34.
+
+## 2026-11-13 09:50 -05:00 Hoja de trabajo nueva y hojas hijas (PEN-48, PEN-49)
+
+Estado: pendientes registrados; plan propuesto; sin cambios en Smartsheet ni en el servicio.
+Evidencia (sólo GET): copia `PROJECT KMV 1.0.0` en Pruebas con 140 columnas, 14 filas y los mismos Stable IDs; faltan 2 automatizaciones de `LT Records`; 68 comentarios copiados con ids nuevos (la original tiene 113 en 50 filas, contando filas borradas). Las de uso mínimo se quedan por ahora (decisión del usuario).
