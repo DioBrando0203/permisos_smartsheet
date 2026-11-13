@@ -601,3 +601,8 @@ Resumen en PEN-45: la vista de tabla no amplía el límite; el millón de celdas
 
 Estado: consulta respondida; sin cambios.
 Evidencia: el cliente implementa `list_columns` con `GET /sheets/{id}/columns` y `get_row` con `GET /sheets/{id}/rows/{rowId}`, los dos no admitidos en hojas a gran escala; búsqueda en `app/`: unas 20 llamadas en 5 módulos. Usuario con plan Enterprise. Registrado en PEN-45 y HK-20.
+
+## 2026-11-12 23:45 -05:00 Consulta: cuántas columnas tener en la maestra (PEN-45)
+
+Estado: recomendación entregada (unas 107 columnas, quitando 33); sin cambios en Smartsheet; falta la decisión del usuario.
+Evidencia (sólo GET, desde el equipo Windows): hojas 2026 de Breezeline (38 filas), Lightpath (39), Hotwire (21) y Others (49) que el conteo anterior no incluía; columnas de los 5 reportes de `Producto/Reports`: `Permitting` usa `Runner Pick up` y 9 columnas de días, `Invoices` usa `Aerial`. Detalle en PEN-45.
