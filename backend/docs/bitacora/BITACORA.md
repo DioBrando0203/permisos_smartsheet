@@ -748,3 +748,9 @@ Evidencia: 362 pruebas aprobadas (2 errores pasajeros del PostgreSQL temporal, a
 Estado: hecho.
 Cambios: `Control Linked Tracking` da `OK` en una hija cuyo `Linked Tracking` es su propio proyecto (permiso adoptado, ID-51). Se corrigieron las horas de las entradas de hoy desde las 15:25, que se habían anotado estimadas y adelantadas, con la hora real de cada commit.
 Evidencia: los 14 valores de control iguales antes y después del cambio.
+
+## 2026-11-13 18:35 -05:00 Primary siempre KMV-P
+
+Estado: hecho en PROJECT KMV 1.0.0.
+Cambios (API, pedido del usuario): fórmula de columna `="KMV-P"` en `Primary`, en lugar de una automatización; la automatización que el usuario empezaba a armar no llegó a guardarse.
+Evidencia: 14 de 14 filas con `KMV-P`; 103 columnas; automatizaciones sin cambios.
