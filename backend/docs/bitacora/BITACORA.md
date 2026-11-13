@@ -718,3 +718,9 @@ Evidencia: 353 pruebas aprobadas; 4 asignaciones iguales en las dos hojas; sin e
 Estado: hecho; faltan los avisos por proceso.
 Cambios: el usuario (interfaz, 16:09) convirtió `Designer1` en `Designers` (contactos múltiples) y `Permitting Team` en contacto, y borró `Email Designer1` y `Email Permitting`. Completado por API: correo de Contact List en las opciones (sólo activos con correo) y 12 filas de texto a contacto; pasada de Billing para `Invoice Status`.
 Evidencia: 106 columnas; `Designers` 8 de 18 opciones con correo, `Permitting Team` 7 de 12; 12 filas con contacto y correo; sin celdas con error; Records y Billing sin diferencias (plan en seco); el guardado de las 16:09 no tocó columnas del servicio salvo 9 celdas de `Invoice Status` con la fórmula vieja, corregidas. Los avisos `DV | New Task ...` ya no aparecen en la lista de automatizaciones (dependían de las columnas `Email`).
+
+## 2026-11-13 17:00 -05:00 Records Owner y avisos de asignación (PEN-50, SPEC-B18)
+
+Estado: hecho; quedan observaciones de los avisos para el usuario.
+Cambios: el usuario renombró en la maestra `Record Request Assignment` a `Records Owner` y rehízo en la interfaz los avisos de diseño, permisos y Records; el asistente renombró la columna en `Records Requests` por API y actualizó `specs.py`, pruebas y docs.
+Evidencia: 353 pruebas aprobadas, Ruff sin observaciones; pasada en seco de Records contra las hojas reales sin diferencias; avisos leídos con el conector (3 de asignación activos más `Client | Status Update`).

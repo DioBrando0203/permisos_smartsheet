@@ -31,7 +31,7 @@ WRITES = {
 }
 DATES = {"Date Received", "Record Request", "PM Approval Date", "Invoice Sent"}
 CHECKS = {"Records Needed", "Invoice? GALP"}
-CONTACTS = {"Record Request Assignment"}
+CONTACTS = {"Records Owner"}
 
 
 def master(row_id: str, needed: bool, tracking: str, **values) -> rules.MasterRow:
@@ -271,7 +271,7 @@ async def test_records_assignment_requests_the_row_and_copies_the_person(router)
     sheets.rows[pilot.PRESENTABLE] = {
         "1": {
             "Tracking Project": "KMV-CC-26-004",
-            "Record Request Assignment": "persona1@example.com",
+            "Records Owner": "persona1@example.com",
             "Records Needed": False,
         },
         "2": {"Tracking Project": "KMV-CC-26-005", "Records Needed": False},
@@ -281,11 +281,11 @@ async def test_records_assignment_requests_the_row_and_copies_the_person(router)
     sync = ChildSheetSync(settings, client, RECORDS, CHILD, interval=0)
     try:
         created = await sync.run()
-        sheets.rows[pilot.PRESENTABLE]["1"]["Record Request Assignment"] = "persona2@example.com"
+        sheets.rows[pilot.PRESENTABLE]["1"]["Records Owner"] = "persona2@example.com"
         changed = await sync.run()
     finally:
         await client.aclose()
     assert created["created"] == 1 and changed["updated"] == 1
     (row,) = sheets.rows[CHILD].values()
     assert row["Master Row"] == "1"
-    assert row["Record Request Assignment"] == "persona2@example.com"
+    assert row["Records Owner"] == "persona2@example.com"

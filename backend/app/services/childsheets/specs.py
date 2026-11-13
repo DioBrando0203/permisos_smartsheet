@@ -20,7 +20,7 @@ QUANTITIES = (
 # SPEC-B18: filas con la casilla marcada o una persona asignada; el trabajo vive en la hoja hija.
 RECORDS = ChildSpec(
     name="records",
-    triggers=("Records Needed", "Record Request Assignment"),
+    triggers=("Records Needed", "Records Owner"),
     context=(
         "Tracking Project",
         "Customer",
@@ -30,7 +30,7 @@ RECORDS = ChildSpec(
         "City",
         "County",
         "Date Received",
-        "Record Request Assignment",
+        "Records Owner",
     ),
     initial=(
         "Request Type",
