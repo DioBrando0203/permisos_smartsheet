@@ -616,3 +616,9 @@ Resumen en PEN-45: ida y vuelta completa no ahorra celdas; diseño en estrella (
 
 Estado: análisis entregado en `ANALISIS_COLUMNAS_KMV.md`; sin cambios en Smartsheet; el usuario decide antes de quitar nada.
 Evidencia (sólo GET, sólo conteos, script temporal fuera del repo con el cliente del backend): 12 hojas originales (2025: 3 938 filas con datos; 2026: 3 634 al 12-nov, 1 423 madres y 2 211 hijas), 140 columnas de PROJECT KMV con fórmulas, 5 reportes, 6 automatizaciones y búsqueda en el código del backend (`Project Number`, `Frozen Number` y `Designers List` no se usan). El usuario indicó que el metraje lo llena diseño, o facturación si los jefes lo deciden.
+
+## 2026-11-13 09:10 -05:00 Verificación del análisis de columnas desde el equipo Linux (PEN-45)
+
+Estado: verificado; sin cambios en Smartsheet.
+Cambios: `git pull` de 3 commits del equipo Windows (f2760c2, ea63cac, effb687); AC-27 y AC-28 en `ANALISIS_COLUMNAS_KMV.md`; PEN-45 marca como superado el análisis del 2026-11-12 18:51; HK-20 y AGENTS.md con las cifras de los 6 clientes.
+Evidencia (sólo GET, conteos): 12 hojas originales 2025 y 2026 (2025: 3 939 filas; 2026: 3 638, 1 427 madres y 2 211 hijas); porcentajes de 10 columnas iguales al documento salvo `Aerial` 2025 (ceros); alcance de los reportes `Permitting` y `MOT y Paquetes` leído con `include=scope`: PROJECT KMV.
