@@ -31,6 +31,7 @@ WRITES = {
 }
 DATES = {"Date Received", "Record Request", "PM Approval Date", "Invoice Sent"}
 CHECKS = {"Records Needed", "Invoice? GALP"}
+CONTACTS = {"Record Request Assignment"}
 
 
 def master(row_id: str, needed: bool, tracking: str, **values) -> rules.MasterRow:
@@ -107,6 +108,11 @@ class TwoSheets:
                 "id": int(row_id),
                 "cells": [
                     {"columnId": titles.index(t) + 1, "value": v}
+                    | (
+                        {"objectValue": {"objectType": "CONTACT", "email": v}}
+                        if t in CONTACTS
+                        else {}
+                    )
                     for t, v in values.items()
                     if t in titles
                 ],
@@ -119,6 +125,8 @@ class TwoSheets:
 
 
 def _type(title: str) -> str:
+    if title in CONTACTS:
+        return "CONTACT_LIST"
     return "DATE" if title in DATES else "CHECKBOX" if title in CHECKS else "TEXT_NUMBER"
 
 
@@ -256,3 +264,28 @@ async def test_monitor_isolates_each_child_sheet(monkeypatch) -> None:
         "records": {"error": "records_failed", "type": "RuntimeError"},
         "billing": {"created": 1},
     }
+
+
+async def test_records_assignment_requests_the_row_and_copies_the_person(router) -> None:
+    sheets = _sheets(router, RECORDS_MASTER, RECORDS_CHILD)
+    sheets.rows[pilot.PRESENTABLE] = {
+        "1": {
+            "Tracking Project": "KMV-CC-26-004",
+            "Record Request Assignment": "persona1@example.com",
+            "Records Needed": False,
+        },
+        "2": {"Tracking Project": "KMV-CC-26-005", "Records Needed": False},
+    }
+    settings = make_settings(**WRITES)
+    client = SmartsheetClient(settings)
+    sync = ChildSheetSync(settings, client, RECORDS, CHILD, interval=0)
+    try:
+        created = await sync.run()
+        sheets.rows[pilot.PRESENTABLE]["1"]["Record Request Assignment"] = "persona2@example.com"
+        changed = await sync.run()
+    finally:
+        await client.aclose()
+    assert created["created"] == 1 and changed["updated"] == 1
+    (row,) = sheets.rows[CHILD].values()
+    assert row["Master Row"] == "1"
+    assert row["Record Request Assignment"] == "persona2@example.com"

@@ -17,10 +17,10 @@ QUANTITIES = (
     "GPR",
 )
 
-# SPEC-B18: sólo filas marcadas; el trabajo de Records vive en la hoja hija.
+# SPEC-B18: filas con la casilla marcada o una persona asignada; el trabajo vive en la hoja hija.
 RECORDS = ChildSpec(
     name="records",
-    trigger="Records Needed",
+    triggers=("Records Needed", "Record Request Assignment"),
     context=(
         "Tracking Project",
         "Customer",
@@ -30,6 +30,7 @@ RECORDS = ChildSpec(
         "City",
         "County",
         "Date Received",
+        "Record Request Assignment",
     ),
     initial=(
         "Request Type",
@@ -49,7 +50,7 @@ RECORDS = ChildSpec(
 # SPEC-B19: toda fila con ID; las cantidades siguen en la maestra (decisión del usuario).
 BILLING = ChildSpec(
     name="billing",
-    trigger=None,
+    triggers=(),
     context=(
         "Tracking Project",
         "Customer",

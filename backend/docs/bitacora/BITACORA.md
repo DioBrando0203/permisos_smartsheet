@@ -705,3 +705,10 @@ Resumen: motivo de las columnas `Email` (avisos sólo a contactos, directorio co
 Estado: hecho.
 Cambios (API, autorizado por el usuario): `Designers List` sólo con `Designer1`; 6 columnas borradas de la maestra; en Records, `Designer2` renombrada `Permitting Team` y convertida en contacto, `Email Designer2` borrada; `Designer2` fuera de los valores iniciales de Records en el código.
 Evidencia: datos de `Designer2` comprobados en Records antes de borrar; 107 columnas en la maestra; sin errores de fórmula; procesador sin errores; 352 pruebas aprobadas. Avisos `New Task` encontrados apagados desde la interfaz (no por estos cambios).
+
+## 2026-11-13 12:58 -05:00 Record Request Assignment en la maestra (PEN-49, corrección)
+
+Estado: hecho; falta crear en la interfaz el aviso al asignado.
+Motivo: el usuario señaló que borrar `Designer2` y llamarlo `Permitting Team` en Records mezclaba dos funciones distintas.
+Cambios: columna de contacto `Record Request Assignment` en la maestra con las 4 asignaciones devueltas; Records con la misma columna como contexto bloqueado; disparo de Records por casilla o asignación; contactos leídos y escritos por correo.
+Evidencia: 353 pruebas aprobadas; 4 asignaciones iguales en las dos hojas; sin errores en el procesador.

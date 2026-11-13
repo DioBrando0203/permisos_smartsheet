@@ -382,3 +382,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - 352 pruebas backend aprobadas; una corrida previa dio 35 errores pasajeros al arrancar el PostgreSQL temporal de las pruebas y la siguiente pasó completa sin cambios de código. Ruff y formato correctos.
 - Maestra 107 columnas, Records 22, Billing 40, sin errores de fórmula; procesador y hojas hijas sin errores; 4 asignaciones de Records convertidas a contacto con correo.
+
+# 2026-11-13 12:58 -05:00 Record Request Assignment (PEN-49, SPEC-B18)
+
+- 353 pruebas backend aprobadas (nueva: asignar a alguien pide la fila de Records y copia la persona por su correo); Ruff y formato correctos.
+- En vivo: columna creada en la maestra, 4 asignaciones devueltas desde Records, columna renombrada y bloqueada en Records; las dos hojas con las mismas 4 asignaciones; procesador y hojas hijas sin errores.

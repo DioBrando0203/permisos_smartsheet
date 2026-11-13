@@ -100,7 +100,12 @@ class SmartsheetClient:
         return [mappers.to_column(item) for item in items]
 
     async def list_rows(
-        self, sheet_id: str, column_ids: list[str], *, with_authors: bool = False
+        self,
+        sheet_id: str,
+        column_ids: list[str],
+        *,
+        with_authors: bool = False,
+        objects: bool = False,
     ) -> list[RawRow]:
         """Todas las filas, sólo con las columnas pedidas; la primera es la etiqueta.
 
@@ -115,8 +120,10 @@ class SmartsheetClient:
                 "pageSize": _ROWS_PAGE,
                 "page": page,
             }
-            if with_authors:
-                params["include"] = "writerInfo"
+            options = (("writerInfo", with_authors), ("objectValue", objects))
+            include = [name for name, on in options if on]
+            if include:
+                params["include"] = ",".join(include)
             data = await self._transport.request("GET", f"/sheets/{sheet_id}", params=params)
             batch = data.get("rows", [])
             rows.extend(mappers.to_row(item, label) for item in batch)

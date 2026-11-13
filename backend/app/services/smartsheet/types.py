@@ -116,6 +116,8 @@ class RawRow:
     date_cells: dict[str, date] = field(default_factory=dict)
     # Fila madre en hojas con jerarquía (indentación); None en filas de primer nivel.
     parent_id: str | None = None
+    # Correo de cada celda de contacto (columna -> correo); sólo si se pidió `objects`.
+    contacts: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

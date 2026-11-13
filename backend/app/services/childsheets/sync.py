@@ -46,8 +46,7 @@ class ChildSheetSync:
         self._last_at = now
         await self._check_barriers()
         spec = self.spec
-        trigger = (spec.trigger,) if spec.trigger else ()
-        master = await self._columns(pilot.PRESENTABLE, (*trigger, *spec.context))
+        master = await self._columns(pilot.PRESENTABLE, (*spec.triggers, *spec.context))
         child = await self._columns(self.sheet, (KEY, *spec.mirrored))
         initial = [t for t in spec.initial if t in master and t in child]
         # El resumen sólo vuelve a columnas de la maestra que no son fórmula.
@@ -96,21 +95,22 @@ class ChildSheetSync:
     async def _masters(
         self, cols: dict[str, RawColumn], titles: list[str]
     ) -> list[rules.MasterRow]:
-        trigger = self.spec.trigger
-        wanted = [cols[t].id for t in dict.fromkeys([*([trigger] if trigger else []), *titles])]
+        triggers = self.spec.triggers
+        wanted = [cols[t].id for t in dict.fromkeys([*triggers, *titles])]
         result = []
-        for row in await self.client.list_rows(pilot.PRESENTABLE, wanted):
+        for row in await self.client.list_rows(pilot.PRESENTABLE, wanted, objects=True):
             values = {title: _value(row, cols[title]) for title in titles}
             if ROW_TYPE in self.spec.derived:
                 values[ROW_TYPE] = "Permit" if row.parent_id else "Project"
-            needed = _value(row, cols[trigger]) is True if trigger else True
+            needed = any(_value(row, cols[t]) for t in triggers) if triggers else True
             result.append(rules.MasterRow(row.id, needed, values))
         return result
 
     async def _children(
         self, cols: dict[str, RawColumn], titles: list[str]
     ) -> list[rules.ChildRow]:
-        rows = await self.client.list_rows(self.sheet, [cols[t].id for t in (KEY, *titles)])
+        wanted = [cols[t].id for t in (KEY, *titles)]
+        rows = await self.client.list_rows(self.sheet, wanted, objects=True)
         return [
             rules.ChildRow(
                 row.id, str(_value(row, cols[KEY])), {t: _value(row, cols[t]) for t in titles}
@@ -142,7 +142,9 @@ class ChildSheetSync:
 
 
 def _value(row: RawRow, column: RawColumn) -> rules.Value:
-    """Fecha ISO, casilla booleana o texto visible; vacío como None."""
+    """Fecha ISO, casilla booleana, correo de un contacto o texto visible; vacío como None."""
+    if column.type == "CONTACT_LIST" and column.id in row.contacts:
+        return row.contacts[column.id]
     if column.type == "DATE":
         found = row.date_cells.get(column.id)
         return found.isoformat() if found else None

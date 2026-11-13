@@ -141,7 +141,18 @@ def to_row(data: Json, label_column_id: str | None = None) -> RawRow:
         cells=cells,
         date_cells=dates,
         parent_id=_optional_id(data.get("parentId")),
+        contacts=_contacts(data),
     )
+
+
+def _contacts(data: Json) -> dict[str, str]:
+    """Correo de las celdas con un contacto (`objectValue` CONTACT)."""
+    found = {}
+    for cell in data.get("cells") or []:
+        obj = cell.get("objectValue")
+        if isinstance(obj, dict) and obj.get("objectType") == "CONTACT" and obj.get("email"):
+            found[_id(cell.get("columnId"))] = str(obj["email"])
+    return found
 
 
 def to_cell_change(data: Json) -> RawCellChange:

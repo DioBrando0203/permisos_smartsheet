@@ -12,8 +12,9 @@ Value = str | bool | None
 @dataclass(frozen=True)
 class ChildSpec:
     name: str
-    # Casilla de la maestra que pide la fila; None: toda fila con Tracking Project canónico.
-    trigger: str | None
+    # Columnas de la maestra que piden la fila (casilla marcada o persona asignada; basta una);
+    # vacío: toda fila con Tracking Project canónico.
+    triggers: tuple[str, ...]
     # Maestra -> hija, siempre al día (bloqueadas en la hija).
     context: tuple[str, ...]
     # Maestra -> hija, una sola vez al crear la fila (si la maestra todavía las tiene).
