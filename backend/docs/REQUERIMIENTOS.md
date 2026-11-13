@@ -483,6 +483,15 @@ Plan propuesto: hacer configurable la hoja maestra del servicio (hoy constante `
 
 Hecho (2026-11-13 09:59, autorizado por el usuario): `IDS_MASTER_SHEET_ID` en la configuración (por defecto la hoja anterior) y `pilot.PRESENTABLE` lo lee; `services/ids/rehome.py` (plan puro y transacción) y `servicios/ids/mover_hoja_maestra.py` (simulación por defecto, `--confirmar`, respaldo en `~/galp_backups`, se niega con el procesador activo). Backend detenido por el asistente; traslado aplicado: 8 madres de PROJECT KMV a PROJECT KMV 1.0.0 (auditoría `inicializado`), 68 comentarios de la copia marcados en `obs_comentario`, 7 asignaciones de filas borradas siguen en la hoja anterior; `IDS_MASTER_SHEET_ID=8346710503018372` en `.env`. Simulación del procesador sobre la copia: 8 `already_stable`, 6 `child_inherited`, nada pendiente; Obs sin pendientes. PROJECT KMV ya no se vigila. Sin escritura en Smartsheet.
 
+Falta para cerrar el paso a la 1.0.0 (2026-11-13 18:40; la estructura de columnas ya está: 103 columnas, 3 asignaciones de contacto, Records y Billing):
+- Usuario, en la interfaz: rehacer sobre la 1.0.0 las Dynamic Views (diseño, permisos y clientes) y crear la de Records sobre `Records Requests`, cada una restringida por su columna de contacto (`Designers`, `Permitting Team`, `Records Owner`, `Client Access`); luego cambiar el enlace de los 4 avisos a las vistas nuevas.
+- Listas de contactos de las 3 columnas: completar los correos que faltan (10 personas en `Designers`, 5 en `Permitting Team`) y dejar en `Records Owner` sólo a quienes piden Records (hoy tiene las 14 personas activas con correo).
+- Avisos: que `DV | New Records Request` se dispare sólo al cambiar `Records Owner`; asunto de permisos; revisar los permisos de flujos ("Some recipients may not get notified").
+- Reportes de `Producto/Reports`: apuntarlos a la 1.0.0 (All Records Request a `Records Requests`, Invoices a `Billing`) y cambiar `Designer1`, `Designer2` y `Permitting Team` por las columnas nuevas.
+- Billing (PEN-49): reporte para facturación, colores y compartir; Records: automatizaciones de `LT Records`.
+- Al final: retirar la hoja anterior, `Contact List` y `Designers List`; arrancar el backend con el código actual (`Records Owner`).
+- Por decidir después: PEN-53 (estado del proyecto en la madre; afecta el aviso al cliente), PEN-43 (filtro de diseñadores), PEN-27, PEN-51.
+
 ### PEN-49 Hojas hijas de Records y Facturación
 
 Prioridad: media. Alcance: servicio y Smartsheet. Estado: Records en uso en Pruebas, prueba real correcta (2026-11-13 10:20); implementada (2026-11-13 10:10, SPEC-B18) y activada en `.env`; falta reiniciar el backend y la prueba real. Facturación, después de ver cómo funciona Records. Origen: propuesta del usuario (2026-11-13 09:50); diseño en `ANALISIS_COLUMNAS_KMV.md` AC-31, AC-33 y AC-34; depende de PEN-48.
