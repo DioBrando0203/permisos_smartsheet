@@ -684,3 +684,8 @@ Evidencia (sólo GET): búsqueda en las 132 hojas y los reportes de la cuenta; a
 Estado: implementada y activada en `.env`; falta reiniciar el backend y la prueba real.
 Cambios: `services/childsheets/` (reemplaza `services/records/`), `RawColumn.formula`, `child_syncs` en el procesador, `last_billing_sync`, SPEC-B19, hoja `Billing` creada por API.
 Evidencia: 352 pruebas aprobadas; Records en vivo sin errores tras la recarga; vista previa real de Facturación sin escrituras.
+
+## 2026-11-13 12:11 -05:00 Prueba real de la hoja de Facturación (PEN-49)
+
+Estado: correcta; falta reporte para facturación, colores y migración de la maestra.
+Evidencia (sólo lectura): 14 filas en `Billing` (8 madres, 6 hijas), contexto y 5 filas con datos de factura iguales a la maestra; `last_billing_sync` y `last_records_sync` en reposo.

@@ -375,3 +375,4 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - 352 pruebas backend aprobadas (`test_childsheets.py` reemplaza a `test_records_sync.py`, con casos de Facturación); Ruff y formato correctos.
 - Records en vivo tras la generalización: `last_records_sync` sin errores. Hoja `Billing` creada y releída; vista previa real: 14 filas, 8 columnas iniciales, sin resumen sobre la fórmula de la maestra.
+- Prueba real (2026-11-13 12:11): 14 filas en `Billing`, contexto y datos de factura iguales a la maestra, sin duplicados ni errores.
