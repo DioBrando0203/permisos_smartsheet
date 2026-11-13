@@ -724,3 +724,9 @@ Evidencia: 106 columnas; `Designers` 8 de 18 opciones con correo, `Permitting Te
 Estado: hecho; quedan observaciones de los avisos para el usuario.
 Cambios: el usuario renombró en la maestra `Record Request Assignment` a `Records Owner` y rehízo en la interfaz los avisos de diseño, permisos y Records; el asistente renombró la columna en `Records Requests` por API y actualizó `specs.py`, pruebas y docs.
 Evidencia: 353 pruebas aprobadas, Ruff sin observaciones; pasada en seco de Records contra las hojas reales sin diferencias; avisos leídos con el conector (3 de asignación activos más `Client | Status Update`).
+
+## 2026-11-13 18:20 -05:00 Tres columnas menos en la maestra (PEN-45)
+
+Estado: hecho.
+Cambios (API, pedido del usuario): borradas `Created`, `Created By` y `Designers List`.
+Evidencia: ninguna fórmula, aviso, hoja hija ni código las usaba; 103 columnas; sin celdas con error; Records y Billing sin diferencias (pasada en seco).

@@ -437,6 +437,8 @@ Análisis de columnas (2026-11-12 18:51; superado por `ANALISIS_COLUMNAS_KMV.md`
 
 Decisiones y propuesta (2026-11-13 09:25): las 6 columnas nuevas y las cantidades de servicios se quedan (AC-29); 9 columnas nunca usadas en 2026 (AC-30); propuesta del usuario de Records en hoja aparte con `Records Needed` en la maestra (AC-31) y cuentas de capacidad (AC-32). Sin decisión de borrar.
 
+Avance (2026-11-13 18:20, pedido del usuario): borradas de la maestra `Created`, `Created By` y `Designers List`; 103 columnas (4 854 filas). Pendientes de decisión: las 6 fórmulas de días sin reporte (AC-11), `Runner` ×2, Sonde ×3 y `Stamp & Seal`.
+
 ### PEN-46 Conversaciones de cada fila compiladas en una columna (reemplazo de Obs)
 
 Prioridad: media. Alcance: backend. Estado: en uso en Pruebas (2026-11-12, SPEC-B17); prueba real correcta en PROJECT KMV.
@@ -535,6 +537,7 @@ Datos (sólo GET, uso en 3 552 filas de 2026): `Prepare Packages` ya es una casi
 Propuesta: hoja hija `MOT & Packages` que se activa con `Prepare Packages` (existente) o con una casilla nueva `MOT Needed`; se mudan las 8 columnas de fechas y días; contexto como Records más `Permit #`, `Contractor` y `Project Status`; `Custom MOT` y `TYPICAL MOT` se quedan (cantidades de facturación). Ganancia neta: 7 columnas (106 a 99, unas 5 050 filas). Ajustes: reporte `MOT y Paquetes` sobre la hoja hija; el reporte `Permitting` usa `Design MOT Request` y los paquetes.
 Descartados por ahora (pocas columnas y las llena el mismo equipo de la maestra): As-Built (3 columnas, 2 %), Sonde (3, 1 %), aplicación al contratista (3, 5 %) y Runner (2, 0,1 %). Revisiones: PEN-51.
 Consulta (2026-11-13 18:05): juntar hojas separadas en un reporte y dar a cada persona una Dynamic View. Un reporte junta filas de varias hojas pero no las une: cada proyecto saldría como dos filas (la de la maestra y la de MOT y paquetes), con las columnas de igual nombre y tipo en una sola columna del reporte; una Dynamic View puede tener un reporte como origen. El reporte de la persona de MOT usa además `Project Status`, `Obs`, `Permit #`, `Agency` y la primera revisión, que quedarían en la otra fila: su trabajo se partiría en dos filas. La muestra de historial no encontró ediciones con el correo del directorio de esa persona (probablemente usa otra cuenta): falta confirmar con ella qué columnas llena antes de decidir.
+Columnas que llena la persona de MOT y paquetes (confirmado por el usuario con capturas, 2026-11-13 18:20): `Prepare Packages`, `Prepare Packages Request`, `Prepare Packages QC`, `Prepare Packages Completed`, `Project Status`, `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT` y `TYPICAL MOT`. Como también cambia `Project Status` y las cantidades de MOT (que se quedan en la maestra por facturación), una hoja aparte le partiría el trabajo en dos lugares. Recomendación: no separar por ahora; darle una vista de la maestra con esas columnas.
 
 ### PEN-53 Estado del proyecto en la fila madre (propuesta)
 
