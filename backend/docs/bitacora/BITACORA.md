@@ -622,3 +622,8 @@ Evidencia (sólo GET, sólo conteos, script temporal fuera del repo con el clien
 Estado: verificado; sin cambios en Smartsheet.
 Cambios: `git pull` de 3 commits del equipo Windows (f2760c2, ea63cac, effb687); AC-27 y AC-28 en `ANALISIS_COLUMNAS_KMV.md`; PEN-45 marca como superado el análisis del 2026-11-12 18:51; HK-20 y AGENTS.md con las cifras de los 6 clientes.
 Evidencia (sólo GET, conteos): 12 hojas originales 2025 y 2026 (2025: 3 939 filas; 2026: 3 638, 1 427 madres y 2 211 hijas); porcentajes de 10 columnas iguales al documento salvo `Aerial` 2025 (ceros); alcance de los reportes `Permitting` y `MOT y Paquetes` leído con `include=scope`: PROJECT KMV.
+
+## 2026-11-13 09:25 -05:00 Columnas sin uso real en 2026 y propuesta de Records aparte (PEN-45)
+
+Estado: medición y opinión entregadas; sin cambios en Smartsheet; falta la decisión del usuario.
+Evidencia (sólo GET, conteos): 2026 de CC, BS y Others, 3 552 filas reales; la fila 1 de cada hoja es de ejemplo (114 a 117 columnas llenas) y se excluyó; 9 columnas sin ningún valor real. Detalle en AC-29 a AC-32.
