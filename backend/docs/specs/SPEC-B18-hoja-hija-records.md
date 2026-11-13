@@ -1,6 +1,6 @@
 # SPEC-B18 Hoja hija de Records
 
-Estado: en construcción (2026-11-13, PEN-49). Primera hoja hija; Facturación usará el mismo mecanismo cuando se decida.
+Estado: en uso en Pruebas (prueba real correcta el 2026-11-13 10:20, PEN-49). Primera hoja hija; Facturación usará el mismo mecanismo cuando se decida.
 
 ## Objetivo
 

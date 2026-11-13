@@ -364,3 +364,4 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - 352 pruebas backend aprobadas (6 nuevas en `test_records_sync.py`); Ruff y formato correctos.
 - Hoja `Records Requests` creada por API en Pruebas y releída: 23 columnas, contexto bloqueado, `Master Row` oculta, fórmulas y 3 referencias OK; casilla `Records Needed` en la maestra.
 - Vista previa real sin escrituras: 14 filas, ninguna marcada, nada que crear. Prueba real pendiente del reinicio.
+- Prueba real (2026-11-13 10:20): 9 filas marcadas en la maestra y 9 en Records, sin duplicados ni faltantes, contexto igual; valores iniciales copiados donde la hoja hija no se editó después.
