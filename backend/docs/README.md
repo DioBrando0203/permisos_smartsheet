@@ -30,6 +30,7 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `specs/SPEC-B12-carga-disenadores.md`: trabajo abierto de cada diseñador por fase y si tiene acceso a sus hojas.
 - `specs/SPEC-B14-mapa.md`: vía, milepost, jurisdicción y parcela de un punto o tramo, desde servicios GIS públicos (borrador, PEN-29).
 - `specs/SPEC-B15-asociaciones.md`: validación de asociaciones entre proyecto y cliente contra un catálogo configurable, sólo lectura (PEN-24).
+- `specs/SPEC-B19-hoja-hija-facturacion.md`: hoja hija de Facturación con el contexto y las cantidades de la maestra y `Invoice Status` de vuelta (PEN-49).
 - `specs/SPEC-B18-hoja-hija-records.md`: hoja hija de Records creada y mantenida por el procesador desde la casilla `Records Needed` (PEN-49).
 - `specs/SPEC-B17-obs-conversaciones.md`: conversaciones de cada fila copiadas a la columna Obs por el procesador (PEN-46).
 - `specs/SPEC-B16-catalogo-linked-tracking.md`: capacidades nativas verificadas, catálogo de proyectos, validación de Linked Tracking y sincronización de la hoja catálogo (PEN-24).

@@ -113,6 +113,7 @@ def to_column(data: Json) -> RawColumn:
         primary=bool(data.get("primary")),
         type=data.get("type"),
         options=tuple(str(item) for item in data.get("options") or ()),
+        formula=data.get("formula") or None,
     )
 
 

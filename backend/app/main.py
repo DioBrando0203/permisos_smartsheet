@@ -16,10 +16,10 @@ from app.core.errors import AppError, app_error_handler
 from app.core.middleware import OriginMiddleware
 from app.frontend import DEFAULT_DIST, mount_frontend
 from app.services.catalog_sync import catalog_hook
+from app.services.childsheets.sync import child_hooks
 from app.services.ids.monitor import IdMonitor
 from app.services.ids.runtime import assign_factory
 from app.services.obs.sync import obs_hook
-from app.services.records.sync import records_hook
 
 
 def create_app(
@@ -42,7 +42,7 @@ def create_app(
         else None,
         obs_sync=obs_hook(settings, services.client),
         customer_change=settings.ids_customer_change_enabled,
-        records_sync=records_hook(settings, services.client),
+        child_syncs=child_hooks(settings, services.client),
     )
 
     @asynccontextmanager

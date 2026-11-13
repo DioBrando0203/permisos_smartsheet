@@ -96,6 +96,8 @@ class RawColumn:
     type: str | None = None
     # Opciones de un desplegable (PICKLIST); vacío en los demás tipos.
     options: tuple[str, ...] = ()
+    # Fórmula de columna, si la tiene: el servicio nunca escribe encima (SPEC-B19).
+    formula: str | None = None
 
 
 @dataclass(frozen=True)

@@ -678,3 +678,9 @@ Estado: análisis entregado; sin cambios.
 Evidencia (sólo GET): búsqueda en las 132 hojas y los reportes de la cuenta; alcance y columnas de 4 reportes `Generator`; filas de BS, CC y Others Generator (todas con `Invoice? GALP` sin marcar); `Payment Request` y `Alerta_factura` sin vínculos.
 - Regla del usuario (2026-11-13 11:44): reportes `Generator` y hojas de facturación de producción sólo de lectura; agregada a AGENTS.md.
 - Filtro del generador confirmado por el usuario (2026-11-13 11:55) y propuesta de hoja de Facturación registrada en PEN-49.
+
+## 2026-11-13 12:04 -05:00 Hoja hija de Facturación en prueba (PEN-49, SPEC-B19)
+
+Estado: implementada y activada en `.env`; falta reiniciar el backend y la prueba real.
+Cambios: `services/childsheets/` (reemplaza `services/records/`), `RawColumn.formula`, `child_syncs` en el procesador, `last_billing_sync`, SPEC-B19, hoja `Billing` creada por API.
+Evidencia: 352 pruebas aprobadas; Records en vivo sin errores tras la recarga; vista previa real de Facturación sin escrituras.

@@ -33,7 +33,7 @@ class IdMonitor:
         poll_seconds: float | None = None,
         obs_sync: Callable[[], Awaitable[dict]] | None = None,
         customer_change: bool = False,
-        records_sync: Callable[[], Awaitable[dict]] | None = None,
+        child_syncs: dict[str, Callable[[], Awaitable[dict]]] | None = None,
     ) -> None:
         self.client = client
         self.enabled = enabled
@@ -51,9 +51,9 @@ class IdMonitor:
         # Cambio de cliente y hijas al día (SPEC-ID01 ID-44 a ID-47); apagado por defecto.
         self.customer_change = customer_change
         self.last_obs: dict | None = None
-        # Hoja hija de Records (SPEC-B18); aislada como Obs.
-        self.records_sync = records_sync
-        self.last_records: dict | None = None
+        # Hojas hijas (SPEC-B18, SPEC-B19); cada una aislada como Obs.
+        self.child_syncs = dict(child_syncs or {})
+        self.last_children: dict[str, dict] = {}
         self.active = False
         self.last_run: str | None = None
         self.last_error: str | None = None
@@ -97,11 +97,12 @@ class IdMonitor:
                     self.last_obs = await self.obs_sync()
                 except Exception as error:
                     self.last_obs = {"error": "obs_sync_failed", "type": type(error).__name__}
-            if self.records_sync is not None:
+            for name, step in self.child_syncs.items():
                 try:
-                    self.last_records = await self.records_sync()
+                    self.last_children[name] = await step()
                 except Exception as error:
-                    self.last_records = {"error": "records_failed", "type": type(error).__name__}
+                    failed = {"error": f"{name}_failed", "type": type(error).__name__}
+                    self.last_children[name] = failed
         self.last_counts = report["counts"]
         self.last_outcomes = outcomes
         self.last_results = results

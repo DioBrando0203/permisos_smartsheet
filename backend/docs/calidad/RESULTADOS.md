@@ -370,3 +370,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - Migración previa: 4 filas con datos sin marcar, marcadas por API; 4 filas creadas en Records con los datos iguales.
 - Borrado de 14 columnas por API, sin fallos; maestra con 122 columnas; ninguna otra fórmula las usaba; 4 automatizaciones activas sin cambio de estado; 14 Tracking Project iguales y sin errores de fórmula; procesador sin errores en el ciclo siguiente; Records, Obs y catálogo sin pendientes.
+
+# 2026-11-13 12:04 -05:00 Hojas hijas genéricas y hoja de Facturación (PEN-49, SPEC-B19)
+
+- 352 pruebas backend aprobadas (`test_childsheets.py` reemplaza a `test_records_sync.py`, con casos de Facturación); Ruff y formato correctos.
+- Records en vivo tras la generalización: `last_records_sync` sin errores. Hoja `Billing` creada y releída; vista previa real: 14 filas, 8 columnas iniciales, sin resumen sobre la fórmula de la maestra.

@@ -73,7 +73,8 @@ async def get_ids_status(request: Request, services: ServicesDep) -> dict:
         "last_outcomes": monitor.last_outcomes,
         "last_catalog_sync": monitor.last_catalog,
         "last_obs_sync": monitor.last_obs,
-        "last_records_sync": monitor.last_records,
+        "last_records_sync": monitor.last_children.get("records"),
+        "last_billing_sync": monitor.last_children.get("billing"),
     }
 
 
