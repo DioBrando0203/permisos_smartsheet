@@ -388,7 +388,7 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - 353 pruebas backend aprobadas (nueva: asignar a alguien pide la fila de Records y copia la persona por su correo); Ruff y formato correctos.
 - En vivo: columna creada en la maestra, 4 asignaciones devueltas desde Records, columna renombrada y bloqueada en Records; las dos hojas con las mismas 4 asignaciones; procesador y hojas hijas sin errores.
 
-# 2026-11-13 19:40 -05:00 Permiso suelto bajo su proyecto (SPEC-ID01 ID-51, PEN-53)
+# 2026-11-13 18:15 -05:00 Permiso suelto bajo su proyecto (SPEC-ID01 ID-51, PEN-53)
 
 - 362 pruebas backend aprobadas (9 nuevas en `tests/test_id_adopt.py`: adopción sin gastar número, permiso con ID propio que toma el del proyecto, cuatro casos que no califican, interruptor apagado y relectura antes de mover). En la corrida completa 2 pruebas de Obs dieron error al arrancar el PostgreSQL temporal; solas pasan las 8. Ruff y formato correctos.
 - Plan en seco contra PROJECT KMV 1.0.0 (sólo lectura): 8 madres con ID y 6 hijas que heredan; ninguna fila para adoptar (las filas 11 y 14 no tienen `Linked Tracking`).

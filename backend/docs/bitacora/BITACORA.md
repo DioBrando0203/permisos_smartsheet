@@ -713,32 +713,38 @@ Motivo: el usuario señaló que borrar `Designer2` y llamarlo `Permitting Team` 
 Cambios: columna de contacto `Record Request Assignment` en la maestra con las 4 asignaciones devueltas; Records con la misma columna como contexto bloqueado; disparo de Records por casilla o asignación; contactos leídos y escritos por correo.
 Evidencia: 353 pruebas aprobadas; 4 asignaciones iguales en las dos hojas; sin errores en el procesador.
 
-## 2026-11-13 16:30 -05:00 Asignaciones como columnas de contacto (PEN-50)
+## 2026-11-13 16:15 -05:00 Asignaciones como columnas de contacto (PEN-50)
 
 Estado: hecho; faltan los avisos por proceso.
 Cambios: el usuario (interfaz, 16:09) convirtió `Designer1` en `Designers` (contactos múltiples) y `Permitting Team` en contacto, y borró `Email Designer1` y `Email Permitting`. Completado por API: correo de Contact List en las opciones (sólo activos con correo) y 12 filas de texto a contacto; pasada de Billing para `Invoice Status`.
 Evidencia: 106 columnas; `Designers` 8 de 18 opciones con correo, `Permitting Team` 7 de 12; 12 filas con contacto y correo; sin celdas con error; Records y Billing sin diferencias (plan en seco); el guardado de las 16:09 no tocó columnas del servicio salvo 9 celdas de `Invoice Status` con la fórmula vieja, corregidas. Los avisos `DV | New Task ...` ya no aparecen en la lista de automatizaciones (dependían de las columnas `Email`).
 
-## 2026-11-13 17:00 -05:00 Records Owner y avisos de asignación (PEN-50, SPEC-B18)
+## 2026-11-13 16:45 -05:00 Records Owner y avisos de asignación (PEN-50, SPEC-B18)
 
 Estado: hecho; quedan observaciones de los avisos para el usuario.
 Cambios: el usuario renombró en la maestra `Record Request Assignment` a `Records Owner` y rehízo en la interfaz los avisos de diseño, permisos y Records; el asistente renombró la columna en `Records Requests` por API y actualizó `specs.py`, pruebas y docs.
 Evidencia: 353 pruebas aprobadas, Ruff sin observaciones; pasada en seco de Records contra las hojas reales sin diferencias; avisos leídos con el conector (3 de asignación activos más `Client | Status Update`).
 
-## 2026-11-13 18:20 -05:00 Tres columnas menos en la maestra (PEN-45)
+## 2026-11-13 17:35 -05:00 Tres columnas menos en la maestra (PEN-45)
 
 Estado: hecho.
 Cambios (API, pedido del usuario): borradas `Created`, `Created By` y `Designers List`.
 Evidencia: ninguna fórmula, aviso, hoja hija ni código las usaba; 103 columnas; sin celdas con error; Records y Billing sin diferencias (pasada en seco).
 
-## 2026-11-13 19:05 -05:00 Control de tipo frente a jerarquía (PEN-53)
+## 2026-11-13 18:04 -05:00 Control de tipo frente a jerarquía (PEN-53)
 
 Estado: hecho en PROJECT KMV 1.0.0.
 Cambios (API, pedido del usuario): `Control Linked Tracking` marca madres de tipo permiso (`ERROR: PERMIT WITHOUT PROJECT`) e hijas de tipo proyecto (`ERROR: PROJECT AS PERMIT`); fórmula anterior respaldada fuera del repo.
 Evidencia: resultado previsto y obtenido: filas 11 y 14 con el error nuevo; las otras 12 con el mismo valor que antes; sin `#UNPARSEABLE`.
 
-## 2026-11-13 19:40 -05:00 Permiso creado en la vista pasa bajo su proyecto (ID-51, PEN-53)
+## 2026-11-13 18:15 -05:00 Permiso creado en la vista pasa bajo su proyecto (ID-51, PEN-53)
 
 Estado: hecho en el código; falta reiniciar el backend y probarlo en Pruebas.
 Cambios: regla ID-51 en `servicios/ids/SPEC.md`; `family.adoptions` y `PERMIT_TYPES`; `read_pilot` lee `Type of Project` y `Linked Tracking` si existen; acción `adopt_permit` planificada antes de reservar número; `customer_change._adopt` relee la fila y la indenta (`move_row_after(..., under=True)`); resultado `adopted` adelanta el ciclo siguiente.
 Evidencia: 362 pruebas aprobadas (2 errores pasajeros del PostgreSQL temporal, aprobadas al repetir); plan en seco real sin adopciones pendientes.
+
+## 2026-11-13 18:19 -05:00 SAME PROJECT sólo en madres y horas corregidas (PEN-53)
+
+Estado: hecho.
+Cambios: `Control Linked Tracking` da `OK` en una hija cuyo `Linked Tracking` es su propio proyecto (permiso adoptado, ID-51). Se corrigieron las horas de las entradas de hoy desde las 15:25, que se habían anotado estimadas y adelantadas, con la hora real de cada commit.
+Evidencia: los 14 valores de control iguales antes y después del cambio.
