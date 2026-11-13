@@ -730,3 +730,9 @@ Evidencia: 353 pruebas aprobadas, Ruff sin observaciones; pasada en seco de Reco
 Estado: hecho.
 Cambios (API, pedido del usuario): borradas `Created`, `Created By` y `Designers List`.
 Evidencia: ninguna fórmula, aviso, hoja hija ni código las usaba; 103 columnas; sin celdas con error; Records y Billing sin diferencias (pasada en seco).
+
+## 2026-11-13 19:05 -05:00 Control de tipo frente a jerarquía (PEN-53)
+
+Estado: hecho en PROJECT KMV 1.0.0.
+Cambios (API, pedido del usuario): `Control Linked Tracking` marca madres de tipo permiso (`ERROR: PERMIT WITHOUT PROJECT`) e hijas de tipo proyecto (`ERROR: PROJECT AS PERMIT`); fórmula anterior respaldada fuera del repo.
+Evidencia: resultado previsto y obtenido: filas 11 y 14 con el error nuevo; las otras 12 con el mismo valor que antes; sin `#UNPARSEABLE`.
