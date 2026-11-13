@@ -645,3 +645,4 @@ Evidencia: 346 pruebas aprobadas, Ruff y formato correctos; base con 8 asignacio
 Estado: implementada y activada en `.env`; falta reiniciar el backend y la prueba real del usuario.
 Cambios (autorizados por el usuario): hoja `Records Requests` en `Pruebas/Producto/PROJECT KMV` y casilla `Records Needed` en la maestra, creadas por API; SPEC-B18; `services/records/`; paso aislado en el procesador; `last_records_sync`; `APP_RECORDS_SYNC_ENABLED` y `APP_RECORDS_SHEET_ID` en `.env`.
 Evidencia: 352 pruebas aprobadas, Ruff y formato correctos; relectura de la hoja nueva; vista previa real sin escrituras (14 filas, ninguna marcada). El backend arrancado por el usuario sobre PROJECT KMV 1.0.0 respondió sin errores: 8 `already_stable`, 6 `child_inherited`, Obs y catálogo sin pendientes (PEN-48 comprobada en vivo).
+- Consulta (2026-11-13 10:13): quitar las columnas de Records de la maestra; dependencias y orden registrados en PEN-49.
