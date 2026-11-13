@@ -606,3 +606,8 @@ Evidencia: el cliente implementa `list_columns` con `GET /sheets/{id}/columns` y
 
 Estado: recomendación entregada (unas 107 columnas, quitando 33); sin cambios en Smartsheet; falta la decisión del usuario.
 Evidencia (sólo GET, desde el equipo Windows): hojas 2026 de Breezeline (38 filas), Lightpath (39), Hotwire (21) y Others (49) que el conteo anterior no incluía; columnas de los 5 reportes de `Producto/Reports`: `Permitting` usa `Runner Pick up` y 9 columnas de días, `Invoices` usa `Aerial`. Detalle en PEN-45.
+
+## 2026-11-13 00:10 -05:00 Consulta: hojas hijas que reciban y devuelvan cambios (PEN-45)
+
+Estado: respondida; sin cambios en Smartsheet ni decisión.
+Resumen en PEN-45: ida y vuelta completa no ahorra celdas; diseño en estrella (cada grupo en su hoja, contexto por fórmula en la hija, como mucho una columna resumen en la maestra) y limpiar las 33 columnas primero.
