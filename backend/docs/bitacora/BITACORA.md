@@ -651,3 +651,8 @@ Evidencia: 352 pruebas aprobadas, Ruff y formato correctos; relectura de la hoja
 
 Estado: correcta; Records en uso en Pruebas.
 Evidencia (sólo lectura): 9 filas marcadas, 9 filas en `Records Requests` enlazadas por `Master Row`, sin duplicados; contexto igual a la maestra en las 9; el usuario llenó datos de Records en 4 filas de la hoja hija; procesador sin errores.
+
+## 2026-11-13 10:26 -05:00 Migración de datos de Records a la hoja hija (PEN-49)
+
+Estado: hecha; falta la confirmación del usuario para borrar las 14 columnas de Records de la maestra.
+Evidencia: 4 filas (KMV-CC-26-001 hija, KMV-CC-26-002 madre y 2 hijas) marcadas por API; el procesador creó sus 4 filas en `Records Requests` en menos de un minuto con los datos iguales (`Designer2`, `LT Records`, `Records Status`, `Record Box`); la hoja hija tiene 13 filas.
