@@ -694,3 +694,8 @@ Evidencia (sólo lectura): 14 filas en `Billing` (8 madres, 6 hijas), contexto y
 
 Estado: hecho.
 Evidencia: copia en `Billing` comprobada antes de borrar; 9 columnas borradas por API; `Invoice Status` sin fórmula e igual a `Billing` en 14 filas tras dos ciclos; 113 columnas; procesador, Records y Facturación sin errores.
+
+## 2026-11-13 12:34 -05:00 Propuesta: una columna por asignación (PEN-50)
+
+Estado: registrada; sin cambios; falta la decisión del usuario.
+Resumen: motivo de las columnas `Email` (avisos sólo a contactos, directorio con `Activo`), propuesta de columnas de contacto con lista fija, migración de nombres a contactos y nombre de `Designer2` en Records.
