@@ -1,4 +1,4 @@
-"""Cambio de cliente (SPEC-ID01 ID-44 a ID-46): ID nuevo para la madre y familia coherente.
+"""Cambio de cliente (SPEC-ID01 ID-44 a ID-46) y permisos sueltos (ID-51): familia coherente.
 
 Mismo patrón que el resto del conector: bloqueo por hoja, registro en PostgreSQL antes de tocar
 la hoja y relectura después de escribir. El rastro queda en la auditoría de PostgreSQL y en el
@@ -12,6 +12,7 @@ import logging
 from app.core.errors import AppError
 from app.services.ids.connector import ConditionalGateway, Outcome, Target, WriteUncertain
 from app.services.ids.dry_run import PILOT_WORKSPACE
+from app.services.ids.family import PERMIT_TYPES
 from app.services.ids.formats import customer_code, parse_id
 from app.services.ids.store import IdStore, Reservation
 
@@ -32,6 +33,8 @@ async def run(
             return await _detach(gateway, target, mother_row, lock)
         if action == "child_follow":
             return await _follow(store, gateway, target, mother_row, lock)
+        if action == "adopt_permit":
+            return await _adopt(gateway, target, mother_row, lock)
         return Outcome.DENIED
     finally:
         await asyncio.to_thread(lock.close)
@@ -110,6 +113,28 @@ async def _follow(
             pass
     after = await gateway.read_child(target)
     return Outcome.FOLLOWED if after.stable == child.root_stable else Outcome.PENDING
+
+
+async def _adopt(gateway: ConditionalGateway, target: Target, mother_row: int, lock) -> Outcome:
+    """Permiso de primer nivel que apunta a su proyecto: pasa a ser su última hija (ID-51).
+
+    `target.parent` es el Stable ID del proyecto; si la fila o la madre cambiaron, espera.
+    """
+    child = await gateway.read_child(target)
+    if child.workspace_id != PILOT_WORKSPACE:
+        return Outcome.DENIED
+    kind, linked = await gateway.permit_link(target)
+    if child.root_row is not None or kind not in PERMIT_TYPES or linked != target.parent:
+        return Outcome.PENDING
+    if await gateway.read_stable(target, mother_row) != target.parent:
+        return Outcome.PENDING
+    mine, mother = await gateway.customer_codes(target, mother_row)
+    if mine and mine != mother:
+        return Outcome.PENDING
+    await asyncio.to_thread(lock.execute, "SELECT 1")
+    await gateway.move_under(target, mother_row)
+    logger.info("ids permiso %s bajo su proyecto en hoja %s", target.row_id, target.sheet_id)
+    return Outcome.ADOPTED
 
 
 async def _fresh_reservation(store: IdStore, target: Target, old: str) -> Reservation | None:

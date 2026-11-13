@@ -736,3 +736,9 @@ Evidencia: ninguna fórmula, aviso, hoja hija ni código las usaba; 103 columnas
 Estado: hecho en PROJECT KMV 1.0.0.
 Cambios (API, pedido del usuario): `Control Linked Tracking` marca madres de tipo permiso (`ERROR: PERMIT WITHOUT PROJECT`) e hijas de tipo proyecto (`ERROR: PROJECT AS PERMIT`); fórmula anterior respaldada fuera del repo.
 Evidencia: resultado previsto y obtenido: filas 11 y 14 con el error nuevo; las otras 12 con el mismo valor que antes; sin `#UNPARSEABLE`.
+
+## 2026-11-13 19:40 -05:00 Permiso creado en la vista pasa bajo su proyecto (ID-51, PEN-53)
+
+Estado: hecho en el código; falta reiniciar el backend y probarlo en Pruebas.
+Cambios: regla ID-51 en `servicios/ids/SPEC.md`; `family.adoptions` y `PERMIT_TYPES`; `read_pilot` lee `Type of Project` y `Linked Tracking` si existen; acción `adopt_permit` planificada antes de reservar número; `customer_change._adopt` relee la fila y la indenta (`move_row_after(..., under=True)`); resultado `adopted` adelanta el ciclo siguiente.
+Evidencia: 362 pruebas aprobadas (2 errores pasajeros del PostgreSQL temporal, aprobadas al repetir); plan en seco real sin adopciones pendientes.

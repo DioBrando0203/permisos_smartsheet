@@ -69,7 +69,10 @@ async def read_pilot(client: SmartsheetClient) -> list[InventorySheet]:
         company = None
         if kind == EntityKind.PROJECT and any(c.title == "KMV/GALP" for c in columns):
             company = _column(columns, "KMV/GALP")
-        wanted = ids + ([company] if company else [])
+        adopt = _optional(columns, ("Type of Project", "Linked Tracking"))
+        if kind != EntityKind.PROJECT:
+            adopt = None
+        wanted = ids + ([company] if company else []) + list(adopt or ())
         top, children = split_hierarchy(
             await client.list_rows(sheet_id, list(dict.fromkeys(wanted)))
         )
@@ -84,6 +87,7 @@ async def read_pilot(client: SmartsheetClient) -> list[InventorySheet]:
                 ids[3] if extra_parent else None,
                 (company, ids[2], ids[3]) if kind == EntityKind.PROJECT else None,
                 tuple(children),
+                adopt,
             )
         )
     for sheet_id, *_ in SHEETS:
@@ -92,6 +96,12 @@ async def read_pilot(client: SmartsheetClient) -> list[InventorySheet]:
         if await client.sheet_version(sheet_id) != versions[sheet_id]:
             raise ValueError("Una hoja cambió durante la lectura; volver a intentar")
     return result
+
+
+def _optional(columns: list, names: tuple[str, str]) -> tuple[str, str] | None:
+    """Ids de esas columnas si cada una existe una sola vez; si no, None (sin error)."""
+    found = [[c.id for c in columns if c.title == name] for name in names]
+    return (found[0][0], found[1][0]) if all(len(ids) == 1 for ids in found) else None
 
 
 def _column(columns: list, name: str) -> str:

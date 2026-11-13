@@ -9,6 +9,9 @@ from app.services.ids.dry_run import PlanAction
 from app.services.ids.formats import EntityKind, customer_code, parse_id
 from app.services.ids.inventory import InventorySheet
 
+# `Type of Project` de un permiso; `KMV-P` y `KMV-Miscellaneous` son el proyecto (ID-51).
+PERMIT_TYPES = frozenset({"KMV-Permit", "KMV-Line", "KMV-MOT"})
+
 
 def children_plan(
     sheet: InventorySheet, confirmed: set[str], counts: Counter, details: list, change: bool
@@ -74,6 +77,33 @@ def _customer_of(value: str) -> str:
         return customer_code(parse_id(EntityKind.PROJECT, value).parent) if value else ""
     except ValueError:
         return ""
+
+
+def adoptions(sheet: InventorySheet) -> dict[str, str]:
+    """Permiso de primer nivel -> madre de tipo proyecto cuyo Stable ID es su `Linked Tracking`.
+
+    ID-51: la madre debe ser única y del mismo `Customer Code` (o la fila sin cliente propio).
+    """
+    if not sheet.adopt_columns:
+        return {}
+    kind, linked = sheet.adopt_columns
+    code = sheet.project_columns[1] if sheet.project_columns else None
+    owners: dict[str, list] = {}
+    for row in sheet.rows:
+        stable = (row.cells.get(sheet.stable_column) or "").strip()
+        if stable and (row.cells.get(kind) or "").strip() not in PERMIT_TYPES:
+            owners.setdefault(stable, []).append(row)
+    found = {}
+    for row in sheet.rows:
+        target = (row.cells.get(linked) or "").strip()
+        mothers = owners.get(target, [])
+        if (row.cells.get(kind) or "").strip() not in PERMIT_TYPES or len(mothers) != 1:
+            continue
+        mine = (row.cells.get(code) or "").strip() if code else ""
+        theirs = (mothers[0].cells.get(code) or "").strip() if code else ""
+        if mothers[0].id != row.id and (not mine or mine == theirs):
+            found[row.id] = mothers[0].id
+    return found
 
 
 def customer_changed(kind: EntityKind, stable: str, parent: str) -> bool:

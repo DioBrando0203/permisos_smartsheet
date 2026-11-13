@@ -12,7 +12,7 @@ from app.services.ids.dry_run import (
     PlanAction,
     plan,
 )
-from app.services.ids.family import children_plan, customer_changed
+from app.services.ids.family import adoptions, children_plan, customer_changed
 from app.services.ids.formats import EntityKind, formula_number, parse_id, project_scope
 from app.services.ids.inventory import InventorySheet
 from app.services.ids.pilot import read_pilot
@@ -95,10 +95,17 @@ async def build_dry_run_report(
 
     for sheet in sheets:
         current = {row.id: (row.cells.get(sheet.stable_column) or "").strip() for row in sheet.rows}
+        adopt = adoptions(sheet) if customer_change else {}
         for row in sorted(sheet.rows, key=lambda item: _formula_order(sheet, item)):
             visible = (row.cells.get(sheet.visible_column) or "").strip()
 
             stable = (row.cells.get(sheet.stable_column) or "").strip()
+
+            if row.id in adopt:
+                # Antes que cualquier número: el permiso tomará el ID de su proyecto (ID-51).
+                counts[PlanAction.ADOPT_PERMIT.value] += 1
+                details.append(_adoption(sheet, row, adopt[row.id], current, visible, stable))
+                continue
 
             parent = (
                 (row.cells.get(sheet.parent_column) or "").strip() if sheet.parent_column else ""
@@ -213,6 +220,21 @@ async def build_dry_run_report(
         "counts": dict(counts),
         "pending_or_conflicting_rows": details,
         "warning": ("Estimaciones orientativas. No reservan IDs ni garantizan máximos históricos."),
+    }
+
+
+def _adoption(sheet, row, mother_row: str, current: dict, visible: str, stable: str) -> dict:
+    return {
+        "sheet_id": str(sheet.sheet_id),
+        "row_id": str(row.id),
+        "type": sheet.kind.value,
+        "parent": current[mother_row],
+        "action": PlanAction.ADOPT_PERMIT.value,
+        "visible_id": visible,
+        "stable_id": stable,
+        "proposed_id": current[mother_row],
+        "mother_row_id": mother_row,
+        "renumbered": False,
     }
 
 

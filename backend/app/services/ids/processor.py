@@ -23,9 +23,10 @@ _ELIGIBLE = frozenset(
         "rescope",
         "detach_child",
         "child_follow",
+        "adopt_permit",
     }
 )
-_CUSTOMER_CHANGE = frozenset({"rescope", "detach_child", "child_follow"})
+_CUSTOMER_CHANGE = frozenset({"rescope", "detach_child", "child_follow", "adopt_permit"})
 _ORDER = {"project": 0, "task": 1, "record": 2, "revision": 3}
 
 

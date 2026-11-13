@@ -22,6 +22,7 @@ class PlanAction(StrEnum):
     RESCOPE = "rescope"  # madre con otro cliente: ID nuevo del cliente actual (ID-44)
     DETACH_CHILD = "detach_child"  # hija de otro cliente: sale de la jerarquía (ID-45)
     CHILD_FOLLOW = "child_follow"  # hija que sigue a su madre tras cambiar de cliente (ID-46)
+    ADOPT_PERMIT = "adopt_permit"  # permiso de primer nivel: pasa bajo su proyecto (ID-51)
     NEEDS_RESERVATION = "needs_reservation"
     WOULD_WRITE = "would_write"
 

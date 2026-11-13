@@ -25,6 +25,7 @@ class Outcome(StrEnum):
     RESCOPED = "rescoped"  # madre con otro cliente: ID nuevo, el anterior retirado (ID-44)
     DETACHED = "detached"  # hija de otro cliente: pasó a primer nivel (ID-45)
     FOLLOWED = "followed"  # hija con el cliente y el ID nuevos de su madre (ID-46)
+    ADOPTED = "adopted"  # permiso de primer nivel indentado bajo su proyecto (ID-51)
 
 
 class WriteUncertain(Exception):
@@ -78,6 +79,10 @@ class ConditionalGateway(Protocol):
     async def customer_codes(self, target: Target, mother_row: int) -> tuple[str, str]: ...
 
     async def move_out(self, target: Target, mother_row: int) -> None: ...
+
+    async def move_under(self, target: Target, mother_row: int) -> None: ...
+
+    async def permit_link(self, target: Target) -> tuple[str, str]: ...
 
     async def copy_customer(self, target: Target, mother_row: int) -> None: ...
 
@@ -139,7 +144,7 @@ class IdConnector:
             await asyncio.to_thread(lock.close)
 
     async def customer_change(self, action: str, target: Target, mother_row: int) -> Outcome:
-        """ID-44 a ID-46: madre con otro cliente, hija de otro cliente o que sigue a su madre."""
+        """ID-44 a ID-46 y ID-51: cliente cambiado, hija que sale o sigue, permiso que entra."""
         from app.services.ids import customer_change
 
         if self._read_only:

@@ -16,7 +16,9 @@ from app.services.smartsheet import SmartsheetClient
 
 _LOCK = 714382002
 # Resultados con escritura: pueden habilitar hijas, así que el siguiente ciclo va enseguida.
-_WROTE = frozenset({"confirmed", "registered", "inherited", "rescoped", "detached", "followed"})
+_WROTE = frozenset(
+    {"confirmed", "registered", "inherited", "rescoped", "detached", "followed", "adopted"}
+)
 
 
 class IdMonitor:

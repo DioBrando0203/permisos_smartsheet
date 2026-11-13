@@ -245,10 +245,13 @@ class SmartsheetClient:
         created = comments[0].get("id")
         return None if created is None else str(created)
 
-    async def move_row_after(self, sheet_id: str, row_id: str, sibling_id: str) -> None:
-        """Mueve una fila al mismo nivel que `sibling_id`, debajo de ella y de sus hijas."""
+    async def move_row_after(
+        self, sheet_id: str, row_id: str, sibling_id: str, *, under: bool = False
+    ) -> None:
+        """Al mismo nivel que `sibling_id`, debajo de su familia; o su última hija (`under`)."""
         self._require_writes()
-        body = [{"id": int(row_id), "siblingId": int(sibling_id)}]
+        place = {"parentId": int(sibling_id), "toBottom": True} if under else {}
+        body = [{"id": int(row_id)} | (place or {"siblingId": int(sibling_id)})]
         await self._transport.request("PUT", f"/sheets/{sheet_id}/rows", json=body, retry=False)
 
     def _require_writes(self) -> None:

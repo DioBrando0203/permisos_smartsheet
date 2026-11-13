@@ -133,6 +133,19 @@ class SmartsheetIdGateway:
         """Saca la fila de la jerarquía: queda en primer nivel, debajo de la familia de su madre."""
         await self._client.move_row_after(str(target.sheet_id), str(target.row_id), str(mother_row))
 
+    async def move_under(self, target: Target, mother_row: int) -> None:
+        """Indenta la fila como última hija de su proyecto (ID-51)."""
+        sheet, row = str(target.sheet_id), str(target.row_id)
+        await self._client.move_row_after(sheet, row, str(mother_row), under=True)
+
+    async def permit_link(self, target: Target) -> tuple[str, str]:
+        """`Type of Project` y `Linked Tracking` actuales de la fila (ID-51)."""
+        sheet_id = str(target.sheet_id)
+        kind = await self._column(sheet_id, "Type of Project")
+        linked = await self._column(sheet_id, "Linked Tracking")
+        row = await self._client.get_row(sheet_id, str(target.row_id))
+        return (row.cells.get(kind) or "").strip(), (row.cells.get(linked) or "").strip()
+
     async def copy_customer(self, target: Target, mother_row: int) -> None:
         """La hija toma el `Customer` de su madre (ID-46)."""
         sheet_id = str(target.sheet_id)
