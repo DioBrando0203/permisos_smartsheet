@@ -783,3 +783,9 @@ Evidencia (sólo GET antes y después): metraje vacío en las 17 filas de la mae
 
 Estado: análisis entregado; sin cambios en Smartsheet. El asistente subió `207a590` a pedido del usuario; falta reiniciar el backend en Linux con el commit `6931b29` (`Designers` sigue en 1 de 4 filas).
 Evidencia (sólo GET y conteos, script temporal fuera del repo): 7 reportes `Generator` (33 a 35 columnas); 30 de las 41 columnas de `Billing` las usa al menos uno; sin `Generator`: las 5 del servicio, `Customer`, `Project Status`, `Invoice? KMV`, `PM Approval Invoice Date`, `Customer invoice?` e `Invoice Paid`. CC y BS 2025 y 2026: secuencia y medianas en PEN-49 y SPEC-B19 FH-10; `Invoice? KMV` va siempre con `Invoice? GALP` y `Customer invoice?` con `Invoice Sent`.
+
+## 2026-11-14 00:15 -05:00 Billing Report (PEN-49, SPEC-B19)
+
+Estado: hecho; falta compartir `Billing` con facturación.
+Cambios (API, pedido del usuario): reporte `Billing Report` (`3753732337782660`) en `Producto/Reports` sobre `Billing`, con las columnas y el filtro de los `Generator` (sólo leídos, sin cambios), agrupado por `Customer`.
+Evidencia: 30 columnas; 0 filas, igual a las filas de `Billing` que cumplen el filtro. Aclarado al usuario: `Invoice? GALP` está visible en los 7 `Generator` pero siempre vacía por el filtro; `Invoice? KMV` y `Customer invoice?` no están en ninguno.

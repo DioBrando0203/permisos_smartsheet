@@ -4,7 +4,7 @@ Estado: en uso en Pruebas (prueba real correcta el 2026-11-13 12:11, PEN-49); ma
 
 ## Objetivo
 
-- FH-01: la facturación tiene su propia hoja, `Billing` (`3091384761536388`, `Pruebas/Producto/PROJECT KMV`), con todo lo que necesita el responsable de facturación en la misma fila, como los reportes `... - Generator` que usa hoy (sólo lectura, prohibido modificarlos). Su vista será un reporte sobre esta hoja con el filtro del generador: `Invoice? GALP` sin marcar y `PM Approval Date` con fecha.
+- FH-01: la facturación tiene su propia hoja, `Billing` (`3091384761536388`, `Pruebas/Producto/PROJECT KMV`), con todo lo que necesita el responsable de facturación en la misma fila, como los reportes `... - Generator` que usa hoy (sólo lectura, prohibido modificarlos). Su vista es `Billing Report` (`3753732337782660`, `Producto/Reports`, desde el 2026-11-14): un solo reporte sobre esta hoja para todos los clientes, con las columnas del generador, el filtro del generador (`Invoice? GALP` sin marcar y `PM Approval Date` con fecha) y agrupado por `Customer`.
 - FH-02 (ADR-B15): Smartsheet no mantiene una fila de otra hoja por cada fila de la maestra con contexto al día; el servicio lo hace y nunca borra.
 
 ## Reglas
