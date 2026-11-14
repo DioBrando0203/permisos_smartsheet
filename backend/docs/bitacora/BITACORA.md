@@ -754,3 +754,10 @@ Evidencia: los 14 valores de control iguales antes y después del cambio.
 Estado: hecho en PROJECT KMV 1.0.0.
 Cambios (API, pedido del usuario): fórmula de columna `="KMV-P"` en `Primary`, en lugar de una automatización; la automatización que el usuario empezaba a armar no llegó a guardarse.
 Evidencia: 14 de 14 filas con `KMV-P`; 103 columnas; automatizaciones sin cambios.
+
+## 2026-11-13 19:00 -05:00 Linked Tracking no indenta: ID-51 inactiva (PEN-53)
+
+Estado: hecho en el código; falta reiniciar el backend.
+Motivo: el usuario aclaró que `Linked Tracking` sólo enlaza proyectos anteriores.
+Cambios: la adopción lee `Parent Project` (columna inexistente: regla inactiva); pruebas nuevas: `Linked Tracking` nunca adopta y sin la columna no hay adopción; `Control Linked Tracking` vuelve a dar `ERROR: SAME PROJECT` en todas las filas.
+Evidencia: 364 pruebas aprobadas; Ruff y formato correctos; valores de control sin cambios salvo filas editadas por el usuario.

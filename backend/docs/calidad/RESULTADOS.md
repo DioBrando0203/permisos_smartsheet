@@ -392,3 +392,7 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - 362 pruebas backend aprobadas (9 nuevas en `tests/test_id_adopt.py`: adopción sin gastar número, permiso con ID propio que toma el del proyecto, cuatro casos que no califican, interruptor apagado y relectura antes de mover). En la corrida completa 2 pruebas de Obs dieron error al arrancar el PostgreSQL temporal; solas pasan las 8. Ruff y formato correctos.
 - Plan en seco contra PROJECT KMV 1.0.0 (sólo lectura): 8 madres con ID y 6 hijas que heredan; ninguna fila para adoptar (las filas 11 y 14 no tienen `Linked Tracking`).
+
+# 2026-11-13 19:00 -05:00 ID-51 por `Parent Project` (inactiva)
+
+- 364 pruebas backend aprobadas (11 en `tests/test_id_adopt.py`, nuevas: `Linked Tracking` nunca adopta; sin la columna `Parent Project` no hay adopción). Ruff y formato correctos.

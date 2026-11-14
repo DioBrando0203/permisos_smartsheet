@@ -80,7 +80,7 @@ def _customer_of(value: str) -> str:
 
 
 def adoptions(sheet: InventorySheet) -> dict[str, str]:
-    """Permiso de primer nivel -> madre de tipo proyecto cuyo Stable ID es su `Linked Tracking`.
+    """Permiso de primer nivel -> madre de tipo proyecto cuyo Stable ID es su `Parent Project`.
 
     ID-51: la madre debe ser única y del mismo `Customer Code` (o la fila sin cliente propio).
     """

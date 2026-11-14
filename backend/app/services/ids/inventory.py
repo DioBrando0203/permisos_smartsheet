@@ -20,7 +20,7 @@ class InventorySheet:
     project_columns: tuple[str | None, str, str] | None = None
     # Filas hijas y la fila de primer nivel de la que heredan el ID (Presentable).
     children: tuple[tuple[RawRow, str], ...] = ()
-    # `Type of Project` y `Linked Tracking`, si la hoja los tiene: permisos sueltos (ID-51).
+    # `Type of Project` y `Parent Project`, si la hoja los tiene: permisos sueltos (ID-51).
     adopt_columns: tuple[str, str] | None = None
 
 

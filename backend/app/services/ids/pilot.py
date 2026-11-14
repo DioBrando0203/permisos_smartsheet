@@ -11,6 +11,9 @@ from app.services.smartsheet import RawRow, SmartsheetClient
 PRESENTABLE = get_settings().ids_master_sheet_id
 # Sin columna de empresa, la fórmula de Tracking Project fija "KMV".
 DEFAULT_COMPANY = "KMV"
+# Columna que dice a qué proyecto pertenece un permiso suelto (ID-51); sin ella, no se adopta.
+# `Linked Tracking` no sirve: sólo enlaza proyectos anteriores (decisión del usuario).
+PARENT_PROJECT = "Parent Project"
 SHEETS = ((PRESENTABLE, EntityKind.PROJECT, "Tracking Project", "Stable Tracking Project", None),)
 _PARENT_KIND = {
     EntityKind.TASK: EntityKind.PROJECT,
@@ -69,7 +72,7 @@ async def read_pilot(client: SmartsheetClient) -> list[InventorySheet]:
         company = None
         if kind == EntityKind.PROJECT and any(c.title == "KMV/GALP" for c in columns):
             company = _column(columns, "KMV/GALP")
-        adopt = _optional(columns, ("Type of Project", "Linked Tracking"))
+        adopt = _optional(columns, ("Type of Project", PARENT_PROJECT))
         if kind != EntityKind.PROJECT:
             adopt = None
         wanted = ids + ([company] if company else []) + list(adopt or ())

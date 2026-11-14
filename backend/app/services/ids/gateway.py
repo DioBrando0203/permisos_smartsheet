@@ -139,10 +139,10 @@ class SmartsheetIdGateway:
         await self._client.move_row_after(sheet, row, str(mother_row), under=True)
 
     async def permit_link(self, target: Target) -> tuple[str, str]:
-        """`Type of Project` y `Linked Tracking` actuales de la fila (ID-51)."""
+        """`Type of Project` y proyecto elegido (`Parent Project`) actuales de la fila (ID-51)."""
         sheet_id = str(target.sheet_id)
         kind = await self._column(sheet_id, "Type of Project")
-        linked = await self._column(sheet_id, "Linked Tracking")
+        linked = await self._column(sheet_id, pilot.PARENT_PROJECT)
         row = await self._client.get_row(sheet_id, str(target.row_id))
         return (row.cells.get(kind) or "").strip(), (row.cells.get(linked) or "").strip()
 

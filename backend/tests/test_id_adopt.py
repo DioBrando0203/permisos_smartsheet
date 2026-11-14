@@ -22,20 +22,22 @@ from tests.test_id_presentable import _fresh, _rows  # noqa: E402
 from tests.test_ids import database  # noqa: E402
 
 database = database
-COLUMNS = (*FULL, "Type of Project")
+COLUMNS = (*FULL, "Type of Project", "Parent Project")
 TYPE = 100 + len(FULL)
+PARENT = TYPE + 1
 
 
 class Hierarchy(Family):
-    """Family con `Type of Project` y filas que se pueden indentar (`parentId`)."""
+    """Family con `Type of Project`, `Parent Project` (opcional) y filas indentables."""
 
     def __init__(self) -> None:
         super().__init__()
         self.adopted: list[tuple[int, int]] = []
+        self.columns = COLUMNS
 
     def handle(self, request: httpx.Request) -> httpx.Response:
         if request.method == "GET" and request.url.path.endswith("/columns"):
-            data = [{"id": 100 + i, "title": t, "index": i} for i, t in enumerate(COLUMNS)]
+            data = [{"id": 100 + i, "title": t, "index": i} for i, t in enumerate(self.columns)]
             return httpx.Response(200, json={"data": data, "pageNumber": 1, "totalPages": 1})
         return super().handle(request)
 
@@ -49,6 +51,7 @@ class Hierarchy(Family):
     def _row(self, row_id: int) -> dict:
         data = super()._row(row_id)
         data["cells"].append({"columnId": TYPE, "value": self.rows[row_id].get("type")})
+        data["cells"].append({"columnId": PARENT, "value": self.rows[row_id].get("project")})
         return data
 
 
@@ -69,7 +72,7 @@ async def test_loose_permit_goes_under_its_project_without_spending_a_number(
     client = SmartsheetClient(settings)
     try:
         await _cycle(settings, client, database)
-        sheet.project(2, "BS", type="KMV-Permit", linked="KMV-BS-26-001")
+        sheet.project(2, "BS", type="KMV-Permit", project="KMV-BS-26-001")
         planned = await _plan(client, database)
         adopted = await _cycle(settings, client, database)
         inherited = await _cycle(settings, client, database)
@@ -93,7 +96,7 @@ async def test_permit_with_own_id_takes_the_project_id(sheet, database) -> None:
     try:
         await _cycle(settings, client, database)
         await _cycle(settings, client, database)
-        sheet.rows[2]["linked"] = "KMV-BS-26-001"
+        sheet.rows[2]["project"] = "KMV-BS-26-001"
         adopted = await _cycle(settings, client, database)
         fixed = await _cycle(settings, client, database)
     finally:
@@ -104,16 +107,18 @@ async def test_permit_with_own_id_takes_the_project_id(sheet, database) -> None:
 
 
 @pytest.mark.parametrize(
-    ("kind", "code", "linked"),
+    ("kind", "code", "cells"),
     [
-        ("KMV-P", "BS", "KMV-BS-26-001"),  # no es permiso
-        ("KMV-Permit", "CC", "KMV-BS-26-001"),  # otro cliente
-        ("KMV-Permit", "BS", "KMV-BS-26-099"),  # proyecto inexistente
-        ("KMV-Permit", "BS", ""),  # sin Linked Tracking
+        ("KMV-P", "BS", {"project": "KMV-BS-26-001"}),  # no es permiso
+        ("KMV-Permit", "CC", {"project": "KMV-BS-26-001"}),  # otro cliente
+        ("KMV-Permit", "BS", {"project": "KMV-BS-26-099"}),  # proyecto inexistente
+        ("KMV-Permit", "BS", {}),  # sin proyecto elegido
+        # Linked Tracking sólo enlaza proyectos anteriores: nunca indenta (decisión del usuario).
+        ("KMV-Permit", "BS", {"linked": "KMV-BS-26-001"}),
     ],
 )
 async def test_rows_that_do_not_qualify_are_left_alone(
-    sheet, database, kind: str, code: str, linked: str
+    sheet, database, kind: str, code: str, cells: dict
 ) -> None:
     _fresh(database)
     sheet.project(1, "BS", provisional="KMV-BS-26-001", type="KMV-P")
@@ -121,7 +126,7 @@ async def test_rows_that_do_not_qualify_are_left_alone(
     client = SmartsheetClient(settings)
     try:
         await _cycle(settings, client, database)
-        sheet.project(2, code, type=kind, linked=linked)
+        sheet.project(2, code, type=kind, **cells)
         planned = await _plan(client, database)
     finally:
         await client.aclose()
@@ -136,11 +141,26 @@ async def test_switch_off_does_not_adopt(sheet, database) -> None:
     client = SmartsheetClient(settings)
     try:
         await _cycle(settings, client, database, change=False)
-        sheet.project(2, "BS", type="KMV-Permit", linked="KMV-BS-26-001")
+        sheet.project(2, "BS", type="KMV-Permit", project="KMV-BS-26-001")
         await _cycle(settings, client, database, change=False)
     finally:
         await client.aclose()
     assert sheet.adopted == []
+
+
+async def test_sheet_without_parent_project_column_never_adopts(sheet, database) -> None:
+    _fresh(database)
+    sheet.columns = COLUMNS[:-1]  # como la maestra real hoy
+    sheet.project(1, "BS", provisional="KMV-BS-26-001", type="KMV-P")
+    settings = make_settings(**ON)
+    client = SmartsheetClient(settings)
+    try:
+        await _cycle(settings, client, database)
+        sheet.project(2, "BS", type="KMV-Permit", project="KMV-BS-26-001")
+        planned = await _plan(client, database)
+    finally:
+        await client.aclose()
+    assert planned.get("2") != "adopt_permit" and sheet.adopted == []
 
 
 class _Lock:
