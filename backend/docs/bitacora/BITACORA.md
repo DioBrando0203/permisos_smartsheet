@@ -449,7 +449,7 @@ Evidencia: cerrados `COMPLETE` y `4. Permit Expired`; abiertos `4. Permit is Req
 Estado: columna creada; automatización pendiente en la interfaz.
 Pedido: columna y automatización para Permitting Team, con nombres en inglés.
 Cambios: `Email Permitting` en PROJECT KMV (índice 67) con la misma fórmula del Directorio que `Correo Designer1`. Intento de crear la regla desactivada por API: rechazado (422, el método POST no existe); no se creó nada.
-Evidencia: en las filas actuales se resuelve el correo de Carlos Lopez; Daniel Zuñiga y Giuliano Leon Jr. quedan vacíos por faltar en el Directorio.
+Evidencia: en las filas actuales se resuelve el correo de una persona; otras dos quedan vacías por faltar en el Directorio.
 
 ## 2026-11-11 12:20 -05:00 Dynamic View KMV - PERMITS filtrada por Closed (PEN-27)
 
@@ -789,3 +789,9 @@ Evidencia (sólo GET y conteos, script temporal fuera del repo): 7 reportes `Gen
 Estado: hecho; falta compartir `Billing` con facturación.
 Cambios (API, pedido del usuario): reporte `Billing Report` (`3753732337782660`) en `Producto/Reports` sobre `Billing`, con las columnas y el filtro de los `Generator` (sólo leídos, sin cambios), agrupado por `Customer`.
 Evidencia: 30 columnas; 0 filas, igual a las filas de `Billing` que cumplen el filtro. Aclarado al usuario: `Invoice? GALP` está visible en los 7 `Generator` pero siempre vacía por el filtro; `Invoice? KMV` y `Customer invoice?` no están en ninguno.
+
+## 2026-11-14 09:21 -05:00 Pull en el equipo Linux y revisión de lo hecho en Windows (PEN-49, PEN-53)
+
+Estado: revisado y comprobado; falta encender el backend para que `Designers` llegue a `Billing`.
+Evidencia: pull de 6 commits (`3618439` a `5f1ac76`). En Linux, 366 pruebas aprobadas sin omitidas (incluidas las 57 que necesitan PostgreSQL), Ruff y formato correctos. En vivo (sólo GET): maestra 98 columnas y 17 filas, `Records Requests` 22 columnas, `Billing` 41; plan en seco de Records sin cambios y de Billing con 3 actualizaciones de `Designers` pendientes (backend apagado); plan de IDs: 9 madres con ID y 6 hijas que heredan.
+Cambios: se reemplazaron por roles los nombres reales que quedaban en REQUERIMIENTOS (PEN-42, PEN-51, PEN-52), RESULTADOS y una entrada antigua de la bitácora, y el de una prueba (`test_workload_rules.py`, nombre sintético).

@@ -38,7 +38,7 @@ def person(key: str, name: str | None) -> Person:
 
 
 def test_match_person() -> None:
-    people = [person("a@e.com", "Gonzalo Díaz"), person("b@e.com", "Ana"), person("c@e.com", "ana")]
-    assert match_person("gonzalo diaz", people) == (people[0], False)
+    people = [person("a@e.com", "Persona Díaz"), person("b@e.com", "Ana"), person("c@e.com", "ana")]
+    assert match_person("persona diaz", people) == (people[0], False)
     assert match_person("Ana", people) == (None, True)
     assert match_person("Nadie", people) == (None, False)

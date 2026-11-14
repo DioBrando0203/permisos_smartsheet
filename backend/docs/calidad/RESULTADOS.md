@@ -327,7 +327,7 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 # 2026-11-10 12:47 -05:00 Reportes de Presentable (PEN-42)
 
-- Reportes creados en `Pruebas/Producto` (ids 8203968674221956, 3413810976345988, 8762864178515844, 8910360334782340). Lectura posterior: Permitting por persona 8 filas en 4 grupos; Invoices 5 filas (PM APPROVED); All Records Request 10 filas; MOT y Paquetes 0 filas porque hoy ninguna fila tiene a Carlos Carrillo ni a German Quiñe.
+- Reportes creados en `Pruebas/Producto` (ids 8203968674221956, 3413810976345988, 8762864178515844, 8910360334782340). Lectura posterior: Permitting por persona 8 filas en 4 grupos; Invoices 5 filas (PM APPROVED); All Records Request 10 filas; MOT y Paquetes 0 filas porque hoy ninguna fila tiene a ninguna de las dos personas de MOT y paquetes.
 - Columna `Invoice Status` agregada al final de Presentable; valores actuales NOT INVOICED y PM APPROVED.
 
 # 2026-11-12 13:30 -05:00 Conversaciones copiadas a Obs (PEN-46, SPEC-B17)
