@@ -772,3 +772,9 @@ Evidencia: tras el pull, 307 pruebas aprobadas y 57 omitidas (necesitan el Postg
 Estado: código y `Billing` listos desde el equipo Windows; falta el push, reiniciar el backend en Linux y borrar el metraje de la maestra.
 Cambios: `specs.py` (metraje como copia única, `Designers` como contexto), `sync.py` (varios contactos y `level=2`), `client.py` (`level` en columnas y filas), `mappers.py` (correos de varios contactos); SPEC-B19 FH-04, FH-05, FH-09, CA-05 y CA-06. En `Billing` (API, autorizado): columna `Designers` creada y las 5 de metraje desbloqueadas.
 Evidencia: 309 pruebas aprobadas y 57 omitidas (PostgreSQL de Linux), 2 nuevas; Ruff y formato correctos. Lectura real con `level=2`: `Designers` de la maestra es de varios contactos (sin `level` la API la da como texto). Una escritura de prueba de `Designers` en una fila de `Billing`, releída igual; 4 filas de la maestra tienen diseñadores con correo.
+
+## 2026-11-13 23:14 -05:00 Metraje borrado de la maestra y reporte de la vista de diseño (PEN-49)
+
+Estado: hecho en Smartsheet; falta push y reiniciar el backend en Linux.
+Cambios (API, autorizado por el usuario): borradas de PROJECT KMV 1.0.0 `Total Footage`, `UG`, `UG + Profile`, `ISP` y `Aerial` (98 columnas); reporte `Design | Status & Footage` (`1499067780910980`) en `Producto/Reports`, fuentes la maestra y `Billing`.
+Evidencia (sólo GET antes y después): metraje vacío en las 17 filas de la maestra; ninguna fórmula ni aviso activo lo usaba; los reportes de `Producto/Reports` leen la hoja anterior. Después: maestra 98 columnas y `Billing` 41, ninguna celda con error; plan en seco de `Billing` con el código nuevo: 0 filas nuevas, 3 actualizaciones sólo de `Designers`; reporte con 5 filas (4 de la maestra, 1 de `Billing`).

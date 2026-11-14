@@ -401,3 +401,4 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - Equipo Windows: 309 pruebas backend aprobadas y 57 omitidas (necesitan el PostgreSQL del equipo Linux); 2 nuevas en `tests/test_childsheets.py`: metraje copiado una sola vez y pasada correcta sin esas columnas en la maestra, `Designers` como varios contactos; correos de varios contactos ordenados y sin los que no tienen correo. Ruff y formato correctos.
 - En vivo: una escritura de `Designers` en una fila de `Billing`, releída igual.
+- En vivo (23:14): metraje borrado de la maestra (98 columnas), sin celdas con error en la maestra ni en `Billing`; plan en seco de `Billing` con el código nuevo: sólo `Designers` en 3 filas; reporte `Design | Status & Footage` con 5 filas.

@@ -1,6 +1,6 @@
 # SPEC-B19 Hoja hija de Facturación
 
-Estado: en uso en Pruebas (prueba real correcta el 2026-11-13 12:11, PEN-49); maestra migrada el 2026-11-13 12:25: sin las columnas de factura e `Invoice Status` como resumen escrito por el servicio (FH-06 activo). Desde el 2026-11-13 23:06 (pedido del usuario) el metraje se trabaja en `Billing` y `Designers` se copia para la vista de diseño (FH-05, FH-09); falta reiniciar el backend y borrar el metraje de la maestra. Mismo mecanismo que Records (SPEC-B18), en `services/childsheets/`.
+Estado: en uso en Pruebas (prueba real correcta el 2026-11-13 12:11, PEN-49); maestra migrada el 2026-11-13 12:25: sin las columnas de factura e `Invoice Status` como resumen escrito por el servicio (FH-06 activo). Desde el 2026-11-13 23:06 (pedido del usuario) el metraje se trabaja en `Billing` y `Designers` se copia para la vista de diseño (FH-05, FH-09); metraje borrado de la maestra a las 23:14 y reporte `Design | Status & Footage` creado; falta reiniciar el backend con este código. Mismo mecanismo que Records (SPEC-B18), en `services/childsheets/`.
 
 ## Objetivo
 
