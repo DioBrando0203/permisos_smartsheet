@@ -25,6 +25,8 @@ from app.services.smartsheet.types import (
 
 # JSON de una librería externa sin tipos: se acota a este módulo (PY-11).
 Json = dict[str, Any]
+# Separa los correos de una celda de varios contactos en `RawRow.contacts`.
+EMAIL_SEPARATOR = ", "
 
 
 def to_sheet(data: Json) -> RawSheet:
@@ -146,13 +148,26 @@ def to_row(data: Json, label_column_id: str | None = None) -> RawRow:
 
 
 def _contacts(data: Json) -> dict[str, str]:
-    """Correo de las celdas con un contacto (`objectValue` CONTACT)."""
+    """Correo de las celdas de contacto; con varios contactos, sólo los que tienen correo."""
     found = {}
     for cell in data.get("cells") or []:
         obj = cell.get("objectValue")
-        if isinstance(obj, dict) and obj.get("objectType") == "CONTACT" and obj.get("email"):
+        if not isinstance(obj, dict):
+            continue
+        if obj.get("objectType") == "CONTACT" and obj.get("email"):
             found[_id(cell.get("columnId"))] = str(obj["email"])
+        elif obj.get("objectType") == "MULTI_CONTACT":
+            values = obj.get("values") or []
+            emails = [str(v["email"]) for v in values if isinstance(v, dict) and v.get("email")]
+            if emails:
+                found[_id(cell.get("columnId"))] = join_emails(emails)
     return found
+
+
+def join_emails(emails: list[str]) -> str:
+    """Forma única de varios correos: sin repetidos y en orden alfabético."""
+    unique = {email.casefold(): email for email in emails}
+    return EMAIL_SEPARATOR.join(unique[key] for key in sorted(unique))
 
 
 def to_cell_change(data: Json) -> RawCellChange:

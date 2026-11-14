@@ -12,7 +12,12 @@ from app.services.ids import pilot
 from app.services.ids.dry_run import PILOT_WORKSPACE
 from app.services.ids.runtime import writes_allowed
 from app.services.smartsheet import RawRow, SmartsheetClient
+from app.services.smartsheet.mappers import EMAIL_SEPARATOR
 from app.services.smartsheet.types import RawColumn
+
+MULTI_CONTACT = "MULTI_CONTACT_LIST"
+# Nivel de la API que muestra las columnas de varios contactos con su tipo y sus correos.
+LEVEL = 2
 
 
 class ChildSheetSync:
@@ -86,7 +91,7 @@ class ChildSheetSync:
                 raise ValueError("La hoja no pertenece al workspace Pruebas")
 
     async def _columns(self, sheet: str, required: tuple[str, ...]) -> dict[str, RawColumn]:
-        columns = await self.client.list_columns(sheet)
+        columns = await self.client.list_columns(sheet, level=LEVEL)
         titles = [column.title for column in columns]
         if any(titles.count(title) != 1 for title in required):
             raise ValueError("Columnas requeridas ausentes o duplicadas")
@@ -98,7 +103,8 @@ class ChildSheetSync:
         triggers = self.spec.triggers
         wanted = [cols[t].id for t in dict.fromkeys([*triggers, *titles])]
         result = []
-        for row in await self.client.list_rows(pilot.PRESENTABLE, wanted, objects=True):
+        rows = await self.client.list_rows(pilot.PRESENTABLE, wanted, objects=True, level=LEVEL)
+        for row in rows:
             values = {title: _value(row, cols[title]) for title in titles}
             if ROW_TYPE in self.spec.derived:
                 values[ROW_TYPE] = "Permit" if row.parent_id else "Project"
@@ -110,7 +116,7 @@ class ChildSheetSync:
         self, cols: dict[str, RawColumn], titles: list[str]
     ) -> list[rules.ChildRow]:
         wanted = [cols[t].id for t in (KEY, *titles)]
-        rows = await self.client.list_rows(self.sheet, wanted, objects=True)
+        rows = await self.client.list_rows(self.sheet, wanted, objects=True, level=LEVEL)
         return [
             rules.ChildRow(
                 row.id, str(_value(row, cols[KEY])), {t: _value(row, cols[t]) for t in titles}
@@ -133,7 +139,7 @@ class ChildSheetSync:
             value = key if title == KEY else values.get(title)
             if row_id is None and value in (None, "", False):
                 continue
-            cells.append({"columnId": int(cols[title].id), "value": "" if value is None else value})
+            cells.append(_cell(cols[title], value))
         return (
             {"toBottom": True, "cells": cells}
             if row_id is None
@@ -141,8 +147,26 @@ class ChildSheetSync:
         )
 
 
+def _cell(column: RawColumn, value: rules.Value) -> dict:
+    """Celda a escribir; varios contactos van como `objectValue` con sus correos."""
+    if column.type == MULTI_CONTACT and isinstance(value, str) and value:
+        contacts = [
+            {"objectType": "CONTACT", "email": email} for email in value.split(EMAIL_SEPARATOR)
+        ]
+        return {
+            "columnId": int(column.id),
+            "objectValue": {"objectType": "MULTI_CONTACT", "values": contacts},
+        }
+    return {"columnId": int(column.id), "value": "" if value is None else value}
+
+
 def _value(row: RawRow, column: RawColumn) -> rules.Value:
-    """Fecha ISO, casilla booleana, correo de un contacto o texto visible; vacío como None."""
+    """Fecha ISO, casilla booleana, correo de un contacto o texto visible; vacío como None.
+
+    De varios contactos sólo cuentan los que tienen correo: un nombre suelto no se copia.
+    """
+    if column.type == MULTI_CONTACT:
+        return row.contacts.get(column.id)
     if column.type == "CONTACT_LIST" and column.id in row.contacts:
         return row.contacts[column.id]
     if column.type == "DATE":

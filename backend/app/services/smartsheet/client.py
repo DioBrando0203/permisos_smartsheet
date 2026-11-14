@@ -95,8 +95,9 @@ class SmartsheetClient:
     async def list_contacts(self) -> list[RawContact]:
         return [mappers.to_contact(item) for item in await self._transport.get_all("/contacts")]
 
-    async def list_columns(self, sheet_id: str) -> list[RawColumn]:
-        items = await self._transport.get_all(f"/sheets/{sheet_id}/columns")
+    async def list_columns(self, sheet_id: str, *, level: int | None = None) -> list[RawColumn]:
+        params = {"level": level} if level else None
+        items = await self._transport.get_all(f"/sheets/{sheet_id}/columns", params)
         return [mappers.to_column(item) for item in items]
 
     async def list_rows(
@@ -106,6 +107,7 @@ class SmartsheetClient:
         *,
         with_authors: bool = False,
         objects: bool = False,
+        level: int | None = None,
     ) -> list[RawRow]:
         """Todas las filas, sólo con las columnas pedidas; la primera es la etiqueta.
 
@@ -119,7 +121,7 @@ class SmartsheetClient:
                 "columnIds": ",".join(column_ids),
                 "pageSize": _ROWS_PAGE,
                 "page": page,
-            }
+            } | ({"level": level} if level else {})
             options = (("writerInfo", with_authors), ("objectValue", objects))
             include = [name for name, on in options if on]
             if include:

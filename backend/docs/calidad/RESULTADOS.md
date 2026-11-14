@@ -396,3 +396,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 # 2026-11-13 19:00 -05:00 ID-51 por `Parent Project` (inactiva)
 
 - 364 pruebas backend aprobadas (11 en `tests/test_id_adopt.py`, nuevas: `Linked Tracking` nunca adopta; sin la columna `Parent Project` no hay adopción). Ruff y formato correctos.
+
+# 2026-11-13 23:06 -05:00 Metraje a Billing y Designers (SPEC-B19 FH-05, FH-09)
+
+- Equipo Windows: 309 pruebas backend aprobadas y 57 omitidas (necesitan el PostgreSQL del equipo Linux); 2 nuevas en `tests/test_childsheets.py`: metraje copiado una sola vez y pasada correcta sin esas columnas en la maestra, `Designers` como varios contactos; correos de varios contactos ordenados y sin los que no tienen correo. Ruff y formato correctos.
+- En vivo: una escritura de `Designers` en una fila de `Billing`, releída igual.

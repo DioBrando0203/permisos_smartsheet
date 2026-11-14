@@ -766,3 +766,9 @@ Evidencia: 364 pruebas aprobadas; Ruff y formato correctos; valores de control s
 
 Estado: medición entregada; sin cambios en Smartsheet; falta la decisión del usuario entre `Parent Project` y dejar ID-51 inactiva.
 Evidencia: tras el pull, 307 pruebas aprobadas y 57 omitidas (necesitan el PostgreSQL del equipo Linux), Ruff y formato correctos. Medición (sólo GET y conteos, script temporal fuera del repo, hojas 2026 de los 6 clientes): 2 208 permisos bajo un proyecto; 96 % con el mismo `Project Name` que su proyecto; sólo 62 % con una única madre de igual `Customer` y `Project Name`; 33 % ambiguos. Detalle en PEN-53. De paso se quitaron dos nombres reales de PEN-53 y uno de `HOJA_PROJECT_KMV.md` (regla de AGENTS.md).
+
+## 2026-11-13 23:06 -05:00 Metraje a Billing y Designers para la vista de diseño (PEN-49, SPEC-B19)
+
+Estado: código y `Billing` listos desde el equipo Windows; falta el push, reiniciar el backend en Linux y borrar el metraje de la maestra.
+Cambios: `specs.py` (metraje como copia única, `Designers` como contexto), `sync.py` (varios contactos y `level=2`), `client.py` (`level` en columnas y filas), `mappers.py` (correos de varios contactos); SPEC-B19 FH-04, FH-05, FH-09, CA-05 y CA-06. En `Billing` (API, autorizado): columna `Designers` creada y las 5 de metraje desbloqueadas.
+Evidencia: 309 pruebas aprobadas y 57 omitidas (PostgreSQL de Linux), 2 nuevas; Ruff y formato correctos. Lectura real con `level=2`: `Designers` de la maestra es de varios contactos (sin `level` la API la da como texto). Una escritura de prueba de `Designers` en una fila de `Billing`, releída igual; 4 filas de la maestra tienen diseñadores con correo.

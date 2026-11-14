@@ -13,12 +13,13 @@ import pytest
 import respx
 
 from app.services.childsheets import rules
-from app.services.childsheets.specs import BILLING, RECORDS
+from app.services.childsheets.specs import BILLING, FOOTAGE, RECORDS
 from app.services.childsheets.sync import ChildSheetSync, child_hooks
 from app.services.ids import pilot
 from app.services.ids.dry_run import PILOT_WORKSPACE
 from app.services.ids.monitor import IdMonitor
 from app.services.smartsheet import SmartsheetClient
+from app.services.smartsheet.mappers import to_row
 from tests.conftest import BASE, make_settings
 
 CHILD = "777"
@@ -32,6 +33,7 @@ WRITES = {
 DATES = {"Date Received", "Record Request", "PM Approval Date", "Invoice Sent"}
 CHECKS = {"Records Needed", "Invoice? GALP"}
 CONTACTS = {"Records Owner"}
+MULTI = {"Designers"}
 
 
 def master(row_id: str, needed: bool, tracking: str, **values) -> rules.MasterRow:
@@ -96,7 +98,7 @@ class TwoSheets:
             body = json.loads(request.content)
             self.writes.append((sheet, request.method, body))
             for item in body:
-                values = {titles[c["columnId"] - 1]: c["value"] for c in item["cells"]}
+                values = {titles[c["columnId"] - 1]: _written(c) for c in item["cells"]}
                 if request.method == "POST":
                     self.next_id += 1
                     self.rows[sheet][str(self.next_id)] = values
@@ -107,12 +109,7 @@ class TwoSheets:
             {
                 "id": int(row_id),
                 "cells": [
-                    {"columnId": titles.index(t) + 1, "value": v}
-                    | (
-                        {"objectValue": {"objectType": "CONTACT", "email": v}}
-                        if t in CONTACTS
-                        else {}
-                    )
+                    {"columnId": titles.index(t) + 1, "value": v} | _object(t, v)
                     for t, v in values.items()
                     if t in titles
                 ],
@@ -124,7 +121,26 @@ class TwoSheets:
         return httpx.Response(200, json=body | {"rows": rows, "totalRowCount": len(rows)})
 
 
+def _object(title: str, value) -> dict:
+    """`objectValue` como lo devuelve la API para contactos (con `level=2` si son varios)."""
+    if title in CONTACTS:
+        return {"objectValue": {"objectType": "CONTACT", "email": value}}
+    if title in MULTI and value:
+        people = [{"objectType": "CONTACT", "email": e} for e in value.split(", ")]
+        return {"objectValue": {"objectType": "MULTI_CONTACT", "values": people}}
+    return {}
+
+
+def _written(cell: dict):
+    """Valor guardado de una celda escrita; varios contactos quedan como correos unidos."""
+    if "objectValue" in cell:
+        return ", ".join(person["email"] for person in cell["objectValue"]["values"])
+    return cell["value"]
+
+
 def _type(title: str) -> str:
+    if title in MULTI:
+        return "MULTI_CONTACT_LIST"
     if title in CONTACTS:
         return "CONTACT_LIST"
     return "DATE" if title in DATES else "CHECKBOX" if title in CHECKS else "TEXT_NUMBER"
@@ -178,9 +194,10 @@ async def test_records_creates_once_and_follows_context(router) -> None:
     assert row["Record Request"] == "2026-11-01" and row["City"] == ""
 
 
-BILLING_MASTER = [*BILLING.context, "Invoice? GALP", "Invoice Sent", "Invoice Status"]
+BILLING_MASTER = [*BILLING.context, *FOOTAGE, "Invoice? GALP", "Invoice Sent", "Invoice Status"]
 BILLING_CHILD = [
     *BILLING.context,
+    *FOOTAGE,
     "Row Type",
     "Master Row",
     "Invoice? GALP",
@@ -225,6 +242,58 @@ async def test_billing_mirrors_every_row_with_id_and_returns_status(router) -> N
         for r in sheets.rows[pilot.PRESENTABLE].values()
         if r["Tracking Project"] != "Pending ID"
     } == {"PAID"}
+
+
+async def test_billing_footage_is_copied_once_and_designers_follow(router) -> None:
+    sheets = _sheets(router, BILLING_MASTER, BILLING_CHILD)
+    designers = "persona2@example.com, persona1@example.com"
+    sheets.rows[pilot.PRESENTABLE] = {
+        "1": {"Tracking Project": "KMV-BS-26-001", "Total Footage": "300", "Designers": designers}
+    }
+    settings = make_settings(
+        **WRITES | {"app_billing_sync_enabled": True, "app_billing_sheet_id": CHILD}
+    )
+    client = SmartsheetClient(settings)
+    sync = ChildSheetSync(settings, client, BILLING, CHILD, interval=0)
+    try:
+        await sync.run()
+        (row,) = sheets.rows[CHILD].values()
+        row["Total Footage"] = "450"  # diseño lo corrige en Billing
+        master_row = sheets.rows[pilot.PRESENTABLE]["1"]
+        master_row.update({"Total Footage": "999", "Designers": "persona3@example.com"})
+        second = await sync.run()
+        # Metraje borrado de la maestra: la pasada sigue funcionando.
+        sheets.titles[pilot.PRESENTABLE] = [t for t in BILLING_MASTER if t not in FOOTAGE]
+        third = await sync.run()
+    finally:
+        await client.aclose()
+    (_, _, created), *_ = [w for w in sheets.writes if w[0] == CHILD and w[1] == "POST"]
+    sent = [c["objectValue"] for c in created[0]["cells"] if "objectValue" in c]
+    assert sent == [
+        {
+            "objectType": "MULTI_CONTACT",
+            "values": [
+                {"objectType": "CONTACT", "email": "persona1@example.com"},
+                {"objectType": "CONTACT", "email": "persona2@example.com"},
+            ],
+        }
+    ]
+    assert row["Total Footage"] == "450"
+    assert second["updated"] == 1 and row["Designers"] == "persona3@example.com"
+    assert third == {"created": 0, "updated": 0, "summarized": 0, "waiting": 0, "deferred": 0}
+
+
+def test_multi_contact_cells_keep_only_emails_in_one_order() -> None:
+    people = [
+        {"objectType": "CONTACT", "email": "persona2@example.com", "name": "Persona 2"},
+        {"objectType": "CONTACT", "name": "Sin correo"},
+        {"objectType": "CONTACT", "email": "Persona1@example.com"},
+        {"objectType": "CONTACT", "email": "persona2@example.com"},
+    ]
+    cells = [{"columnId": 7, "objectValue": {"objectType": "MULTI_CONTACT", "values": people}}]
+    assert to_row({"id": 1, "cells": cells}).contacts == {
+        "7": "Persona1@example.com, persona2@example.com"
+    }
 
 
 async def test_barriers_and_hooks(router) -> None:
