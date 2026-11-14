@@ -86,8 +86,8 @@ app/
   services/ids/recovery.py      plan de recuperación de reservas sin confirmar (puro)
   services/ids/gateway.py       adaptador de Stable IDs con comprobaciones y riesgo residual de edición externa
   services/ids/rehome.py        traslado del registro de IDs a otra hoja maestra con los mismos Stable IDs (ID-50)
-  services/ids/family.py        decisiones puras de madre e hijas: cambio de cliente, hija ajena o copiada (ID-44 a ID-47)
-  services/ids/customer_change.py  retiro e ID nuevo de la madre, salida de hijas ajenas y hijas que siguen a su madre
+  services/ids/family.py        decisiones puras de madre e hijas: cambio de cliente, hija ajena o copiada (ID-44 a ID-47), permiso suelto a adoptar (ID-51)
+  services/ids/customer_change.py  retiro e ID nuevo de la madre, salida de hijas ajenas, hijas que siguen a su madre y permiso suelto indentado bajo su proyecto (ID-51, inactiva sin `Parent Project`)
   api/routes/idsmart.py         ID Manager con token independiente: consultas, simulación, recuperación y escrituras con barreras
   services/catalog_plan.py      comparación pura de catálogos; no ejecuta sincronización
   services/catalog_rules.py     reglas puras del catálogo de proyectos y de Linked Tracking (SPEC-B16)
