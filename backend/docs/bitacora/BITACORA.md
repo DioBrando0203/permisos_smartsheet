@@ -778,3 +778,8 @@ Evidencia: 309 pruebas aprobadas y 57 omitidas (PostgreSQL de Linux), 2 nuevas; 
 Estado: hecho en Smartsheet; falta push y reiniciar el backend en Linux.
 Cambios (API, autorizado por el usuario): borradas de PROJECT KMV 1.0.0 `Total Footage`, `UG`, `UG + Profile`, `ISP` y `Aerial` (98 columnas); reporte `Design | Status & Footage` (`1499067780910980`) en `Producto/Reports`, fuentes la maestra y `Billing`.
 Evidencia (sólo GET antes y después): metraje vacío en las 17 filas de la maestra; ninguna fórmula ni aviso activo lo usaba; los reportes de `Producto/Reports` leen la hoja anterior. Después: maestra 98 columnas y `Billing` 41, ninguna celda con error; plan en seco de `Billing` con el código nuevo: 0 filas nuevas, 3 actualizaciones sólo de `Designers`; reporte con 5 filas (4 de la maestra, 1 de `Billing`).
+
+## 2026-11-13 23:51 -05:00 Columnas de Billing frente a los Generator y momento de facturación (PEN-49)
+
+Estado: análisis entregado; sin cambios en Smartsheet. El usuario hizo push a las 23:30 por pedido al asistente; falta reiniciar el backend en Linux con el commit `6931b29` (`Designers` sigue en 1 de 4 filas).
+Evidencia (sólo GET y conteos, script temporal fuera del repo): 7 reportes `Generator` (33 a 35 columnas); 30 de las 41 columnas de `Billing` las usa al menos uno; sin `Generator`: las 5 del servicio, `Customer`, `Project Status`, `Invoice? KMV`, `PM Approval Invoice Date`, `Customer invoice?` e `Invoice Paid`. CC y BS 2025 y 2026: secuencia y medianas en PEN-49 y SPEC-B19 FH-10; `Invoice? KMV` va siempre con `Invoice? GALP` y `Customer invoice?` con `Invoice Sent`.
