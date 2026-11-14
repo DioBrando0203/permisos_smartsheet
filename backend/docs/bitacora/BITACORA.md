@@ -761,3 +761,8 @@ Estado: hecho en el código; falta reiniciar el backend.
 Motivo: el usuario aclaró que `Linked Tracking` sólo enlaza proyectos anteriores.
 Cambios: la adopción lee `Parent Project` (columna inexistente: regla inactiva); pruebas nuevas: `Linked Tracking` nunca adopta y sin la columna no hay adopción; `Control Linked Tracking` vuelve a dar `ERROR: SAME PROJECT` en todas las filas.
 Evidencia: 364 pruebas aprobadas; Ruff y formato correctos; valores de control sin cambios salvo filas editadas por el usuario.
+
+## 2026-11-13 21:50 -05:00 Pull en el equipo Windows y medición de la opción sin columna de ID-51 (PEN-53)
+
+Estado: medición entregada; sin cambios en Smartsheet; falta la decisión del usuario entre `Parent Project` y dejar ID-51 inactiva.
+Evidencia: tras el pull, 307 pruebas aprobadas y 57 omitidas (necesitan el PostgreSQL del equipo Linux), Ruff y formato correctos. Medición (sólo GET y conteos, script temporal fuera del repo, hojas 2026 de los 6 clientes): 2 208 permisos bajo un proyecto; 96 % con el mismo `Project Name` que su proyecto; sólo 62 % con una única madre de igual `Customer` y `Project Name`; 33 % ambiguos. Detalle en PEN-53. De paso se quitaron dos nombres reales de PEN-53 y uno de `HOJA_PROJECT_KMV.md` (regla de AGENTS.md).
