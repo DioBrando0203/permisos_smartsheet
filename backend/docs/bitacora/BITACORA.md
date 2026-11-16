@@ -896,3 +896,9 @@ Estado: hecho; falta reiniciar el backend (también para Records con agencia y `
 Decisión del usuario: el metraje lo llena diseño y facturación sólo lo consulta.
 Cambios: `BILLING` copia el metraje como contexto; en el prototipo, metraje en la maestra (78 columnas) con el valor existente pasado desde `Billing`, bloqueado en `Billing`; `Tracking Project` normal en `Billing` y `Permits` del prototipo; reporte `KMV 2.0 | Design Projects`; guía de vistas sección 2 rehecha. El reporte `KMV 2.0 | Design` queda obsoleto (no se borró).
 Evidencia: 183 pruebas aprobadas; reportes leídos (detalle en RESULTADOS).
+
+## 2026-11-16 18:38 -05:00 Reporte KMV 2.0 | Design borrado (PEN-54)
+
+Estado: hecho a pedido del usuario (no tenía vistas encima).
+Cambios: borrado el reporte `KMV 2.0 | Design` (`5398000605286276`) de la carpeta `Reports` del prototipo; lo reemplaza `KMV 2.0 | Design Projects`.
+Evidencia: la carpeta lista 7 reportes: Billing, Coordinator, Design Projects, Design Tickets, MOT & Packages, Permits y Records.
