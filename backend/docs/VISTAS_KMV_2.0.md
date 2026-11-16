@@ -8,7 +8,7 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 - VK-01b: crear un filtro compartido en la hoja de origen (en la hoja, no en la vista): botón `Filter` > `New Filter`; condición sobre la columna (`is one of` = "es uno de", `is not one of` = "no es ninguno de"); ponerle nombre; marcar que se comparte (`Share filter`) y guardar. Después aparece en `Restrict view by sheet filter`. Si el origen es un reporte, el reporte ya trae su filtro y no hace falta.
 - VK-02: `View Display` > `Displayed fields`: en `Available fields` marcas las columnas que se ven en la tabla; en `Visible fields` quedan en orden (se arrastran para ordenarlas). Ahí también `Attachments` y `Comments`.
 - VK-03: `Details Panel`: los campos que aparecen al abrir una fila y también al agregar una fila nueva (el panel nuevo sale vacío). Se arrastran desde `Add Field` a `Details Panel Layout` en el orden en que se llenan. Al hacer clic en un campo del panel se marca de sólo lectura o obligatorio (`Required`), si la opción aparece. `Details panel description` sirve para un texto de ayuda arriba del panel. `Focus tab` en `Data`.
-- VK-04: `Field Logic` (a la derecha del panel, `+ Logic`): muestra u oculta campos según el valor de otro. Así el panel de una fila nueva sólo pide lo necesario y el resto aparece cuando ya hace falta.
+- VK-04: `Field Logic` (a la derecha del panel, `+ Logic`): muestra u oculta campos según el valor de otro. En `When` sólo aparecen columnas de lista desplegable (`Type of Project`, `Project Status`, `Priority`, `Task`, `Parent Project`, etc.); contactos (`Designers`, `Permitting Team`), texto y fechas no sirven de condición, aunque sí se pueden mostrar u ocultar. Úsala con `Type of Project` para que cada tipo de fila muestre sólo sus campos.
 - VK-05: `Sharing`: quién entra a la vista. Lo que ve cada uno se limita en `General` > `Restrict view by current user`.
 
 ## Para que no canse la vista
@@ -34,7 +34,7 @@ Origen de las dos: `PROJECT KMV 2.0 (Prototype)` (o el reporte `KMV 2.0 | Coordi
   - Avance: `Project Status`, `Survey Completed`, `Design Completed`, `PM Approval Date`, `LT`, `Design Ticket`, `Mile Post`.
   - Sólo lectura: `Tracking Project`, `Invoice Status`, `Obs`.
   - `Details panel description`: "The project number appears about a minute after saving (Pending ID until then)."
-- VK-14: `Field Logic`: mostrar los grupos Asignación y Avance sólo cuando `Tracking Project` no está vacío (fila ya guardada). Al agregar una fila el panel muestra sólo lo de crear y los datos del proyecto.
+- VK-14: `Field Logic` (opcional), regla `Design`: when `Type of Project` `is one of` `KMV-P` → mostrar `Design Ticket`, `Mile Post` y `DT Owner` (en 2026 casi nunca se usaron en `KMV-Miscellaneous`: 4 de 425). Lo demás siempre visible, en el orden de VK-13. Quitar del panel `Control Linked Tracking` (VK-09).
 - VK-15: `Sharing`: la coordinación.
 
 ### 1B. `PROJECT KMV 2.0 - PERMITS INTAKE`
@@ -46,7 +46,7 @@ Origen de las dos: `PROJECT KMV 2.0 (Prototype)` (o el reporte `KMV 2.0 | Coordi
   - Opcionales: `Permitting Team` (vacío = el del proyecto), `Contractor`, `Records Needed` y `Records Owner` (Records de esta agencia: la fila de Records se crea sola, siempre que haya `Agency`), `Project Status` (sólo si nace `NO PERMIT REQUIRED`, o para cancelar con `CANCELLED`).
   - Sólo lectura: `Tracking Project`, `Project Name`, `Permit #`, `Permit Approved`, `Permit Expires`.
   - `Details panel description`: "Choose the project in Parent Project. In about a minute the row moves under it and goes to the team sheet."
-- VK-19: `Field Logic`: mostrar `Tracking Project`, `Project Name`, `Permit #`, `Permit Approved` y `Permit Expires` sólo cuando `Tracking Project` no está vacío.
+- VK-19: sin `Field Logic`: el panel es corto; lo de sólo lectura queda abajo y se llena solo cuando la fila ya está bajo su proyecto.
 - VK-20: `Sharing`: la coordinación.
 
 ## 2. Diseño: `KMV 2.0 | Design`
@@ -56,7 +56,7 @@ Origen: reporte `KMV 2.0 | Design` (cada proyecto sale en dos filas: la de la ma
 - VK-21: `General`: `Restrict view by current user` = `Designers`; `New Item Submission` = `Do Not Allow`.
 - VK-22: `Visible fields`: `Tracking Project`, `Sheet Name` (para distinguir las dos filas), `Project Name`, `Customer`, `Project Status`, `Drawing Due Date`, `QC IN`, `QC OUT`, `Total Footage`.
 - VK-23: `Details Panel`: sólo lectura `Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`; editables `Project Status`, `Drawing Due Date`, `Survey Completed`, `QC IN`, `QC OUT`, `Design Completed`, `Design Ticket`, `Mile Post`; editables `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`.
-- VK-24: `Field Logic`: los campos de diseño cuando `Sheet Name` es la maestra; los de metraje cuando es `Billing`.
+- VK-24: `Field Logic`, regla `Design`: when `Type of Project` `is one of` `KMV-P`, `KMV-Miscellaneous` → mostrar los campos de diseño (sólo las filas de la maestra tienen ese tipo como lista). El metraje queda siempre visible: en la fila de la maestra sale vacío.
 - VK-25: `Sharing`: el equipo de diseño.
 
 ## 3. Permisos: `KMV 2.0 | Permits`
@@ -72,7 +72,7 @@ Origen: reporte `KMV 2.0 | Permits` (filas de `Permits` y los proyectos `KMV-Mis
   - Aprobación: `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`.
   - Estado: `Permit Status`.
   - Para los proyectos `KMV-Miscellaneous`: `Project Status`, `LT`, `Obs`.
-- VK-29: `Field Logic`: los grupos Solicitud, Revisiones, Aprobación y `Permit Status` cuando `Sheet Name` es `Permits`; `Project Status` y `Obs` cuando es la maestra. Además, la segunda revisión sólo cuando `1st Revision Req` tiene fecha.
+- VK-29: `Field Logic`: regla `Permit`: when `Type of Project` `is one of` `KMV-Permit`, `KMV-Line` → mostrar Solicitud, Revisiones, Aprobación y `Permit Status`; regla `Project`: when `Type of Project` `is one of` `KMV-Miscellaneous` → mostrar `Project Status` y `Obs`.
 - VK-30: `Sharing`: el equipo de permisos.
 
 ## 4. MOT y paquetes: `KMV 2.0 | MOT & Packages`
@@ -87,7 +87,7 @@ Origen: reporte `KMV 2.0 | MOT & Packages` (filas `MOT` y `Package`).
   - Diseño de MOT: `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT`, `TYPICAL MOT`.
   - Permiso de MOT: `LT`, `Submitted Date`, `Permit #`, `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`, `Permit Approved`, `Permit Expires`.
   - Estado: `MOT Status`.
-- VK-34: `Field Logic`: Paquetes cuando `Row Type` es `Package`; Diseño y Permiso de MOT cuando es `MOT`.
+- VK-34: `Field Logic` por `Row Type` (Paquetes cuando es `Package`; Diseño y Permiso de MOT cuando es `MOT`) sólo si `Row Type` es lista desplegable en `MOT & Packages (Prototype)`; hoy es texto, así que todo queda visible en el orden de VK-33.
 - VK-35: `Sharing`: la persona de MOT.
 
 ## 5. Records: `KMV 2.0 | Records`
