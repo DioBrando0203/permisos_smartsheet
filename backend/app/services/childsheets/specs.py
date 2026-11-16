@@ -2,7 +2,7 @@
 
 from app.services.childsheets.rules import ROW_TYPE, ChildSpec
 
-# Metraje que llena diseño: vive en Billing; la maestra sólo lo da al crear la fila.
+# Metraje que llena diseño en la maestra (SPEC-B19 FH-05, 2026-11-16); Billing lo copia siempre.
 FOOTAGE = ("Total Footage", "UG", "UG + Profile", "ISP", "Aerial")
 # Cantidades que siguen en la maestra y Billing copia siempre al día.
 QUANTITIES = (
@@ -78,9 +78,9 @@ BILLING = ChildSpec(
         "Stamp And Signatures #",
         "Designers",
         *QUANTITIES,
+        *FOOTAGE,
     ),
     initial=(
-        *FOOTAGE,
         "Purchase Orden",
         "Invoice? GALP",
         "Invoice? KMV",

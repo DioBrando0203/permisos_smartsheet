@@ -49,14 +49,17 @@ Origen de las dos: `PROJECT KMV 2.0 (Prototype)` (o el reporte `KMV 2.0 | Coordi
 - VK-19: sin `Field Logic`: el panel es corto; lo de sólo lectura queda abajo y se llena solo cuando la fila ya está bajo su proyecto.
 - VK-20: `Sharing`: la coordinación.
 
-## 2. Diseño: `KMV 2.0 | Design`
+## 2. Diseño: `KMV 2.0 | Design Projects`
 
-Origen: reporte `KMV 2.0 | Design` (cada proyecto sale en dos filas: la de la maestra y la de `Billing` con el metraje).
+Origen: reporte `KMV 2.0 | Design Projects` (sólo la maestra: una fila por proyecto `KMV-P` o `KMV-Miscellaneous`). El metraje se llena aquí; facturación lo ve en `Billing`, bloqueado.
 
 - VK-21: `General`: `Restrict view by current user` = `Designers`; `New Item Submission` = `Do Not Allow`.
-- VK-22: `Visible fields`: `Tracking Project`, `Sheet Name` (para distinguir las dos filas), `Project Name`, `Customer`, `Project Status`, `Drawing Due Date`, `QC IN`, `QC OUT`, `Total Footage`.
-- VK-23: `Details Panel`: sólo lectura `Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`; editables `Project Status`, `Drawing Due Date`, `Survey Completed`, `QC IN`, `QC OUT`, `Design Completed`, `Design Ticket`, `Mile Post`; editables `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`.
-- VK-24: `Field Logic`, regla `Design`: when `Type of Project` `is one of` `KMV-P`, `KMV-Miscellaneous` → mostrar los campos de diseño (sólo las filas de la maestra tienen ese tipo como lista). El metraje queda siempre visible: en la fila de la maestra sale vacío.
+- VK-22: `Visible fields`: `Tracking Project`, `Project Name`, `Customer`, `Project Status`, `Drawing Due Date`, `QC IN`, `QC OUT`, `Design Completed`, `Total Footage`.
+- VK-23: `Details Panel`, en este orden:
+  - Sólo lectura: `Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`, `Design Ticket`, `Mile Post`.
+  - Diseño (editable): `Project Status`, `Drawing Due Date`, `Survey Completed`, `QC IN`, `QC OUT`, `Design Completed`.
+  - Metraje (editable): `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`.
+- VK-24: `Field Logic` (opcional), regla `Design`: when `Type of Project` `is one of` `KMV-P` → mostrar el metraje (en `KMV-Miscellaneous` casi no hay diseño).
 - VK-25: `Sharing`: el equipo de diseño.
 
 ## 3. Permisos: `KMV 2.0 | Permits`

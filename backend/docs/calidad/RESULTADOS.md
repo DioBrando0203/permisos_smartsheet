@@ -417,3 +417,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - Equipo Linux: 183 pruebas backend aprobadas (una nueva: fila al asignar `DT Owner`, `Design Ticket` y `Mile Post` vuelven al proyecto). Una corrida intermedia dio 48 errores del PostgreSQL temporal al arrancar; repetida, todo aprobado. Ruff correcto.
 - En vivo: hoja `Design Tickets (Prototype)` creada (13 columnas, contexto bloqueado, `Master Row` oculta) y `Design Ticket` y `Mile Post` bloqueadas en la maestra; reporte creado. Sin ciclo en vivo: el backend del usuario estaba encendido con el código anterior (dos procesos a la vez podrían duplicar filas).
+
+# 2026-11-16 18:35 -05:00 Metraje en la maestra y reportes ordenados (SPEC-B19 FH-05b, PEN-54)
+
+- Equipo Linux: 183 pruebas backend aprobadas (la de metraje ahora comprueba que `Billing` lo copia siempre de la maestra). Dos corridas intermedias tuvieron errores intermitentes del PostgreSQL temporal (28 y 52); la prueba sola y la corrida siguiente, todo aprobado. Ruff correcto.
+- En vivo (prototipo): 5 columnas de metraje en la maestra (78 columnas), metraje de la única fila con datos pasado desde `Billing`, metraje bloqueado en `Billing`; columna `Tracking Project` normal en `Billing (Prototype)` (15 filas) y `Permits (Prototype)` (5); `KMV 2.0 | Permits` ya intercala cada proyecto `Miscellaneous` con sus permisos; reporte `KMV 2.0 | Design Projects` con 6 filas, una por proyecto.

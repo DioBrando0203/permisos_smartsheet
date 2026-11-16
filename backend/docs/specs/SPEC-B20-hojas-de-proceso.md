@@ -25,7 +25,7 @@ Estado: implementada y probada en el prototipo de Pruebas (2026-11-16 16:41, PEN
 
 ## Prototipo
 
-- HP-11: carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype`: maestra `1979884168761220` (73 columnas), `Permits (Prototype)` `3435959686483844`, `MOT & Packages (Prototype)` `2866571577085828`, `Records Requests (Prototype)` `3471473697312644`, `Billing (Prototype)` `4630718656499588`; reportes `KMV 2.0 | ...` en su carpeta `Reports` (detalle en PEN-54).
+- HP-11: carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype`: maestra `1979884168761220` (78 columnas: desde el 2026-11-16 18:35 vuelve el metraje, SPEC-B19 FH-05b), `Permits (Prototype)` `3435959686483844`, `MOT & Packages (Prototype)` `2866571577085828`, `Records Requests (Prototype)` `3471473697312644`, `Billing (Prototype)` `4630718656499588`; reportes `KMV 2.0 | ...` en su carpeta `Reports` (detalle en PEN-54).
 
 ## Pruebas
 

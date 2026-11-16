@@ -13,7 +13,7 @@ import pytest
 import respx
 
 from app.services.childsheets import rules
-from app.services.childsheets.specs import BILLING, FOOTAGE, RECORDS
+from app.services.childsheets.specs import BILLING, RECORDS
 from app.services.childsheets.sync import ChildSheetSync, child_hooks
 from app.services.ids import pilot
 from app.services.ids.dry_run import PILOT_WORKSPACE
@@ -195,10 +195,9 @@ async def test_records_creates_once_and_follows_context(router) -> None:
     assert row["Record Request"] == "2026-11-01" and row["City"] == ""
 
 
-BILLING_MASTER = [*BILLING.context, *FOOTAGE, "Invoice? GALP", "Invoice Sent", "Invoice Status"]
+BILLING_MASTER = [*BILLING.context, "Invoice? GALP", "Invoice Sent", "Invoice Status"]
 BILLING_CHILD = [
     *BILLING.context,
-    *FOOTAGE,
     "Row Type",
     "Master Row",
     "Invoice? GALP",
@@ -245,7 +244,7 @@ async def test_billing_mirrors_every_row_with_id_and_returns_status(router) -> N
     } == {"PAID"}
 
 
-async def test_billing_footage_is_copied_once_and_designers_follow(router) -> None:
+async def test_billing_footage_follows_the_master_and_designers_follow(router) -> None:
     sheets = _sheets(router, BILLING_MASTER, BILLING_CHILD)
     designers = "persona2@example.com, persona1@example.com"
     sheets.rows[pilot.PRESENTABLE] = {
@@ -259,12 +258,10 @@ async def test_billing_footage_is_copied_once_and_designers_follow(router) -> No
     try:
         await sync.run()
         (row,) = sheets.rows[CHILD].values()
-        row["Total Footage"] = "450"  # diseño lo corrige en Billing
+        row["Total Footage"] = "450"  # cambio a mano en Billing: la maestra manda
         master_row = sheets.rows[pilot.PRESENTABLE]["1"]
-        master_row.update({"Total Footage": "999", "Designers": "persona3@example.com"})
+        master_row.update({"UG": "120", "Designers": "persona3@example.com"})
         second = await sync.run()
-        # Metraje borrado de la maestra: la pasada sigue funcionando.
-        sheets.titles[pilot.PRESENTABLE] = [t for t in BILLING_MASTER if t not in FOOTAGE]
         third = await sync.run()
     finally:
         await client.aclose()
@@ -279,8 +276,9 @@ async def test_billing_footage_is_copied_once_and_designers_follow(router) -> No
             ],
         }
     ]
-    assert row["Total Footage"] == "450"
-    assert second["updated"] == 1 and row["Designers"] == "persona3@example.com"
+    assert second["updated"] == 1
+    assert (row["Total Footage"], row["UG"]) == ("300", "120")
+    assert row["Designers"] == "persona3@example.com"
     assert third == {"created": 0, "updated": 0, "summarized": 0, "waiting": 0, "deferred": 0}
 
 

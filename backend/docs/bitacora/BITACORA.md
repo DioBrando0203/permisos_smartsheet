@@ -889,3 +889,10 @@ Evidencia: 182 pruebas aprobadas, Ruff correcto (detalle en RESULTADOS).
 Estado: hecho; falta reiniciar el backend (también para el cambio de Records con agencia).
 Cambios (pedido del usuario): `DESIGN_TICKETS` en `services/childsheets/specs.py` y su paso; hoja `Design Tickets (Prototype)` y reporte `KMV 2.0 | Design Tickets` en Pruebas; `Design Ticket` y `Mile Post` bloqueadas en la maestra del prototipo; `backend/.env` con `APP_DESIGN_TICKETS_SYNC_ENABLED` y su hoja (token sin leer); guía de vistas con la sección 7.
 Evidencia: 183 pruebas aprobadas (detalle en RESULTADOS).
+
+## 2026-11-16 18:35 -05:00 Metraje de vuelta en la maestra y vista de diseño sin duplicados (PEN-54, SPEC-B19 FH-05b)
+
+Estado: hecho; falta reiniciar el backend (también para Records con agencia y `Design Tickets`).
+Decisión del usuario: el metraje lo llena diseño y facturación sólo lo consulta.
+Cambios: `BILLING` copia el metraje como contexto; en el prototipo, metraje en la maestra (78 columnas) con el valor existente pasado desde `Billing`, bloqueado en `Billing`; `Tracking Project` normal en `Billing` y `Permits` del prototipo; reporte `KMV 2.0 | Design Projects`; guía de vistas sección 2 rehecha. El reporte `KMV 2.0 | Design` queda obsoleto (no se borró).
+Evidencia: 183 pruebas aprobadas; reportes leídos (detalle en RESULTADOS).
