@@ -803,15 +803,22 @@ Cambios (API, pedido del usuario, sólo en Pruebas): carpeta `Producto/PROJECT K
 Evidencia (lectura posterior): IDs `KMV-26-001` a `KMV-26-005` en madres y heredados en las 5 hijas; `Linked Tracking` de `KMV-26-005` a `KMV-26-001` da `OK`; `Phase`, `Closed` y `Client Access` calculan tras recrear las referencias (las 5 en `OK`); en las hojas de proceso calculan las fórmulas de días (por ejemplo `Process # Days` 20, `Permit - Days in Submitted` 6) y los contactos copiados se ven.
 Hallazgo: con un contador por año, 3 dígitos no alcanzan (1 382 proyectos en 2026 en tres clientes); queda por decidir el número de dígitos (PEN-54).
 
-## 2026-11-16 15:52 -05:00 Prototipo 2.0: IDs de 4 dígitos (PEN-54)
+## 2026-11-16 15:32 -05:00 Prototipo 2.0: IDs de 4 dígitos (PEN-54)
 
 Estado: hecho en Smartsheet (sólo hojas del prototipo en Pruebas); sin cambios de código.
 Decisión del usuario: un contador por año con 4 dígitos fijos, `KMV-AA-NNNN`.
 Cambios (API): `Stable Tracking Project` de 10 filas, opciones y valor de `Linked Tracking` en la maestra del prototipo y `Tracking Project` de 3 filas en `Permits (Prototype)` y 3 en `MOT & Packages (Prototype)`.
 Evidencia (lectura posterior): madres `KMV-26-0001` a `KMV-26-0005`, las 5 hijas heredan el de su madre, `Linked Tracking` de `KMV-26-0005` a `KMV-26-0001` da `OK`, hojas de proceso con los IDs nuevos.
 
-## 2026-11-16 16:20 -05:00 Historial de celdas en hojas 2026 y LT de vuelta en el prototipo (PEN-54)
+## 2026-11-16 15:48 -05:00 Historial de celdas en hojas 2026 y LT de vuelta en el prototipo (PEN-54)
 
 Estado: hecho; queda la consulta del usuario sobre `Designer2`.
 Evidencia (sólo GET): valores de las 6 hojas `Engineering Plan` 2026 e historial de celdas de 21 filas creadas desde octubre (7 madres con `LT` y su hija, 6 madres `Miscellaneous`, 7 hijas `Line` con `Designer2`). Todo lo escribe a mano la coordinadora de proyectos; las automatizaciones de esas hojas son sólo avisos. `LT` de la madre se escribe junto con `PM Approval Date` y la creación de la hija; `Designer2` guarda personas de permisos (36 % de los `Permit`, 15 % de las `Line`). Detalle en PEN-54.
 Cambios (API, sólo prototipo en Pruebas): `LT` y `Process # Days` (fórmula de la maestra) de vuelta en `PROJECT KMV 2.0 (Prototype)`, 72 columnas; `LT` en `KMV-26-0001` y `KMV-26-0002` (`Process # Days` 18 y 13).
+
+## 2026-11-16 16:00 -05:00 Prototipo 2.0: Records, Billing, cancelación y cambio de tipo (PEN-54)
+
+Estado: hecho en Smartsheet (sólo hojas del prototipo en Pruebas); sin cambios de código. Falta en la interfaz el tachado de `CANCELLED` en `Permits` y `MOT & Packages`.
+Decisiones del usuario: las hijas no se borran, se cancelan con `CANCELLED`; si cambia el tipo, la fila se mueve a la otra hoja de proceso.
+Cambios (API): copias sin datos de `Records Requests` y `Billing` en la carpeta del prototipo (22 y 41 columnas); `Master Row` oculta en `Permits` y `MOT & Packages`; `CANCELLED` en `Permit Status`; hijas de la maestra con los datos del proyecto; `Records Needed` y `Records Owner` en `KMV-26-0003`; un permiso cancelado en `KMV-26-0002`; 11 filas en `Billing`, 1 en Records, 1 más en `Permits`; `Invoice Status` devuelto a las 11 filas de la maestra. Las hojas en uso (1.0.0, Records, Billing) sólo se leyeron.
+Evidencia (lectura posterior): maestra 72 columnas y 11 filas; `Permits` 4 filas, `MOT & Packages` 3, `Billing` 11, Records 1, todas con `Master Row` apuntando a la fila correcta (mismo ID y agencia); `Invoice Status` `NOT INVOICED`; `Record # Days` calcula; `Designers` copiado en `Billing`.
