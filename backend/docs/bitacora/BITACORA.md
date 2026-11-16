@@ -809,3 +809,9 @@ Estado: hecho en Smartsheet (sólo hojas del prototipo en Pruebas); sin cambios 
 Decisión del usuario: un contador por año con 4 dígitos fijos, `KMV-AA-NNNN`.
 Cambios (API): `Stable Tracking Project` de 10 filas, opciones y valor de `Linked Tracking` en la maestra del prototipo y `Tracking Project` de 3 filas en `Permits (Prototype)` y 3 en `MOT & Packages (Prototype)`.
 Evidencia (lectura posterior): madres `KMV-26-0001` a `KMV-26-0005`, las 5 hijas heredan el de su madre, `Linked Tracking` de `KMV-26-0005` a `KMV-26-0001` da `OK`, hojas de proceso con los IDs nuevos.
+
+## 2026-11-16 16:20 -05:00 Historial de celdas en hojas 2026 y LT de vuelta en el prototipo (PEN-54)
+
+Estado: hecho; queda la consulta del usuario sobre `Designer2`.
+Evidencia (sólo GET): valores de las 6 hojas `Engineering Plan` 2026 e historial de celdas de 21 filas creadas desde octubre (7 madres con `LT` y su hija, 6 madres `Miscellaneous`, 7 hijas `Line` con `Designer2`). Todo lo escribe a mano la coordinadora de proyectos; las automatizaciones de esas hojas son sólo avisos. `LT` de la madre se escribe junto con `PM Approval Date` y la creación de la hija; `Designer2` guarda personas de permisos (36 % de los `Permit`, 15 % de las `Line`). Detalle en PEN-54.
+Cambios (API, sólo prototipo en Pruebas): `LT` y `Process # Days` (fórmula de la maestra) de vuelta en `PROJECT KMV 2.0 (Prototype)`, 72 columnas; `LT` en `KMV-26-0001` y `KMV-26-0002` (`Process # Days` 18 y 13).
