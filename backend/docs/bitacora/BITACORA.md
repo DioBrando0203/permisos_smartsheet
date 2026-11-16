@@ -866,3 +866,8 @@ Evidencia: 383 pruebas aprobadas, Ruff y formato correctos; en vivo sobre el pro
 Estado: hecho en la configuración; falta que el usuario reinicie el backend.
 Cambios (`backend/.env`, no versionado, a pedido del usuario): `IDS_MASTER_SHEET_ID`, `APP_RECORDS_SHEET_ID` y `APP_BILLING_SHEET_ID` a las hojas del prototipo; `IDS_PROJECT_FORMAT=year`, `IDS_PROJECT_OPTIONS_ENABLED`, `APP_INHERIT_ENABLED`, `Permits` y `MOT & Packages` activos; `APP_PROJECT_CATALOG_SHEET` vacío (el catálogo sirve a la 1.0.0). El usuario ya había pegado el bloque al final: se quitaron los duplicados y los valores de la 1.0.0 quedaron comentados al final para volver. El token no se leyó ni se mostró.
 Evidencia: configuración leída por la aplicación con esos valores; plan en seco con ella: 6 proyectos con ID y 9 hijas heredadas; pasos activos herencia, Records, Billing, `Permits`, `MOT & Packages` y listas.
+
+## 2026-11-16 16:55 -05:00 Guía de vistas de la 2.0 (PEN-54)
+
+Estado: hecho (documento); las vistas las arma el usuario.
+Cambios: `backend/docs/VISTAS_KMV_2.0.md` con las vistas de coordinación (proyectos y permisos), diseño, permisos, MOT y paquetes, Records y facturación: tabla de 6 a 9 columnas, filtros guardados, formularios y paneles de detalle por secciones con lo copiado en sólo lectura.
