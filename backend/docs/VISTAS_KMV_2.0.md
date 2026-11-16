@@ -1,126 +1,112 @@
 # Vistas (Dynamic View) de la versión 2.0
 
-Guía para armar las vistas de cada equipo sobre los reportes de `Pruebas/Producto/PROJECT KMV 2.0 - Prototype/Reports`. Los nombres de vistas, columnas y filtros van en inglés, como todo en Smartsheet. Reglas del servicio en SPEC-B20 y PEN-54.
+Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones son los de la pantalla de configuración de Dynamic View (`Settings`). Las vistas de coordinación pueden ir directo sobre la maestra `PROJECT KMV 2.0 (Prototype)`; las de los equipos van sobre los reportes de `Pruebas/Producto/PROJECT KMV 2.0 - Prototype/Reports`. Reglas del servicio en SPEC-B20 y PEN-54.
 
-## Idea general: que no canse la vista
+## Dónde se configura cada cosa
 
-- VK-01: la tabla muestra pocas columnas (6 a 8): las que sirven para encontrar la fila y saber qué falta. Todo lo demás va al panel de detalle, que se abre al hacer clic en la fila.
-- VK-02: orden de izquierda a derecha, siempre el mismo en todas las vistas: quién es (ID y tipo), qué es (nombre), cómo está (estado), qué toca ahora (la fecha que sigue) y quién lo lleva.
-- VK-03: el panel de detalle se divide en secciones con título, en el orden en que se trabaja: primero los datos del proyecto (sólo lectura), luego el trabajo del equipo (editable) y al final el estado.
-- VK-04: lo que copia el servicio se marca de sólo lectura en la vista (contexto del proyecto, IDs, resúmenes). Si alguien lo cambia, el servicio lo vuelve a escribir: mejor que ni se pueda.
-- VK-05: nunca se muestran columnas técnicas: `Master Row`, `Stable Tracking Project`, `Row Level`, `Row Order`, `Customer Code`, `Year`, `Control Linked Tracking`, ni `Primary` (siempre dice `KMV-P`).
-- VK-06: cada vista abre con un filtro de lo pendiente (sin cerrados ni cancelados) y otro de todo; orden por `Tracking Project` de mayor a menor (lo más nuevo arriba).
-- VK-07: si tu Dynamic View permite varios paneles de detalle con condición, usa uno por tipo de fila (por ejemplo, uno para proyectos y otro para permisos); así cada fila muestra sólo sus campos.
-- VK-08: en cada vista de equipo, `Restrict by` (filtrar por persona) con su columna de asignación: cada uno ve sólo lo suyo.
+- VK-01: `General`: nombre de la vista, hoja o reporte de origen, el filtro de la vista (qué filas existen en ella; condición `is one of` = "es uno de", `is not one of` = "no es ninguno de") y si se permite agregar filas.
+- VK-02: `View Display` > `Displayed fields`: en `Available fields` marcas las columnas que se ven en la tabla; en `Visible fields` quedan en orden (se arrastran para ordenarlas). Ahí también `Attachments` y `Comments`.
+- VK-03: `Details Panel`: los campos que aparecen al abrir una fila y también al agregar una fila nueva (el panel nuevo sale vacío). Se arrastran desde `Add Field` a `Details Panel Layout` en el orden en que se llenan. Al hacer clic en un campo del panel se marca de sólo lectura o obligatorio (`Required`), si la opción aparece. `Details panel description` sirve para un texto de ayuda arriba del panel. `Focus tab` en `Data`.
+- VK-04: `Field Logic` (a la derecha del panel, `+ Logic`): muestra u oculta campos según el valor de otro. Así el panel de una fila nueva sólo pide lo necesario y el resto aparece cuando ya hace falta.
+- VK-05: `Sharing`: quién entra a la vista y, para cada uno, restringir las filas a las que tienen su nombre en una columna de contacto (por ejemplo `Permitting Team`), para que cada persona vea sólo lo suyo.
 
-## 1. Coordinación (Zaira): dos vistas
+## Para que no canse la vista
 
-Recomiendo dos vistas sobre el mismo reporte en lugar de una con todos los campos: una para crear y llevar proyectos y otra para crear permisos. El formulario de cada una queda corto.
+- VK-06: `Visible fields` con 6 a 9 columnas, siempre en el mismo orden: ID y tipo, nombre, estado, la fecha que sigue y quién lo lleva. El resto va sólo al panel.
+- VK-07: quitar `Primary` de `Visible fields` (siempre dice `KMV-P`) y poner primero `Tracking Project`.
+- VK-08: en el panel, primero lo que se escribe al crear, luego lo que se va llenando con el trabajo y al final lo de sólo lectura. Lo que copia el servicio va de sólo lectura: si alguien lo cambia, el servicio lo vuelve a escribir.
+- VK-09: nunca agregar columnas técnicas: `Master Row`, `Stable Tracking Project`, `Row Level`, `Row Order`, `Customer Code`, `Year`, `Control Linked Tracking`.
+- VK-10: ordenar la tabla por `Tracking Project` de mayor a menor (lo nuevo arriba) y, ya en la vista, guardar un filtro `Open` con lo pendiente.
 
-Reporte: `KMV 2.0 | Coordinator`. Hoja donde se guardan las filas nuevas: `PROJECT KMV 2.0 (Prototype)`.
+## 1. Coordinación (Zaira): dos vistas sobre la maestra
 
-### 1A. `KMV 2.0 | Projects`
+Origen de las dos: `PROJECT KMV 2.0 (Prototype)` (o el reporte `KMV 2.0 | Coordinator`). Una vista para proyectos y otra para permisos: cada panel queda corto.
 
-- VK-10: filtro de la vista: `Type of Project` es `KMV-P` o `KMV-Miscellaneous`.
-- VK-11: tabla, en este orden: `Tracking Project`, `Type of Project`, `Customer`, `Project Name`, `Project Status`, `Date Received`, `Drawing Due Date`, `Designers`, `Permitting Team`.
-- VK-12: filtros guardados: `Open` (`Project Status` no es `COMPLETE` ni `CANCELLED`), `Pending ID` (`Tracking Project` es `Pending ID`), `All`.
-- VK-13: formulario para crear un proyecto, en este orden y con obligatorios marcados (*):
-  - `Type of Project` * (`KMV-P` o `KMV-Miscellaneous`)
-  - `Customer` *
-  - `Date Received` *
-  - `Project Name` *
-  - `Project Address`, `City`, `County`
-  - `Task`, `Priority`, `CC System`
-  - `Drawing Due Date`
-  - `Designers` (proyecto de diseño) o `Permitting Team` (proyecto de permisos)
-  - `Linked Tracking` (sólo si continúa un proyecto anterior)
-  - Texto de ayuda en el formulario: "The project number appears in a minute (Pending ID until then)."
-- VK-14: panel de detalle:
-  - Sección `Project` (editable): `Type of Project`, `Customer`, `Project Name`, `Project Address`, `City`, `County`, `Task`, `Priority`, `CC System`, `Linked Tracking`.
-  - Sección `Assignment` (editable): `Designers`, `Permitting Team`, `Surveyor`, `Engineer`, `Records Needed`, `Records Owner`, `Prepare Packages`, `DT Owner`, `Construction Manager`, `Contractor`.
-  - Sección `Milestones` (editable): `Date Received`, `Drawing Due Date`, `Survey Completed`, `Design Completed`, `PM Approval Date`, `LT`, `Design Ticket`, `Mile Post`.
-  - Sección `Status` : `Project Status` (editable); `Tracking Project` e `Invoice Status` (sólo lectura).
-  - Sección `Notes` (sólo lectura): `Obs`.
+### 1A. `PROJECT KMV 2.0 - PROJECTS`
 
-### 1B. `KMV 2.0 | Permits Intake`
+- VK-11: `General`: filtro de la vista `Type of Project` `is one of` `KMV-P`, `KMV-Miscellaneous`; permitir agregar filas.
+- VK-12: `View Display` > `Visible fields`, en este orden: `Tracking Project`, `Type of Project`, `Customer`, `Project Name`, `Project Status`, `Date Received`, `Drawing Due Date`, `Designers`, `Permitting Team`.
+- VK-13: `Details Panel`, en este orden:
+  - Para crear (obligatorios): `Type of Project`, `Customer`, `Date Received`, `Project Name`.
+  - Datos del proyecto: `Project Address`, `City`, `County`, `Task`, `Priority`, `CC System`, `Drawing Due Date`, `Linked Tracking`.
+  - Asignación: `Designers`, `Permitting Team`, `Surveyor`, `Engineer`, `Records Needed`, `Records Owner`, `Prepare Packages`, `DT Owner`, `Construction Manager`, `Contractor`.
+  - Avance: `Project Status`, `Survey Completed`, `Design Completed`, `PM Approval Date`, `LT`, `Design Ticket`, `Mile Post`.
+  - Sólo lectura: `Tracking Project`, `Invoice Status`, `Obs`.
+  - `Details panel description`: "The project number appears about a minute after saving (Pending ID until then)."
+- VK-14: `Field Logic`: mostrar los grupos Asignación y Avance sólo cuando `Tracking Project` no está vacío (fila ya guardada). Al agregar una fila el panel muestra sólo lo de crear y los datos del proyecto.
+- VK-15: `Sharing`: la coordinación, sin restringir filas.
 
-- VK-15: filtro de la vista: `Type of Project` es `KMV-Permit`, `KMV-Line` o `KMV-MOT`.
-- VK-16: tabla: `Tracking Project`, `Parent Project`, `Type of Project`, `Agency`, `Project Status`, `Permitting Team`, `Project Name`.
-- VK-17: formulario para crear un permiso, línea o MOT (corto a propósito):
-  - `Type of Project` * (`KMV-Permit`, `KMV-Line` o `KMV-MOT`)
-  - `Parent Project` * (el proyecto al que pertenece; la lista se actualiza sola)
-  - `Agency` * (sin agencia la fila no pasa a la hoja del equipo)
-  - `Permitting Team` (si se deja vacío, toma el del proyecto)
-  - `Project Status` (sólo si nace como `NO PERMIT REQUIRED`)
-  - Texto de ayuda: "It moves under its project and takes its data in about a minute."
-- VK-18: panel de detalle: `Type of Project`, `Parent Project`, `Agency`, `Permitting Team`, `Contractor` editables; `Project Status`, `Permit #`, `Permit Approved`, `Permit Expires` de sólo lectura (vienen de la hoja del equipo), salvo `Project Status` para cancelar: `CANCELLED` en la fila cancela también en la hoja del equipo.
+### 1B. `PROJECT KMV 2.0 - PERMITS INTAKE`
+
+- VK-16: `General`: filtro de la vista `Type of Project` `is one of` `KMV-Permit`, `KMV-Line`, `KMV-MOT`; permitir agregar filas.
+- VK-17: `View Display` > `Visible fields`: `Tracking Project`, `Parent Project`, `Type of Project`, `Agency`, `Project Status`, `Permitting Team`, `Project Name`.
+- VK-18: `Details Panel`, en este orden:
+  - Para crear (obligatorios): `Type of Project`, `Parent Project`, `Agency`.
+  - Opcionales: `Permitting Team` (vacío = el del proyecto), `Contractor`, `Project Status` (sólo si nace `NO PERMIT REQUIRED`, o para cancelar con `CANCELLED`).
+  - Sólo lectura: `Tracking Project`, `Project Name`, `Permit #`, `Permit Approved`, `Permit Expires`.
+  - `Details panel description`: "Choose the project in Parent Project. In about a minute the row moves under it and goes to the team sheet."
+- VK-19: `Field Logic`: mostrar `Tracking Project`, `Project Name`, `Permit #`, `Permit Approved` y `Permit Expires` sólo cuando `Tracking Project` no está vacío.
+- VK-20: `Sharing`: la coordinación, sin restringir filas.
 
 ## 2. Diseño: `KMV 2.0 | Design`
 
-Reporte: `KMV 2.0 | Design` (cada proyecto sale en dos filas: la de la maestra y la de `Billing` con el metraje).
+Origen: reporte `KMV 2.0 | Design` (cada proyecto sale en dos filas: la de la maestra y la de `Billing` con el metraje).
 
-- VK-20: `Restrict by`: `Designers`.
-- VK-21: tabla: `Tracking Project`, `Sheet Name` (angosta, para distinguir las dos filas), `Project Name`, `Customer`, `Project Status`, `Drawing Due Date`, `QC IN`, `QC OUT`, `Total Footage`.
-- VK-22: filtros guardados: `Open` (`Project Status` no es `COMPLETE` ni `CANCELLED`), `Needs QC` (`Project Status` es `2. Design Needs QC`), `All`.
-- VK-23: sin formulario de filas nuevas.
-- VK-24: panel de detalle:
-  - Sección `Project` (sólo lectura): `Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`.
-  - Sección `Design` (editable; sólo en la fila de la maestra): `Project Status`, `Drawing Due Date`, `Survey Completed`, `QC IN`, `QC OUT`, `Design Completed`, `Design Ticket`, `Mile Post`.
-  - Sección `Footage` (editable; sólo en la fila de `Billing`): `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`.
-  - Si se puede poner condición al panel: panel `Design` cuando `Sheet Name` es la maestra y panel `Footage` cuando es `Billing`.
+- VK-21: `General`: sin agregar filas.
+- VK-22: `Visible fields`: `Tracking Project`, `Sheet Name` (para distinguir las dos filas), `Project Name`, `Customer`, `Project Status`, `Drawing Due Date`, `QC IN`, `QC OUT`, `Total Footage`.
+- VK-23: `Details Panel`: sólo lectura `Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`; editables `Project Status`, `Drawing Due Date`, `Survey Completed`, `QC IN`, `QC OUT`, `Design Completed`, `Design Ticket`, `Mile Post`; editables `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`.
+- VK-24: `Field Logic`: los campos de diseño cuando `Sheet Name` es la maestra; los de metraje cuando es `Billing`.
+- VK-25: `Sharing`: el equipo de diseño, restringido por `Designers`.
 
 ## 3. Permisos: `KMV 2.0 | Permits`
 
-Reporte: `KMV 2.0 | Permits` (filas de `Permits` y, además, los proyectos `KMV-Miscellaneous` del equipo).
+Origen: reporte `KMV 2.0 | Permits` (filas de `Permits` y los proyectos `KMV-Miscellaneous` del equipo).
 
-- VK-30: `Restrict by`: `Permitting Team`.
-- VK-31: tabla: `Tracking Project`, `Type of Project`, `Agency`, `Permit Status`, `Project Name`, `Submitted Date`, `Permit #`, `Permit Expires`.
-- VK-32: filtros guardados: `Open` (`Permit Status` no es `CANCELLED`, `4. Permit Closed`, `4. No Permit Required` ni `8. Close - Permit Process`), `In revision` (`Permit Status` es `4. Permit Needs Revision`), `Expiring` (`Permit Expires` en los próximos 30 días), `My projects` (`Type of Project` es `KMV-Miscellaneous`), `All`.
-- VK-33: vista de tarjetas por `Permit Status` (columnas tipo tablero), para mover cada permiso de estado arrastrando.
-- VK-34: sin formulario de filas nuevas: las crea el servicio desde la vista de coordinación.
-- VK-35: panel de detalle de un permiso:
-  - Sección `Permit` (sólo lectura): `Tracking Project`, `Type of Project`, `Agency`, `Customer`, `Project Name`, `Project Address`, `City`, `Design Ticket`, `Mile Post`, `Designers`, `Date Received`, `PM Approval Date`.
-  - Sección `Application` (editable): `LT`, `App Sent to Contractor`, `App Returned from Contractor`, `Submitted Date`, `Runner Submitting`.
-  - Sección `Revisions` (editable): `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`, `2nd Revision Req`, `2nd Revision Completed`, `Permit 2nd Resubmitted`.
-  - Sección `Approval` (editable): `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`.
-  - Sección `Status` (editable): `Permit Status`.
-- VK-36: panel de detalle de un proyecto `KMV-Miscellaneous` (filas de la maestra): `Project Status`, `LT` editables; `Project Name`, `Customer`, `Date Received` y `Obs` de sólo lectura.
+- VK-26: `General`: sin agregar filas (las crea el servicio desde la coordinación).
+- VK-27: `Visible fields`: `Tracking Project`, `Type of Project`, `Agency`, `Permit Status`, `Project Name`, `Submitted Date`, `Permit #`, `Permit Expires`.
+- VK-28: `Details Panel`, en este orden:
+  - Sólo lectura: `Tracking Project`, `Type of Project`, `Agency`, `Customer`, `Project Name`, `Project Address`, `City`, `Design Ticket`, `Mile Post`, `Designers`, `Date Received`, `PM Approval Date`.
+  - Solicitud: `LT`, `App Sent to Contractor`, `App Returned from Contractor`, `Submitted Date`, `Runner Submitting`.
+  - Revisiones: `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`, `2nd Revision Req`, `2nd Revision Completed`, `Permit 2nd Resubmitted`.
+  - Aprobación: `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`.
+  - Estado: `Permit Status`.
+  - Para los proyectos `KMV-Miscellaneous`: `Project Status`, `LT`, `Obs`.
+- VK-29: `Field Logic`: los grupos Solicitud, Revisiones, Aprobación y `Permit Status` cuando `Sheet Name` es `Permits`; `Project Status` y `Obs` cuando es la maestra. Además, la segunda revisión sólo cuando `1st Revision Req` tiene fecha.
+- VK-30: `Sharing`: el equipo de permisos, restringido por `Permitting Team`.
 
 ## 4. MOT y paquetes: `KMV 2.0 | MOT & Packages`
 
-Reporte: `KMV 2.0 | MOT & Packages` (filas `MOT` por cada hija `KMV-MOT` y `Package` por cada proyecto con `Prepare Packages`).
+Origen: reporte `KMV 2.0 | MOT & Packages` (filas `MOT` y `Package`).
 
-- VK-40: `Restrict by`: `Permitting Team`.
-- VK-41: tabla: `Tracking Project`, `Row Type`, `Agency`, `MOT Status`, `Project Name`, `Design MOT Request`, `Prepare Packages Request`, `Submitted Date`.
-- VK-42: filtros guardados: `Open` (`MOT Status` no es `COMPLETE` ni `CANCELLED`), `MOT`, `Packages`, `All`.
-- VK-43: vista de tarjetas por `MOT Status`.
-- VK-44: sin formulario de filas nuevas.
-- VK-45: panel de detalle:
-  - Sección `Project` (sólo lectura): `Tracking Project`, `Row Type`, `Agency`, `Customer`, `Project Name`, `Project Address`, `City`, `Designers`, `Date Received`, `PM Approval Date`.
-  - Sección `Packages` (editable; filas `Package`): `Prepare Packages Request`, `Prepare Packages QC`, `Prepare Packages Completed`.
-  - Sección `MOT Design` (editable; filas `MOT`): `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT`, `TYPICAL MOT`.
-  - Sección `MOT Permit` (editable; filas `MOT`): `LT`, `Submitted Date`, `Permit #`, `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`, `Permit Approved`, `Permit Expires`.
-  - Sección `Status` (editable): `MOT Status`.
-  - Con condición de panel: uno para `Row Type` `Package` y otro para `MOT`.
+- VK-31: `General`: sin agregar filas.
+- VK-32: `Visible fields`: `Tracking Project`, `Row Type`, `Agency`, `MOT Status`, `Project Name`, `Design MOT Request`, `Prepare Packages Request`, `Submitted Date`.
+- VK-33: `Details Panel`, en este orden:
+  - Sólo lectura: `Tracking Project`, `Row Type`, `Agency`, `Customer`, `Project Name`, `Project Address`, `City`, `Designers`, `Date Received`, `PM Approval Date`.
+  - Paquetes: `Prepare Packages Request`, `Prepare Packages QC`, `Prepare Packages Completed`.
+  - Diseño de MOT: `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT`, `TYPICAL MOT`.
+  - Permiso de MOT: `LT`, `Submitted Date`, `Permit #`, `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`, `Permit Approved`, `Permit Expires`.
+  - Estado: `MOT Status`.
+- VK-34: `Field Logic`: Paquetes cuando `Row Type` es `Package`; Diseño y Permiso de MOT cuando es `MOT`.
+- VK-35: `Sharing`: la persona de MOT, restringido por `Permitting Team`.
 
 ## 5. Records: `KMV 2.0 | Records`
 
-- VK-50: `Restrict by`: `Records Owner`.
-- VK-51: tabla: `Tracking Project`, `Project Name`, `Agency`, `Records Status`, `Record Request`, `Reminder Sent`, `Record Received`.
-- VK-52: filtros guardados: `Open` (`Records Status` vacío, `Not Received` o `Ticket - coordination`), `All`.
-- VK-53: sin formulario de filas nuevas (las pide la coordinación con `Records Needed` o `Records Owner`).
-- VK-54: panel de detalle: sección `Project` (sólo lectura: `Tracking Project`, `Customer`, `Agency`, `Project Name`, `Project Address`, `City`, `County`, `Date Received`); sección `Request` (editable: `Request Type`, `Send Method`, `Record Request`, `Reminder Sent`, `LT Records`, `PRR #`, `Future Project #`, `Security Key`); sección `Result` (editable: `Record Received`, `Records Status`, `Record Box`).
+- VK-36: `General`: sin agregar filas (las pide la coordinación con `Records Needed` o `Records Owner`).
+- VK-37: `Visible fields`: `Tracking Project`, `Project Name`, `Agency`, `Records Status`, `Record Request`, `Reminder Sent`, `Record Received`.
+- VK-38: `Details Panel`: sólo lectura `Tracking Project`, `Customer`, `Agency`, `Project Name`, `Project Address`, `City`, `County`, `Date Received`; editables `Request Type`, `Send Method`, `Record Request`, `Reminder Sent`, `LT Records`, `PRR #`, `Future Project #`, `Security Key`, `Record Received`, `Records Status`, `Record Box`.
+- VK-39: `Field Logic`: `PRR #` y `Security Key` sólo cuando `Request Type` es `PRR`; `Future Project #` sólo cuando es `Future Project`.
+- VK-40: `Sharing`: restringido por `Records Owner`.
 
 ## 6. Facturación: `KMV 2.0 | Billing`
 
-- VK-60: sin `Restrict by` (la ve sólo la persona de facturación).
-- VK-61: tabla: `Tracking Project`, `Row Type`, `Customer`, `Project Name`, `Invoice Status`, `Purchase Orden`, `Invoice Sent`, `Invoice Paid`.
-- VK-62: filtros guardados: `To invoice` (`Invoice? GALP` sin marcar y `PM Approval Date` con fecha, como los `Generator`), `Sent` (`Invoice Status` es `SENT TO CUSTOMER`), `All`.
-- VK-63: sin formulario de filas nuevas.
-- VK-64: panel de detalle: sección `Project` (sólo lectura: `Tracking Project`, `Type of Project`, `Customer`, `Project Name`, `Project Address`, `County`, `Agency`, `Contractor`, `Construction Manager`, `PM Approval Date`, `Project Status`); sección `Quantities` (sólo lectura: metraje, `Custom MOT`, `TYPICAL MOT`, `Additional Site Survey`, `Survey Certified`, `Tone Locating`, `Sonde FTG`, `GPR`, `Permit #`, `Permit Fee`, `Stamp And Signatures #`); sección `Invoice` (editable: `Purchase Orden`, `Invoice? GALP`, `Invoice? KMV`, `Customer invoice?`, `Invoice Completed (Galp)`, `PM Approval Invoice Date`, `Invoice Sent`, `Invoice Paid`); `Invoice Status` de sólo lectura.
+- VK-41: `General`: sin agregar filas.
+- VK-42: `Visible fields`: `Tracking Project`, `Row Type`, `Customer`, `Project Name`, `Invoice Status`, `Purchase Orden`, `Invoice Sent`, `Invoice Paid`.
+- VK-43: `Details Panel`: sólo lectura `Tracking Project`, `Type of Project`, `Customer`, `Project Name`, `Project Address`, `County`, `Agency`, `Contractor`, `Construction Manager`, `PM Approval Date`, `Project Status`, el metraje, `Custom MOT`, `TYPICAL MOT`, `Additional Site Survey`, `Survey Certified`, `Tone Locating`, `Sonde FTG`, `GPR`, `Permit #`, `Permit Fee`, `Stamp And Signatures #`; editables `Purchase Orden`, `Invoice? GALP`, `Invoice? KMV`, `Customer invoice?`, `Invoice Completed (Galp)`, `PM Approval Invoice Date`, `Invoice Sent`, `Invoice Paid`; sólo lectura `Invoice Status`.
+- VK-44: `Sharing`: sólo la persona de facturación, sin restringir filas.
 
-## Cómo probar una vista nueva
+## Cómo probar una vista
 
-- VK-70: abrir la vista con otra cuenta o en modo de vista previa y revisar que la persona vea sólo lo suyo (`Restrict by`).
-- VK-71: en la de coordinación, crear un proyecto y esperar su número; luego crear un permiso con ese `Parent Project` y `Agency`: en un minuto queda bajo el proyecto y aparece en `KMV 2.0 | Permits`.
-- VK-72: en la de permisos, cambiar `Permit Status`: en un minuto se ve en la vista de coordinación como `Project Status` de esa fila.
+- VK-45: guardar (`Save`) y abrir la vista (`Back to view`). Agregar una fila: el panel debe pedir sólo lo de crear.
+- VK-46: en `PROJECTS`, crear un proyecto y esperar su número (aparece `Pending ID` y en un minuto el número).
+- VK-47: en `PERMITS INTAKE`, crear un permiso con ese número en `Parent Project` y una `Agency`: en un minuto queda bajo el proyecto y aparece en `KMV 2.0 | Permits`.
+- VK-48: en `KMV 2.0 | Permits`, cambiar `Permit Status`: en un minuto se ve como `Project Status` de esa fila en la coordinación.

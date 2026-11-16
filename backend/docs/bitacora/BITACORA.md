@@ -871,3 +871,8 @@ Evidencia: configuración leída por la aplicación con esos valores; plan en se
 
 Estado: hecho (documento); las vistas las arma el usuario.
 Cambios: `backend/docs/VISTAS_KMV_2.0.md` con las vistas de coordinación (proyectos y permisos), diseño, permisos, MOT y paquetes, Records y facturación: tabla de 6 a 9 columnas, filtros guardados, formularios y paneles de detalle por secciones con lo copiado en sólo lectura.
+
+## 2026-11-16 17:09 -05:00 Guía de vistas con los nombres reales de la pantalla (PEN-54)
+
+Estado: hecho; copia en la carpeta compartida del usuario.
+Cambios: `VISTAS_KMV_2.0.md` reescrita según las capturas del usuario: pestañas `General`, `View Display`, `Details Panel` (con `Field Logic`) y `Sharing`; al agregar una fila se abre el mismo `Details Panel` vacío (no hay formulario aparte), así que cada panel pone primero lo que se escribe al crear y usa `Field Logic` para mostrar el resto cuando hace falta.
