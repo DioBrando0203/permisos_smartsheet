@@ -902,3 +902,9 @@ Evidencia: 183 pruebas aprobadas; reportes leídos (detalle en RESULTADOS).
 Estado: hecho a pedido del usuario (no tenía vistas encima).
 Cambios: borrado el reporte `KMV 2.0 | Design` (`5398000605286276`) de la carpeta `Reports` del prototipo; lo reemplaza `KMV 2.0 | Design Projects`.
 Evidencia: la carpeta lista 7 reportes: Billing, Coordinator, Design Projects, Design Tickets, MOT & Packages, Permits y Records.
+
+## 2026-11-16 18:56 -05:00 Records Status por proyecto para la vista de diseño (PEN-54, SPEC-B18 RH-03c)
+
+Estado: hecho en la maestra del prototipo; falta que el usuario agregue la columna al reporte `KMV 2.0 | Design Projects` (la API no edita reportes existentes).
+Cambios: columna `Records Status` con fórmula entre hojas (79 columnas); guía de vistas actualizada.
+Evidencia: valores comprobados en vivo (detalle en RESULTADOS).

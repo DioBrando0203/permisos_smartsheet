@@ -422,3 +422,7 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 
 - Equipo Linux: 183 pruebas backend aprobadas (la de metraje ahora comprueba que `Billing` lo copia siempre de la maestra). Dos corridas intermedias tuvieron errores intermitentes del PostgreSQL temporal (28 y 52); la prueba sola y la corrida siguiente, todo aprobado. Ruff correcto.
 - En vivo (prototipo): 5 columnas de metraje en la maestra (78 columnas), metraje de la única fila con datos pasado desde `Billing`, metraje bloqueado en `Billing`; columna `Tracking Project` normal en `Billing (Prototype)` (15 filas) y `Permits (Prototype)` (5); `KMV 2.0 | Permits` ya intercala cada proyecto `Miscellaneous` con sus permisos; reporte `KMV 2.0 | Design Projects` con 6 filas, una por proyecto.
+
+# 2026-11-16 18:56 -05:00 Records Status por proyecto en la maestra (SPEC-B18 RH-03c)
+
+- En vivo (prototipo): 2 referencias a la hoja de Records en `OK`; `KMV-26-0003` muestra `Pending (0/1 received)` y los proyectos sin pedidos quedan vacíos; al poner `Received` en su fila de Records la maestra mostró `Received` a los 30 segundos (a los 15 todavía no); el valor de prueba se devolvió a `Not Received`. Sin cambios de código.

@@ -54,9 +54,9 @@ Origen de las dos: `PROJECT KMV 2.0 (Prototype)` (o el reporte `KMV 2.0 | Coordi
 Origen: reporte `KMV 2.0 | Design Projects` (sólo la maestra: una fila por proyecto `KMV-P` o `KMV-Miscellaneous`). El metraje se llena aquí; facturación lo ve en `Billing`, bloqueado.
 
 - VK-21: `General`: `Restrict view by current user` = `Designers`; `New Item Submission` = `Do Not Allow`.
-- VK-22: `Visible fields`: `Tracking Project`, `Project Name`, `Customer`, `Project Status`, `Drawing Due Date`, `QC IN`, `QC OUT`, `Design Completed`, `Total Footage`.
+- VK-22: `Visible fields`: `Tracking Project`, `Project Name`, `Customer`, `Project Status`, `Records Status`, `Drawing Due Date`, `QC IN`, `QC OUT`, `Design Completed`, `Total Footage`. `Records Status` dice si ya llegaron los Records del proyecto: `Received`, `No records` o `Pending (1/2 received)`; vacío si no se pidieron.
 - VK-23: `Details Panel`, en este orden:
-  - Sólo lectura: `Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`, `Design Ticket`, `Mile Post`.
+  - Sólo lectura: `Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`, `Records Status`, `Design Ticket`, `Mile Post`.
   - Diseño (editable): `Project Status`, `Drawing Due Date`, `Survey Completed`, `QC IN`, `QC OUT`, `Design Completed`.
   - Metraje (editable): `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`.
 - VK-24: `Field Logic` (opcional), regla `Design`: when `Type of Project` `is one of` `KMV-P` → mostrar el metraje (en `KMV-Miscellaneous` casi no hay diseño).
