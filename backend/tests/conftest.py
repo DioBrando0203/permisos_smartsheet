@@ -21,14 +21,6 @@ def make_settings(**overrides: object) -> Settings:
         "smartsheet_retry_base_seconds": 0.0,
         "smartsheet_max_retries": 2,
         "app_read_only": False,
-        "gis_fdot_base_url": "https://gis.test/arcgis/rest/services",
-        "gis_fdacs_parcels_url": "https://parcels.test/0",
-        "gis_census_geocoder_url": "https://geocoder.test/onelineaddress",
-        "gis_broward_parcels_url": "https://broward.test/0",
-        "gis_miami_dade_parcels_url": "https://miami-dade.test/26",
-        "gis_tiger_roads_url": "https://tiger.test/Transportation/MapServer",
-        "gis_stjohns_roads_url": "https://stjohns.test/36",
-        "gis_max_retries": 0,
     }
     values.update(overrides)
     return Settings(_env_file=None, **values)
@@ -58,7 +50,7 @@ async def make_client() -> AsyncIterator[AppFactory]:
 
     def factory(**overrides: object) -> httpx.AsyncClient:
         settings = make_settings(**overrides)
-        app = create_app(settings, build_services(settings), frontend_dist=None)
+        app = create_app(settings, build_services(settings))
         client = httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app), base_url="http://localhost"
         )

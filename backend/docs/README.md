@@ -1,5 +1,7 @@
 # Documentación del backend
 
+Estado 2026-11-16 (PEN-55): este backend conserva el procesador y catálogo. El panel de permisos y GIS están en el proyecto vecino `../gis_permisos`, relativo a la raíz del repositorio; sus specs y rutas históricas en esta documentación son referencia anterior al traslado. No se ejecutaron pruebas tras el retiro por pedido del usuario.
+
 Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet. Metodología: desarrollo guiado por especificaciones (SDD), igual que el frontend. Ningún cambio de comportamiento entra sin spec; ninguna spec queda sin prueba.
 
 ## Orden de lectura para una IA o persona nueva

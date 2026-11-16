@@ -849,6 +849,11 @@ Evidencia (lectura de los reportes): 12, 10 (5 de la maestra y 5 de `Billing`), 
 - Estado: en curso. Copiados al proyecto vecino el backend del panel y la navegación completa, con proxy separado para GIS. El procesador de IDs de la copia está desactivado; la consola original no se modifica.
 - Evidencia: sin pruebas ni arranque de servicios por solicitud expresa del usuario. Se mantienen copias durante la separación; queda retirar código anterior sin afectar la consola.
 
+# 2026-11-16 16:49 America/Lima — PEN-55 retiro del panel y GIS
+
+- Estado: código retirado de este proyecto a pedido del usuario. El frontend, mapa y gestión de permisos están en `../gis_permisos`; aquí quedan el procesador, catálogo y sus dependencias comunes.
+- Evidencia: revisión de dependencias por lectura. No se ejecutaron pruebas ni se arrancó el backend por pedido del usuario; el funcionamiento posterior no está verificado.
+
 
 ## 2026-11-16 16:41 -05:00 Servicio de la maestra 2.0: IDs por año, Permits, MOT & Packages, herencia y listas (PEN-54, SPEC-B20)
 

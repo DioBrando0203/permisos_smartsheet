@@ -66,3 +66,7 @@ cd backend
 ```
 
 Documentación de continuidad: [guía de agentes](AGENTS.md), [backend](backend/docs/README.md) y [frontend](frontend/docs/README.md).
+# Estado actual
+
+El panel de permisos y el mapa se trasladaron al proyecto vecino `../gis_permisos`. Este proyecto conserva el servicio y la consola de Smartsheet. El retiro se hizo sin ejecutar pruebas por solicitud del usuario; la documentación histórica de abajo puede mencionar rutas o interfaz anteriores.
+

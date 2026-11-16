@@ -1,11 +1,10 @@
 from app.core.config import split_list
 from tests.conftest import FAKE_TOKEN, make_settings
-from tests.factories import SHEET_ID
 
 
 async def test_foreign_origin_cannot_write(client, smartsheet) -> None:
-    response = await client.delete(
-        f"/api/sheets/{SHEET_ID}/shares/S-ANA", headers={"Origin": "https://otro.example"}
+    response = await client.post(
+        "/api/catalogs/projects/sync", headers={"Origin": "https://otro.example"}
     )
     assert response.json()["detail"]["code"] == "ORIGIN_NOT_ALLOWED"
     assert smartsheet.calls.call_count == 0
@@ -50,7 +49,7 @@ def test_httpx_does_not_log_full_urls() -> None:
 def test_every_endpoint_has_a_single_swagger_group() -> None:
     from app.main import create_app
 
-    spec = create_app(make_settings(), frontend_dist=None).openapi()
+    spec = create_app(make_settings()).openapi()
     tags = {path: op.get("tags") for path, ops in spec["paths"].items() for op in ops.values()}
     assert all(len(group or []) == 1 for group in tags.values()), tags
-    assert tags["/api/review"] == ["auditoría y comparación"]
+    assert tags["/api/ids/status"] == ["Galp - ID Manager"]

@@ -59,7 +59,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 
 ### PEN-55 Separar GIS y permisos viales del servicio de Smartsheet
 
-Prioridad: solicitada por el usuario el 2026-11-16. Estado: en curso; proyecto vecino `../gis_permisos` contiene el mapa y una copia del panel de permisos de hojas con su backend; el procesador queda desactivado en la copia del panel. La consola y el tráfico del proyecto original siguen igual. Falta separar definitivamente el código compartido y retirar las copias anteriores sin afectar la consola. El usuario pidió no ejecutar pruebas para este traslado.
+Prioridad: solicitada por el usuario el 2026-11-16. Estado: traslado de código realizado; el proyecto vecino `../gis_permisos` contiene mapa, panel y backend del panel. En este proyecto se retiraron frontend, GIS y rutas exclusivas del panel; se conservan el procesador, catálogo y sus dependencias compartidas. No se ejecutaron pruebas ni se arrancaron servicios por decisión del usuario; el funcionamiento tras el retiro no está verificado.
 
 Cada pendiente se cita por su ID. Al tomar uno: crear o actualizar la spec con sus criterios de aceptación y mover aquí su estado.
 

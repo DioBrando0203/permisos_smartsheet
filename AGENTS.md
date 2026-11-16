@@ -1,5 +1,7 @@
 # Guía breve para retomar el proyecto
 
+Estado 2026-11-16 (PEN-55): el frontend, panel de permisos y GIS se trasladaron a `../gis_permisos`. Este proyecto conserva el procesador y catálogo de Smartsheet; las referencias históricas al frontend y al panel en este archivo y en las guías anteriores no describen la estructura actual. No se probaron los cambios por decisión del usuario.
+
 ## ¿Qué podemos continuar?
 
 Si el usuario pregunta qué sigue, qué falta o qué podemos continuar: leer `backend/docs/REQUERIMIENTOS.md`, sección "Pendientes" (IDs PEN-xx), y responder con esa lista en orden de prioridad, con su estado y qué haría falta. No inventar pendientes fuera de esa lista; si aparece uno nuevo, agregarlo allí con su ID antes de trabajarlo. Al terminar uno, actualizar su estado y la bitácora.

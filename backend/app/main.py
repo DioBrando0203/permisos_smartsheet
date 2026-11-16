@@ -1,9 +1,8 @@
-"""Aplicación FastAPI: middlewares, errores, ciclo de vida del cliente y build del panel."""
+"""Aplicación FastAPI del procesador y catálogo de Smartsheet."""
 
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,7 +13,6 @@ from app.api.router import api_router
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError, app_error_handler
 from app.core.middleware import OriginMiddleware
-from app.frontend import DEFAULT_DIST, mount_frontend
 from app.services.catalog_sync import catalog_hook
 from app.services.childsheets.sync import child_hooks
 from app.services.ids.monitor import IdMonitor
@@ -25,7 +23,6 @@ from app.services.obs.sync import obs_hook
 def create_app(
     settings: Settings | None = None,
     services: Services | None = None,
-    frontend_dist: Path | None = DEFAULT_DIST,
 ) -> FastAPI:
     settings = settings or get_settings()
     services = services or build_services(settings)
@@ -51,7 +48,6 @@ def create_app(
         yield
         await monitor.stop()
         await services.client.aclose()
-        await services.maps.aclose()
 
     app = FastAPI(title=settings.app_name, version="0.1.0", docs_url="/docs", lifespan=lifespan)
     app.state.services = services
@@ -67,8 +63,6 @@ def create_app(
     app.add_middleware(OriginMiddleware, allowed_origins=settings.allowed_origins)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=list(settings.allowed_hosts))
     app.include_router(api_router, prefix="/api")
-    # Al final: la ruta comodín del panel no debe tapar a la API ni a /docs.
-    mount_frontend(app, frontend_dist)
     return app
 
 

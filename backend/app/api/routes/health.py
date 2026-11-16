@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
 from app.api.deps import ServicesDep
-from app.models.people import Me
 
 router = APIRouter()
 
@@ -16,8 +15,3 @@ async def health(services: ServicesDep) -> dict[str, str | bool]:
         "read_only": settings.app_read_only,
     }
 
-
-@router.get("/me")
-async def me(services: ServicesDep) -> Me:
-    """Dueño del token en Smartsheet."""
-    return await services.people.me()
