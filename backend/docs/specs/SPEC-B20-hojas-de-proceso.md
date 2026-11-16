@@ -1,6 +1,6 @@
 # SPEC-B20 Hojas de proceso (maestra 2.0)
 
-Estado: implementada y probada en el prototipo de Pruebas (2026-11-16 16:41, PEN-54); el backend en uso sigue con la maestra 1.0.0 hasta que el usuario cambie `backend/.env`. Mismo mecanismo que Records y Facturación (SPEC-B18, SPEC-B19), en `services/childsheets/`. IDs de la maestra 2.0 en SPEC-ID01 ID-52 a ID-54.
+Estado: implementada y probada en el prototipo de Pruebas (2026-11-16 16:41, PEN-54); desde el 2026-11-16 16:50 `backend/.env` apunta a la maestra 2.0 del prototipo (pedido del usuario; valores de la 1.0.0 comentados al final para volver). Mismo mecanismo que Records y Facturación (SPEC-B18, SPEC-B19), en `services/childsheets/`. IDs de la maestra 2.0 en SPEC-ID01 ID-52 a ID-54.
 
 ## Objetivo
 
