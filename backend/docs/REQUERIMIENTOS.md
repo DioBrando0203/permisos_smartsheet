@@ -57,6 +57,10 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 
 ## Pendientes (backlog priorizado)
 
+### PEN-55 Separar GIS y permisos viales del servicio de Smartsheet
+
+Prioridad: solicitada por el usuario el 2026-11-16. Estado: en curso; primera copia ejecutable en `servicios/gis`, sin cambiar el tráfico actual. Falta trasladar el frontend y sus pruebas, conectar el nuevo servicio, validar el contrato y retirar la implementación anterior. Los permisos de acceso a hojas siguen en Smartsheet.
+
 Cada pendiente se cita por su ID. Al tomar uno: crear o actualizar la spec con sus criterios de aceptación y mover aquí su estado.
 
 Resumen al 2026-11-04 (actualizado el 2026-11-12 para PEN-27 y PEN-42 a PEN-47; estado de la hoja en `HOJA_PROJECT_KMV.md`):

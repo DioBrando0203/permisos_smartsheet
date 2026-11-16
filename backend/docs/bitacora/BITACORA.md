@@ -834,3 +834,8 @@ Cambios (API, sólo prototipo): hija `Line` en `NO PERMIT REQUIRED` bajo `KMV-26
 Estado: hecho en Smartsheet (sólo prototipo en Pruebas); las Dynamic Views las arma el usuario. Sigue el servicio (código).
 Cambios (API y conector de Smartsheet): `Parent Project` en la maestra del prototipo (73 columnas); `Control Linked Tracking` sin error para permisos con `Parent Project`; contexto de `Permits` y `MOT & Packages` como listas; carpeta `Reports` con 6 reportes `KMV 2.0 | ...` (Coordinator, Design, Permits, MOT & Packages, Records, Billing).
 Evidencia (lectura de los reportes): 12, 10 (5 de la maestra y 5 de `Billing`), 5 (4 de `Permits` y 1 madre `Miscellaneous`), 3, 1 y 12 filas, las esperadas por sus filtros.
+# 2026-11-16 16:32 America/Lima — PEN-55
+
+- Estado: en curso. Primera copia independiente de la API GIS en `servicios/gis`; el panel todavía usa la API anterior. Sin cambios en Smartsheet.
+- Evidencia: 2 pruebas del servicio con fuentes sin consultar; Ruff check y format correctos. Falta migrar y conectar el frontend y retirar la copia antigua después de validar el flujo.
+
