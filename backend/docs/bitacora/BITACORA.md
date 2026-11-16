@@ -822,3 +822,9 @@ Estado: hecho en Smartsheet (sólo hojas del prototipo en Pruebas); sin cambios 
 Decisiones del usuario: las hijas no se borran, se cancelan con `CANCELLED`; si cambia el tipo, la fila se mueve a la otra hoja de proceso.
 Cambios (API): copias sin datos de `Records Requests` y `Billing` en la carpeta del prototipo (22 y 41 columnas); `Master Row` oculta en `Permits` y `MOT & Packages`; `CANCELLED` en `Permit Status`; hijas de la maestra con los datos del proyecto; `Records Needed` y `Records Owner` en `KMV-26-0003`; un permiso cancelado en `KMV-26-0002`; 11 filas en `Billing`, 1 en Records, 1 más en `Permits`; `Invoice Status` devuelto a las 11 filas de la maestra. Las hojas en uso (1.0.0, Records, Billing) sólo se leyeron.
 Evidencia (lectura posterior): maestra 72 columnas y 11 filas; `Permits` 4 filas, `MOT & Packages` 3, `Billing` 11, Records 1, todas con `Master Row` apuntando a la fila correcta (mismo ID y agencia); `Invoice Status` `NOT INVOICED`; `Record # Days` calcula; `Designers` copiado en `Billing`.
+
+## 2026-11-16 16:12 -05:00 Miscellaneous y Line: asignación y paso a Permits (PEN-54)
+
+Estado: hecho (análisis y ejemplo en el prototipo); reglas anotadas en PEN-54.
+Evidencia (sólo GET sobre las 6 hojas 2026 e historial de 7 hijas `Line`): `Miscellaneous` es madre en 425 de 429 casos, con persona de permisos o de diseño; `Line` sin asignar en 303 de 879, 289 de ellas `NO PERMIT REQUIRED` (la coordinadora las crea así en 5 de 7).
+Cambios (API, sólo prototipo): hija `Line` en `NO PERMIT REQUIRED` bajo `KMV-26-0001` y su fila en `Billing (Prototype)`; no entra a `Permits`.
