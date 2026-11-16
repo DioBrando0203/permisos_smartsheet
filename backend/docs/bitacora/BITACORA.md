@@ -844,3 +844,14 @@ Evidencia (lectura de los reportes): 12, 10 (5 de la maestra y 5 de `Billing`), 
 - Estado: en curso. Creado `../gis_permisos` con backend GIS, copia del frontend y ruta inicial al mapa; `.env` copiados por solicitud del usuario y excluidos de Git. El panel original no se cambió.
 - Evidencia: backend nuevo instalado en su propio entorno; 2 pruebas y Ruff correctos. Compilación del frontend correcta con dependencias copiadas localmente; `npm ci` no terminó. Queda depurar el frontend y validar el flujo completo antes de retirar la implementación anterior.
 
+# 2026-11-16 16:42 America/Lima — PEN-55 panel de permisos
+
+- Estado: en curso. Copiados al proyecto vecino el backend del panel y la navegación completa, con proxy separado para GIS. El procesador de IDs de la copia está desactivado; la consola original no se modifica.
+- Evidencia: sin pruebas ni arranque de servicios por solicitud expresa del usuario. Se mantienen copias durante la separación; queda retirar código anterior sin afectar la consola.
+
+
+## 2026-11-16 16:41 -05:00 Servicio de la maestra 2.0: IDs por año, Permits, MOT & Packages, herencia y listas (PEN-54, SPEC-B20)
+
+Estado: hecho y probado; el backend en uso sigue con la 1.0.0 (pasarlo a la 2.0 es decisión del usuario, SPEC-B20 HP-10). Pendientes: mover la fila al cambiar el tipo (HP-08), tachado de `CANCELLED` en las hojas de proceso y las vistas.
+Cambios (código, pedido del usuario: la coordinadora sólo usará vistas): formato `KMV-AA-NNNN` sin cliente con `IDS_PROJECT_FORMAT=year` (ID-52); permisos de primer nivel sin número hasta su `Parent Project` (ID-53); listas `Parent Project` y `Linked Tracking` al día (ID-54); hojas de proceso con pedido por valor, contexto del proyecto, resumen sólo a hijas y cancelación (SPEC-B20); herencia de celdas vacías en la maestra (HP-07); escrituras de estructura del cliente en un módulo aparte. La 1.0.0 no cambia (valores por defecto).
+Evidencia: 383 pruebas aprobadas, Ruff y formato correctos; en vivo sobre el prototipo en Pruebas con variables del proceso (sin tocar `backend/.env`): IDs del prototipo registrados, proyecto nuevo `KMV-26-0006`, permiso y MOT de primer nivel con `Parent Project` movidos bajo `KMV-26-0003` con su ID y sus datos, y sus filas en `Billing`, `Permits` y `MOT & Packages`; ciclos siguientes sin cambios (detalle en RESULTADOS).
