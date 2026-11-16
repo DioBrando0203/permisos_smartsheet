@@ -167,13 +167,14 @@ async def test_records_creates_once_and_follows_context(router) -> None:
     sheets.rows[pilot.PRESENTABLE] = {
         "1": {
             "Tracking Project": "KMV-BS-26-001",
+            "Agency": "Doral",
             "City": "Doral",
             "Date Received": "2026-10-12",
             "Records Needed": True,
             "PRR #": "PRR-7",
             "Record Request": "2026-11-01",
         },
-        "2": {"Tracking Project": "Pending ID", "Records Needed": True},
+        "2": {"Tracking Project": "Pending ID", "Agency": "FDOT", "Records Needed": True},
         "3": {"Tracking Project": "KMV-CC-26-002", "Records Needed": False},
     }
     settings = make_settings(**WRITES)
@@ -340,6 +341,7 @@ async def test_records_assignment_requests_the_row_and_copies_the_person(router)
     sheets.rows[pilot.PRESENTABLE] = {
         "1": {
             "Tracking Project": "KMV-CC-26-004",
+            "Agency": "Miami",
             "Records Owner": "persona1@example.com",
             "Records Needed": False,
         },
@@ -358,3 +360,24 @@ async def test_records_assignment_requests_the_row_and_copies_the_person(router)
     (row,) = sheets.rows[CHILD].values()
     assert row["Master Row"] == "1"
     assert row["Records Owner"] == "persona2@example.com"
+
+
+async def test_records_need_an_agency_to_be_requested(router) -> None:
+    sheets = _sheets(router, RECORDS_MASTER, RECORDS_CHILD)
+    sheets.rows[pilot.PRESENTABLE] = {
+        "1": {"Tracking Project": "KMV-26-0001", "Records Needed": True},
+        "2": {"Tracking Project": "KMV-26-0002", "Records Owner": "persona1@example.com"},
+    }
+    settings = make_settings(**WRITES)
+    client = SmartsheetClient(settings)
+    sync = ChildSheetSync(settings, client, RECORDS, CHILD, interval=0)
+    try:
+        without = await sync.run()
+        sheets.rows[pilot.PRESENTABLE]["2"]["Agency"] = "FDOT"
+        with_agency = await sync.run()
+    finally:
+        await client.aclose()
+    assert without["created"] == 0 and without["waiting"] == 0
+    assert with_agency["created"] == 1
+    (row,) = sheets.rows[CHILD].values()
+    assert (row["Master Row"], row["Agency"]) == ("2", "FDOT")

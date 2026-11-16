@@ -26,6 +26,14 @@ def make_settings(**overrides: object) -> Settings:
     return Settings(_env_file=None, **values)
 
 
+@pytest.fixture(autouse=True)
+def _customer_ids(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Las pruebas no dependen del formato de ID del `.env` local (SPEC-ID01 ID-52)."""
+    from app.services.ids import pilot
+
+    monkeypatch.setattr(pilot, "YEAR_FORMAT", False)
+
+
 @pytest.fixture
 def smartsheet() -> respx.MockRouter:
     """Smartsheet simulado; una solicitud sin ruta simulada hace fallar la prueba (QB-02)."""

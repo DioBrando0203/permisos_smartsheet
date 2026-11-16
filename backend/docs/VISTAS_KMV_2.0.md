@@ -30,7 +30,7 @@ Origen de las dos: `PROJECT KMV 2.0 (Prototype)` (o el reporte `KMV 2.0 | Coordi
 - VK-13: `Details Panel`, en este orden:
   - Para crear (obligatorios): `Type of Project`, `Customer`, `Date Received`, `Project Name`.
   - Datos del proyecto: `Project Address`, `City`, `County`, `Task`, `Priority`, `CC System`, `Drawing Due Date`, `Linked Tracking`.
-  - Asignación: `Designers`, `Permitting Team`, `Surveyor`, `Engineer`, `Records Needed`, `Records Owner`, `Prepare Packages`, `DT Owner`, `Construction Manager`, `Contractor`.
+  - Asignación: `Designers`, `Permitting Team`, `Surveyor`, `Engineer`, `Prepare Packages`, `DT Owner`, `Construction Manager`, `Contractor`. Records no va aquí: se pide en la fila del permiso, que tiene la agencia (VK-18).
   - Avance: `Project Status`, `Survey Completed`, `Design Completed`, `PM Approval Date`, `LT`, `Design Ticket`, `Mile Post`.
   - Sólo lectura: `Tracking Project`, `Invoice Status`, `Obs`.
   - `Details panel description`: "The project number appears about a minute after saving (Pending ID until then)."
@@ -43,7 +43,7 @@ Origen de las dos: `PROJECT KMV 2.0 (Prototype)` (o el reporte `KMV 2.0 | Coordi
 - VK-17: `View Display` > `Visible fields`: `Tracking Project`, `Parent Project`, `Type of Project`, `Agency`, `Project Status`, `Permitting Team`, `Project Name`.
 - VK-18: `Details Panel`, en este orden:
   - Para crear (obligatorios): `Type of Project`, `Parent Project`, `Agency`.
-  - Opcionales: `Permitting Team` (vacío = el del proyecto), `Contractor`, `Project Status` (sólo si nace `NO PERMIT REQUIRED`, o para cancelar con `CANCELLED`).
+  - Opcionales: `Permitting Team` (vacío = el del proyecto), `Contractor`, `Records Needed` y `Records Owner` (Records de esta agencia: la fila de Records se crea sola, siempre que haya `Agency`), `Project Status` (sólo si nace `NO PERMIT REQUIRED`, o para cancelar con `CANCELLED`).
   - Sólo lectura: `Tracking Project`, `Project Name`, `Permit #`, `Permit Approved`, `Permit Expires`.
   - `Details panel description`: "Choose the project in Parent Project. In about a minute the row moves under it and goes to the team sheet."
 - VK-19: `Field Logic`: mostrar `Tracking Project`, `Project Name`, `Permit #`, `Permit Approved` y `Permit Expires` sólo cuando `Tracking Project` no está vacío.
@@ -92,7 +92,7 @@ Origen: reporte `KMV 2.0 | MOT & Packages` (filas `MOT` y `Package`).
 
 ## 5. Records: `KMV 2.0 | Records`
 
-- VK-36: `General`: `Restrict view by current user` = `Records Owner`; `New Item Submission` = `Do Not Allow` (las pide la coordinación con `Records Needed` o `Records Owner`).
+- VK-36: `General`: `Restrict view by current user` = `Records Owner`; `New Item Submission` = `Do Not Allow` (las pide la coordinación con `Records Needed` o `Records Owner` en la fila del permiso, con `Agency`).
 - VK-37: `Visible fields`: `Tracking Project`, `Project Name`, `Agency`, `Records Status`, `Record Request`, `Reminder Sent`, `Record Received`.
 - VK-38: `Details Panel`: sólo lectura `Tracking Project`, `Customer`, `Agency`, `Project Name`, `Project Address`, `City`, `County`, `Date Received`; editables `Request Type`, `Send Method`, `Record Request`, `Reminder Sent`, `LT Records`, `PRR #`, `Future Project #`, `Security Key`, `Record Received`, `Records Status`, `Record Box`.
 - VK-39: `Field Logic`: `PRR #` y `Security Key` sólo cuando `Request Type` es `PRR`; `Future Project #` sólo cuando es `Future Project`.

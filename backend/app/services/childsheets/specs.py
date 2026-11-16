@@ -15,10 +15,20 @@ QUANTITIES = (
     "GPR",
 )
 
-# SPEC-B18: filas con la casilla marcada o una persona asignada; el trabajo vive en la hoja hija.
+
+def _records(values: dict, _child: bool) -> bool:
+    """RH-03: casilla marcada o responsable asignado, y siempre con agencia (a quién se pide)."""
+    wanted = values.get("Records Needed") or values.get("Records Owner")
+    return bool(wanted) and bool(values.get("Agency"))
+
+
+# SPEC-B18: filas con la casilla marcada o una persona asignada y con `Agency`; el trabajo vive
+# en la hoja hija.
 RECORDS = ChildSpec(
     name="records",
     triggers=("Records Needed", "Records Owner"),
+    when=_records,
+    reads=("Records Needed",),
     context=(
         "Tracking Project",
         "Customer",

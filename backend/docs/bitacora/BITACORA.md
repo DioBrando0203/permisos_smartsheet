@@ -876,3 +876,10 @@ Cambios: `backend/docs/VISTAS_KMV_2.0.md` con las vistas de coordinación (proye
 
 Estado: hecho; copia en la carpeta compartida del usuario.
 Cambios: `VISTAS_KMV_2.0.md` reescrita según las capturas del usuario: pestañas `General`, `View Display`, `Details Panel` (con `Field Logic`) y `Sharing`; al agregar una fila se abre el mismo `Details Panel` vacío (no hay formulario aparte), así que cada panel pone primero lo que se escribe al crear y usa `Field Logic` para mostrar el resto cuando hace falta.
+
+## 2026-11-16 17:38 -05:00 Records exige agencia (PEN-54, SPEC-B18 RH-03b)
+
+Estado: hecho; el backend encendido necesita reiniciarse para tomar el cambio.
+Decisión del usuario: Records siempre se pide a una agencia. Datos 2026 (sólo GET): el trabajo de Records estuvo en hijas con agencia.
+Cambios: `RECORDS` pide la fila sólo con `Agency` además de `Records Needed` o `Records Owner`; pruebas aisladas del formato de ID del `.env` local; guía de vistas con Records en el panel de `PERMITS INTAKE`.
+Evidencia: 182 pruebas aprobadas, Ruff correcto (detalle en RESULTADOS).
