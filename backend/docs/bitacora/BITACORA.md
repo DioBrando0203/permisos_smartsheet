@@ -839,3 +839,8 @@ Evidencia (lectura de los reportes): 12, 10 (5 de la maestra y 5 de `Billing`), 
 - Estado: en curso. Primera copia independiente de la API GIS en `servicios/gis`; el panel todavía usa la API anterior. Sin cambios en Smartsheet.
 - Evidencia: 2 pruebas del servicio con fuentes sin consultar; Ruff check y format correctos. Falta migrar y conectar el frontend y retirar la copia antigua después de validar el flujo.
 
+# 2026-11-16 16:35 America/Lima — PEN-55 proyecto independiente
+
+- Estado: en curso. Creado `../gis_permisos` con backend GIS, copia del frontend y ruta inicial al mapa; `.env` copiados por solicitud del usuario y excluidos de Git. El panel original no se cambió.
+- Evidencia: backend nuevo instalado en su propio entorno; 2 pruebas y Ruff correctos. Queda depurar el frontend y validar el flujo completo antes de retirar la implementación anterior.
+
