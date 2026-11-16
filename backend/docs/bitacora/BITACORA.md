@@ -802,3 +802,10 @@ Estado: hecho en Smartsheet; sin cambios de código por decisión del usuario; e
 Cambios (API, pedido del usuario, sólo en Pruebas): carpeta `Producto/PROJECT KMV 2.0 - Prototype` con `PROJECT KMV 2.0 (Prototype)` (copia de la maestra 1.0.0 sin datos, automatizaciones ni accesos; 70 columnas; `Tracking Project` con formato `KMV-AA-NNN` sin cliente; `Control Linked Tracking` adaptado; 5 referencias a otras hojas recreadas), `Permits (Prototype)` (40 columnas) y `MOT & Packages (Prototype)` (32 columnas); 5 proyectos sintéticos, 3 filas de permisos y 3 de MOT y paquetes escritos por un script puntual del scratchpad. La maestra 1.0.0 sólo se leyó.
 Evidencia (lectura posterior): IDs `KMV-26-001` a `KMV-26-005` en madres y heredados en las 5 hijas; `Linked Tracking` de `KMV-26-005` a `KMV-26-001` da `OK`; `Phase`, `Closed` y `Client Access` calculan tras recrear las referencias (las 5 en `OK`); en las hojas de proceso calculan las fórmulas de días (por ejemplo `Process # Days` 20, `Permit - Days in Submitted` 6) y los contactos copiados se ven.
 Hallazgo: con un contador por año, 3 dígitos no alcanzan (1 382 proyectos en 2026 en tres clientes); queda por decidir el número de dígitos (PEN-54).
+
+## 2026-11-16 15:52 -05:00 Prototipo 2.0: IDs de 4 dígitos (PEN-54)
+
+Estado: hecho en Smartsheet (sólo hojas del prototipo en Pruebas); sin cambios de código.
+Decisión del usuario: un contador por año con 4 dígitos fijos, `KMV-AA-NNNN`.
+Cambios (API): `Stable Tracking Project` de 10 filas, opciones y valor de `Linked Tracking` en la maestra del prototipo y `Tracking Project` de 3 filas en `Permits (Prototype)` y 3 en `MOT & Packages (Prototype)`.
+Evidencia (lectura posterior): madres `KMV-26-0001` a `KMV-26-0005`, las 5 hijas heredan el de su madre, `Linked Tracking` de `KMV-26-0005` a `KMV-26-0001` da `OK`, hojas de proceso con los IDs nuevos.
