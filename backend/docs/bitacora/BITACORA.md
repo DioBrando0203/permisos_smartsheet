@@ -795,3 +795,10 @@ Evidencia: 30 columnas; 0 filas, igual a las filas de `Billing` que cumplen el f
 Estado: revisado y comprobado; falta encender el backend para que `Designers` llegue a `Billing`.
 Evidencia: pull de 6 commits (`3618439` a `5f1ac76`). En Linux, 366 pruebas aprobadas sin omitidas (incluidas las 57 que necesitan PostgreSQL), Ruff y formato correctos. En vivo (sólo GET): maestra 98 columnas y 17 filas, `Records Requests` 22 columnas, `Billing` 41; plan en seco de Records sin cambios y de Billing con 3 actualizaciones de `Designers` pendientes (backend apagado); plan de IDs: 9 madres con ID y 6 hijas que heredan.
 Cambios: se reemplazaron por roles los nombres reales que quedaban en REQUERIMIENTOS (PEN-42, PEN-51, PEN-52), RESULTADOS y una entrada antigua de la bitácora, y el de una prueba (`test_workload_rules.py`, nombre sintético).
+
+## 2026-11-16 15:13 -05:00 Prototipo del modelo 2.0 en Pruebas (PEN-54)
+
+Estado: hecho en Smartsheet; sin cambios de código por decisión del usuario; el servicio no procesa estas hojas.
+Cambios (API, pedido del usuario, sólo en Pruebas): carpeta `Producto/PROJECT KMV 2.0 - Prototype` con `PROJECT KMV 2.0 (Prototype)` (copia de la maestra 1.0.0 sin datos, automatizaciones ni accesos; 70 columnas; `Tracking Project` con formato `KMV-AA-NNN` sin cliente; `Control Linked Tracking` adaptado; 5 referencias a otras hojas recreadas), `Permits (Prototype)` (40 columnas) y `MOT & Packages (Prototype)` (32 columnas); 5 proyectos sintéticos, 3 filas de permisos y 3 de MOT y paquetes escritos por un script puntual del scratchpad. La maestra 1.0.0 sólo se leyó.
+Evidencia (lectura posterior): IDs `KMV-26-001` a `KMV-26-005` en madres y heredados en las 5 hijas; `Linked Tracking` de `KMV-26-005` a `KMV-26-001` da `OK`; `Phase`, `Closed` y `Client Access` calculan tras recrear las referencias (las 5 en `OK`); en las hojas de proceso calculan las fórmulas de días (por ejemplo `Process # Days` 20, `Permit - Days in Submitted` 6) y los contactos copiados se ven.
+Hallazgo: con un contador por año, 3 dígitos no alcanzan (1 382 proyectos en 2026 en tres clientes); queda por decidir el número de dígitos (PEN-54).
