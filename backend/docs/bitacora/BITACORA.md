@@ -828,3 +828,9 @@ Evidencia (lectura posterior): maestra 72 columnas y 11 filas; `Permits` 4 filas
 Estado: hecho (análisis y ejemplo en el prototipo); reglas anotadas en PEN-54.
 Evidencia (sólo GET sobre las 6 hojas 2026 e historial de 7 hijas `Line`): `Miscellaneous` es madre en 425 de 429 casos, con persona de permisos o de diseño; `Line` sin asignar en 303 de 879, 289 de ellas `NO PERMIT REQUIRED` (la coordinadora las crea así en 5 de 7).
 Cambios (API, sólo prototipo): hija `Line` en `NO PERMIT REQUIRED` bajo `KMV-26-0001` y su fila en `Billing (Prototype)`; no entra a `Permits`.
+
+## 2026-11-16 16:23 -05:00 Prototipo 2.0: Parent Project y reportes para las vistas (PEN-54)
+
+Estado: hecho en Smartsheet (sólo prototipo en Pruebas); las Dynamic Views las arma el usuario. Sigue el servicio (código).
+Cambios (API y conector de Smartsheet): `Parent Project` en la maestra del prototipo (73 columnas); `Control Linked Tracking` sin error para permisos con `Parent Project`; contexto de `Permits` y `MOT & Packages` como listas; carpeta `Reports` con 6 reportes `KMV 2.0 | ...` (Coordinator, Design, Permits, MOT & Packages, Records, Billing).
+Evidencia (lectura de los reportes): 12, 10 (5 de la maestra y 5 de `Billing`), 5 (4 de `Permits` y 1 madre `Miscellaneous`), 3, 1 y 12 filas, las esperadas por sus filtros.
