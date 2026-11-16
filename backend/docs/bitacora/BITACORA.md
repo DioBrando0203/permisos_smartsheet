@@ -883,3 +883,9 @@ Estado: hecho; el backend encendido necesita reiniciarse para tomar el cambio.
 Decisión del usuario: Records siempre se pide a una agencia. Datos 2026 (sólo GET): el trabajo de Records estuvo en hijas con agencia.
 Cambios: `RECORDS` pide la fila sólo con `Agency` además de `Records Needed` o `Records Owner`; pruebas aisladas del formato de ID del `.env` local; guía de vistas con Records en el panel de `PERMITS INTAKE`.
 Evidencia: 182 pruebas aprobadas, Ruff correcto (detalle en RESULTADOS).
+
+## 2026-11-16 17:56 -05:00 Hoja Design Tickets para el DT Owner (PEN-54, SPEC-B20 HP-14)
+
+Estado: hecho; falta reiniciar el backend (también para el cambio de Records con agencia).
+Cambios (pedido del usuario): `DESIGN_TICKETS` en `services/childsheets/specs.py` y su paso; hoja `Design Tickets (Prototype)` y reporte `KMV 2.0 | Design Tickets` en Pruebas; `Design Ticket` y `Mile Post` bloqueadas en la maestra del prototipo; `backend/.env` con `APP_DESIGN_TICKETS_SYNC_ENABLED` y su hoja (token sin leer); guía de vistas con la sección 7.
+Evidencia: 183 pruebas aprobadas (detalle en RESULTADOS).

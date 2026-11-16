@@ -31,8 +31,8 @@ Origen de las dos: `PROJECT KMV 2.0 (Prototype)` (o el reporte `KMV 2.0 | Coordi
   - Para crear (obligatorios): `Type of Project`, `Customer`, `Date Received`, `Project Name`.
   - Datos del proyecto: `Project Address`, `City`, `County`, `Task`, `Priority`, `CC System`, `Drawing Due Date`, `Linked Tracking`.
   - Asignación: `Designers`, `Permitting Team`, `Surveyor`, `Engineer`, `Prepare Packages`, `DT Owner`, `Construction Manager`, `Contractor`. Records no va aquí: se pide en la fila del permiso, que tiene la agencia (VK-18).
-  - Avance: `Project Status`, `Survey Completed`, `Design Completed`, `PM Approval Date`, `LT`, `Design Ticket`, `Mile Post`.
-  - Sólo lectura: `Tracking Project`, `Invoice Status`, `Obs`.
+  - Avance: `Project Status`, `Survey Completed`, `Design Completed`, `PM Approval Date`, `LT`.
+  - Sólo lectura: `Tracking Project`, `Design Ticket` y `Mile Post` (los llena el `DT Owner` en su hoja, sección 7), `Invoice Status`, `Obs`.
   - `Details panel description`: "The project number appears about a minute after saving (Pending ID until then)."
 - VK-14: `Field Logic` (opcional), regla `Design`: when `Type of Project` `is one of` `KMV-P` → mostrar `Design Ticket`, `Mile Post` y `DT Owner` (en 2026 casi nunca se usaron en `KMV-Miscellaneous`: 4 de 425). Lo demás siempre visible, en el orden de VK-13. Quitar del panel `Control Linked Tracking` (VK-09).
 - VK-15: `Sharing`: la coordinación.
@@ -104,6 +104,15 @@ Origen: reporte `KMV 2.0 | MOT & Packages` (filas `MOT` y `Package`).
 - VK-42: `Visible fields`: `Tracking Project`, `Row Type`, `Customer`, `Project Name`, `Invoice Status`, `Purchase Orden`, `Invoice Sent`, `Invoice Paid`.
 - VK-43: `Details Panel`: sólo lectura `Tracking Project`, `Type of Project`, `Customer`, `Project Name`, `Project Address`, `County`, `Agency`, `Contractor`, `Construction Manager`, `PM Approval Date`, `Project Status`, el metraje, `Custom MOT`, `TYPICAL MOT`, `Additional Site Survey`, `Survey Certified`, `Tone Locating`, `Sonde FTG`, `GPR`, `Permit #`, `Permit Fee`, `Stamp And Signatures #`; editables `Purchase Orden`, `Invoice? GALP`, `Invoice? KMV`, `Customer invoice?`, `Invoice Completed (Galp)`, `PM Approval Invoice Date`, `Invoice Sent`, `Invoice Paid`; sólo lectura `Invoice Status`.
 - VK-44: `Sharing`: sólo la persona de facturación.
+
+## 7. Design Ticket y Mile Post: `KMV 2.0 | Design Tickets`
+
+Origen: reporte `KMV 2.0 | Design Tickets` (hoja `Design Tickets (Prototype)`: una fila por proyecto con `DT Owner`, la crea el servicio).
+
+- VK-50: `General`: `Restrict view by current user` = `DT Owner`; `New Item Submission` = `Do Not Allow` (la fila sale al asignar `DT Owner` en el proyecto).
+- VK-51: `Visible fields`: `Tracking Project`, `Project Name`, `Customer`, `City`, `Design Ticket`, `Mile Post`, `Project Status`, `Date Received`.
+- VK-52: `Details Panel`: editables `Design Ticket` y `Mile Post` (primero); sólo lectura `Tracking Project`, `Project Name`, `Customer`, `Project Address`, `City`, `County`, `Date Received`, `Designers`, `Project Status`. Lo que se escribe vuelve a la maestra y de allí a `Permits`.
+- VK-53: `Sharing`: las personas que son `DT Owner`.
 
 ## Cómo probar una vista
 

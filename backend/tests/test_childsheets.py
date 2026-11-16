@@ -31,7 +31,7 @@ WRITES = {
     "app_records_sheet_id": CHILD,
 }
 DATES = {"Date Received", "Record Request", "PM Approval Date", "Invoice Sent"}
-CHECKS = {"Records Needed", "Invoice? GALP"}
+CHECKS = {"Records Needed", "Invoice? GALP", "Mile Post", "Prepare Packages"}
 CONTACTS = {"Records Owner"}
 MULTI = {"Designers"}
 

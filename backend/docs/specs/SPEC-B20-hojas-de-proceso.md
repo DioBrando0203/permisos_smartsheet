@@ -17,9 +17,11 @@ Estado: implementada y probada en el prototipo de Pruebas (2026-11-16 16:41, PEN
 - HP-08: cambio de tipo (decisión del usuario): la fila se moverá a la otra hoja con las columnas del mismo nombre. Pendiente de implementar: hoy la fila se queda en su hoja y la nueva hoja crea otra.
 - HP-09: barreras: escritura aprobada (las del ID Manager), hojas configuradas y dentro de Pruebas; columnas requeridas presentes una sola vez; tope de filas por pasada (`APP_RECORDS_MAX_ROWS`). Nada técnico visible: el vínculo es `Master Row`, oculta.
 
+- HP-14 (2026-11-16 17:56, pedido del usuario): hoja `Design Tickets` para que el responsable (`DT Owner`) llene `Design Ticket` y `Mile Post`: una fila por fila de la maestra con `DT Owner` asignado; contexto `Tracking Project`, `DT Owner`, `Project Status`, `Customer`, `Project Name`, `Project Address`, `City`, `County`, `Date Received`, `Designers`; `Design Ticket` y `Mile Post` se copian una vez al crear y luego vuelven a la maestra (la hoja manda; en la maestra quedan bloqueadas). Variables `APP_DESIGN_TICKETS_SYNC_ENABLED` y `APP_DESIGN_TICKETS_SHEET_ID`. Prototipo: `Design Tickets (Prototype)` `263146012102532` (13 columnas), reporte `KMV 2.0 | Design Tickets` `1458545469116292`.
+
 ## Configuración
 
-- HP-10: variables (`backend/.env`, ver `.env.example`): `APP_PERMITS_SYNC_ENABLED` y `APP_PERMITS_SHEET_ID`, `APP_MOT_SYNC_ENABLED` y `APP_MOT_SHEET_ID`, `APP_INHERIT_ENABLED`; para la maestra 2.0 además `IDS_MASTER_SHEET_ID`, `IDS_PROJECT_FORMAT=year`, `IDS_PROJECT_OPTIONS_ENABLED=true`, `IDS_CUSTOMER_CHANGE_ENABLED=true` (activa ID-51) y los ids de sus Records y Billing. Orden de los pasos en cada ciclo: herencia, Records, Billing, `Permits`, `MOT & Packages` y listas de proyectos.
+- HP-10: variables (`backend/.env`, ver `.env.example`): `APP_PERMITS_SYNC_ENABLED` y `APP_PERMITS_SHEET_ID`, `APP_MOT_SYNC_ENABLED` y `APP_MOT_SHEET_ID`, `APP_INHERIT_ENABLED`; para la maestra 2.0 además `IDS_MASTER_SHEET_ID`, `IDS_PROJECT_FORMAT=year`, `IDS_PROJECT_OPTIONS_ENABLED=true`, `IDS_CUSTOMER_CHANGE_ENABLED=true` (activa ID-51) y los ids de sus Records y Billing. Orden de los pasos en cada ciclo: herencia, Records, Billing, `Permits`, `MOT & Packages`, `Design Tickets` y listas de proyectos.
 
 ## Prototipo
 

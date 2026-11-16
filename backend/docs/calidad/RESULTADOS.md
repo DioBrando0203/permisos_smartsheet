@@ -412,3 +412,8 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 # 2026-11-16 17:38 -05:00 Records exige agencia (SPEC-B18 RH-03b) y pruebas aisladas del formato del `.env`
 
 - Equipo Linux: 182 pruebas backend aprobadas (el commit `a4cdb37`, ajeno a esta tarea, retiró el panel y el GIS con sus pruebas); una nueva: sin agencia no se pide Records y con agencia sí; las de Records existentes llevan ahora `Agency`. Las pruebas ya no toman `IDS_PROJECT_FORMAT` del `.env` local (fijan el formato con cliente; las del formato por año lo cambian). Ruff correcto; `ruff format --check` marca `app/api/routes/health.py` y `app/core/config.py`, que dejó así el commit `a4cdb37` (no tocados).
+
+# 2026-11-16 17:56 -05:00 Hoja Design Tickets (SPEC-B20 HP-14)
+
+- Equipo Linux: 183 pruebas backend aprobadas (una nueva: fila al asignar `DT Owner`, `Design Ticket` y `Mile Post` vuelven al proyecto). Una corrida intermedia dio 48 errores del PostgreSQL temporal al arrancar; repetida, todo aprobado. Ruff correcto.
+- En vivo: hoja `Design Tickets (Prototype)` creada (13 columnas, contexto bloqueado, `Master Row` oculta) y `Design Ticket` y `Mile Post` bloqueadas en la maestra; reporte creado. Sin ciclo en vivo: el backend del usuario estaba encendido con el código anterior (dos procesos a la vez podrían duplicar filas).

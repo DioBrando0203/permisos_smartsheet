@@ -13,7 +13,7 @@ from app.services.childsheets.cells import LEVEL, cell, check_barriers, columns,
 from app.services.childsheets.inherit import InheritSync
 from app.services.childsheets.options import ProjectOptions
 from app.services.childsheets.rules import KEY, ROW_TYPE, ChildSpec
-from app.services.childsheets.specs import BILLING, MOT, PERMITS, RECORDS
+from app.services.childsheets.specs import BILLING, DESIGN_TICKETS, MOT, PERMITS, RECORDS
 from app.services.ids import pilot
 from app.services.ids.runtime import writes_allowed
 from app.services.smartsheet import SmartsheetClient
@@ -171,6 +171,11 @@ def child_hooks(
         (BILLING, settings.app_billing_sync_enabled, settings.app_billing_sheet_id),
         (PERMITS, settings.app_permits_sync_enabled, settings.app_permits_sheet_id),
         (MOT, settings.app_mot_sync_enabled, settings.app_mot_sheet_id),
+        (
+            DESIGN_TICKETS,
+            settings.app_design_tickets_sync_enabled,
+            settings.app_design_tickets_sheet_id,
+        ),
     ]
     for spec, enabled, sheet in configured:
         if enabled and sheet:

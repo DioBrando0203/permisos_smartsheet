@@ -12,7 +12,7 @@ import respx
 
 from app.services.childsheets.inherit import InheritSync
 from app.services.childsheets.options import ProjectOptions
-from app.services.childsheets.specs import INHERITED, MOT, PERMITS
+from app.services.childsheets.specs import DESIGN_TICKETS, INHERITED, MOT, PERMITS
 from app.services.childsheets.sync import ChildSheetSync, child_hooks
 from app.services.ids import pilot
 from app.services.ids.dry_run import PILOT_WORKSPACE
@@ -243,6 +243,36 @@ async def test_project_lists_follow_the_projects() -> None:
     assert fake.options["Linked Tracking"] == ["KMV-CC-25-090", "KMV-26-0002", "KMV-26-0001"]
 
 
+DT_MASTER = [*DESIGN_TICKETS.context, "Design Ticket", "Mile Post"]
+DT_CHILD = [*DESIGN_TICKETS.context, "Master Row", "Design Ticket", "Mile Post"]
+
+
+async def test_design_tickets_are_filled_by_their_owner_and_go_back_to_the_project(
+    router,
+) -> None:
+    sheets = _sheets(router, DT_MASTER, DT_CHILD)
+    sheets.rows[M] = {
+        "1": {"Tracking Project": "KMV-26-0001", "DT Owner": "persona1@example.com"},
+        "2": {"Tracking Project": "KMV-26-0002"},
+    }
+    settings = make_settings(
+        **WRITES | {"app_design_tickets_sync_enabled": True, "app_design_tickets_sheet_id": CHILD}
+    )
+    client = SmartsheetClient(settings)
+    sync = ChildSheetSync(settings, client, DESIGN_TICKETS, CHILD, interval=0)
+    try:
+        created = await sync.run()
+        (row,) = sheets.rows[CHILD].values()
+        row.update({"Design Ticket": "261100789", "Mile Post": True})
+        back = await sync.run()
+    finally:
+        await client.aclose()
+    assert created["created"] == 1 and row["Master Row"] == "1"
+    assert back["summarized"] == 1
+    assert sheets.rows[M]["1"]["Design Ticket"] == "261100789"
+    assert sheets.rows[M]["1"]["Mile Post"] is True
+
+
 def test_hooks_run_inheritance_first_and_lists_last() -> None:
     everything = ON | {
         "app_inherit_enabled": True,
@@ -251,7 +281,10 @@ def test_hooks_run_inheritance_first_and_lists_last() -> None:
         "app_mot_sync_enabled": True,
         "app_mot_sheet_id": "999",
         "ids_project_options_enabled": True,
+        "app_design_tickets_sync_enabled": True,
+        "app_design_tickets_sheet_id": "555",
     }
     hooks = child_hooks(make_settings(**everything), None)
-    assert list(hooks) == ["inherit", "records", "billing", "permits", "mot", "options"]
+    expected = ["inherit", "records", "billing", "permits", "mot", "design_tickets", "options"]
+    assert list(hooks) == expected
     assert child_hooks(make_settings(**everything | {"app_read_only": True}), None) == {}

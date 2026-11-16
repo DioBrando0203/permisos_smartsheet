@@ -170,6 +170,27 @@ MOT = ChildSpec(
     cancel=("MOT Status", "CANCELLED"),
 )
 
+# HP-14: Design Ticket y Mile Post los llena el responsable (`DT Owner`) en su hoja y vuelven a
+# la fila de la maestra (el proyecto); `Permits` los toma de allí.
+DESIGN_TICKETS = ChildSpec(
+    name="design_tickets",
+    triggers=("DT Owner",),
+    context=(
+        "Tracking Project",
+        "DT Owner",
+        "Project Status",
+        "Customer",
+        "Project Name",
+        "Project Address",
+        "City",
+        "County",
+        "Date Received",
+        "Designers",
+    ),
+    initial=("Design Ticket", "Mile Post"),
+    summary=("Design Ticket", "Mile Post"),
+)
+
 # HP-07: datos del proyecto que una hija de la maestra toma si los tiene vacíos.
 INHERITED = (
     "Customer",
