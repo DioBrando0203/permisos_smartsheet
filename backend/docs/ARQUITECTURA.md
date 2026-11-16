@@ -94,9 +94,13 @@ app/
   services/project_catalog.py   lectura del catálogo desde Proyectos y la hoja catálogo, validación y plan
   services/catalog_sync.py      escritura de la hoja catálogo en Pruebas con barreras; nunca borra
   api/routes/catalogs.py        /api/catalogs: consultas y sincronización protegida
-  services/childsheets/rules.py  reglas puras de las hojas hijas: crear, esperar, contexto y resumen (SPEC-B18, SPEC-B19)
-  services/childsheets/specs.py  definición de Records y Facturación: activación, contexto, valores iniciales y resumen
+  services/childsheets/rules.py  reglas puras de las hojas hijas: crear, esperar, contexto, resumen, cancelación y herencia (SPEC-B18 a SPEC-B20)
+  services/childsheets/specs.py  definición de Records, Facturación, Permits y MOT & Packages: activación, contexto, valores iniciales y resumen
   services/childsheets/sync.py   paso del procesador por hoja hija, con barreras; nunca borra ni escribe sobre fórmulas
+  services/childsheets/cells.py   lectura y escritura de celdas, barreras y ritmo comunes a los pasos
+  services/childsheets/inherit.py hijas de la maestra completan celdas vacías con las de su proyecto (SPEC-B20 HP-07)
+  services/childsheets/options.py listas `Parent Project` y `Linked Tracking` al día (SPEC-ID01 ID-54)
+  services/smartsheet/structure.py escrituras de estructura (opciones de un desplegable), mezcla del cliente
   services/obs/rules.py         reglas puras de Obs: formato MM.DD, unión del mismo día, límite y archivo (SPEC-B17)
   services/obs/store.py         comentarios ya copiados a Obs en PostgreSQL (migración 004)
   services/obs/sync.py          paso del procesador que copia comentarios nuevos a Obs con barreras; nunca borra texto

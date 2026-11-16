@@ -5,6 +5,7 @@ Funciones puras sobre el inventario leído; no reservan, consultan ni escriben.
 
 from collections import Counter
 
+from app.services.ids import pilot
 from app.services.ids.dry_run import PlanAction
 from app.services.ids.formats import EntityKind, customer_code, parse_id
 from app.services.ids.inventory import InventorySheet
@@ -24,9 +25,10 @@ def children_plan(
         stable = (child.cells.get(sheet.stable_column) or "").strip()
         mother = mothers.get(root, "")
         mine = (child.cells.get(code) or "").strip() if code else ""
-        action = _child_action(
-            change, stable, mother, mine, codes.get(root, ""), mother in confirmed
-        )
+        theirs = codes.get(root, "")
+        if pilot.YEAR_FORMAT:
+            mine = theirs = ""  # sin cliente en el ID, la hija siempre sigue a su madre (ID-52)
+        action = _child_action(change, stable, mother, mine, theirs, mother in confirmed)
         if action is None:
             counts["child_inherited"] += 1
             continue
@@ -104,6 +106,13 @@ def adoptions(sheet: InventorySheet) -> dict[str, str]:
         if mothers[0].id != row.id and (not mine or mine == theirs):
             found[row.id] = mothers[0].id
     return found
+
+
+def loose_permit(sheet: InventorySheet, row) -> bool:
+    """Permiso de primer nivel (ID-53): con IDs por año no recibe número; espera su proyecto."""
+    if not pilot.YEAR_FORMAT or not sheet.adopt_columns:
+        return False
+    return (row.cells.get(sheet.adopt_columns[0]) or "").strip() in PERMIT_TYPES
 
 
 def customer_changed(kind: EntityKind, stable: str, parent: str) -> bool:

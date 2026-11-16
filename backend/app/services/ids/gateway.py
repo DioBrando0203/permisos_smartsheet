@@ -195,4 +195,4 @@ def _project_scope(row: RawRow, columns: dict[str, str]) -> str:
         company = pilot.DEFAULT_COMPANY
     customer = (row.cells.get(columns.get("Customer Code", "")) or "").strip()
     received = row.date_cells.get(columns.get("Date Received", ""))
-    return project_scope(company, customer, received)
+    return project_scope(company, customer, received, with_customer=not pilot.YEAR_FORMAT)

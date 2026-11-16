@@ -12,7 +12,7 @@ from app.services.ids.dry_run import (
     PlanAction,
     plan,
 )
-from app.services.ids.family import adoptions, children_plan, customer_changed
+from app.services.ids.family import adoptions, children_plan, customer_changed, loose_permit
 from app.services.ids.formats import EntityKind, formula_number, parse_id, project_scope
 from app.services.ids.inventory import InventorySheet
 from app.services.ids.pilot import read_pilot
@@ -106,6 +106,9 @@ async def build_dry_run_report(
                 counts[PlanAction.ADOPT_PERMIT.value] += 1
                 details.append(_adoption(sheet, row, adopt[row.id], current, visible, stable))
                 continue
+            if not stable and loose_permit(sheet, row):
+                counts[PlanAction.PENDING_PROJECT.value] += 1  # sin número hasta su proyecto
+                continue
 
             parent = (
                 (row.cells.get(sheet.parent_column) or "").strip() if sheet.parent_column else ""
@@ -117,6 +120,7 @@ async def build_dry_run_report(
                     (row.cells.get(company) or "") if company else pilot.DEFAULT_COMPANY,
                     row.cells.get(customer) or "",
                     row.date_cells.get(received),
+                    with_customer=not pilot.YEAR_FORMAT,
                 )
             elif sheet.kind == EntityKind.PROJECT and visible:
                 try:

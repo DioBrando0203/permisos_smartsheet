@@ -11,6 +11,8 @@ from app.services.smartsheet import RawRow, SmartsheetClient
 PRESENTABLE = get_settings().ids_master_sheet_id
 # Sin columna de empresa, la fórmula de Tracking Project fija "KMV".
 DEFAULT_COMPANY = "KMV"
+# Maestra 2.0 (ID-52): IDs `KMV-26-0001` sin cliente; se lee en cada uso (pruebas lo cambian).
+YEAR_FORMAT = get_settings().ids_project_format == "year"
 # Columna que dice a qué proyecto pertenece un permiso suelto (ID-51); sin ella, no se adopta.
 # `Linked Tracking` no sirve: sólo enlaza proyectos anteriores (decisión del usuario).
 PARENT_PROJECT = "Parent Project"

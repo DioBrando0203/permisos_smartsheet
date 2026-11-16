@@ -83,3 +83,94 @@ BILLING = ChildSpec(
     summary=("Invoice Status",),
     derived=(ROW_TYPE,),
 )
+
+
+# SPEC-B20 (PEN-54): hojas de proceso. Una hija pasa cuando tiene su tipo y su agencia y no
+# nació cerrada; el contexto vacío en la hija se toma de su proyecto.
+CLOSED = frozenset({"CANCELLED", "NO PERMIT REQUIRED"})
+PERMIT_KINDS = frozenset({"KMV-Permit", "KMV-Line"})
+PROJECT_CONTEXT = (
+    "Permitting Team",
+    "Customer",
+    "Project Name",
+    "Project Address",
+    "City",
+    "County",
+    "Designers",
+    "Contractor",
+    "Date Received",
+    "PM Approval Date",
+)
+_READS = ("Type of Project", "Agency", "Project Status")
+
+
+def _open(values: dict) -> bool:
+    return bool(values.get("Agency")) and values.get("Project Status") not in CLOSED
+
+
+def _permit(values: dict, child: bool) -> bool:
+    return child and values.get("Type of Project") in PERMIT_KINDS and _open(values)
+
+
+def _mot(values: dict, child: bool) -> bool:
+    if not child:
+        return bool(values.get("Prepare Packages"))
+    return values.get("Type of Project") == "KMV-MOT" and _open(values)
+
+
+PERMITS = ChildSpec(
+    name="permits",
+    triggers=(),
+    when=_permit,
+    reads=_READS,
+    context=(
+        "Tracking Project",
+        "Type of Project",
+        "Agency",
+        *PROJECT_CONTEXT,
+        "Design Ticket",
+        "Mile Post",
+    ),
+    initial=("LT",),
+    summary=(
+        ("Permit Status", "Project Status"),
+        "Permit #",
+        "Permit Approved",
+        "Permit Expires",
+        "Permit Fee",
+    ),
+    fallback=(*PROJECT_CONTEXT, "Design Ticket", "Mile Post"),
+    summary_children_only=True,
+    cancel=("Permit Status", "CANCELLED"),
+)
+
+# Filas `MOT` (hijas `KMV-MOT`) y `Package` (madres con `Prepare Packages`).
+MOT = ChildSpec(
+    name="mot",
+    triggers=(),
+    when=_mot,
+    reads=(*_READS, "Prepare Packages"),
+    context=("Tracking Project", "Agency", *PROJECT_CONTEXT),
+    initial=("LT",),
+    summary=(("MOT Status", "Project Status"), "Custom MOT", "TYPICAL MOT"),
+    derived=(ROW_TYPE,),
+    fallback=PROJECT_CONTEXT,
+    kinds=("Package", "MOT"),
+    summary_children_only=True,
+    cancel=("MOT Status", "CANCELLED"),
+)
+
+# HP-07: datos del proyecto que una hija de la maestra toma si los tiene vacíos.
+INHERITED = (
+    "Customer",
+    "Project Name",
+    "Project Address",
+    "City",
+    "County",
+    "CC System",
+    "Date Received",
+    "Survey Completed",
+    "Design Completed",
+    "PM Approval Date",
+    "LT",
+)

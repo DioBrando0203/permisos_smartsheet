@@ -23,6 +23,7 @@ class PlanAction(StrEnum):
     DETACH_CHILD = "detach_child"  # hija de otro cliente: sale de la jerarquía (ID-45)
     CHILD_FOLLOW = "child_follow"  # hija que sigue a su madre tras cambiar de cliente (ID-46)
     ADOPT_PERMIT = "adopt_permit"  # permiso de primer nivel: pasa bajo su proyecto (ID-51)
+    PENDING_PROJECT = "pending_project"  # permiso suelto sin `Parent Project`: sin número (ID-53)
     NEEDS_RESERVATION = "needs_reservation"
     WOULD_WRITE = "would_write"
 

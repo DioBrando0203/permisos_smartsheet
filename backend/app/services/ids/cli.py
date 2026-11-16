@@ -81,6 +81,7 @@ async def _simulate(sheets, entries) -> None:
                     (row.cells.get(company) or "") if company else pilot.DEFAULT_COMPANY,
                     row.cells.get(customer) or "",
                     row.date_cells.get(received),
+                    with_customer=not pilot.YEAR_FORMAT,
                 )
             elif sheet.kind == EntityKind.PROJECT and visible:
                 try:

@@ -402,3 +402,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Equipo Windows: 309 pruebas backend aprobadas y 57 omitidas (necesitan el PostgreSQL del equipo Linux); 2 nuevas en `tests/test_childsheets.py`: metraje copiado una sola vez y pasada correcta sin esas columnas en la maestra, `Designers` como varios contactos; correos de varios contactos ordenados y sin los que no tienen correo. Ruff y formato correctos.
 - En vivo: una escritura de `Designers` en una fila de `Billing`, releída igual.
 - En vivo (23:14): metraje borrado de la maestra (98 columnas), sin celdas con error en la maestra ni en `Billing`; plan en seco de `Billing` con el código nuevo: sólo `Designers` en 3 filas; reporte `Design | Status & Footage` con 5 filas.
+
+# 2026-11-16 16:41 -05:00 Maestra 2.0: IDs por año, hojas de proceso, herencia y listas (SPEC-B20, SPEC-ID01 ID-52 a ID-54, PEN-54)
+
+- Equipo Linux: 383 pruebas backend aprobadas (366 anteriores sin cambios y 17 nuevas: 13 en `tests/test_process_sheets.py`, 4 en `tests/test_id_year_format.py`, estas con PostgreSQL temporal). Ruff y formato correctos.
+- En vivo, sólo prototipo en Pruebas, con variables de entorno del proceso (sin tocar `backend/.env`; backend apagado): plan en seco con 5 madres a registrar y 7 hijas heredadas; primer ciclo: 5 IDs registrados, 6 hijas completadas con datos de su proyecto, `Linked Tracking` actualizada; segundo ciclo sin cambios.
+- En vivo, filas como desde una vista (de primer nivel): un proyecto nuevo recibió `KMV-26-0006`; un `KMV-Permit` y un `KMV-MOT` con `Parent Project` `KMV-26-0003` pasaron bajo ese proyecto, heredaron su ID y sus datos; se crearon 3 filas en `Billing`, 1 en `Permits` y 1 en `MOT & Packages` con el contexto del proyecto; las listas incluyen `KMV-26-0006`; ciclos siguientes sin cambios.

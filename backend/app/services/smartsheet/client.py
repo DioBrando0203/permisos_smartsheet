@@ -10,6 +10,7 @@ import httpx
 
 from app.core.config import Settings
 from app.services.smartsheet import mappers
+from app.services.smartsheet.structure import StructureWrites
 from app.services.smartsheet.transport import Transport
 from app.services.smartsheet.types import (
     NewShare,
@@ -33,7 +34,7 @@ _SHARING_INCLUDE = "ITEM,WORKSPACE"
 _ROWS_PAGE = 500
 
 
-class SmartsheetClient:
+class SmartsheetClient(StructureWrites):
     def __init__(self, settings: Settings, http: httpx.AsyncClient | None = None) -> None:
         self._settings = settings
         self._transport = Transport(settings, http)
@@ -255,12 +256,6 @@ class SmartsheetClient:
         place = {"parentId": int(sibling_id), "toBottom": True} if under else {}
         body = [{"id": int(row_id)} | (place or {"siblingId": int(sibling_id)})]
         await self._transport.request("PUT", f"/sheets/{sheet_id}/rows", json=body, retry=False)
-
-    def _require_writes(self) -> None:
-        from app.core.errors import AppError
-
-        if self._settings.app_read_only:
-            raise AppError("WRITE_BLOCKED", "Escrituras deshabilitadas (solo lectura).", 403)
 
     # Escrituras (bloqueadas antes de llegar aquí en modo solo lectura)
 

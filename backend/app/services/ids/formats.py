@@ -13,22 +13,30 @@ class EntityKind(StrEnum):
     REVISION = "revision"
 
 
-_PROJECT = r"[A-Z0-9]+-[A-Z0-9]+-[0-9]{2}-[0-9]{3,}"
+# Proyecto con cliente (`KMV-CC-26-001`) o sólo con año (`KMV-26-0001`, ID-52).
+_SCOPE = r"[A-Z0-9]+-(?:[A-Z0-9]+-)?[0-9]{2}"
+_PROJECT = _SCOPE + r"-[0-9]{3,}"
 _TASK = _PROJECT + r"-[0-9]{2,}"
 _PATTERNS = {
-    EntityKind.PROJECT: re.compile(r"(?P<parent>[A-Z0-9]+-[A-Z0-9]+-[0-9]{2})-(?P<num>[0-9]{3,})"),
+    EntityKind.PROJECT: re.compile(rf"(?P<parent>{_SCOPE})-(?P<num>[0-9]{{3,}})"),
     EntityKind.TASK: re.compile(rf"(?P<parent>{_PROJECT})-(?P<num>[0-9]{{2,}})"),
     EntityKind.RECORD: re.compile(rf"(?P<parent>{_TASK})-R(?P<num>[0-9]+)"),
     EntityKind.REVISION: re.compile(rf"(?P<parent>{_TASK})-V(?P<num>[0-9]+)"),
 }
 
 
-def project_scope(company: str, customer: str, received: date | None) -> str:
-    """Ámbito usando exclusivamente el año de recepción del proyecto."""
+def project_scope(
+    company: str, customer: str, received: date | None, *, with_customer: bool = True
+) -> str:
+    """Ámbito usando exclusivamente el año de recepción del proyecto.
+
+    Sin cliente en el ID (ID-52) el cliente sigue siendo obligatorio para numerar.
+    """
     company, customer = company.strip(), customer.strip()
     if not company or not customer or not received or not 2000 <= received.year <= 2099:
         return ""
-    return f"{company}-{customer}-{received.year % 100:02d}"
+    year = f"{received.year % 100:02d}"
+    return f"{company}-{customer}-{year}" if with_customer else f"{company}-{year}"
 
 
 def customer_code(scope: str) -> str:
@@ -52,8 +60,10 @@ def make_id(kind: EntityKind, parent: str, number: int) -> str:
     """Construye y valida el ID completo, sin normalizar silenciosamente sus componentes."""
     if number <= 0:
         raise ValueError("El consecutivo debe ser positivo")
+    # Con un solo contador por año (sin cliente) el número lleva 4 dígitos (ID-52).
+    width = 4 if parent.count("-") == 1 else 3
     suffix = {
-        EntityKind.PROJECT: f"{number:03d}",
+        EntityKind.PROJECT: f"{number:0{width}d}",
         EntityKind.TASK: f"{number:02d}",
         EntityKind.RECORD: f"R{number}",
         EntityKind.REVISION: f"V{number}",

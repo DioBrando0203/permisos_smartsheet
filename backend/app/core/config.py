@@ -4,6 +4,7 @@ El token se guarda como `SecretStr` para que nunca aparezca en `repr`, logs ni e
 """
 
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -44,6 +45,11 @@ class Settings(BaseSettings):
     ids_master_sheet_id: str = "5254686035890052"
     # Cambio de cliente (SPEC-ID01 ID-44 a ID-47): ID nuevo, hijas ajenas fuera y hijas al día.
     ids_customer_change_enabled: bool = False
+    # Formato del ID de proyecto (SPEC-ID01 ID-52): `customer` (KMV-CC-26-001) o `year`
+    # (KMV-26-0001, maestra 2.0, PEN-54): un contador por año y empresa, sin cliente.
+    ids_project_format: Literal["customer", "year"] = "customer"
+    # Listas de `Parent Project` y `Linked Tracking` al día con los proyectos (ID-54).
+    ids_project_options_enabled: bool = False
     # Hoja catálogo de proyectos en Pruebas, origen del desplegable vinculado de Linked Tracking.
     app_project_catalog_sheet: str = ""
     # Conversaciones de cada fila copiadas a Obs (SPEC-B17); exige las barreras de escritura.
@@ -60,6 +66,13 @@ class Settings(BaseSettings):
     # Hoja hija de Facturación (SPEC-B19); usa el mismo intervalo y tope que Records.
     app_billing_sync_enabled: bool = False
     app_billing_sheet_id: str = ""
+    # Hijas de la maestra completan sus celdas vacías con las de su proyecto (SPEC-B20 HP-07).
+    app_inherit_enabled: bool = False
+    # Hojas de proceso (SPEC-B20, PEN-54): permisos, y MOT con paquetes; mismo tope que Records.
+    app_permits_sync_enabled: bool = False
+    app_permits_sheet_id: str = ""
+    app_mot_sync_enabled: bool = False
+    app_mot_sheet_id: str = ""
     app_allowed_hosts: str = _DEFAULT_HOSTS
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""
