@@ -842,5 +842,5 @@ Evidencia (lectura de los reportes): 12, 10 (5 de la maestra y 5 de `Billing`), 
 # 2026-11-16 16:35 America/Lima — PEN-55 proyecto independiente
 
 - Estado: en curso. Creado `../gis_permisos` con backend GIS, copia del frontend y ruta inicial al mapa; `.env` copiados por solicitud del usuario y excluidos de Git. El panel original no se cambió.
-- Evidencia: backend nuevo instalado en su propio entorno; 2 pruebas y Ruff correctos. Queda depurar el frontend y validar el flujo completo antes de retirar la implementación anterior.
+- Evidencia: backend nuevo instalado en su propio entorno; 2 pruebas y Ruff correctos. Compilación del frontend correcta con dependencias copiadas localmente; `npm ci` no terminó. Queda depurar el frontend y validar el flujo completo antes de retirar la implementación anterior.
 
