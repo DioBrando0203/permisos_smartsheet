@@ -64,10 +64,10 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 
 ## Reportes y vistas
 
-- K2-60: regla (2026-11-17 15:21, decisión del usuario): cada vista va directo sobre su hoja; sólo la del equipo de permisos (`PROJECT KMV 2.0 - PERMITS TEAM`) va sobre el reporte `KMV 2.0 | Permits` (`4305169530703748`), porque junta `Permits` y los proyectos `KMV-Miscellaneous`. Lista y configuración de cada vista en `VISTAS_KMV_2.0.md` (VK-00a a VK-00h).
-- K2-61: las vistas de coordinación y de diseño usan los filtros compartidos `Projects` y `Permits` de la maestra (los crea el usuario en la hoja).
-- K2-62: los demás reportes de la carpeta `Reports` (`5430691564414852`: Coordinator, Design Projects, MOT & Packages, Records, Billing, Design Tickets) ya no son necesarios para las vistas; quedan de consulta o se pueden borrar.
-- K2-63: la API no edita reportes existentes: una columna nueva se agrega desde la interfaz (por eso las vistas van sobre hojas).
+- K2-60: regla (2026-11-17 15:27, decisión del usuario): todas las vistas van directo sobre su hoja; ninguna usa reporte. Las hojas de equipo ya traen copiados los datos del proyecto. Lista y configuración en `VISTAS_KMV_2.0.md` (VK-00a a VK-00h).
+- K2-61: el equipo de permisos tiene dos vistas: `PERMITS TEAM` sobre `Permits` y, si trabaja sus proyectos `KMV-Miscellaneous`, `MISC PROJECTS` sobre la maestra.
+- K2-62: filtros compartidos de la maestra (los crea el usuario en la hoja): `Projects`, `Permits` y `Miscellaneous`.
+- K2-63: los reportes de la carpeta `Reports` (`5430691564414852`) ya no se usan para las vistas; quedan de consulta o se pueden borrar. La API no edita reportes existentes.
 
 ## Configuración
 
@@ -78,7 +78,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 ## Pendientes, en orden
 
 - K2-80: reiniciar el backend (toma Records con agencia, `Design Tickets` y metraje en la maestra).
-- K2-81: desde la interfaz: `Revision Stage` en el reporte `KMV 2.0 | Permits` (las demás vistas van sobre hojas y no lo necesitan).
+- K2-81: crear los filtros compartidos `Projects`, `Permits` y `Miscellaneous` en la maestra.
 - K2-82: filtros compartidos `Projects` y `Permits` en la maestra; armar las vistas (guía `VISTAS_KMV_2.0.md`).
 - K2-83: formato condicional de `CANCELLED` (gris y tachado) en `Permits` y `MOT & Packages`.
 - K2-84: probar el flujo completo con las vistas: proyecto, trámite con `Parent Project` y `Agency`, estado del equipo de vuelta, cancelación.

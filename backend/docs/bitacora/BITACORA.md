@@ -942,3 +942,10 @@ Cambios: `VISTAS_KMV_2.0.md` (VK-00a a VK-00i y orígenes de cada sección) y `K
 
 Estado: hecho (documento), a pedido del usuario.
 Cambios: `VISTAS_KMV_2.0.md` con VK-00j a VK-00m (las hojas de equipo ya traen copiados los datos del proyecto; reporte sólo para mostrar filas de dos hojas) y VK-00n a VK-00s (pasos para continuar, en orden).
+
+## 2026-11-17 15:27 -05:00 Ninguna vista sobre reporte (PEN-54)
+
+Estado: hecho (documentos).
+Decisión del usuario: la vista del equipo de permisos quedó sobre la hoja `Permits` (la armó así); se deja. Sus proyectos `KMV-Miscellaneous` van en una vista aparte sobre la maestra (filtro `Miscellaneous`). Así ninguna vista usa reporte.
+Comprobación previa (sólo lectura): las 5 filas de `Permits` coinciden en contexto y estado con la maestra; el reporte `KMV 2.0 | Permits` mostraba 6 filas (5 permisos y 1 proyecto `KMV-Miscellaneous`).
+Cambios: `VISTAS_KMV_2.0.md` (VK-00d, VK-00d2, sección 3B, reglas de permisos sin la de proyecto) y `KMV_2.0.md` (K2-60 a K2-63, K2-81).

@@ -1,32 +1,32 @@
 # Vistas (Dynamic View) de la versión 2.0
 
-Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones son los de la pantalla de configuración de Dynamic View (`Settings`). Regla única (decisión del usuario, 2026-11-17 15:21, lo más cómodo y limpio): cada vista va directo sobre su hoja; sólo la del equipo de permisos va sobre su reporte, porque junta dos hojas. Reglas del servicio en SPEC-B20 y PEN-54.
+Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones son los de la pantalla de configuración de Dynamic View (`Settings`). Regla única (decisión del usuario, 2026-11-17 15:27): todas las vistas van directo sobre su hoja; no se usa ningún reporte. Reglas del servicio en SPEC-B20 y PEN-54.
 
 ## Dónde va cada vista
 
 - VK-00a: `PROJECT KMV 2.0 - PROJECTS` (coordinación, crea proyectos): hoja `PROJECT KMV 2.0 (Prototype)` con el filtro compartido `Projects`.
 - VK-00b: `PROJECT KMV 2.0 - PERMITS` (coordinación, crea trámites): hoja `PROJECT KMV 2.0 (Prototype)` con el filtro compartido `Permits`.
 - VK-00c: `PROJECT KMV 2.0 - DESIGN` (diseño): hoja `PROJECT KMV 2.0 (Prototype)` con el filtro compartido `Projects`, restringida por `Designers`.
-- VK-00d: `PROJECT KMV 2.0 - PERMITS TEAM` (equipo de permisos): reporte `KMV 2.0 | Permits` (sus permisos y sus proyectos `KMV-Miscellaneous`), restringida por `Permitting Team`. Es la única sobre un reporte; agregar `Revision Stage` al reporte desde la interfaz.
+- VK-00d: `PROJECT KMV 2.0 - PERMITS TEAM` (equipo de permisos): hoja `Permits (Prototype)`, restringida por `Permitting Team`.
+- VK-00d2: `PROJECT KMV 2.0 - MISC PROJECTS` (equipo de permisos, sus proyectos `KMV-Miscellaneous`; sólo si los trabajan): hoja `PROJECT KMV 2.0 (Prototype)` con el filtro compartido `Miscellaneous`, restringida por `Permitting Team`.
 - VK-00e: `PROJECT KMV 2.0 - MOT & PACKAGES`: hoja `MOT & Packages (Prototype)`, restringida por `Permitting Team`.
 - VK-00f: `PROJECT KMV 2.0 - RECORDS`: hoja `Records Requests (Prototype)`, restringida por `Records Owner`.
 - VK-00g: `PROJECT KMV 2.0 - BILLING`: hoja `Billing (Prototype)`, sin restricción.
 - VK-00h: `PROJECT KMV 2.0 - DESIGN TICKETS` (si se queda la hoja): hoja `Design Tickets (Prototype)`, restringida por `DT Owner`.
-- VK-00i: sobre una hoja, la vista ve al instante cualquier columna nueva; sobre un reporte, cada columna nueva hay que agregarla al reporte a mano (la API no edita reportes).
+- VK-00i: sobre una hoja, la vista ve al instante cualquier columna nueva; sobre un reporte habría que agregarla al reporte a mano (la API no edita reportes). Por eso ninguna vista usa reporte.
 
 ## Por qué casi todas van sobre su hoja
 
 - VK-00j: cada hoja de equipo (`Permits`, `MOT & Packages`, `Records Requests`, `Billing`, `Design Tickets`) ya trae copiados los datos de su proyecto desde la maestra (`Tracking Project`, `Customer`, `Project Name`, `Project Address`, `City`, `Designers`, `Date Received`, etc.). Los copia el servicio, siempre al día y bloqueados. Por eso una vista sobre la hoja ya muestra en una fila el proyecto y el trabajo del equipo: no hace falta un reporte para traer columnas de la maestra.
 - VK-00k: la coordinación y diseño trabajan sobre la maestra misma, que tiene todas sus columnas.
-- VK-00l: un reporte sólo hace falta cuando una vista debe mostrar filas de dos hojas. Pasa una vez: el equipo de permisos ve sus permisos (hoja `Permits`) y sus proyectos `KMV-Miscellaneous` (filas de la maestra), así que su vista va sobre el reporte `KMV 2.0 | Permits`.
+- VK-00l: un reporte sólo haría falta para mostrar filas de dos hojas en una misma vista. El único caso era el equipo de permisos (sus permisos y sus proyectos `KMV-Miscellaneous`); se resolvió con dos vistas sobre hojas (VK-00d y VK-00d2), más simples de mantener.
 - VK-00m: si a un equipo le falta una columna de la maestra (por ejemplo `Project Status` del proyecto en `MOT & Packages`), no se arma un reporte: se pide que el servicio la agregue a lo que copia en esa hoja.
 
 ## Para continuar (en orden)
 
 - VK-00n: reiniciar el backend si no se hizo después del último cambio de código.
-- VK-00o: en la maestra `PROJECT KMV 2.0 (Prototype)`, crear dos filtros compartidos (VK-01b): `Projects` (`Type of Project` `is one of` `KMV-P`, `KMV-Miscellaneous`) y `Permits` (`Type of Project` `is one of` `KMV-Permit`, `KMV-Line`, `KMV-MOT`), sin `Include parent rows`.
-- VK-00p: en el reporte `KMV 2.0 | Permits`, agregar la columna `Revision Stage` (botón de columnas, guardar).
-- VK-00q: armar las vistas en el orden de la lista de arriba (VK-00a a VK-00h), siguiendo cada sección de esta guía.
+- VK-00o: en la maestra `PROJECT KMV 2.0 (Prototype)`, crear tres filtros compartidos (VK-01b), sin `Include parent rows`: `Projects` (`Type of Project` `is one of` `KMV-P`, `KMV-Miscellaneous`), `Permits` (`KMV-Permit`, `KMV-Line`, `KMV-MOT`) y `Miscellaneous` (`KMV-Miscellaneous`).
+- VK-00q: armar las vistas en el orden de la lista de arriba (VK-00a a VK-00h), siguiendo cada sección de esta guía. `PERMITS TEAM` ya está armada sobre la hoja `Permits` (2026-11-17).
 - VK-00r: en `Permits` y `MOT & Packages`, formato condicional: `Permit Status` o `MOT Status` = `CANCELLED` → gris y tachado.
 - VK-00s: probar el flujo (VK-45 a VK-48).
 
@@ -93,7 +93,7 @@ Origen: la hoja `PROJECT KMV 2.0 (Prototype)` (una fila por proyecto). El metraj
 
 ## 3. Equipo de permisos: `PROJECT KMV 2.0 - PERMITS TEAM`
 
-Origen: reporte `KMV 2.0 | Permits` (filas de `Permits` y los proyectos `KMV-Miscellaneous` del equipo). Antes de armarla, agregar `Revision Stage` al reporte (botón de columnas).
+Origen: la hoja `Permits (Prototype)` (sus permisos y líneas). Sus proyectos `KMV-Miscellaneous` van en la vista de la sección 3B.
 
 - VK-26: `General`: `Restrict view by current user` = `Permitting Team`; `New Item Submission` = `Do Not Allow` (las filas las crea el servicio desde la coordinación).
 - VK-27: `Visible fields`: `Tracking Project`, `Type of Project`, `Agency`, `Permit Status`, `Revision Stage`, `Project Name`, `Submitted Date`, `Permit #`, `Permit Expires`.
@@ -104,14 +104,21 @@ Origen: reporte `KMV 2.0 | Permits` (filas de `Permits` y los proyectos `KMV-Mis
   - 2nd revision: `2nd Revision Req`, `2nd Revision Completed`, `Permit 2nd Resubmitted`.
   - Approval: `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`.
   - Status: `Permit Status`.
-  - Para los proyectos `KMV-Miscellaneous`: `Project Status`, `LT` y `Obs` (sólo lectura: las notas van en `Comments`).
-- VK-29: `Field Logic` (cuatro reglas; en cada una se eligen los campos a mostrar):
+- VK-29: `Field Logic` (tres reglas; en cada una se eligen los campos a mostrar):
   - `Permit`: when `Type of Project` `is one of` `KMV-Permit`, `KMV-Line` → mostrar `LT`, `App Sent to Contractor`, `App Returned from Contractor`, `Submitted Date`, `Runner Submitting`, `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`, `Permit Status`.
   - `1st revision`: when `Revision Stage` `is one of` `1st Revision`, `2nd Revision` → mostrar `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`.
   - `2nd revision`: when `Revision Stage` `is one of` `2nd Revision` → mostrar `2nd Revision Req`, `2nd Revision Completed`, `Permit 2nd Resubmitted`.
-  - `Project`: when `Type of Project` `is one of` `KMV-Miscellaneous` → mostrar `Project Status` y `Obs`.
   - `Revision Stage` la calcula la hoja (no se escribe): `1st Revision` cuando el permiso pasa a `4. Permit Needs Revision` o ya tiene `1st Revision Req`; `2nd Revision` cuando, ya reenviado (`Permit 1st Resubmitted`), vuelve a `4. Permit Needs Revision` o tiene `2nd Revision Req`; si no, `No revision`. Para que aparezca la primera revisión basta cambiar `Permit Status` a `4. Permit Needs Revision`.
 - VK-30: `Sharing`: el equipo de permisos.
+
+## 3B. Proyectos del equipo de permisos: `PROJECT KMV 2.0 - MISC PROJECTS`
+
+Origen: la hoja `PROJECT KMV 2.0 (Prototype)`. Sólo si el equipo de permisos trabaja sus proyectos `KMV-Miscellaneous` (estado y `LT`); los crea la coordinación.
+
+- VK-30a: `General`: `Restrict view by current user` = `Permitting Team`; `Restrict view by sheet filter` = `Miscellaneous`; `New Item Submission` = `Do Not Allow`.
+- VK-30b: `Visible fields`: `Tracking Project`, `Project Name`, `Customer`, `Project Status`, `Date Received`, `LT`, `Records Status`.
+- VK-30c: `Details Panel`: editables `Project Status` y `LT`; sólo lectura `Tracking Project`, `Project Name`, `Customer`, `Project Address`, `City`, `Date Received`, `Records Status`, `Obs` (las notas van en `Comments`).
+- VK-30d: `Sharing`: el equipo de permisos.
 
 ## 4. MOT y paquetes: `PROJECT KMV 2.0 - MOT & PACKAGES`
 
