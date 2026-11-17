@@ -14,6 +14,22 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 - VK-00h: `PROJECT KMV 2.0 - DESIGN TICKETS` (si se queda la hoja): hoja `Design Tickets (Prototype)`, restringida por `DT Owner`.
 - VK-00i: sobre una hoja, la vista ve al instante cualquier columna nueva; sobre un reporte, cada columna nueva hay que agregarla al reporte a mano (la API no edita reportes).
 
+## Por qué casi todas van sobre su hoja
+
+- VK-00j: cada hoja de equipo (`Permits`, `MOT & Packages`, `Records Requests`, `Billing`, `Design Tickets`) ya trae copiados los datos de su proyecto desde la maestra (`Tracking Project`, `Customer`, `Project Name`, `Project Address`, `City`, `Designers`, `Date Received`, etc.). Los copia el servicio, siempre al día y bloqueados. Por eso una vista sobre la hoja ya muestra en una fila el proyecto y el trabajo del equipo: no hace falta un reporte para traer columnas de la maestra.
+- VK-00k: la coordinación y diseño trabajan sobre la maestra misma, que tiene todas sus columnas.
+- VK-00l: un reporte sólo hace falta cuando una vista debe mostrar filas de dos hojas. Pasa una vez: el equipo de permisos ve sus permisos (hoja `Permits`) y sus proyectos `KMV-Miscellaneous` (filas de la maestra), así que su vista va sobre el reporte `KMV 2.0 | Permits`.
+- VK-00m: si a un equipo le falta una columna de la maestra (por ejemplo `Project Status` del proyecto en `MOT & Packages`), no se arma un reporte: se pide que el servicio la agregue a lo que copia en esa hoja.
+
+## Para continuar (en orden)
+
+- VK-00n: reiniciar el backend si no se hizo después del último cambio de código.
+- VK-00o: en la maestra `PROJECT KMV 2.0 (Prototype)`, crear dos filtros compartidos (VK-01b): `Projects` (`Type of Project` `is one of` `KMV-P`, `KMV-Miscellaneous`) y `Permits` (`Type of Project` `is one of` `KMV-Permit`, `KMV-Line`, `KMV-MOT`), sin `Include parent rows`.
+- VK-00p: en el reporte `KMV 2.0 | Permits`, agregar la columna `Revision Stage` (botón de columnas, guardar).
+- VK-00q: armar las vistas en el orden de la lista de arriba (VK-00a a VK-00h), siguiendo cada sección de esta guía.
+- VK-00r: en `Permits` y `MOT & Packages`, formato condicional: `Permit Status` o `MOT Status` = `CANCELLED` → gris y tachado.
+- VK-00s: probar el flujo (VK-45 a VK-48).
+
 ## Dónde se configura cada cosa
 
 - VK-01: `General`: `View name`, `Source sheet or report` (no se cambia después de crear la vista), `Restrict view by current user` (cada persona ve sólo las filas con su nombre en esa columna de contacto), `Restrict view by sheet filter` (qué filas existen en la vista: se elige un filtro compartido que ya existe en la hoja de origen, ver VK-01b), `New Item Submission` (`Allow` para poder agregar filas) y `Export to .csv file`.
