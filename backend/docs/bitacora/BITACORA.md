@@ -949,3 +949,8 @@ Estado: hecho (documentos).
 Decisión del usuario: la vista del equipo de permisos quedó sobre la hoja `Permits` (la armó así); se deja. Sus proyectos `KMV-Miscellaneous` van en una vista aparte sobre la maestra (filtro `Miscellaneous`). Así ninguna vista usa reporte.
 Comprobación previa (sólo lectura): las 5 filas de `Permits` coinciden en contexto y estado con la maestra; el reporte `KMV 2.0 | Permits` mostraba 6 filas (5 permisos y 1 proyecto `KMV-Miscellaneous`).
 Cambios: `VISTAS_KMV_2.0.md` (VK-00d, VK-00d2, sección 3B, reglas de permisos sin la de proyecto) y `KMV_2.0.md` (K2-60 a K2-63, K2-81).
+
+## 2026-11-17 15:28 -05:00 Hallazgo: comentarios de las hojas de equipo no llegan a Obs (PEN-54)
+
+Estado: anotado como pendiente (K2-85b); sin cambios de código.
+Evidencia: `app/services/obs/sync.py` recorre sólo `pilot.SHEETS` (la maestra). Una vista sobre hoja o sobre reporte guarda el comentario en la fila de origen, así que rehacer la vista de permisos sobre el reporte no cambia nada.

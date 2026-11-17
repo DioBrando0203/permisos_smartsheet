@@ -83,6 +83,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 - K2-83: formato condicional de `CANCELLED` (gris y tachado) en `Permits` y `MOT & Packages`.
 - K2-84: probar el flujo completo con las vistas: proyecto, trámite con `Parent Project` y `Agency`, estado del equipo de vuelta, cancelación.
 - K2-85: código: mover la fila a la otra hoja cuando cambia el tipo (SPEC-B20 HP-08), la única regla decidida que falta.
+- K2-85b (2026-11-17 15:28, hallazgo; el usuario: no se puede perder nada): `Obs` sólo junta las conversaciones de la maestra (SPEC-B17, `pilot.SHEETS`). Lo que un equipo comenta en su hoja (`Permits`, `MOT & Packages`, Records, `Billing`, `Design Tickets`) queda en esa fila, no se pierde, pero no llega al `Obs` de su fila en la maestra. Pasa igual con vistas sobre hoja o sobre reporte (el comentario se guarda en la fila de origen). Arreglo en el servicio: juntar también los comentarios de las hojas de equipo en el `Obs` de su fila de la maestra, por `Master Row`. Hasta entonces, la vista sobre la hoja no pierde nada frente al reporte.
 - K2-86: avisos y automatizaciones de la 2.0 (asignación de `Permitting Team`, `Records Owner`, `DT Owner`).
 - K2-87: decidir si `Design Tickets` se queda; `Row Type` de `MOT & Packages` como lista si se quiere separar paneles.
 - K2-88: plan de paso a producción (ver mi opinión, K2-93).
