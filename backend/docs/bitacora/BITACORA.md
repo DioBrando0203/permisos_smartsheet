@@ -967,3 +967,9 @@ Evidencia: 185 pruebas aprobadas (detalle en RESULTADOS).
 Estado: en curso (vistas).
 Evidencia (sólo GET): backend iniciado a las 15:37, después del último cambio de código (15:35); `Permits` tiene la fila del proyecto `KMV-26-0002` (`KMV-Miscellaneous`); `Linked Tracking` copiado (`Billing`, `KMV-26-0005` → `KMV-26-0001`). Vistas `PROJECTS`, `PERMITS` y `PERMITS TEAM` armadas por el usuario.
 Cambios: `VISTAS_KMV_2.0.md` (VK-00t, VK-00u) y `KMV_2.0.md` (K2-80).
+
+## 2026-11-17 15:51 -05:00 Vistas PROJECTS, PERMITS y DESIGN revisadas (PEN-54)
+
+Estado: en curso.
+Evidencia (capturas del usuario): `PROJECTS` con 6 proyectos y `PERMITS` con 9 trámites, filtros compartidos aplicados y `Linked Tracking` visible; vista de diseño armada sobre el reporte `KMV 2.0 | Design Projects`, al que le faltan `Records Status` y `Linked Tracking` (se agregan desde la interfaz).
+Cambios: `VISTAS_KMV_2.0.md` (VK-00t2).
