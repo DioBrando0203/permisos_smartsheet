@@ -926,3 +926,9 @@ Evidencia: conteos leídos en vivo (maestra 79 columnas y 15 filas; `Permits` 43
 Estado: hecho.
 Decisión del usuario: `Obs` nunca se edita ni se usa a mano; las notas son conversaciones por fila y el servicio las copia a `Obs`.
 Cambios: `Obs` bloqueada en la maestra del prototipo; guía de vistas (VK-09b: `Obs` de sólo lectura y comentarios activados en toda vista) y `KMV_2.0.md` (K2-24b, K2-36, `Obs` entre los resúmenes bloqueados).
+
+## 2026-11-17 15:21 -05:00 Vistas directo sobre sus hojas (PEN-54)
+
+Estado: hecho (documentos).
+Decisión del usuario (lo más cómodo y limpio): cada vista va sobre su hoja; sólo la del equipo de permisos sobre el reporte `KMV 2.0 | Permits`. Nombres de vista alineados con los del usuario (`PROJECT KMV 2.0 - PROJECTS`, `- PERMITS`, `- DESIGN`, `- PERMITS TEAM`, etc.).
+Cambios: `VISTAS_KMV_2.0.md` (VK-00a a VK-00i y orígenes de cada sección) y `KMV_2.0.md` (K2-60 a K2-63, K2-81).

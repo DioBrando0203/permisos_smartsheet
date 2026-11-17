@@ -29,7 +29,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 ## Qué hace la coordinadora
 
 - K2-20: proyecto (vista `PROJECTS`): `Type of Project` (`KMV-P` diseño o `KMV-Miscellaneous` permisos), `Customer`, `Date Received`, `Project Name`; asigna `Designers` y `Permitting Team`.
-- K2-21: trámite (vista `PERMITS INTAKE`): `Type of Project` (`KMV-Permit`, `KMV-Line` o `KMV-MOT`), `Parent Project`, `Agency`; `Permitting Team` si no es el del proyecto. Sin `Agency` el trámite no pasa a la hoja del equipo; si no requiere permiso nace en `NO PERMIT REQUIRED` y tampoco pasa.
+- K2-21: trámite (vista `PERMITS`): `Type of Project` (`KMV-Permit`, `KMV-Line` o `KMV-MOT`), `Parent Project`, `Agency`; `Permitting Team` si no es el del proyecto. Sin `Agency` el trámite no pasa a la hoja del equipo; si no requiere permiso nace en `NO PERMIT REQUIRED` y tampoco pasa.
 - K2-22: Records: `Records Needed` o `Records Owner` en la fila del trámite (Records siempre se pide a una agencia).
 - K2-23: paquetes: `Prepare Packages` en el proyecto. Design Ticket: `DT Owner` en el proyecto.
 - K2-24: cancelar: `CANCELLED` en la fila; nunca se borra. Se cancela también en la hoja del equipo.
@@ -64,13 +64,10 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 
 ## Reportes y vistas
 
-Carpeta `Reports` del prototipo (`5430691564414852`). Cada vista se arma sobre su reporte según `VISTAS_KMV_2.0.md`.
-
-- K2-60: `KMV 2.0 | Coordinator` (`2331623468257156`): toda la maestra; vistas de la coordinadora (`PROJECTS` y `PERMITS INTAKE`, que también pueden ir directo sobre la maestra con los filtros compartidos `Projects` y `Permits`).
-- K2-61: `KMV 2.0 | Design Projects` (`3039907867217796`): una fila por proyecto, con metraje; restringida por `Designers`.
-- K2-62: `KMV 2.0 | Permits` (`4305169530703748`): filas de `Permits` y proyectos `KMV-Miscellaneous`; restringida por `Permitting Team`.
-- K2-63: `KMV 2.0 | MOT & Packages` (`2440788920455044`), `KMV 2.0 | Records` (`8810630590189444`), `KMV 2.0 | Billing` (`3426054955028356`), `KMV 2.0 | Design Tickets` (`1458545469116292`).
-- K2-64: la API no edita reportes existentes: columnas nuevas se agregan desde la interfaz.
+- K2-60: regla (2026-11-17 15:21, decisión del usuario): cada vista va directo sobre su hoja; sólo la del equipo de permisos (`PROJECT KMV 2.0 - PERMITS TEAM`) va sobre el reporte `KMV 2.0 | Permits` (`4305169530703748`), porque junta `Permits` y los proyectos `KMV-Miscellaneous`. Lista y configuración de cada vista en `VISTAS_KMV_2.0.md` (VK-00a a VK-00h).
+- K2-61: las vistas de coordinación y de diseño usan los filtros compartidos `Projects` y `Permits` de la maestra (los crea el usuario en la hoja).
+- K2-62: los demás reportes de la carpeta `Reports` (`5430691564414852`: Coordinator, Design Projects, MOT & Packages, Records, Billing, Design Tickets) ya no son necesarios para las vistas; quedan de consulta o se pueden borrar.
+- K2-63: la API no edita reportes existentes: una columna nueva se agrega desde la interfaz (por eso las vistas van sobre hojas).
 
 ## Configuración
 
@@ -81,7 +78,7 @@ Carpeta `Reports` del prototipo (`5430691564414852`). Cada vista se arma sobre s
 ## Pendientes, en orden
 
 - K2-80: reiniciar el backend (toma Records con agencia, `Design Tickets` y metraje en la maestra).
-- K2-81: en los reportes, desde la interfaz: `Records Status` en `KMV 2.0 | Design Projects` y `Revision Stage` en `KMV 2.0 | Permits`.
+- K2-81: desde la interfaz: `Revision Stage` en el reporte `KMV 2.0 | Permits` (las demás vistas van sobre hojas y no lo necesitan).
 - K2-82: filtros compartidos `Projects` y `Permits` en la maestra; armar las vistas (guía `VISTAS_KMV_2.0.md`).
 - K2-83: formato condicional de `CANCELLED` (gris y tachado) en `Permits` y `MOT & Packages`.
 - K2-84: probar el flujo completo con las vistas: proyecto, trámite con `Parent Project` y `Agency`, estado del equipo de vuelta, cancelación.
