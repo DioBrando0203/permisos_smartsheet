@@ -33,6 +33,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 - K2-22: Records: `Records Needed` o `Records Owner` en la fila del trámite (Records siempre se pide a una agencia).
 - K2-23: paquetes: `Prepare Packages` en el proyecto. Design Ticket: `DT Owner` en el proyecto.
 - K2-24: cancelar: `CANCELLED` en la fila; nunca se borra. Se cancela también en la hoja del equipo.
+- K2-24b: notas: siempre como conversación de la fila (`Comments` en la vista); nadie escribe en `Obs`, que el servicio llena con esas conversaciones (SPEC-B17) y queda bloqueada.
 - K2-25: crea unas 2 filas por proyecto (en promedio 1,5 trámites); nunca crea filas en las otras hojas.
 
 ## Qué hace el servicio
@@ -43,6 +44,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 - K2-33: Records: fila con `Records Needed` o `Records Owner` y `Agency`.
 - K2-34: `Billing`: fila para toda fila con ID; metraje y cantidades copiados y bloqueados (los llena diseño en la maestra, facturación sólo los ve); `Invoice Status` vuelve a la maestra.
 - K2-35: `Design Tickets`: fila al asignar `DT Owner`; `Design Ticket` y `Mile Post` vuelven a la maestra.
+- K2-36: `Obs`: copia las conversaciones de cada fila de la maestra a su `Obs` (SPEC-B17, `APP_OBS_SYNC_ENABLED`).
 
 ## Qué calcula Smartsheet solo
 
@@ -53,11 +55,11 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 ## Columnas de la maestra 2.0 (79)
 
 - K2-50: identificación: `Primary` (fórmula `KMV-P`), `Type of Project`, `Tracking Project`, `Linked Tracking`, `Parent Project`.
-- K2-51: proyecto: `Priority`, `CC System`, `Task`, `Project Name`, `Project Address`, `City`, `County`, `Customer`, `Client Access`, `Date Received`, `Project Status`, `Phase`, `Closed`, `Obs`, `LT`, `Process # Days`.
+- K2-51: proyecto: `Priority`, `CC System`, `Task`, `Project Name`, `Project Address`, `City`, `County`, `Customer`, `Client Access`, `Date Received`, `Project Status`, `Phase`, `Closed`, `LT`, `Process # Days`.
 - K2-52: diseño: `Drawing Due Date`, `Project # Days`, `QC IN`, `QC OUT`, `QC # Days`, `Survey Completed`, `Survey Check`, `Design Completed`, `PM Approval Date`, `PM Approval Days`, `Design Completed Days`, metraje (`Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`), `Sonde Request`, `Sonde Received`, `Sonde # Days`, `Asbuilt received - Bore Log`, `As-Built Complete Date`, `As-built # Days`.
 - K2-53: asignación y pedidos: `Designers`, `Permitting Team`, `Surveyor`, `Engineer`, `Construction Manager`, `Contractor`, `Agency`, `Records Needed`, `Records Owner`, `DT Owner`, `Prepare Packages`, `Stamp & Seal`, `Stamp And Signatures #`.
 - K2-54: cantidades: `Custom MOT`, `TYPICAL MOT`, `Survey Certified`, `Additional Site Survey`, `Tone Locating`, `Sonde FTG`, `GPR`.
-- K2-55: resúmenes que escribe el servicio o una fórmula (bloqueados): `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`, `Design Ticket`, `Mile Post`, `Invoice Status`, `Records Status`.
+- K2-55: resúmenes que escribe el servicio o una fórmula (bloqueados): `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`, `Design Ticket`, `Mile Post`, `Invoice Status`, `Records Status`, `Obs`.
 - K2-56: técnicas y de sistema (ocultas o no se muestran): `Customer Code`, `Year`, `Row Order`, `Stable Tracking Project`, `Row Level`, `Control Linked Tracking`, `Modified`, `Modified By`.
 
 ## Reportes y vistas

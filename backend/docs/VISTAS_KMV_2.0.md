@@ -17,6 +17,7 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 - VK-07: quitar `Primary` de `Visible fields` (siempre dice `KMV-P`) y poner primero `Tracking Project`.
 - VK-08: en el panel, primero lo que se escribe al crear, luego lo que se va llenando con el trabajo y al final lo de sólo lectura. Lo que copia el servicio va de sólo lectura: si alguien lo cambia, el servicio lo vuelve a escribir.
 - VK-09: nunca agregar columnas técnicas: `Master Row`, `Stable Tracking Project`, `Row Level`, `Row Order`, `Customer Code`, `Year`, `Control Linked Tracking`.
+- VK-09b: `Obs` nunca se edita (decisión del usuario): las notas se escriben como conversación de la fila (pestaña `Comments` del panel) y el servicio las copia a `Obs` (SPEC-B17). En toda vista `Obs` va de sólo lectura (`Read-Only`) y en `View Display` quedan marcados `Display comments` y `Users can add comments`.
 - VK-10: ordenar la tabla por `Tracking Project` de mayor a menor (lo nuevo arriba) y, ya en la vista, guardar un filtro `Open` con lo pendiente.
 
 ## 1. Coordinación (Zaira): dos vistas sobre la maestra
@@ -75,7 +76,7 @@ Origen: reporte `KMV 2.0 | Permits` (filas de `Permits` y los proyectos `KMV-Mis
   - 2nd revision: `2nd Revision Req`, `2nd Revision Completed`, `Permit 2nd Resubmitted`.
   - Approval: `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`.
   - Status: `Permit Status`.
-  - Para los proyectos `KMV-Miscellaneous`: `Project Status`, `LT`, `Obs`.
+  - Para los proyectos `KMV-Miscellaneous`: `Project Status`, `LT` y `Obs` (sólo lectura: las notas van en `Comments`).
 - VK-29: `Field Logic` (cuatro reglas; en cada una se eligen los campos a mostrar):
   - `Permit`: when `Type of Project` `is one of` `KMV-Permit`, `KMV-Line` → mostrar `LT`, `App Sent to Contractor`, `App Returned from Contractor`, `Submitted Date`, `Runner Submitting`, `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`, `Permit Status`.
   - `1st revision`: when `Revision Stage` `is one of` `1st Revision`, `2nd Revision` → mostrar `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`.

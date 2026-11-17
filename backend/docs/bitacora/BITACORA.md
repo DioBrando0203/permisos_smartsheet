@@ -920,3 +920,9 @@ Evidencia: valores comprobados en vivo (detalle en RESULTADOS).
 Estado: hecho.
 Cambios (pedido del usuario: un md actual para no saturar la memoria): `backend/docs/KMV_2.0.md` (K2-xx) con el estado vigente de la 2.0: hojas e IDs, flujo de la coordinadora, qué hace el servicio y qué calcula Smartsheet, las 79 columnas de la maestra por grupo, reportes, configuración, pendientes en orden y una sección de opinión. `AGENTS.md` con un párrafo de estado corto que apunta allí (se conserva la nota de PEN-55); índice de `docs/README.md`; PEN-54 marcada como historial.
 Evidencia: conteos leídos en vivo (maestra 79 columnas y 15 filas; `Permits` 43; `MOT & Packages` 33; Records 22; `Billing` 42; `Design Tickets` 13).
+
+## 2026-11-16 19:21 -05:00 Obs sólo por conversaciones (PEN-54, SPEC-B17)
+
+Estado: hecho.
+Decisión del usuario: `Obs` nunca se edita ni se usa a mano; las notas son conversaciones por fila y el servicio las copia a `Obs`.
+Cambios: `Obs` bloqueada en la maestra del prototipo; guía de vistas (VK-09b: `Obs` de sólo lectura y comentarios activados en toda vista) y `KMV_2.0.md` (K2-24b, K2-36, `Obs` entre los resúmenes bloqueados).
