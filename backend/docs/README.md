@@ -17,7 +17,9 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `GUIA_IA.md`: protocolo para agentes IA.
 - `ARQUITECTURA.md`: estructura y límites entre módulos.
 - `REQUERIMIENTOS.md`: requisitos verificables (RQ-xx), límites honestos y backlog priorizado (PEN-xx) con su estado.
-- `HOJA_PROJECT_KMV.md`: estado actual de la hoja de trabajo PROJECT KMV y sus catálogos, columnas, fórmulas, automatizaciones, vistas, reportes y lo que el servicio hace sobre ella (HK-xx).
+- `KMV_2.0.md`: estado actual de la versión vigente 2.0 (hojas, IDs, qué hace cada quien, qué hace el servicio, columnas, reportes, configuración, pendientes y opinión) (K2-xx). Leer primero.
+- `VISTAS_KMV_2.0.md`: cómo armar cada Dynamic View de la 2.0 (VK-xx).
+- `HOJA_PROJECT_KMV.md`: la hoja PROJECT KMV 1.0.0 (versión anterior) y sus catálogos, columnas, fórmulas, automatizaciones, vistas, reportes y lo que el servicio hace sobre ella (HK-xx).
 - `ANALISIS_COLUMNAS_KMV.md`: uso medido de cada columna en las hojas originales 2025 y 2026, capacidad de la maestra anual, columnas a quitar y hojas hijas (AC-xx, PEN-45).
 - `specs/SPEC-B01-hojas.md`: listado y detalle de hojas.
 - `specs/SPEC-B02-permisos.md`: CRUD de permisos de una hoja.

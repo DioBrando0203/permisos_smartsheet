@@ -914,3 +914,9 @@ Evidencia: valores comprobados en vivo (detalle en RESULTADOS).
 Estado: hecho en `Permits (Prototype)`; falta agregar `Revision Stage` al reporte `KMV 2.0 | Permits` desde la interfaz.
 Cambios: columna `Revision Stage` (lista con fórmula, 43 columnas); guía de vistas con los campos en inglés (sin nombres de grupo en español en `Field Logic`) y cuatro reglas para permisos.
 Evidencia: valores comprobados en vivo (detalle en RESULTADOS).
+
+## 2026-11-16 19:14 -05:00 Documento único de la versión 2.0 (PEN-54)
+
+Estado: hecho.
+Cambios (pedido del usuario: un md actual para no saturar la memoria): `backend/docs/KMV_2.0.md` (K2-xx) con el estado vigente de la 2.0: hojas e IDs, flujo de la coordinadora, qué hace el servicio y qué calcula Smartsheet, las 79 columnas de la maestra por grupo, reportes, configuración, pendientes en orden y una sección de opinión. `AGENTS.md` con un párrafo de estado corto que apunta allí (se conserva la nota de PEN-55); índice de `docs/README.md`; PEN-54 marcada como historial.
+Evidencia: conteos leídos en vivo (maestra 79 columnas y 15 filas; `Permits` 43; `MOT & Packages` 33; Records 22; `Billing` 42; `Design Tickets` 13).
