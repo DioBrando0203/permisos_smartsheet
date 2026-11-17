@@ -961,3 +961,9 @@ Estado: hecho; falta reiniciar el backend.
 Decisiones del usuario: lo de `Miscellaneous` va en la hoja del equipo de permisos aunque se use poco (sin vista aparte); `Linked Tracking` siempre debe estar.
 Cambios: `PERMITS` pide fila también para madres `KMV-Miscellaneous` y les devuelve sólo los datos del permiso (`mother_summary`); `Linked Tracking` en el contexto de `Permits`, `MOT & Packages`, Records, `Billing` y `Design Tickets` (en hijas, la del proyecto); columnas creadas en el prototipo; guía de vistas sin la vista `MISC PROJECTS` y con `Linked Tracking` visible en todas.
 Evidencia: 185 pruebas aprobadas (detalle en RESULTADOS).
+
+## 2026-11-17 15:44 -05:00 Avance de vistas y backend con el último código (PEN-54)
+
+Estado: en curso (vistas).
+Evidencia (sólo GET): backend iniciado a las 15:37, después del último cambio de código (15:35); `Permits` tiene la fila del proyecto `KMV-26-0002` (`KMV-Miscellaneous`); `Linked Tracking` copiado (`Billing`, `KMV-26-0005` → `KMV-26-0001`). Vistas `PROJECTS`, `PERMITS` y `PERMITS TEAM` armadas por el usuario.
+Cambios: `VISTAS_KMV_2.0.md` (VK-00t, VK-00u) y `KMV_2.0.md` (K2-80).

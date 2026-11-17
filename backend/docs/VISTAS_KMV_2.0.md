@@ -22,6 +22,11 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 - VK-00l: un reporte sólo haría falta para mostrar filas de dos hojas en una misma vista. El único caso era el equipo de permisos (sus permisos y sus proyectos `KMV-Miscellaneous`); se resolvió llevando esos proyectos también a la hoja `Permits` (decisión del usuario: aunque se usen poco, deben estar en su hoja).
 - VK-00m: si a un equipo le falta una columna de la maestra (por ejemplo `Project Status` del proyecto en `MOT & Packages`), no se arma un reporte: se pide que el servicio la agregue a lo que copia en esa hoja.
 
+## Avance (2026-11-17 15:44)
+
+- VK-00t: hecho: backend reiniciado con el último código (15:37; comprobado: el proyecto `KMV-26-0002` ya tiene su fila en `Permits` y `Linked Tracking` se copia, por ejemplo en `Billing` de `KMV-26-0005`). Vistas armadas por el usuario: `PROJECTS` y `PERMITS` (coordinación, sobre la maestra) y `PERMITS TEAM` (sobre la hoja `Permits`, con `Linked Tracking`).
+- VK-00u: falta: filtros compartidos `Projects` y `Permits` en la maestra (si no están) y elegirlos en `PROJECTS` y `PERMITS`; vistas `DESIGN`, `MOT & PACKAGES`, `RECORDS`, `BILLING` (y `DESIGN TICKETS` si se queda); tachado de `CANCELLED` en `Permits` y `MOT & Packages`; probar el flujo (VK-45 a VK-48).
+
 ## Para continuar (en orden)
 
 - VK-00n: reiniciar el backend si no se hizo después del último cambio de código.
