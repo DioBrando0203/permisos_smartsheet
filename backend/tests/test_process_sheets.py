@@ -69,6 +69,16 @@ def test_mot_rows_are_mot_children_and_mothers_with_packages() -> None:
     assert not MOT.when({"Type of Project": "KMV-Permit", "Agency": "FDOT"}, True)
 
 
+def test_a_permit_with_its_own_package_gets_a_package_row() -> None:
+    """HP-18: paquete por permiso (en 2026, un proyecto con un paquete por permiso de edificio)."""
+    own = {"Type of Project": "KMV-Permit", "Agency": "City", "Prepare Packages": True}
+    assert MOT.when(own, True) and MOT.kind(own, True) == "Package"
+    closed = {"Type of Project": "KMV-Line", "Project Status": "NO PERMIT REQUIRED"}
+    assert MOT.when(closed | {"Prepare Packages": True}, True)
+    assert MOT.kind({"Type of Project": "KMV-MOT", "Prepare Packages": True}, True) == "MOT"
+    assert MOT.kind({"Type of Project": "KMV-P", "Prepare Packages": True}, False) == "Package"
+
+
 def _family(sheets, rows: dict[str, dict], mother: str = "1") -> None:
     sheets.rows[M] = rows
     sheets.parents.update({row: mother for row in rows if row != mother})
@@ -177,6 +187,30 @@ async def test_mot_rows_for_mot_children_and_packages_status_only_for_children(r
     assert back["summarized"] == 1
     assert sheets.rows[M]["2"]["Project Status"] == "5. Design MOT Process"
     assert sheets.rows[M]["1"]["Project Status"] == "IN PERMITTING"
+
+
+async def test_permit_package_row_never_overwrites_the_permit_status(router) -> None:
+    sheets = _sheets(router, MOT_MASTER, MOT_CHILD)
+    mother = {"Tracking Project": "KMV-26-0001", "Type of Project": "KMV-P"}
+    permit = {"Tracking Project": "KMV-26-0001", "Type of Project": "KMV-Permit"}
+    permit |= {"Agency": "City", "Prepare Packages": True, "Project Status": "4. Permit Process"}
+    _family(sheets, {"1": mother | {"Project Name": "A"}, "2": permit})
+    settings = make_settings(**WRITES | {"app_mot_sync_enabled": True, "app_mot_sheet_id": CHILD})
+    client = SmartsheetClient(settings)
+    sync = ChildSheetSync(settings, client, MOT, CHILD, interval=0)
+    try:
+        await sync.run()
+        for row in sheets.rows[CHILD].values():
+            row["MOT Status"] = "3. Packages Completed"
+        back = await sync.run()
+    finally:
+        await client.aclose()
+    rows = list(sheets.rows[CHILD].values())
+    kinds = [(r["Master Row"], r["Row Type"], r["Agency"]) for r in rows]
+    assert kinds == [("2", "Package", "City")]
+    assert rows[0]["Project Name"] == "A"
+    assert back["summarized"] == 0
+    assert sheets.rows[M]["2"]["Project Status"] == "4. Permit Process"
 
 
 async def test_children_inherit_only_empty_project_cells(router) -> None:

@@ -436,3 +436,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Equipo Linux: 185 pruebas backend aprobadas (nueva: proyecto `Miscellaneous` con fila en `Permits`, a la madre vuelve `Permit #` y no el estado, la hija toma `Linked Tracking` de su proyecto). Ruff y formato correctos.
 - Historial (sólo GET, 10 madres `Miscellaneous` recientes de CC y BS): 19 de 19 cambios de `Project Status` los hizo la coordinadora; ninguno en `LT`.
 - En vivo (prototipo): columna `Linked Tracking` bloqueada agregada en `Permits` (44), `MOT & Packages` (34), Records (23), `Billing` (43) y `Design Tickets` (14). Se llena y se crea la fila del proyecto `Miscellaneous` en la siguiente pasada tras reiniciar el backend.
+
+# 2026-11-17 18:21 -05:00 Paquete por permiso y revisión de MOT y paquetes (SPEC-B20 HP-18)
+
+- Equipo Linux: 187 pruebas backend aprobadas (nuevas: regla de paso y `Row Type` de un permiso con su propio paquete; fila `Package` de un permiso con su agencia, sin resumen hacia el estado del permiso). Ruff y formato correctos.
+- Historial (sólo GET): reporte personal de la persona de MOT, 35 filas (18 de paquetes o MOT, 16 de permisos donde figura en `Permitting Team`); 2026, filas con fechas de paquete o de diseño de MOT: madres con paquete 388, hijas `KMV-MOT` con MOT 146, hijas con paquete 23, MOT fuera de `KMV-MOT` 11, filas con los dos 0 (sólo los encabezados); QC y Completed de paquetes en 17 madres: 15 por una misma cuenta personal, 2 por la coordinadora.
+- Sin escrituras en Smartsheet.

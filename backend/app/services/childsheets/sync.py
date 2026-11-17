@@ -107,7 +107,7 @@ class ChildSheetSync:
             if is_child and spec.fallback:
                 values = rules.with_fallback(values, found.get(roots[row.id], {}), spec.fallback)
             if ROW_TYPE in spec.derived:
-                values[ROW_TYPE] = spec.kinds[1] if row.parent_id else spec.kinds[0]
+                values[ROW_TYPE] = spec.kind(values, bool(row.parent_id))
             if spec.when is not None:
                 needed = spec.when(values, is_child)
             elif spec.triggers:

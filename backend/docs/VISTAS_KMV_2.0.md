@@ -9,7 +9,7 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 - VK-00c: `PROJECT KMV 2.0 - DESIGN` (diseño): hoja `PROJECT KMV 2.0 (Prototype)` con el filtro compartido `Projects`, restringida por `Designers`.
 - VK-00d: `PROJECT KMV 2.0 - PERMITS TEAM` (equipo de permisos): hoja `Permits (Prototype)`, restringida por `Permitting Team`. Trae sus permisos y líneas y también sus proyectos `KMV-Miscellaneous` (HP-16): todo en una vista.
 - VK-00d3: `Linked Tracking` (proyecto anterior relacionado) va en todas las vistas, junto a `Tracking Project`: todas las hojas de equipo lo traen copiado de su proyecto (decisión del usuario: dato de seguimiento que siempre debe estar).
-- VK-00e: `PROJECT KMV 2.0 - MOT & PACKAGES`: hoja `MOT & Packages (Prototype)`, restringida por `Permitting Team`.
+- VK-00e: `PROJECT KMV 2.0 - MOT & PACKAGES`: hoja `MOT & Packages (Prototype)`, sin restricción por usuario: paquetes y MOT los hace una sola persona para todos los proyectos (historial 2026, K2-85c).
 - VK-00f: `PROJECT KMV 2.0 - RECORDS`: hoja `Records Requests (Prototype)`, restringida por `Records Owner`.
 - VK-00g: `PROJECT KMV 2.0 - BILLING`: hoja `Billing (Prototype)`, sin restricción.
 - VK-00h: `PROJECT KMV 2.0 - DESIGN TICKETS` (si se queda la hoja): hoja `Design Tickets (Prototype)`, restringida por `DT Owner`.
@@ -26,6 +26,7 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 
 - VK-00t: hecho: backend reiniciado con el último código (15:37; comprobado: el proyecto `KMV-26-0002` ya tiene su fila en `Permits` y `Linked Tracking` se copia, por ejemplo en `Billing` de `KMV-26-0005`). Vistas armadas por el usuario: `PROJECTS` y `PERMITS` (coordinación, sobre la maestra) y `PERMITS TEAM` (sobre la hoja `Permits`, con `Linked Tracking`).
 - VK-00t2 (2026-11-17 15:51, revisado en capturas): `PROJECTS` (6 proyectos, filtro `Projects`) y `PERMITS` (9 trámites, filtro `Permits`) funcionan, con `Linked Tracking`. La vista de diseño quedó armada sobre el reporte `KMV 2.0 | Design Projects` (no sobre la maestra): se deja así; falta agregar al reporte `Records Status` y `Linked Tracking` (botón de columnas, desde la interfaz) y luego en la vista: en `Visible fields` y en el panel de sólo lectura, con `Tracking Project`, `Project Name` y `Customer` arriba del panel.
+- VK-00t3 (2026-11-17 18:21): `MOT & PACKAGES` armada hasta VK-35b. Corregir en ella: `General` > `Restrict view by current user` sin restricción (VK-31) y `Sharing` (VK-35); en `PERMITS` (coordinación), sumar `Prepare Packages` a los opcionales del panel (VK-18); automatizaciones 1 y 2 de VK-35b (la 3 es opcional).
 - VK-00u: hecho (2026-11-17 15:48): filtros compartidos `Projects` y `Permits` creados en la maestra (además del `Open` que venía de la 1.0). Falta: elegirlos en `General` > `Restrict view by sheet filter` de `PROJECTS`, `PERMITS` y `DESIGN`; vistas `DESIGN`, `MOT & PACKAGES`, `RECORDS`, `BILLING` (y `DESIGN TICKETS` si se queda); tachado de `CANCELLED` en `Permits` y `MOT & Packages`; probar el flujo (VK-45 a VK-48).
 
 ## Para continuar (en orden)
@@ -78,7 +79,7 @@ Origen de las dos: la hoja `PROJECT KMV 2.0 (Prototype)`. Una vista para proyect
 - VK-17: `View Display` > `Visible fields`: `Tracking Project`, `Linked Tracking`, `Parent Project`, `Type of Project`, `Agency`, `Project Status`, `Permitting Team`, `Project Name`.
 - VK-18: `Details Panel`, en este orden:
   - Para crear (obligatorios): `Type of Project`, `Parent Project`, `Agency`.
-  - Opcionales: `Permitting Team` (vacío = el del proyecto), `Contractor`, `Records Needed` y `Records Owner` (Records de esta agencia: la fila de Records se crea sola, siempre que haya `Agency`), `Project Status` (sólo si nace `NO PERMIT REQUIRED`, o para cancelar con `CANCELLED`).
+  - Opcionales: `Permitting Team` (vacío = el del proyecto), `Contractor`, `Records Needed` y `Records Owner` (Records de esta agencia: la fila de Records se crea sola, siempre que haya `Agency`), `Project Status` (sólo si nace `NO PERMIT REQUIRED`, o para cancelar con `CANCELLED`), `Prepare Packages` (sólo si este permiso lleva su propio paquete: crea su fila `Package` en `MOT & Packages`, HP-18).
   - Sólo lectura: `Tracking Project`, `Project Name`, `Permit #`, `Permit Approved`, `Permit Expires`.
   - `Details panel description`: "Choose the project in Parent Project. In about a minute the row moves under it and goes to the team sheet."
 - VK-19: sin `Field Logic`: el panel es corto; lo de sólo lectura queda abajo y se llena solo cuando la fila ya está bajo su proyecto.
@@ -121,7 +122,7 @@ Origen: la hoja `Permits (Prototype)`: sus permisos y líneas y sus proyectos `K
 
 Origen: la hoja `MOT & Packages (Prototype)` (filas `Package` y `MOT`). Sólo lo que la persona de MOT usa de verdad (capturas del usuario, 2026-11-05, y historial 2026): nada más para no cargar la vista.
 
-- VK-31: `General`: `Restrict view by current user` = `Permitting Team`; sin filtro de hoja; `New Item Submission` = `Do Not Allow` (las filas `Package` salen al marcar `Prepare Packages` en el proyecto; las `MOT`, de las hijas `KMV-MOT`).
+- VK-31: `General`: `Restrict view by current user`: sin restricción (corregido 2026-11-17 18:21: los paquetes los completa una sola persona para todos los proyectos, 15 de 17 en el historial, fuera quien fuera el `Permitting Team`; con la restricción vería sólo 1 de cada 5); sin filtro de hoja; `New Item Submission` = `Do Not Allow` (las filas `Package` salen al marcar `Prepare Packages` en el proyecto, o en un permiso que lleva su propio paquete; las `MOT`, de las hijas `KMV-MOT`).
 - VK-32: `Visible fields`: `Tracking Project`, `Linked Tracking`, `Row Type`, `Project Name`, `MOT Status`, `Prepare Packages Request`, `Prepare Packages Completed`, `Design MOT Request`, `Design MOT Completed`.
 - VK-33: `Details Panel`, en este orden:
   - Read-only: `Tracking Project`, `Linked Tracking`, `Row Type`, `Agency`, `Customer`, `Project Name`, `City`, `Designers`.
@@ -131,8 +132,11 @@ Origen: la hoja `MOT & Packages (Prototype)` (filas `Package` y `MOT`). Sólo lo
   - Status: `MOT Status`.
   - No van en la vista (siguen en la hoja, nada se pierde; se agregan si hicieran falta): `Permit #`, revisiones, `Permit Approved`, `Permit Expires` (usados en 14 o menos de 152).
 - VK-34: `Field Logic` por `Row Type` (lista desde el 2026-11-17 16:27): regla `Package`: when `Row Type` `is one of` `Package` → mostrar `Prepare Packages Request`, `Prepare Packages QC`, `Prepare Packages Completed`; regla `MOT`: when `Row Type` `is one of` `MOT` → mostrar `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT`, `TYPICAL MOT`, `LT`, `Submitted Date`.
-- VK-35: `Sharing`: la persona de MOT.
-- VK-35b: automatizaciones de la hoja (como en la 1.0; las arma el usuario, en inglés): `When rows are added` con `Row Type` = `Package` → `Record a date` en `Prepare Packages Request` (hoy esa fecha la pone la coordinadora al marcar la casilla); `When Prepare Packages Completed` cambia y no está vacía → `Change cell value` `MOT Status` = `3. Packages Completed` (en la 1.0 una automatización ponía `3. Packages Completed`).
+- VK-35: `Sharing`: la persona de MOT y paquetes, con la cuenta con la que de verdad entra (el historial muestra una cuenta personal, no la de la empresa); el diseñador de MOT (llena `Design MOT QC` y pasa el estado a `5. Design MOT Needs QC`); y, si quiere, la coordinadora (en la 1.0 a veces llenaba `LT` y `Submitted Date` del MOT).
+- VK-35b: automatizaciones de la hoja (las arma el usuario, en inglés; corregido 2026-11-17 18:21):
+  - 1: `When rows are added` con `Row Type` = `Package` → `Record a date` en `Prepare Packages Request`. En la 1.0 esa fecha la ponía la coordinadora al marcar la casilla; en la 2.0 la columna ya no está en su vista.
+  - 2: `When rows are added` con `Row Type` = `MOT` → `Record a date` en `Design MOT Request`. En la 1.0 también la ponía la coordinadora (9 de 9 en el historial).
+  - 3, opcional: `When Prepare Packages Completed` cambia y no está vacía → `Change cell value` `MOT Status` = `3. Packages Completed`. En la 1.0 ese estado lo ponía a mano la persona de MOT, no una automatización (el historial lo muestra sin nombre porque entra con una cuenta personal); la automatización sólo le ahorra un paso.
 
 ## 5. Records: `PROJECT KMV 2.0 - RECORDS`
 

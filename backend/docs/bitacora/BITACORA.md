@@ -979,3 +979,10 @@ Cambios: `VISTAS_KMV_2.0.md` (VK-00t2).
 Estado: hecho (guía y hoja del prototipo).
 Evidencia: capturas del usuario de lo que la persona de MOT llena (`/mnt/hgfs/Share/nuevo`); historial 2026 (sólo GET, 12 madres con paquetes): casilla y `Prepare Packages Request` las pone la coordinadora (16 y 8 cambios), estados de paquetes también una automatización.
 Cambios: `Row Type` en `MOT & Packages (Prototype)` como lista (`MOT`, `Package`), valores intactos; `VISTAS_KMV_2.0.md` sección 4 rehecha (campos mínimos, `Field Logic` por `Row Type`, automatizaciones sugeridas VK-35b); `KMV_2.0.md` K2-85c.
+
+## 2026-11-17 18:21 -05:00 MOT y paquetes revisados con el historial; paquete por permiso (PEN-54, SPEC-B20 HP-18)
+
+Estado: hecho (código, pruebas y guía); falta que el usuario reinicie el backend y corrija la vista `MOT & PACKAGES`.
+Pedido: revisar con el reporte personal original de la persona de MOT y su historial si separar paquetes y MOT en filas estaba bien, y hacerlo posible en todos los aspectos.
+Evidencia (sólo GET, fuera de Pruebas sólo lectura): reporte personal 2026 (35 filas); hojas 2026 de Crown Castle, Blue Stream y Others; historial de celdas de las 35 filas y de 17 madres con paquetes. Paquetes en madres y diseño de MOT en hijas `KMV-MOT`, nunca juntos; QC y Completed de paquetes los llena una misma cuenta personal en 15 de 17 proyectos de distintos `Permitting Team`; lo que a las 16:27 se tomó por automatización era esa cuenta.
+Cambios: `ChildSpec.second` y `kind` (`rules.py`), `Row Type` con esa regla (`sync.py`), `_mot` y `_mot_row` (`specs.py`): una hija con su propio `Prepare Packages` tiene fila `Package` y nada vuelve a su estado. Docs: SPEC-B20 HP-18, `KMV_2.0.md` K2-05, K2-85c a K2-85e, K2-87; `VISTAS_KMV_2.0.md` VK-00e, VK-00t3, VK-18, VK-31, VK-35, VK-35b; PEN-54. Maestra sin cambios: 79 columnas.

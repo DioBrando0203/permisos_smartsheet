@@ -23,6 +23,7 @@ Estado: implementada y probada en el prototipo de Pruebas (2026-11-16 16:41, PEN
 
 - HP-16 (2026-11-17 15:35, decisión del usuario: aunque se usen poco, deben estar en su hoja): cada proyecto `KMV-Miscellaneous` (madre) también tiene su fila en `Permits`, así el equipo de permisos trabaja todo en una hoja y una vista. A la madre vuelven sólo `Permit #`, `Permit Approved`, `Permit Expires` y `Permit Fee` (`mother_summary`); su `Project Status` lo lleva la coordinación (historial 2026: 19 de 19 cambios de estado en madres `Miscellaneous` recientes los hizo la coordinadora). `CANCELLED` en la madre cancela también su fila.
 - HP-17 (2026-11-17 15:35, decisión del usuario): `Linked Tracking` en todas las hojas de equipo (`Permits`, `MOT & Packages`, Records, `Billing`, `Design Tickets`), copiada y bloqueada; en una hija se toma la de su proyecto. Prototipo: `Permits` 44 columnas, `MOT & Packages` 34, Records 23, `Billing` 43, `Design Tickets` 14.
+- HP-18 (2026-11-17 18:21, pedido del usuario: "hazlo posible en todos los aspectos"): una hija que no es `KMV-MOT` y tiene su propia casilla `Prepare Packages` también tiene su fila `Package` en `MOT & Packages` (paquete por permiso, con la `Agency` del permiso), aunque esté en `NO PERMIT REQUIRED`; a esa hija no vuelve nada, porque su estado lo lleva `Permits`. Una hija `KMV-MOT` sigue siendo fila `MOT`. `ChildSpec.second` decide el segundo tipo de `Row Type` y a qué filas vuelve el resumen (sin regla, las hijas). Datos 2026 (sólo GET): 23 hijas con fechas de paquete, 20 de ellas de un mismo proyecto con un paquete por permiso de edificio, todas con su madre también con paquete; ninguna fila con paquete y diseño de MOT a la vez.
 
 ## Configuración
 
@@ -34,4 +35,4 @@ Estado: implementada y probada en el prototipo de Pruebas (2026-11-16 16:41, PEN
 
 ## Pruebas
 
-- HP-12: `tests/test_process_sheets.py` (13 pruebas: reglas de paso, contexto del proyecto, resumen sólo a hijas, cancelación, filas `MOT` y `Package`, herencia, listas y orden de los pasos) y `tests/test_id_year_format.py` (4: formato, contador único por año, hija de otro cliente que sigue a su madre, permiso suelto sin número que pasa bajo su proyecto).
+- HP-12: `tests/test_process_sheets.py` (15 pruebas: reglas de paso, contexto del proyecto, resumen sólo a hijas, cancelación, filas `MOT` y `Package`, paquete por permiso sin pisar su estado, herencia, listas y orden de los pasos) y `tests/test_id_year_format.py` (4: formato, contador único por año, hija de otro cliente que sigue a su madre, permiso suelto sin número que pasa bajo su proyecto).

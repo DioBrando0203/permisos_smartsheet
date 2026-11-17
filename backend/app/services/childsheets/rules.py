@@ -34,7 +34,9 @@ class ChildSpec:
     fallback: tuple[str, ...] = ()
     # `Row Type` de una madre y de una hija.
     kinds: tuple[str, str] = ("Project", "Permit")
-    # El resumen sólo vuelve a hijas de la maestra: la madre conserva su estado (HP-05).
+    # Si la fila es del segundo tipo de `kinds`; sin regla, las hijas de la maestra (HP-18).
+    second: Callable[[dict[str, Value], bool], bool] | None = None
+    # El resumen sólo vuelve a filas del segundo tipo: la madre conserva su estado (HP-05).
     summary_children_only: bool = False
     # Con `summary_children_only`, columnas del resumen que sí vuelven a una madre (HP-16).
     mother_summary: tuple[str, ...] = ()
@@ -49,6 +51,13 @@ class ChildSpec:
     def summary_pairs(self) -> tuple[tuple[str, str], ...]:
         """(columna de la hija, columna de la maestra) de cada resumen."""
         return tuple((s, s) if isinstance(s, str) else s for s in self.summary)
+
+    def is_second(self, values: dict[str, Value], child: bool) -> bool:
+        return self.second(values, child) if self.second else child
+
+    def kind(self, values: dict[str, Value], child: bool) -> str:
+        """`Row Type` de una fila de la maestra en esta hoja."""
+        return self.kinds[1] if self.is_second(values, child) else self.kinds[0]
 
 
 @dataclass(frozen=True)
@@ -84,7 +93,7 @@ def plan(spec: ChildSpec, masters: list[MasterRow], children: list[ChildRow]) ->
         child = linked.get(master.row_id)
         if child is not None:
             changes = _diff(spec.mirrored, master.values, child.values)
-            whole = master.child or not spec.summary_children_only
+            whole = not spec.summary_children_only or spec.is_second(master.values, master.child)
             back = {
                 theirs: child.values.get(mine)
                 for mine, theirs in spec.summary_pairs

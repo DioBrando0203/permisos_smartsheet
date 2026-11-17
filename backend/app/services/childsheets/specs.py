@@ -130,10 +130,16 @@ def _permit(values: dict, child: bool) -> bool:
     return values.get("Type of Project") in PERMIT_KINDS and _open(values)
 
 
+def _mot_row(values: dict, child: bool) -> bool:
+    """Fila `MOT`: hija `KMV-MOT`; otra fila con `Prepare Packages` es `Package` (HP-18)."""
+    return child and values.get("Type of Project") == "KMV-MOT"
+
+
 def _mot(values: dict, child: bool) -> bool:
-    if not child:
-        return bool(values.get("Prepare Packages"))
-    return values.get("Type of Project") == "KMV-MOT" and _open(values)
+    """MOT abierto con agencia; paquete del proyecto o de un permiso con su propia casilla."""
+    if _mot_row(values, child):
+        return _open(values)
+    return bool(values.get("Prepare Packages"))
 
 
 PERMITS = ChildSpec(
@@ -176,6 +182,7 @@ MOT = ChildSpec(
     derived=(ROW_TYPE,),
     fallback=PROJECT_CONTEXT,
     kinds=("Package", "MOT"),
+    second=_mot_row,
     summary_children_only=True,
     cancel=("MOT Status", "CANCELLED"),
 )
