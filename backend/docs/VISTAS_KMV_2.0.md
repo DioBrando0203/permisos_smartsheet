@@ -59,7 +59,7 @@ Origen: reporte `KMV 2.0 | Design Projects` (sólo la maestra: una fila por proy
   - Sólo lectura: `Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`, `Records Status`, `Design Ticket`, `Mile Post`.
   - Diseño (editable): `Project Status`, `Drawing Due Date`, `Survey Completed`, `QC IN`, `QC OUT`, `Design Completed`.
   - Metraje (editable): `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`.
-- VK-24: `Field Logic` (opcional), regla `Design`: when `Type of Project` `is one of` `KMV-P` → mostrar el metraje (en `KMV-Miscellaneous` casi no hay diseño).
+- VK-24: `Field Logic` (opcional), regla `Footage`: when `Type of Project` `is one of` `KMV-P` → mostrar `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial` (en `KMV-Miscellaneous` casi no hay diseño).
 - VK-25: `Sharing`: el equipo de diseño.
 
 ## 3. Permisos: `KMV 2.0 | Permits`
@@ -67,15 +67,21 @@ Origen: reporte `KMV 2.0 | Design Projects` (sólo la maestra: una fila por proy
 Origen: reporte `KMV 2.0 | Permits` (filas de `Permits` y los proyectos `KMV-Miscellaneous` del equipo).
 
 - VK-26: `General`: `Restrict view by current user` = `Permitting Team`; `New Item Submission` = `Do Not Allow` (las filas las crea el servicio desde la coordinación).
-- VK-27: `Visible fields`: `Tracking Project`, `Type of Project`, `Agency`, `Permit Status`, `Project Name`, `Submitted Date`, `Permit #`, `Permit Expires`.
-- VK-28: `Details Panel`, en este orden:
-  - Sólo lectura: `Tracking Project`, `Type of Project`, `Agency`, `Customer`, `Project Name`, `Project Address`, `City`, `Design Ticket`, `Mile Post`, `Designers`, `Date Received`, `PM Approval Date`.
-  - Solicitud: `LT`, `App Sent to Contractor`, `App Returned from Contractor`, `Submitted Date`, `Runner Submitting`.
-  - Revisiones: `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`, `2nd Revision Req`, `2nd Revision Completed`, `Permit 2nd Resubmitted`.
-  - Aprobación: `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`.
-  - Estado: `Permit Status`.
+- VK-27: `Visible fields`: `Tracking Project`, `Type of Project`, `Agency`, `Permit Status`, `Revision Stage`, `Project Name`, `Submitted Date`, `Permit #`, `Permit Expires`.
+- VK-28: `Details Panel`, en este orden (los títulos son sólo para ordenar; en Smartsheet se arrastran los campos):
+  - Read-only: `Tracking Project`, `Type of Project`, `Agency`, `Customer`, `Project Name`, `Project Address`, `City`, `Design Ticket`, `Mile Post`, `Designers`, `Date Received`, `PM Approval Date`, `Revision Stage`.
+  - Application: `LT`, `App Sent to Contractor`, `App Returned from Contractor`, `Submitted Date`, `Runner Submitting`.
+  - 1st revision: `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`.
+  - 2nd revision: `2nd Revision Req`, `2nd Revision Completed`, `Permit 2nd Resubmitted`.
+  - Approval: `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`.
+  - Status: `Permit Status`.
   - Para los proyectos `KMV-Miscellaneous`: `Project Status`, `LT`, `Obs`.
-- VK-29: `Field Logic`: regla `Permit`: when `Type of Project` `is one of` `KMV-Permit`, `KMV-Line` → mostrar Solicitud, Revisiones, Aprobación y `Permit Status`; regla `Project`: when `Type of Project` `is one of` `KMV-Miscellaneous` → mostrar `Project Status` y `Obs`.
+- VK-29: `Field Logic` (cuatro reglas; en cada una se eligen los campos a mostrar):
+  - `Permit`: when `Type of Project` `is one of` `KMV-Permit`, `KMV-Line` → mostrar `LT`, `App Sent to Contractor`, `App Returned from Contractor`, `Submitted Date`, `Runner Submitting`, `Runner Pick up`, `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`, `Permit Status`.
+  - `1st revision`: when `Revision Stage` `is one of` `1st Revision`, `2nd Revision` → mostrar `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`.
+  - `2nd revision`: when `Revision Stage` `is one of` `2nd Revision` → mostrar `2nd Revision Req`, `2nd Revision Completed`, `Permit 2nd Resubmitted`.
+  - `Project`: when `Type of Project` `is one of` `KMV-Miscellaneous` → mostrar `Project Status` y `Obs`.
+  - `Revision Stage` la calcula la hoja (no se escribe): `1st Revision` cuando el permiso pasa a `4. Permit Needs Revision` o ya tiene `1st Revision Req`; `2nd Revision` cuando, ya reenviado (`Permit 1st Resubmitted`), vuelve a `4. Permit Needs Revision` o tiene `2nd Revision Req`; si no, `No revision`. Para que aparezca la primera revisión basta cambiar `Permit Status` a `4. Permit Needs Revision`.
 - VK-30: `Sharing`: el equipo de permisos.
 
 ## 4. MOT y paquetes: `KMV 2.0 | MOT & Packages`

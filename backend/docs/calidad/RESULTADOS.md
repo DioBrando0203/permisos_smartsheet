@@ -426,3 +426,7 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 # 2026-11-16 18:56 -05:00 Records Status por proyecto en la maestra (SPEC-B18 RH-03c)
 
 - En vivo (prototipo): 2 referencias a la hoja de Records en `OK`; `KMV-26-0003` muestra `Pending (0/1 received)` y los proyectos sin pedidos quedan vacíos; al poner `Received` en su fila de Records la maestra mostró `Received` a los 30 segundos (a los 15 todavía no); el valor de prueba se devolvió a `Not Received`. Sin cambios de código.
+
+# 2026-11-16 19:10 -05:00 Revision Stage en Permits (SPEC-B20 HP-15)
+
+- En vivo (prototipo): `Revision Stage` calcula `1st Revision` en el permiso en `4. Permit Needs Revision` con `1st Revision Req` y `No revision` en los otros 4; con `Permit 1st Resubmitted` pasa a `2nd Revision` y al quitar la fecha vuelve a `1st Revision` (fecha de prueba retirada). Sin cambios de código.

@@ -908,3 +908,9 @@ Evidencia: la carpeta lista 7 reportes: Billing, Coordinator, Design Projects, D
 Estado: hecho en la maestra del prototipo; falta que el usuario agregue la columna al reporte `KMV 2.0 | Design Projects` (la API no edita reportes existentes).
 Cambios: columna `Records Status` con fórmula entre hojas (79 columnas); guía de vistas actualizada.
 Evidencia: valores comprobados en vivo (detalle en RESULTADOS).
+
+## 2026-11-16 19:10 -05:00 Revisiones sólo cuando hacen falta en la vista de permisos (PEN-54, SPEC-B20 HP-15)
+
+Estado: hecho en `Permits (Prototype)`; falta agregar `Revision Stage` al reporte `KMV 2.0 | Permits` desde la interfaz.
+Cambios: columna `Revision Stage` (lista con fórmula, 43 columnas); guía de vistas con los campos en inglés (sin nombres de grupo en español en `Field Logic`) y cuatro reglas para permisos.
+Evidencia: valores comprobados en vivo (detalle en RESULTADOS).
