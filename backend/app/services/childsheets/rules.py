@@ -36,6 +36,8 @@ class ChildSpec:
     kinds: tuple[str, str] = ("Project", "Permit")
     # El resumen sólo vuelve a hijas de la maestra: la madre conserva su estado (HP-05).
     summary_children_only: bool = False
+    # Con `summary_children_only`, columnas del resumen que sí vuelven a una madre (HP-16).
+    mother_summary: tuple[str, ...] = ()
     # (columna de estado de la hija, valor) que la maestra impone (HP-06): la cancelación.
     cancel: tuple[str, str] | None = None
 
@@ -82,13 +84,13 @@ def plan(spec: ChildSpec, masters: list[MasterRow], children: list[ChildRow]) ->
         child = linked.get(master.row_id)
         if child is not None:
             changes = _diff(spec.mirrored, master.values, child.values)
-            back = {}
-            if master.child or not spec.summary_children_only:
-                back = {
-                    theirs: child.values.get(mine)
-                    for mine, theirs in spec.summary_pairs
-                    if _same(child.values.get(mine)) != _same(master.values.get(theirs))
-                }
+            whole = master.child or not spec.summary_children_only
+            back = {
+                theirs: child.values.get(mine)
+                for mine, theirs in spec.summary_pairs
+                if (whole or theirs in spec.mother_summary)
+                and _same(child.values.get(mine)) != _same(master.values.get(theirs))
+            }
             _cancel(spec, master, child, changes, back)
             if changes:
                 result.update.append((child.row_id, changes))

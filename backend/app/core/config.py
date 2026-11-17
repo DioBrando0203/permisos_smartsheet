@@ -92,6 +92,7 @@ class Settings(BaseSettings):
     )
     app_designer_catalog_sheet: str = ""
     app_designer_catalog_column: str = "Designer"
+
     @property
     def has_token(self) -> bool:
         token = self.smartsheet_access_token

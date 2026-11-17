@@ -954,3 +954,10 @@ Cambios: `VISTAS_KMV_2.0.md` (VK-00d, VK-00d2, sección 3B, reglas de permisos s
 
 Estado: anotado como pendiente (K2-85b); sin cambios de código.
 Evidencia: `app/services/obs/sync.py` recorre sólo `pilot.SHEETS` (la maestra). Una vista sobre hoja o sobre reporte guarda el comentario en la fila de origen, así que rehacer la vista de permisos sobre el reporte no cambia nada.
+
+## 2026-11-17 15:35 -05:00 Proyectos Miscellaneous en Permits y Linked Tracking en todas las hojas de equipo (PEN-54, SPEC-B20 HP-16, HP-17)
+
+Estado: hecho; falta reiniciar el backend.
+Decisiones del usuario: lo de `Miscellaneous` va en la hoja del equipo de permisos aunque se use poco (sin vista aparte); `Linked Tracking` siempre debe estar.
+Cambios: `PERMITS` pide fila también para madres `KMV-Miscellaneous` y les devuelve sólo los datos del permiso (`mother_summary`); `Linked Tracking` en el contexto de `Permits`, `MOT & Packages`, Records, `Billing` y `Design Tickets` (en hijas, la del proyecto); columnas creadas en el prototipo; guía de vistas sin la vista `MISC PROJECTS` y con `Linked Tracking` visible en todas.
+Evidencia: 185 pruebas aprobadas (detalle en RESULTADOS).

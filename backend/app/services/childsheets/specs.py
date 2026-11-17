@@ -31,6 +31,7 @@ RECORDS = ChildSpec(
     reads=("Records Needed",),
     context=(
         "Tracking Project",
+        "Linked Tracking",
         "Customer",
         "Agency",
         "Project Name",
@@ -40,6 +41,7 @@ RECORDS = ChildSpec(
         "Date Received",
         "Records Owner",
     ),
+    fallback=("Linked Tracking",),
     initial=(
         "Request Type",
         "Send Method",
@@ -61,6 +63,7 @@ BILLING = ChildSpec(
     triggers=(),
     context=(
         "Tracking Project",
+        "Linked Tracking",
         "Customer",
         "Type of Project",
         "CC System",
@@ -90,6 +93,7 @@ BILLING = ChildSpec(
         "Invoice Sent",
         "Invoice Paid",
     ),
+    fallback=("Linked Tracking",),
     summary=("Invoice Status",),
     derived=(ROW_TYPE,),
 )
@@ -100,6 +104,7 @@ BILLING = ChildSpec(
 CLOSED = frozenset({"CANCELLED", "NO PERMIT REQUIRED"})
 PERMIT_KINDS = frozenset({"KMV-Permit", "KMV-Line"})
 PROJECT_CONTEXT = (
+    "Linked Tracking",
     "Permitting Team",
     "Customer",
     "Project Name",
@@ -119,7 +124,10 @@ def _open(values: dict) -> bool:
 
 
 def _permit(values: dict, child: bool) -> bool:
-    return child and values.get("Type of Project") in PERMIT_KINDS and _open(values)
+    """Hijas `Permit` y `Line` abiertas con agencia; y los proyectos `Miscellaneous` (HP-16)."""
+    if not child:
+        return values.get("Type of Project") == "KMV-Miscellaneous"
+    return values.get("Type of Project") in PERMIT_KINDS and _open(values)
 
 
 def _mot(values: dict, child: bool) -> bool:
@@ -151,6 +159,8 @@ PERMITS = ChildSpec(
     ),
     fallback=(*PROJECT_CONTEXT, "Design Ticket", "Mile Post"),
     summary_children_only=True,
+    # Un proyecto `Miscellaneous` recibe lo del permiso, no el estado (lo lleva la coordinación).
+    mother_summary=("Permit #", "Permit Approved", "Permit Expires", "Permit Fee"),
     cancel=("Permit Status", "CANCELLED"),
 )
 
@@ -177,6 +187,7 @@ DESIGN_TICKETS = ChildSpec(
     triggers=("DT Owner",),
     context=(
         "Tracking Project",
+        "Linked Tracking",
         "DT Owner",
         "Project Status",
         "Customer",

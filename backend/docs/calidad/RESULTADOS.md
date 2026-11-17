@@ -430,3 +430,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 # 2026-11-16 19:10 -05:00 Revision Stage en Permits (SPEC-B20 HP-15)
 
 - En vivo (prototipo): `Revision Stage` calcula `1st Revision` en el permiso en `4. Permit Needs Revision` con `1st Revision Req` y `No revision` en los otros 4; con `Permit 1st Resubmitted` pasa a `2nd Revision` y al quitar la fecha vuelve a `1st Revision` (fecha de prueba retirada). Sin cambios de código.
+
+# 2026-11-17 15:35 -05:00 Proyectos Miscellaneous en Permits y Linked Tracking en las hojas de equipo (SPEC-B20 HP-16, HP-17)
+
+- Equipo Linux: 185 pruebas backend aprobadas (nueva: proyecto `Miscellaneous` con fila en `Permits`, a la madre vuelve `Permit #` y no el estado, la hija toma `Linked Tracking` de su proyecto). Ruff y formato correctos.
+- Historial (sólo GET, 10 madres `Miscellaneous` recientes de CC y BS): 19 de 19 cambios de `Project Status` los hizo la coordinadora; ninguno en `LT`.
+- En vivo (prototipo): columna `Linked Tracking` bloqueada agregada en `Permits` (44), `MOT & Packages` (34), Records (23), `Billing` (43) y `Design Tickets` (14). Se llena y se crea la fila del proyecto `Miscellaneous` en la siguiente pasada tras reiniciar el backend.

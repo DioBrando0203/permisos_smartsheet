@@ -55,6 +55,7 @@ def router():
         ),
         ({"Type of Project": "KMV-MOT", "Agency": "FDOT"}, True, False),  # va a MOT & Packages
         ({"Type of Project": "KMV-P", "Agency": "FDOT"}, False, False),  # madre
+        ({"Type of Project": "KMV-Miscellaneous"}, False, True),  # proyecto de permisos
     ],
 )
 def test_permit_rows_need_type_agency_and_an_open_status(values, child, expected) -> None:
@@ -109,6 +110,29 @@ async def test_permits_take_project_data_return_status_and_follow_cancellation(r
     assert sheets.rows[M]["1"]["Project Status"] == "IN PERMITTING"
     assert third["updated"] >= 1 and row["Permit Status"] == "CANCELLED"
     assert {r["Master Row"] for r in sheets.rows[CHILD].values()} == {"2", "3"}
+
+
+async def test_misc_projects_go_to_permits_and_only_permit_data_returns(router) -> None:
+    sheets = _sheets(router, PERMITS_MASTER, PERMITS_CHILD)
+    mother = {"Tracking Project": "KMV-26-0001", "Type of Project": "KMV-Miscellaneous"}
+    mother |= {"Project Status": "IN PERMITTING", "Linked Tracking": "KMV-CC-25-090"}
+    child = {"Tracking Project": "KMV-26-0001", "Type of Project": "KMV-Permit", "Agency": "FDOT"}
+    _family(sheets, {"1": mother, "2": child})
+    settings = make_settings(**ON)
+    client = SmartsheetClient(settings)
+    sync = ChildSheetSync(settings, client, PERMITS, CHILD, interval=0)
+    try:
+        created = await sync.run()
+        rows = {r["Master Row"]: r for r in sheets.rows[CHILD].values()}
+        rows["1"].update({"Permit Status": "4. Permit Process", "Permit #": "M-1"})
+        back = await sync.run()
+    finally:
+        await client.aclose()
+    assert created["created"] == 2
+    assert rows["2"]["Linked Tracking"] == "KMV-CC-25-090"  # del proyecto
+    assert back["summarized"] == 1
+    assert sheets.rows[M]["1"]["Permit #"] == "M-1"
+    assert sheets.rows[M]["1"]["Project Status"] == "IN PERMITTING"  # lo lleva la coordinación
 
 
 MOT_MASTER = [*MOT.context, "Type of Project", "Project Status", "Prepare Packages", "LT"]

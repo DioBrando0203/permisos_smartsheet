@@ -12,12 +12,12 @@ Versión vigente desde el 2026-11-16. Este documento es la fuente única del est
 Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Pruebas).
 
 - K2-03: `PROJECT KMV 2.0 (Prototype)` (`1979884168761220`): maestra, 79 columnas, unas 6 329 filas por año (2026 proyecta unas 4 230: 67 %). Decir siempre cuántas columnas tiene tras cualquier cambio.
-- K2-04: `Permits (Prototype)` (`3435959686483844`, 43 columnas): una fila por hija `KMV-Permit` o `KMV-Line`.
-- K2-05: `MOT & Packages (Prototype)` (`2866571577085828`, 33): filas `MOT` (hijas `KMV-MOT`) y `Package` (madres con `Prepare Packages`).
-- K2-06: `Records Requests (Prototype)` (`3471473697312644`, 22): una fila por pedido de Records.
-- K2-07: `Billing (Prototype)` (`4630718656499588`, 42): una fila por cada fila de la maestra con ID.
-- K2-08: `Design Tickets (Prototype)` (`263146012102532`, 13): una fila por proyecto con `DT Owner` (por revisar si hace falta).
-- K2-09: todas las hojas hijas llevan `Master Row` oculta (el vínculo con su fila de la maestra). En `Billing` y `Permits` la columna principal es `Primary` (fórmula con el ID) y `Tracking Project` es una columna normal, para que los reportes de varias hojas ordenen e intercalen por ID.
+- K2-04: `Permits (Prototype)` (`3435959686483844`, 44 columnas): una fila por hija `KMV-Permit` o `KMV-Line` y por proyecto `KMV-Miscellaneous` (HP-16).
+- K2-05: `MOT & Packages (Prototype)` (`2866571577085828`, 34): filas `MOT` (hijas `KMV-MOT`) y `Package` (madres con `Prepare Packages`).
+- K2-06: `Records Requests (Prototype)` (`3471473697312644`, 23): una fila por pedido de Records.
+- K2-07: `Billing (Prototype)` (`4630718656499588`, 43): una fila por cada fila de la maestra con ID.
+- K2-08: `Design Tickets (Prototype)` (`263146012102532`, 14): una fila por proyecto con `DT Owner` (por revisar si hace falta).
+- K2-09: todas las hojas hijas llevan `Linked Tracking` (copiada del proyecto, HP-17) y `Master Row` oculta (el vínculo con su fila de la maestra). En `Billing` y `Permits` la columna principal es `Primary` (fórmula con el ID) y `Tracking Project` es una columna normal, para que los reportes de varias hojas ordenen e intercalen por ID.
 
 ## IDs
 
@@ -41,6 +41,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 - K2-30: IDs cada minuto; las hojas cada 30 segundos, en este orden: herencia, Records, `Billing`, `Permits`, `MOT & Packages`, `Design Tickets` y listas de proyectos.
 - K2-31: herencia: una hija completa sus celdas vacías con las de su proyecto (`Customer`, `Project Name`, dirección, ciudad, condado, `CC System`, fechas, `LT`); nunca reemplaza.
 - K2-32: `Permits` y `MOT & Packages`: fila cuando la hija tiene tipo, ID y `Agency` y no está cerrada; contexto del proyecto copiado y bloqueado (lo vacío en la hija se toma del proyecto); el estado del equipo (`Permit Status`, `MOT Status`) vuelve como `Project Status` de la hija, junto con `Permit #`, `Permit Approved`, `Permit Expires`, `Permit Fee`, `Custom MOT`, `TYPICAL MOT`; `CANCELLED` en la maestra se impone.
+- K2-32b: los proyectos `KMV-Miscellaneous` también tienen fila en `Permits`; a la madre vuelven `Permit #`, `Permit Approved`, `Permit Expires` y `Permit Fee`, no el estado (HP-16). `Linked Tracking` va copiada en todas las hojas de equipo (HP-17).
 - K2-33: Records: fila con `Records Needed` o `Records Owner` y `Agency`.
 - K2-34: `Billing`: fila para toda fila con ID; metraje y cantidades copiados y bloqueados (los llena diseño en la maestra, facturación sólo los ve); `Invoice Status` vuelve a la maestra.
 - K2-35: `Design Tickets`: fila al asignar `DT Owner`; `Design Ticket` y `Mile Post` vuelven a la maestra.
@@ -65,8 +66,8 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 ## Reportes y vistas
 
 - K2-60: regla (2026-11-17 15:27, decisión del usuario): todas las vistas van directo sobre su hoja; ninguna usa reporte. Las hojas de equipo ya traen copiados los datos del proyecto. Lista y configuración en `VISTAS_KMV_2.0.md` (VK-00a a VK-00h).
-- K2-61: el equipo de permisos tiene dos vistas: `PERMITS TEAM` sobre `Permits` y, si trabaja sus proyectos `KMV-Miscellaneous`, `MISC PROJECTS` sobre la maestra.
-- K2-62: filtros compartidos de la maestra (los crea el usuario en la hoja): `Projects`, `Permits` y `Miscellaneous`.
+- K2-61: el equipo de permisos tiene una sola vista, `PERMITS TEAM` sobre `Permits`: sus permisos, líneas y proyectos `KMV-Miscellaneous` (HP-16).
+- K2-62: filtros compartidos de la maestra (los crea el usuario en la hoja): `Projects` y `Permits`.
 - K2-63: los reportes de la carpeta `Reports` (`5430691564414852`) ya no se usan para las vistas; quedan de consulta o se pueden borrar. La API no edita reportes existentes.
 
 ## Configuración
@@ -78,7 +79,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 ## Pendientes, en orden
 
 - K2-80: reiniciar el backend (toma Records con agencia, `Design Tickets` y metraje en la maestra).
-- K2-81: crear los filtros compartidos `Projects`, `Permits` y `Miscellaneous` en la maestra.
+- K2-81: crear los filtros compartidos `Projects` y `Permits` en la maestra.
 - K2-82: filtros compartidos `Projects` y `Permits` en la maestra; armar las vistas (guía `VISTAS_KMV_2.0.md`).
 - K2-83: formato condicional de `CANCELLED` (gris y tachado) en `Permits` y `MOT & Packages`.
 - K2-84: probar el flujo completo con las vistas: proyecto, trámite con `Parent Project` y `Agency`, estado del equipo de vuelta, cancelación.

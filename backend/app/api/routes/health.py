@@ -14,4 +14,3 @@ async def health(services: ServicesDep) -> dict[str, str | bool]:
         "smartsheet": "configured" if settings.has_token else "missing_token",
         "read_only": settings.app_read_only,
     }
-
