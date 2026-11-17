@@ -973,3 +973,9 @@ Cambios: `VISTAS_KMV_2.0.md` (VK-00t, VK-00u) y `KMV_2.0.md` (K2-80).
 Estado: en curso.
 Evidencia (capturas del usuario): `PROJECTS` con 6 proyectos y `PERMITS` con 9 trámites, filtros compartidos aplicados y `Linked Tracking` visible; vista de diseño armada sobre el reporte `KMV 2.0 | Design Projects`, al que le faltan `Records Status` y `Linked Tracking` (se agregan desde la interfaz).
 Cambios: `VISTAS_KMV_2.0.md` (VK-00t2).
+
+## 2026-11-17 16:27 -05:00 Vista de MOT y paquetes sólo con lo que se usa (PEN-54)
+
+Estado: hecho (guía y hoja del prototipo).
+Evidencia: capturas del usuario de lo que la persona de MOT llena (`/mnt/hgfs/Share/nuevo`); historial 2026 (sólo GET, 12 madres con paquetes): casilla y `Prepare Packages Request` las pone la coordinadora (16 y 8 cambios), estados de paquetes también una automatización.
+Cambios: `Row Type` en `MOT & Packages (Prototype)` como lista (`MOT`, `Package`), valores intactos; `VISTAS_KMV_2.0.md` sección 4 rehecha (campos mínimos, `Field Logic` por `Row Type`, automatizaciones sugeridas VK-35b); `KMV_2.0.md` K2-85c.

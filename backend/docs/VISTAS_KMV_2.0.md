@@ -119,18 +119,20 @@ Origen: la hoja `Permits (Prototype)`: sus permisos y líneas y sus proyectos `K
 
 ## 4. MOT y paquetes: `PROJECT KMV 2.0 - MOT & PACKAGES`
 
-Origen: la hoja `MOT & Packages (Prototype)` (filas `MOT` y `Package`).
+Origen: la hoja `MOT & Packages (Prototype)` (filas `Package` y `MOT`). Sólo lo que la persona de MOT usa de verdad (capturas del usuario, 2026-11-05, y historial 2026): nada más para no cargar la vista.
 
-- VK-31: `General`: `Restrict view by current user` = `Permitting Team`; `New Item Submission` = `Do Not Allow`.
-- VK-32: `Visible fields`: `Tracking Project`, `Linked Tracking`, `Row Type`, `Agency`, `MOT Status`, `Project Name`, `Design MOT Request`, `Prepare Packages Request`, `Submitted Date`.
+- VK-31: `General`: `Restrict view by current user` = `Permitting Team`; sin filtro de hoja; `New Item Submission` = `Do Not Allow` (las filas `Package` salen al marcar `Prepare Packages` en el proyecto; las `MOT`, de las hijas `KMV-MOT`).
+- VK-32: `Visible fields`: `Tracking Project`, `Linked Tracking`, `Row Type`, `Project Name`, `MOT Status`, `Prepare Packages Request`, `Prepare Packages Completed`, `Design MOT Request`, `Design MOT Completed`.
 - VK-33: `Details Panel`, en este orden:
-  - Sólo lectura: `Tracking Project`, `Row Type`, `Agency`, `Customer`, `Project Name`, `Project Address`, `City`, `Designers`, `Date Received`, `PM Approval Date`.
-  - Paquetes: `Prepare Packages Request`, `Prepare Packages QC`, `Prepare Packages Completed`.
-  - Diseño de MOT: `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT`, `TYPICAL MOT`.
-  - Permiso de MOT: `LT`, `Submitted Date`, `Permit #`, `1st Revision Req`, `1st Revision Completed`, `Permit 1st Resubmitted`, `Permit Approved`, `Permit Expires`.
-  - Estado: `MOT Status`.
-- VK-34: `Field Logic` por `Row Type` (Paquetes cuando es `Package`; Diseño y Permiso de MOT cuando es `MOT`) sólo si `Row Type` es lista desplegable en `MOT & Packages (Prototype)`; hoy es texto, así que todo queda visible en el orden de VK-33.
+  - Read-only: `Tracking Project`, `Linked Tracking`, `Row Type`, `Agency`, `Customer`, `Project Name`, `City`, `Designers`.
+  - Packages: `Prepare Packages Request`, `Prepare Packages QC`, `Prepare Packages Completed`.
+  - MOT design: `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT`, `TYPICAL MOT`.
+  - MOT permit (sólo lo que se usa seguido en 2026: `LT` en 134 de 152 MOT y `Submitted Date` en 128): `LT`, `Submitted Date`.
+  - Status: `MOT Status`.
+  - No van en la vista (siguen en la hoja, nada se pierde; se agregan si hicieran falta): `Permit #`, revisiones, `Permit Approved`, `Permit Expires` (usados en 14 o menos de 152).
+- VK-34: `Field Logic` por `Row Type` (lista desde el 2026-11-17 16:27): regla `Package`: when `Row Type` `is one of` `Package` → mostrar `Prepare Packages Request`, `Prepare Packages QC`, `Prepare Packages Completed`; regla `MOT`: when `Row Type` `is one of` `MOT` → mostrar `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT`, `TYPICAL MOT`, `LT`, `Submitted Date`.
 - VK-35: `Sharing`: la persona de MOT.
+- VK-35b: automatizaciones de la hoja (como en la 1.0; las arma el usuario, en inglés): `When rows are added` con `Row Type` = `Package` → `Record a date` en `Prepare Packages Request` (hoy esa fecha la pone la coordinadora al marcar la casilla); `When Prepare Packages Completed` cambia y no está vacía → `Change cell value` `MOT Status` = `3. Packages Completed` (en la 1.0 una automatización ponía `3. Packages Completed`).
 
 ## 5. Records: `PROJECT KMV 2.0 - RECORDS`
 
