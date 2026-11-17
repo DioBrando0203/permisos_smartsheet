@@ -79,7 +79,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 ## Pendientes, en orden
 
 - K2-80: hecho (2026-11-17 15:44): backend reiniciado con el último código; vistas `PROJECTS`, `PERMITS` y `PERMITS TEAM` armadas por el usuario (VISTAS VK-00t).
-- K2-81: crear los filtros compartidos `Projects` y `Permits` en la maestra.
+- K2-81: hecho (2026-11-17 15:48): filtros compartidos `Projects` y `Permits` en la maestra; falta elegirlos en cada vista.
 - K2-82: filtros compartidos `Projects` y `Permits` en la maestra; armar las vistas (guía `VISTAS_KMV_2.0.md`).
 - K2-83: formato condicional de `CANCELLED` (gris y tachado) en `Permits` y `MOT & Packages`.
 - K2-84: probar el flujo completo con las vistas: proyecto, trámite con `Parent Project` y `Agency`, estado del equipo de vuelta, cancelación.

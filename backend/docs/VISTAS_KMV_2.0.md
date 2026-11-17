@@ -25,7 +25,7 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 ## Avance (2026-11-17 15:44)
 
 - VK-00t: hecho: backend reiniciado con el último código (15:37; comprobado: el proyecto `KMV-26-0002` ya tiene su fila en `Permits` y `Linked Tracking` se copia, por ejemplo en `Billing` de `KMV-26-0005`). Vistas armadas por el usuario: `PROJECTS` y `PERMITS` (coordinación, sobre la maestra) y `PERMITS TEAM` (sobre la hoja `Permits`, con `Linked Tracking`).
-- VK-00u: falta: filtros compartidos `Projects` y `Permits` en la maestra (si no están) y elegirlos en `PROJECTS` y `PERMITS`; vistas `DESIGN`, `MOT & PACKAGES`, `RECORDS`, `BILLING` (y `DESIGN TICKETS` si se queda); tachado de `CANCELLED` en `Permits` y `MOT & Packages`; probar el flujo (VK-45 a VK-48).
+- VK-00u: hecho (2026-11-17 15:48): filtros compartidos `Projects` y `Permits` creados en la maestra (además del `Open` que venía de la 1.0). Falta: elegirlos en `General` > `Restrict view by sheet filter` de `PROJECTS`, `PERMITS` y `DESIGN`; vistas `DESIGN`, `MOT & PACKAGES`, `RECORDS`, `BILLING` (y `DESIGN TICKETS` si se queda); tachado de `CANCELLED` en `Permits` y `MOT & Packages`; probar el flujo (VK-45 a VK-48).
 
 ## Para continuar (en orden)
 
