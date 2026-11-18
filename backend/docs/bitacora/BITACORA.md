@@ -987,14 +987,14 @@ Pedido: revisar con el reporte personal original de la persona de MOT y su histo
 Evidencia (sólo GET, fuera de Pruebas sólo lectura): reporte personal 2026 (35 filas); hojas 2026 de Crown Castle, Blue Stream y Others; historial de celdas de las 35 filas y de 17 madres con paquetes. Paquetes en madres y diseño de MOT en hijas `KMV-MOT`, nunca juntos; QC y Completed de paquetes los llena una misma cuenta personal en 15 de 17 proyectos de distintos `Permitting Team`; lo que a las 16:27 se tomó por automatización era esa cuenta.
 Cambios: `ChildSpec.second` y `kind` (`rules.py`), `Row Type` con esa regla (`sync.py`), `_mot` y `_mot_row` (`specs.py`): una hija con su propio `Prepare Packages` tiene fila `Package` y nada vuelve a su estado. Docs: SPEC-B20 HP-18, `KMV_2.0.md` K2-05, K2-85c a K2-85e, K2-87; `VISTAS_KMV_2.0.md` VK-00e, VK-00t3, VK-18, VK-31, VK-35, VK-35b; PEN-54. Maestra sin cambios: 79 columnas.
 
-## 2026-11-18 15:19 -05:00 Listas de asignación desde Contact List (SPEC-B20 HP-19, K2-88)
+## 2026-11-18 15:19 -05:00 Listas de asignación desde Contact List (SPEC-B20 HP-19, K2-89)
 
 Estado: hecho y apagado; falta que el usuario complete el directorio y lo encienda.
 Pedido: usar `Contact List` para controlar `Designers`, `Permitting Team`, `Records Owner` y `DT Owner` sin agregar columnas a la maestra; dejar el directorio ordenado para llenarlo y a todas las personas desactivadas.
 Cambios en Smartsheet (sólo `Contact List`, Pruebas, autorizado por el usuario): columnas renombradas a `Name`, `Email`, `Active`; columna nueva `Teams` (lista múltiple); `Teams` sembrado con las listas actuales de la maestra 2.0; una persona que faltaba agregada; `Active` sin marcar en las 30 filas; filas ordenadas por nombre. Dos escrituras sin cambios (misma lista) en `Records Owner` de Records y `Designers` de Billing del prototipo para comprobar el formato.
-Cambios en código: `childsheets/contacts.py` (paso `contacts`), `set_contact_options` en `structure.py`, `RawColumn.contacts` y `validation`, variables `APP_CONTACT_OPTIONS_ENABLED` y `APP_CONTACTS_SHEET_ID` (apagado en `.env`), `.env.example`. Docs: SPEC-B20 HP-19, `KMV_2.0.md` K2-88, VISTAS VK-00v, ARQUITECTURA, PEN-50. Maestra sin cambios: 79 columnas.
+Cambios en código: `childsheets/contacts.py` (paso `contacts`), `set_contact_options` en `structure.py`, `RawColumn.contacts` y `validation`, variables `APP_CONTACT_OPTIONS_ENABLED` y `APP_CONTACTS_SHEET_ID` (apagado en `.env`), `.env.example`. Docs: SPEC-B20 HP-19, `KMV_2.0.md` K2-89, VISTAS VK-00v, ARQUITECTURA, PEN-50. Maestra sin cambios: 79 columnas.
 
-## 2026-11-18 15:35 -05:00 Columna Check en Contact List (K2-88)
+## 2026-11-18 15:35 -05:00 Columna Check en Contact List (K2-89)
 
 Estado: hecho.
 Pedido: ayuda para llenar el directorio sin columnas nuevas en la maestra; en `Contact List` sí.
@@ -1007,3 +1007,9 @@ Estado: hecho (guía); las automatizaciones las arma el usuario.
 Pedido: un md aparte con las automatizaciones que necesita cada hoja de la 2.0, a partir de las de la 1.0, enviado a la carpeta compartida.
 Evidencia (sólo GET, correos ocultos): avisos de `PROJECT KMV 1.0.0` (`DV | New Task Permitting Team`, `DV | New Records Request`, `DV | New Project`, `Client | Status Update`), de las hojas `Engineering Plan` 2026 (sólo `Others` con avisos de asignación activos), de `Invoices (Piloto)` (2 apagados) y de la maestra 2.0 (4 avisos apagados; `DV | New Project` a una persona fija); las de cambio de celda y fecha no salen por API (tomadas de `HOJA_PROJECT_KMV.md` y de la captura del usuario).
 Cambios: `backend/docs/AUTOMATIZACIONES_KMV_2.0.md` (AU-xx): reglas, revisión de las 6 ya creadas, automatizaciones por hoja con prioridad, orden y pruebas; VISTAS VK-35b apunta a la guía; `KMV_2.0.md` K2-86; índice `docs/README.md`. Copia en `/mnt/hgfs/Share`.
+
+## 2026-11-18 16:06 -05:00 Automatizaciones de la maestra 2.0 revisadas (K2-86)
+
+Estado: hecho en la maestra (otra sesión, con el conector de Smartsheet); faltan las hojas de equipo.
+Evidencia (conector, `get_workflows`, sólo lectura): `PROJECT KMV 2.0 (Prototype)` con 10 flujos apagados: `Auto | Default Engineer` y `Auto | Default Surveyor` (sólo filas nuevas de tipo proyecto), `DV | New Project` (a `Designers`, con ID y tipo), `DV | New Project (ID assigned)`, `Client | Status Update` (21 estados de la 1.0), `AUTO | QC ALERT` y `Auto | QC IN date` (estado `2. Design Needs QC`), `Alert | QC overdue` (2 días después de `QC IN`, 9:00) y las viejas `DV | New Records Request` y `DV | New Task Permitting Team`. Enlaces de vistas todavía de la 1.0.
+Cambios: AUTOMATIZACIONES AU-14, AU-15, AU-16 y sección Avance (AU-80 a AU-82); `KMV_2.0.md` K2-87b (vista de clientes de la 2.0). Corrección: la entrada de `Contact List` usaba el ID `K2-88`, ya ocupado; pasa a `K2-89` en todos los docs.

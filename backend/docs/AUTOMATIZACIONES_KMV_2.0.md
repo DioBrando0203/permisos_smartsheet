@@ -9,7 +9,7 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
 - AU-00a: un flujo tiene un solo disparador (`Trigger`); dentro puede tener condiciones y varias acciones en orden (por ejemplo, registrar una fecha y avisar).
 - AU-00b: lo que escribe el servicio (filas nuevas en las hojas de equipo, datos copiados, estados que vuelven a la maestra, el ID) también dispara automatizaciones, igual que si lo escribiera una persona.
 - AU-00c: cada aviso sale de la hoja donde trabaja quien lo recibe y lleva el enlace a su vista. Por eso los avisos de permisos, Records y Design Ticket pasan de la maestra a su hoja: allí la fila sólo existe cuando ya tiene su ID (nunca llega un `Pending ID`) y la persona la encuentra en su vista. Un mismo aviso no debe quedar en las dos hojas: llegarían dos correos.
-- AU-00d: `Alert someone` > `Contacts in a cell` usa el correo guardado en la celda. Quién aparece en `Designers`, `Permitting Team`, `Records Owner` y `DT Owner` se maneja en `Contact List` (`KMV_2.0.md` K2-88): una persona sin correo no recibe avisos.
+- AU-00d: `Alert someone` > `Contacts in a cell` usa el correo guardado en la celda. Quién aparece en `Designers`, `Permitting Team`, `Records Owner` y `DT Owner` se maneja en `Contact List` (`KMV_2.0.md` K2-89): una persona sin correo no recibe avisos.
 - AU-00e: el enlace de cada vista se copia desde la vista ya armada (el de la 1.0 apunta a las vistas viejas).
 - AU-00f: no usar como disparador una columna con `TODAY()` (`QC # Days`, `Process # Days` y las demás de días): cambia sola cada día. Se usa el estado o la fecha de origen.
 - AU-00g: `Client | Status Update` escribe a los contactos reales de cada cliente (`Client Access` sale de `Customer List`). En el prototipo se deja apagada, o se prueba con un cliente cuyos contactos sean internos.
@@ -43,20 +43,21 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
   - Conditions: `Designers` `is not blank`; `Type of Project` `is one of` `KMV-P`, `KMV-Miscellaneous`.
   - Action, subject, message y fields: los de AU-12.
 - AU-14 `Client | Status Update` (obligatoria en producción; viene de la 1.0; apagada en el prototipo, AU-00g).
-  - Trigger: `When rows are added or changed` > `Project Status` changes.
+  - Trigger: `When rows are changed` > `Project Status` changes to uno de los 21 estados que ya usaba la 1.0 (los de cara al cliente: trámite, permiso, MOT aprobado, cierre y cancelación; no los internos de diseño).
   - Conditions: `Client Access` `is not blank`.
   - Action: `Alert someone` > `Contacts in a cell`: `Client Access`.
   - Subject: `Project Update – {{Tracking Project}}: {{Project Status}}`.
-  - Message: el de la 1.0 (saludo; `Project`, `Tracking #` y `Current status`; enlace de la vista de clientes).
+  - Message: el de la 1.0 (saludo; `Project`, `Tracking #` y `Current status`; enlace de la vista de clientes de la 2.0, que falta armar: `KMV_2.0.md` K2-87b).
   - En la 2.0 el estado de cada permiso vuelve solo desde `Permits` y `MOT & Packages` (AU-00b), así que el cliente recibe lo mismo que en la 1.0.
 - AU-15 `AUTO | QC ALERT` (recomendada; rehecha).
   - Trigger: `When rows are added or changed` > `Project Status` changes to `2. Design Needs QC`.
-  - Actions: `Alert someone` > a la persona de QC (personas fijas); opcional, antes, `Record a date` en `QC IN` (con la condición `QC IN` `is blank`).
+  - Action: `Alert someone` > a la persona de QC (personas fijas).
+  - Va en dos flujos con el mismo disparador: éste avisa y `Auto | QC IN date` registra la fecha en `QC IN` si está vacía (Smartsheet no aceptó las dos acciones en un solo flujo).
   - Fields: `Tracking Project`, `Project Name`, `Designers`, `QC IN`.
 - AU-16 `Alert | QC overdue` (opcional; nueva; es lo que buscaba `QC # Days`).
   - Trigger: `When a date is reached`: 2 días después de `QC IN`.
   - Conditions: `QC OUT` `is blank`.
-  - Action: `Alert someone` > la persona de QC y la coordinación.
+  - Action: `Alert someone` > la persona de QC y la coordinación. Hora: 9:00.
 
 ## `Permits (Prototype)`
 
@@ -161,6 +162,12 @@ Vienen de `Invoices (Piloto)` de la 1.0, que las tenía apagadas. `Invoice Statu
   - Message: `You have a new task: "DESIGN TICKET"`, más el enlace de la vista `DESIGN TICKETS`.
   - Fields: `Tracking Project`, `Linked Tracking`, `Customer`, `Project Name`, `Project Address`, `City`, `County`, `Date Received`, `Designers`.
 
+## Avance
+
+- AU-80 (2026-11-18 16:06, comprobado con el conector de Smartsheet, `get_workflows`): la maestra tiene 10 flujos, todos apagados para probarlos de a uno: AU-10, AU-11, AU-12, AU-13, AU-14, AU-15 (`AUTO | QC ALERT` y `Auto | QC IN date`), AU-16 y las viejas AU-04 y AU-05.
+- AU-81: falta en la maestra: los enlaces de las vistas de la 2.0 (`DESIGN` en AU-12 y AU-13; clientes en AU-14, vista que aún no existe); a quién va QC (AU-15 y AU-16 avisan hoy a una sola persona fija) y si se suma la coordinación a AU-16; correos de los diseñadores en `Contact List` (K2-89).
+- AU-82: siguiente: hojas de equipo, de a una (`Permits`, `MOT & Packages`, Records, `Billing`; `Design Tickets` si se queda). Recién cuando existan AU-20 y AU-40 se borran de la maestra AU-04 y AU-05 (borrar no tiene vuelta atrás).
+
 ## Orden sugerido
 
 - AU-90: obligatorias primero: AU-12, AU-13, AU-20, AU-30, AU-31, AU-40, AU-41 (y AU-60 si `Design Tickets` se queda); ajustar AU-10 y AU-11; borrar de la maestra las viejas de Records y permisos (AU-04, AU-05).
@@ -172,4 +179,4 @@ Vienen de `Invoices (Piloto)` de la 1.0, que las tenía apagadas. `Invoice Statu
 
 - AU-95: activar una a la vez y probar con filas de prueba del prototipo, con el backend encendido. Por ejemplo, un proyecto nuevo con diseñador y `Permitting Team`, y un permiso con `Agency`. En un minuto debe llegar `DV | New Project` con el ID (AU-13); en menos de un minuto más, `DV | New Task Permitting Team` desde `Permits` (AU-20).
 - AU-96: una reasignación: cambiar `Permitting Team` del proyecto en la maestra; el servicio lo copia a `Permits` y llega un aviso por cada permiso del proyecto (los que no tienen otra persona propia), sólo a la persona nueva y ninguno desde la maestra.
-- AU-97: mientras `Contact List` no esté completa (K2-88), sólo reciben avisos las personas que ya tienen correo en las columnas.
+- AU-97: mientras `Contact List` no esté completa (K2-89), sólo reciben avisos las personas que ya tienen correo en las columnas.
