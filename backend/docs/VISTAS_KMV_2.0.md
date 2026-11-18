@@ -134,10 +134,7 @@ Origen: la hoja `MOT & Packages (Prototype)` (filas `Package` y `MOT`). Sólo lo
   - No van en la vista (siguen en la hoja, nada se pierde; se agregan si hicieran falta): `Permit #`, revisiones, `Permit Approved`, `Permit Expires` (usados en 14 o menos de 152).
 - VK-34: `Field Logic` por `Row Type` (lista desde el 2026-11-17 16:27): regla `Package`: when `Row Type` `is one of` `Package` → mostrar `Prepare Packages Request`, `Prepare Packages QC`, `Prepare Packages Completed`; regla `MOT`: when `Row Type` `is one of` `MOT` → mostrar `Design MOT Request`, `Design MOT QC`, `Design MOT Completed`, `Custom MOT`, `TYPICAL MOT`, `LT`, `Submitted Date`.
 - VK-35: `Sharing`: la persona de MOT y paquetes, con la cuenta con la que de verdad entra (el historial muestra una cuenta personal, no la de la empresa); el diseñador de MOT (llena `Design MOT QC` y pasa el estado a `5. Design MOT Needs QC`); y, si quiere, la coordinadora (en la 1.0 a veces llenaba `LT` y `Submitted Date` del MOT).
-- VK-35b: automatizaciones de la hoja (las arma el usuario, en inglés; corregido 2026-11-17 18:21):
-  - 1: `When rows are added` con `Row Type` = `Package` → `Record a date` en `Prepare Packages Request`. En la 1.0 esa fecha la ponía la coordinadora al marcar la casilla; en la 2.0 la columna ya no está en su vista.
-  - 2: `When rows are added` con `Row Type` = `MOT` → `Record a date` en `Design MOT Request`. En la 1.0 también la ponía la coordinadora (9 de 9 en el historial).
-  - 3, opcional: `When Prepare Packages Completed` cambia y no está vacía → `Change cell value` `MOT Status` = `3. Packages Completed`. En la 1.0 ese estado lo ponía a mano la persona de MOT, no una automatización (el historial lo muestra sin nombre porque entra con una cuenta personal); la automatización sólo le ahorra un paso.
+- VK-35b: automatizaciones de la hoja: ver `AUTOMATIZACIONES_KMV_2.0.md` AU-30 a AU-36 (las de todas las hojas están en esa guía).
 
 ## 5. Records: `PROJECT KMV 2.0 - RECORDS`
 

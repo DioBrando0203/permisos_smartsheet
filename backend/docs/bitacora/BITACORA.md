@@ -1000,3 +1000,10 @@ Estado: hecho.
 Pedido: ayuda para llenar el directorio sin columnas nuevas en la maestra; en `Contact List` sí.
 Cambios (API, sólo `Contact List` en Pruebas): columna fórmula `Check` después de `Active`: vacía si no hay nombre; si no, `Missing email`, `No team`, `Inactive` o `Ready`. Maestra sin cambios: 79 columnas.
 Evidencia: relectura: `Contact List` con `Name`, `Email`, `Teams`, `Active`, `Check`; `Check`: `Inactive` 17, `Missing email` 12, vacía 1 (fila sin nombre).
+
+## 2026-11-18 15:50 -05:00 Guía de automatizaciones de la 2.0 (K2-86)
+
+Estado: hecho (guía); las automatizaciones las arma el usuario.
+Pedido: un md aparte con las automatizaciones que necesita cada hoja de la 2.0, a partir de las de la 1.0, enviado a la carpeta compartida.
+Evidencia (sólo GET, correos ocultos): avisos de `PROJECT KMV 1.0.0` (`DV | New Task Permitting Team`, `DV | New Records Request`, `DV | New Project`, `Client | Status Update`), de las hojas `Engineering Plan` 2026 (sólo `Others` con avisos de asignación activos), de `Invoices (Piloto)` (2 apagados) y de la maestra 2.0 (4 avisos apagados; `DV | New Project` a una persona fija); las de cambio de celda y fecha no salen por API (tomadas de `HOJA_PROJECT_KMV.md` y de la captura del usuario).
+Cambios: `backend/docs/AUTOMATIZACIONES_KMV_2.0.md` (AU-xx): reglas, revisión de las 6 ya creadas, automatizaciones por hoja con prioridad, orden y pruebas; VISTAS VK-35b apunta a la guía; `KMV_2.0.md` K2-86; índice `docs/README.md`. Copia en `/mnt/hgfs/Share`.
