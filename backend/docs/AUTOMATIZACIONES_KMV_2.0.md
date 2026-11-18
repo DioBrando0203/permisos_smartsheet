@@ -51,13 +51,13 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
   - En la 2.0 el estado de cada permiso vuelve solo desde `Permits` y `MOT & Packages` (AU-00b), así que el cliente recibe lo mismo que en la 1.0.
 - AU-15 `AUTO | QC ALERT` (recomendada; rehecha).
   - Trigger: `When rows are added or changed` > `Project Status` changes to `2. Design Needs QC`.
-  - Action: `Alert someone` > a la persona de QC (personas fijas).
+  - Action: `Alert someone` > a la persona de QC (persona fija). Decisión del usuario (2026-11-18): mientras la persona de QC no tenga correo en `Contact List`, el aviso va a una persona provisional; la coordinación no se suma a AU-15 ni a AU-16.
   - Va en dos flujos con el mismo disparador: éste avisa y `Auto | QC IN date` registra la fecha en `QC IN` si está vacía (Smartsheet no aceptó las dos acciones en un solo flujo).
   - Fields: `Tracking Project`, `Project Name`, `Designers`, `QC IN`.
 - AU-16 `Alert | QC overdue` (opcional; nueva; es lo que buscaba `QC # Days`).
   - Trigger: `When a date is reached`: 2 días después de `QC IN`.
   - Conditions: `QC OUT` `is blank`.
-  - Action: `Alert someone` > la persona de QC y la coordinación. Hora: 9:00.
+  - Action: `Alert someone` > la persona de QC (ver AU-15). Hora: 9:00.
 
 ## `Permits (Prototype)`
 
@@ -73,15 +73,15 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
   - Action: `Alert someone` > `Contacts in a cell`: `Designers`.
   - Subject: `Revision requested: {{Tracking Project}} – {{Agency}}`.
   - Fields: `Tracking Project`, `Agency`, `Project Name`, `Revision Stage`, `Permitting Team`.
-- AU-22 `Auto | Revision Request Date` (opcional; nueva). Un flujo con dos caminos de condición:
-  - Trigger: el de AU-21 (puede ser el mismo flujo, con estas acciones antes del aviso).
+- AU-22 `Auto | Revision Request Date` (opcional; nueva). Un flujo con dos caminos de condición, aparte de AU-21 (Smartsheet no aceptó registrar la fecha y avisar en el mismo flujo):
+  - Trigger: el de AU-21.
   - Camino 1: `1st Revision Req` `is blank` → `Record a date` en `1st Revision Req`.
   - Camino 2: `Permit 1st Resubmitted` `is not blank` y `2nd Revision Req` `is blank` → `Record a date` en `2nd Revision Req`.
   - Así `Revision Stage` cambia solo y la vista muestra la revisión que toca.
 - AU-23 `Alert | Permit Expiring` (recomendada; nueva).
   - Trigger: `When a date is reached`: 30 días antes de `Permit Expires`.
   - Conditions: `Permit Status` `is not one of` `4. Permit Closed`, `4. Permit Cancelled`, `8. Close - Permit Process`, `CANCELLED`.
-  - Action: `Alert someone` > `Contacts in a cell`: `Permitting Team` (y la coordinación).
+  - Action: `Alert someone` > `Contacts in a cell`: `Permitting Team`, y la coordinación como persona fija. Hora: 9:00.
   - Fields: `Tracking Project`, `Agency`, `Permit #`, `Permit Expires`, `Project Name`.
 
 ## `MOT & Packages (Prototype)`
@@ -166,6 +166,7 @@ Vienen de `Invoices (Piloto)` de la 1.0, que las tenía apagadas. `Invoice Statu
 
 - AU-80 (2026-11-18 16:06, comprobado con el conector de Smartsheet, `get_workflows`): la maestra tiene 10 flujos, todos apagados para probarlos de a uno: AU-10, AU-11, AU-12, AU-13, AU-14, AU-15 (`AUTO | QC ALERT` y `Auto | QC IN date`), AU-16 y las viejas AU-04 y AU-05.
 - AU-81: falta en la maestra: los enlaces de las vistas de la 2.0 (`DESIGN` en AU-12 y AU-13; clientes en AU-14, vista que aún no existe); a quién va QC (AU-15 y AU-16 avisan hoy a una sola persona fija) y si se suma la coordinación a AU-16; correos de los diseñadores en `Contact List` (K2-89).
+- AU-83 (2026-11-18 16:25, comprobado con `get_workflows`): `Permits (Prototype)` tiene AU-20, AU-21, AU-22 y AU-23, todos apagados. Falta el enlace de la vista `PERMITS TEAM` en AU-20.
 - AU-82: siguiente: hojas de equipo, de a una (`Permits`, `MOT & Packages`, Records, `Billing`; `Design Tickets` si se queda). Recién cuando existan AU-20 y AU-40 se borran de la maestra AU-04 y AU-05 (borrar no tiene vuelta atrás).
 
 ## Orden sugerido

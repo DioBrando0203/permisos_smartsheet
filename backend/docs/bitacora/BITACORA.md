@@ -1013,3 +1013,10 @@ Cambios: `backend/docs/AUTOMATIZACIONES_KMV_2.0.md` (AU-xx): reglas, revisión d
 Estado: hecho en la maestra (otra sesión, con el conector de Smartsheet); faltan las hojas de equipo.
 Evidencia (conector, `get_workflows`, sólo lectura): `PROJECT KMV 2.0 (Prototype)` con 10 flujos apagados: `Auto | Default Engineer` y `Auto | Default Surveyor` (sólo filas nuevas de tipo proyecto), `DV | New Project` (a `Designers`, con ID y tipo), `DV | New Project (ID assigned)`, `Client | Status Update` (21 estados de la 1.0), `AUTO | QC ALERT` y `Auto | QC IN date` (estado `2. Design Needs QC`), `Alert | QC overdue` (2 días después de `QC IN`, 9:00) y las viejas `DV | New Records Request` y `DV | New Task Permitting Team`. Enlaces de vistas todavía de la 1.0.
 Cambios: AUTOMATIZACIONES AU-14, AU-15, AU-16 y sección Avance (AU-80 a AU-82); `KMV_2.0.md` K2-87b (vista de clientes de la 2.0). Corrección: la entrada de `Contact List` usaba el ID `K2-88`, ya ocupado; pasa a `K2-89` en todos los docs.
+
+## 2026-11-18 16:25 -05:00 Automatizaciones de Permits (K2-86, AU-20 a AU-23)
+
+Estado: hecho en `Permits (Prototype)` por la otra sesión (conector de Smartsheet); siguen `MOT & Packages`, Records y `Billing`.
+Evidencia (conector, `get_workflows`, sólo lectura): 4 flujos apagados: `DV | New Task Permitting Team` (filas nuevas o cambio de `Permitting Team`, a esa columna, 10 campos), `Alert | Permit Needs Revision` (a `Designers`), `Auto | Revision Request Date` (dos caminos: `1st Revision Req` vacía, o `Permit 1st Resubmitted` llena y `2nd Revision Req` vacía) y `Alert | Permit Expiring` (30 días antes de `Permit Expires`, 9:00, sin cerrados ni cancelados, a `Permitting Team` y a la coordinación).
+Decisiones del usuario: los avisos de QC van a una persona provisional hasta que la persona de QC tenga correo; la coordinación no entra en QC.
+Cambios: AUTOMATIZACIONES AU-15, AU-16, AU-22, AU-23 y AU-83.
