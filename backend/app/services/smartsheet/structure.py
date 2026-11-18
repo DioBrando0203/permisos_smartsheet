@@ -25,3 +25,16 @@ class StructureWrites:
             json={"type": "PICKLIST", "options": options},
             retry=False,
         )
+
+    async def set_contact_options(
+        self, sheet_id: str, column_id: str, column_type: str, contacts: list[tuple[str, str]]
+    ) -> None:
+        """Reemplaza la lista de una columna de contacto; sólo valores de la lista (HP-19)."""
+        self._require_writes()
+        options = [{"name": name, "email": email} for name, email in contacts]
+        await self._transport.request(
+            "PUT",
+            f"/sheets/{sheet_id}/columns/{column_id}",
+            json={"type": column_type, "contactOptions": options, "validation": True},
+            retry=False,
+        )

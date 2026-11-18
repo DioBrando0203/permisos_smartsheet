@@ -100,7 +100,8 @@ app/
   services/childsheets/cells.py   lectura y escritura de celdas, barreras y ritmo comunes a los pasos
   services/childsheets/inherit.py hijas de la maestra completan celdas vacías con las de su proyecto (SPEC-B20 HP-07)
   services/childsheets/options.py listas `Parent Project` y `Linked Tracking` al día (SPEC-ID01 ID-54)
-  services/smartsheet/structure.py escrituras de estructura (opciones de un desplegable), mezcla del cliente
+  services/childsheets/contacts.py listas de las columnas de asignación desde `Contact List` (SPEC-B20 HP-19)
+  services/smartsheet/structure.py escrituras de estructura (opciones de un desplegable y de una columna de contacto), mezcla del cliente
   services/obs/rules.py         reglas puras de Obs: formato MM.DD, unión del mismo día, límite y archivo (SPEC-B17)
   services/obs/store.py         comentarios ya copiados a Obs en PostgreSQL (migración 004)
   services/obs/sync.py          paso del procesador que copia comentarios nuevos a Obs con barreras; nunca borra texto

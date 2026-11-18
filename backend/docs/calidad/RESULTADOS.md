@@ -442,3 +442,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Equipo Linux: 187 pruebas backend aprobadas (nuevas: regla de paso y `Row Type` de un permiso con su propio paquete; fila `Package` de un permiso con su agencia, sin resumen hacia el estado del permiso). Ruff y formato correctos.
 - Historial (sólo GET): reporte personal de la persona de MOT, 35 filas (18 de paquetes o MOT, 16 de permisos donde figura en `Permitting Team`); 2026, filas con fechas de paquete o de diseño de MOT: madres con paquete 388, hijas `KMV-MOT` con MOT 146, hijas con paquete 23, MOT fuera de `KMV-MOT` 11, filas con los dos 0 (sólo los encabezados); QC y Completed de paquetes en 17 madres: 15 por una misma cuenta personal, 2 por la coordinadora.
 - Sin escrituras en Smartsheet.
+
+# 2026-11-18 15:19 -05:00 Listas de asignación desde Contact List (SPEC-B20 HP-19)
+
+- Equipo Linux: 190 pruebas backend aprobadas (nuevas en `tests/test_contact_options.py`: sólo personas activas con correo de su equipo, sin repetir correos; listas que siguen al directorio, con "sólo valores de la lista", sin vaciar un equipo sin nadie activo e idempotentes; el paso va al final y sólo encendido). Ruff y formato correctos.
+- En vivo (Pruebas): `Contact List` releída: 4 columnas (`Name`, `Email`, `Teams`, `Active`), 30 filas, todas inactivas, `Teams` con `Design` 18, `Permits` 12, `Records` 14, `Design Tickets` 7, ordenada por nombre. Escrituras sin cambios con el formato del servicio: `CONTACT_LIST` (14 opciones) y `MULTI_CONTACT_LIST` respondieron 200 y la columna quedó igual.
+- Paso `contacts` apagado: no escribió en la maestra.

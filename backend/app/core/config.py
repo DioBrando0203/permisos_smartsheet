@@ -76,6 +76,9 @@ class Settings(BaseSettings):
     # Hoja de Design Ticket y Mile Post (SPEC-B20 HP-14): una fila por proyecto con `DT Owner`.
     app_design_tickets_sync_enabled: bool = False
     app_design_tickets_sheet_id: str = ""
+    # Listas de las columnas de asignación desde el directorio `Contact List` (SPEC-B20 HP-19).
+    app_contact_options_enabled: bool = False
+    app_contacts_sheet_id: str = ""
     app_allowed_hosts: str = _DEFAULT_HOSTS
     # Hojas con Dynamic View, marcadas a mano: la API no lo expone (B-07, PEN-17).
     app_dynamic_view_sheets: str = ""

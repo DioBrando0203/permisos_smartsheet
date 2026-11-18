@@ -36,6 +36,7 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 - VK-00q: armar las vistas en el orden de la lista de arriba (VK-00a a VK-00h), siguiendo cada sección de esta guía. `PERMITS TEAM` ya está armada sobre la hoja `Permits` (2026-11-17).
 - VK-00r: en `Permits` y `MOT & Packages`, formato condicional: `Permit Status` o `MOT Status` = `CANCELLED` → gris y tachado.
 - VK-00s: probar el flujo (VK-45 a VK-48).
+- VK-00v (2026-11-18): avisos de asignación en la 2.0: acción `Alert someone` > `Contacts in a cell` con la columna de asignación (`Designers`, `Permitting Team`, `Records Owner`, `DT Owner`); ya no hacen falta columnas `Email`. Quién aparece en esas columnas se maneja en `Contact List` (KMV_2.0 K2-88), apagado hasta completar el directorio.
 
 ## Dónde se configura cada cosa
 

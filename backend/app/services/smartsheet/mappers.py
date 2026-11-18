@@ -116,6 +116,11 @@ def to_column(data: Json) -> RawColumn:
         type=data.get("type"),
         options=tuple(str(item) for item in data.get("options") or ()),
         formula=data.get("formula") or None,
+        contacts=tuple(
+            (str(item.get("name") or ""), str(item.get("email") or ""))
+            for item in data.get("contactOptions") or ()
+        ),
+        validation=bool(data.get("validation")),
     )
 
 

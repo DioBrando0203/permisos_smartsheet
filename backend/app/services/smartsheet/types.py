@@ -98,6 +98,9 @@ class RawColumn:
     options: tuple[str, ...] = ()
     # Fórmula de columna, si la tiene: el servicio nunca escribe encima (SPEC-B19).
     formula: str | None = None
+    # Lista de una columna de contacto: (nombre, correo); y si acepta sólo valores de la lista.
+    contacts: tuple[tuple[str, str], ...] = ()
+    validation: bool = False
 
 
 @dataclass(frozen=True)

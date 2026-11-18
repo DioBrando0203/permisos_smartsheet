@@ -10,6 +10,7 @@ from dataclasses import replace
 from app.core.config import Settings
 from app.services.childsheets import rules
 from app.services.childsheets.cells import LEVEL, cell, check_barriers, columns, value
+from app.services.childsheets.contacts import ContactOptions
 from app.services.childsheets.inherit import InheritSync
 from app.services.childsheets.options import ProjectOptions
 from app.services.childsheets.rules import KEY, ROW_TYPE, ChildSpec
@@ -184,4 +185,6 @@ def child_hooks(
             ).run
     if settings.ids_project_options_enabled:
         hooks["options"] = ProjectOptions(settings, client, interval=interval).run
+    if settings.app_contact_options_enabled and settings.app_contacts_sheet_id:
+        hooks["contacts"] = ContactOptions(settings, client, interval=interval).run
     return hooks
