@@ -993,3 +993,10 @@ Estado: hecho y apagado; falta que el usuario complete el directorio y lo encien
 Pedido: usar `Contact List` para controlar `Designers`, `Permitting Team`, `Records Owner` y `DT Owner` sin agregar columnas a la maestra; dejar el directorio ordenado para llenarlo y a todas las personas desactivadas.
 Cambios en Smartsheet (sólo `Contact List`, Pruebas, autorizado por el usuario): columnas renombradas a `Name`, `Email`, `Active`; columna nueva `Teams` (lista múltiple); `Teams` sembrado con las listas actuales de la maestra 2.0; una persona que faltaba agregada; `Active` sin marcar en las 30 filas; filas ordenadas por nombre. Dos escrituras sin cambios (misma lista) en `Records Owner` de Records y `Designers` de Billing del prototipo para comprobar el formato.
 Cambios en código: `childsheets/contacts.py` (paso `contacts`), `set_contact_options` en `structure.py`, `RawColumn.contacts` y `validation`, variables `APP_CONTACT_OPTIONS_ENABLED` y `APP_CONTACTS_SHEET_ID` (apagado en `.env`), `.env.example`. Docs: SPEC-B20 HP-19, `KMV_2.0.md` K2-88, VISTAS VK-00v, ARQUITECTURA, PEN-50. Maestra sin cambios: 79 columnas.
+
+## 2026-11-18 15:35 -05:00 Columna Check en Contact List (K2-88)
+
+Estado: hecho.
+Pedido: ayuda para llenar el directorio sin columnas nuevas en la maestra; en `Contact List` sí.
+Cambios (API, sólo `Contact List` en Pruebas): columna fórmula `Check` después de `Active`: vacía si no hay nombre; si no, `Missing email`, `No team`, `Inactive` o `Ready`. Maestra sin cambios: 79 columnas.
+Evidencia: relectura: `Contact List` con `Name`, `Email`, `Teams`, `Active`, `Check`; `Check`: `Inactive` 17, `Missing email` 12, vacía 1 (fila sin nombre).
