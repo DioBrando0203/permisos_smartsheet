@@ -101,6 +101,8 @@ app/
   services/childsheets/inherit.py hijas de la maestra completan celdas vacías con las de su proyecto (SPEC-B20 HP-07)
   services/childsheets/options.py listas `Parent Project` y `Linked Tracking` al día (SPEC-ID01 ID-54)
   services/childsheets/contacts.py listas de las columnas de asignación desde `Contact List` (SPEC-B20 HP-19)
+  services/childsheets/footage.py metraje en la maestra y en `Billing`: gana el último cambio y avisa los de facturación (SPEC-B19 FH-05c)
+  services/smartsheet/emails.py envío de filas por correo desde Smartsheet, mezcla del cliente (FH-05c)
   services/smartsheet/structure.py escrituras de estructura (opciones de un desplegable y de una columna de contacto), mezcla del cliente
   services/obs/rules.py         reglas puras de Obs: formato MM.DD, unión del mismo día, límite y archivo (SPEC-B17)
   services/obs/store.py         comentarios ya copiados a Obs en PostgreSQL (migración 004)

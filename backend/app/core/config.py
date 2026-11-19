@@ -66,6 +66,8 @@ class Settings(BaseSettings):
     # Hoja hija de Facturación (SPEC-B19); usa el mismo intervalo y tope que Records.
     app_billing_sync_enabled: bool = False
     app_billing_sheet_id: str = ""
+    # Metraje editable en la maestra y en `Billing`, con aviso por correo (SPEC-B19 FH-05c).
+    app_footage_sync_enabled: bool = False
     # Hijas de la maestra completan sus celdas vacías con las de su proyecto (SPEC-B20 HP-07).
     app_inherit_enabled: bool = False
     # Hojas de proceso (SPEC-B20, PEN-54): permisos, y MOT con paquetes; mismo tope que Records.

@@ -11,10 +11,18 @@ from app.core.config import Settings
 from app.services.childsheets import rules
 from app.services.childsheets.cells import LEVEL, cell, check_barriers, columns, value
 from app.services.childsheets.contacts import ContactOptions
+from app.services.childsheets.footage import FootageSync
 from app.services.childsheets.inherit import InheritSync
 from app.services.childsheets.options import ProjectOptions
 from app.services.childsheets.rules import KEY, ROW_TYPE, ChildSpec
-from app.services.childsheets.specs import BILLING, DESIGN_TICKETS, MOT, PERMITS, RECORDS
+from app.services.childsheets.specs import (
+    BILLING,
+    DESIGN_TICKETS,
+    FOOTAGE,
+    MOT,
+    PERMITS,
+    RECORDS,
+)
 from app.services.ids import pilot
 from app.services.ids.runtime import writes_allowed
 from app.services.smartsheet import SmartsheetClient
@@ -154,6 +162,13 @@ class ChildSheetSync:
         )
 
 
+def billing_spec(settings: Settings) -> ChildSpec:
+    """Con el metraje en las dos hojas (SPEC-B19 FH-05c), `Billing` deja de copiarlo."""
+    if not settings.app_footage_sync_enabled:
+        return BILLING
+    return replace(BILLING, context=tuple(t for t in BILLING.context if t not in FOOTAGE))
+
+
 def child_hooks(
     settings: Settings, client: SmartsheetClient
 ) -> dict[str, Callable[[], Awaitable[dict]]]:
@@ -169,7 +184,7 @@ def child_hooks(
         hooks["inherit"] = InheritSync(settings, client, interval=interval, max_rows=max_rows).run
     configured = [
         (RECORDS, settings.app_records_sync_enabled, settings.app_records_sheet_id),
-        (BILLING, settings.app_billing_sync_enabled, settings.app_billing_sheet_id),
+        (billing_spec(settings), settings.app_billing_sync_enabled, settings.app_billing_sheet_id),
         (PERMITS, settings.app_permits_sync_enabled, settings.app_permits_sheet_id),
         (MOT, settings.app_mot_sync_enabled, settings.app_mot_sheet_id),
         (
@@ -183,6 +198,8 @@ def child_hooks(
             hooks[spec.name] = ChildSheetSync(
                 settings, client, spec, sheet, interval=interval, max_rows=max_rows
             ).run
+        if spec.name == BILLING.name and settings.app_footage_sync_enabled and enabled and sheet:
+            hooks["footage"] = FootageSync(settings, client, interval=interval).run
     if settings.ids_project_options_enabled:
         hooks["options"] = ProjectOptions(settings, client, interval=interval).run
     if settings.app_contact_options_enabled and settings.app_contacts_sheet_id:

@@ -61,7 +61,7 @@ class ContactOptions(Paced):
             return self.last or {}
         directory = self.settings.app_contacts_sheet_id
         await check_barriers(self.settings, self.client, pilot.PRESENTABLE, directory)
-        people = await self._people(directory)
+        people = await read_people(self.client, directory)
         cols = await columns(self.client, pilot.PRESENTABLE, ())
         updated = empty = 0
         for title, team in TEAM_COLUMNS:
@@ -80,19 +80,21 @@ class ContactOptions(Paced):
         self.last = {"updated": updated, "empty": empty, "active": active}
         return self.last
 
-    async def _people(self, sheet: str) -> list[Person]:
-        cols = await columns(self.client, sheet, (NAME, EMAIL, TEAMS, ACTIVE))
-        wanted = [cols[title].id for title in (NAME, EMAIL, TEAMS, ACTIVE)]
-        rows = await self.client.list_rows(sheet, wanted, objects=True, level=LEVEL)
-        people = []
-        for row in rows:
-            teams = str(value(row, cols[TEAMS]) or "")
-            people.append(
-                Person(
-                    name=str(value(row, cols[NAME]) or ""),
-                    email=row.contacts.get(cols[EMAIL].id, ""),
-                    teams=frozenset(t.strip() for t in teams.split(",") if t.strip()),
-                    active=value(row, cols[ACTIVE]) is True,
-                )
+
+async def read_people(client: SmartsheetClient, sheet: str) -> list[Person]:
+    """Personas del directorio `Contact List` (también para los avisos de metraje, FH-05c)."""
+    cols = await columns(client, sheet, (NAME, EMAIL, TEAMS, ACTIVE))
+    wanted = [cols[title].id for title in (NAME, EMAIL, TEAMS, ACTIVE)]
+    rows = await client.list_rows(sheet, wanted, objects=True, level=LEVEL)
+    people = []
+    for row in rows:
+        teams = str(value(row, cols[TEAMS]) or "")
+        people.append(
+            Person(
+                name=str(value(row, cols[NAME]) or ""),
+                email=row.contacts.get(cols[EMAIL].id, ""),
+                teams=frozenset(t.strip() for t in teams.split(",") if t.strip()),
+                active=value(row, cols[ACTIVE]) is True,
             )
-        return people
+        )
+    return people

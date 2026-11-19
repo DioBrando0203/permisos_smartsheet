@@ -448,3 +448,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Equipo Linux: 190 pruebas backend aprobadas (nuevas en `tests/test_contact_options.py`: sólo personas activas con correo de su equipo, sin repetir correos; listas que siguen al directorio, con "sólo valores de la lista", sin vaciar un equipo sin nadie activo e idempotentes; el paso va al final y sólo encendido). Ruff y formato correctos.
 - En vivo (Pruebas): `Contact List` releída: 4 columnas (`Name`, `Email`, `Teams`, `Active`), 30 filas, todas inactivas, `Teams` con `Design` 18, `Permits` 12, `Records` 14, `Design Tickets` 7, ordenada por nombre. Escrituras sin cambios con el formato del servicio: `CONTACT_LIST` (14 opciones) y `MULTI_CONTACT_LIST` respondieron 200 y la columna quedó igual.
 - Paso `contacts` apagado: no escribió en la maestra.
+
+# 2026-11-19 18:56 -05:00 Metraje en la maestra y en Billing con aviso (SPEC-B19 FH-05c)
+
+- Equipo Linux: 194 pruebas backend aprobadas (nuevas en `tests/test_footage_sync.py`: gana la hoja que cambió más tarde; asunto y mensaje con antes y después; corrección de `Billing` a la maestra con un correo sólo a la persona activa de `Footage Alerts`, cambio de la maestra a `Billing` sin correo, `Billing` vacío sin consultar historial; sin directorio el cambio igual pasa; `Billing` deja de copiar el metraje sólo con el paso encendido y el paso va justo después de `billing`). Ruff y formato correctos.
+- En vivo (Pruebas): lectura previa, 15 filas de `Billing` y 0 celdas de metraje distintas de la maestra; después, columnas de metraje desbloqueadas y `Footage Alerts` en `Teams` (opción y fila del ingeniero), releído.
+- No probado en vivo: el envío del correo (`POST /sheets/{id}/rows/emails`) ni una corrección real; se prueba al reiniciar el backend, activando en `Contact List` a quien deba recibirlo y cambiando un metraje en `Billing`.

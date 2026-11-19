@@ -152,7 +152,7 @@ Origen: la hoja `Billing (Prototype)`.
 
 - VK-41: `General`: sin restricción por usuario; `New Item Submission` = `Do Not Allow`.
 - VK-42: `Visible fields`: `Tracking Project`, `Linked Tracking`, `Row Type`, `Customer`, `Project Name`, `Invoice Status`, `Purchase Orden`, `Invoice Sent`, `Invoice Paid`.
-- VK-43: `Details Panel`: sólo lectura `Tracking Project`, `Type of Project`, `Customer`, `Project Name`, `Project Address`, `County`, `Agency`, `Contractor`, `Construction Manager`, `PM Approval Date`, `Project Status`, el metraje, `Custom MOT`, `TYPICAL MOT`, `Additional Site Survey`, `Survey Certified`, `Tone Locating`, `Sonde FTG`, `GPR`, `Permit #`, `Permit Fee`, `Stamp And Signatures #`; editables `Purchase Orden`, `Invoice? GALP`, `Invoice? KMV`, `Customer invoice?`, `Invoice Completed (Galp)`, `PM Approval Invoice Date`, `Invoice Sent`, `Invoice Paid`; sólo lectura `Invoice Status`.
+- VK-43: `Details Panel`: sólo lectura `Tracking Project`, `Type of Project`, `Customer`, `Project Name`, `Project Address`, `County`, `Agency`, `Contractor`, `Construction Manager`, `PM Approval Date`, `Project Status`, `Custom MOT`, `TYPICAL MOT`, `Additional Site Survey`, `Survey Certified`, `Tone Locating`, `Sonde FTG`, `GPR`, `Permit #`, `Permit Fee`, `Stamp And Signatures #`; editables el metraje (`Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`: facturación lo corrige aquí, pasa a la maestra y avisa por correo, SPEC-B19 FH-05c), `Purchase Orden`, `Invoice? GALP`, `Invoice? KMV`, `Customer invoice?`, `Invoice Completed (Galp)`, `PM Approval Invoice Date`, `Invoice Sent`, `Invoice Paid`; sólo lectura `Invoice Status`.
 - VK-44: `Sharing`: sólo la persona de facturación.
 
 ## 7. Design Ticket y Mile Post: `PROJECT KMV 2.0 - DESIGN TICKETS`

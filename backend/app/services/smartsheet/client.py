@@ -10,6 +10,7 @@ import httpx
 
 from app.core.config import Settings
 from app.services.smartsheet import mappers
+from app.services.smartsheet.emails import EmailWrites
 from app.services.smartsheet.structure import StructureWrites
 from app.services.smartsheet.transport import Transport
 from app.services.smartsheet.types import (
@@ -34,7 +35,7 @@ _SHARING_INCLUDE = "ITEM,WORKSPACE"
 _ROWS_PAGE = 500
 
 
-class SmartsheetClient(StructureWrites):
+class SmartsheetClient(StructureWrites, EmailWrites):
     def __init__(self, settings: Settings, http: httpx.AsyncClient | None = None) -> None:
         self._settings = settings
         self._transport = Transport(settings, http)

@@ -1033,3 +1033,11 @@ Estado: hallazgo; falta la decisión del usuario.
 Pedido: si la persona de facturación cambia el metraje en `Billing`, avisar a alguien con el valor anterior y el nuevo.
 Evidencia (sólo GET, cuentas sin nombre comparadas por resumen, sin correos): historial de `Total Footage`, `UG` y `Aerial` en 14 proyectos 2026 aprobados por el PM (CC y BS): 20 celdas sin historial, 14 con un cambio y 8 con dos; primeras cargas: una cuenta personal 14 y la coordinación 8; correcciones: las 8 de esa cuenta, que también llena `PM Approval Invoice Date` e `Invoice Completed (Galp)` en 4 de 4 filas revisadas.
 Cambios: `KMV_2.0.md` K2-85f.
+
+## 2026-11-19 18:56 -05:00 Metraje editable en Billing con aviso de antes y después (SPEC-B19 FH-05c, K2-85f)
+
+Estado: hecho; rige al reiniciar el backend. El correo no se probó en vivo (no se mandaron correos).
+Pedido: si facturación cambia el metraje, avisar a las personas que elija el usuario con el valor anterior y el nuevo; la opción que no agrega columnas.
+Cambios en código: `childsheets/footage.py` (paso `footage` después de `billing`: gana la hoja que cambió más tarde según el historial de celdas; con `Billing` vacío gana la maestra sin consultar; si gana `Billing`, pasa a la maestra y se manda la fila por correo a `Footage Alerts` de `Contact List`; tope de 10 celdas consultadas por pasada); `billing_spec` en `sync.py` (sin metraje en el contexto de `Billing` cuando el paso está encendido); `read_people` en `contacts.py`; `smartsheet/emails.py` (`send_rows_email`); `APP_FOOTAGE_SYNC_ENABLED` en configuración y `.env.example`. Sin migración de PostgreSQL.
+Cambios en Smartsheet (Pruebas): columnas de metraje de `Billing (Prototype)` desbloqueadas; opción `Footage Alerts` en `Teams` de `Contact List`, marcada en la fila del ingeniero (inactiva, como todas). Antes, lectura: 15 filas de `Billing` con el mismo metraje que la maestra (0 celdas distintas).
+Docs: SPEC-B19 FH-05c, `KMV_2.0.md` K2-85f y K2-30, VISTAS VK-43 (metraje editable), ARQUITECTURA. Maestra sin cambios: 79 columnas.
