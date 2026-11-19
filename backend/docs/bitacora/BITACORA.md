@@ -1041,3 +1041,8 @@ Pedido: si facturación cambia el metraje, avisar a las personas que elija el us
 Cambios en código: `childsheets/footage.py` (paso `footage` después de `billing`: gana la hoja que cambió más tarde según el historial de celdas; con `Billing` vacío gana la maestra sin consultar; si gana `Billing`, pasa a la maestra y se manda la fila por correo a `Footage Alerts` de `Contact List`; tope de 10 celdas consultadas por pasada); `billing_spec` en `sync.py` (sin metraje en el contexto de `Billing` cuando el paso está encendido); `read_people` en `contacts.py`; `smartsheet/emails.py` (`send_rows_email`); `APP_FOOTAGE_SYNC_ENABLED` en configuración y `.env.example`. Sin migración de PostgreSQL.
 Cambios en Smartsheet (Pruebas): columnas de metraje de `Billing (Prototype)` desbloqueadas; opción `Footage Alerts` en `Teams` de `Contact List`, marcada en la fila del ingeniero (inactiva, como todas). Antes, lectura: 15 filas de `Billing` con el mismo metraje que la maestra (0 celdas distintas).
 Docs: SPEC-B19 FH-05c, `KMV_2.0.md` K2-85f y K2-30, VISTAS VK-43 (metraje editable), ARQUITECTURA. Maestra sin cambios: 79 columnas.
+
+## 2026-11-19 18:59 -05:00 Aviso de metraje en las guías (FH-05c)
+
+Estado: hecho.
+Cambios: AUTOMATIZACIONES AU-52 (el aviso de metraje lo manda el servicio; no duplicarlo con una automatización de `Billing`); `KMV_2.0.md` K2-89 (`Footage Alerts` en `Teams`). Sin cambios en código ni en Smartsheet.
