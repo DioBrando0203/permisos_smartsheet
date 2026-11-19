@@ -1020,3 +1020,9 @@ Estado: hecho en `Permits (Prototype)` por la otra sesión (conector de Smartshe
 Evidencia (conector, `get_workflows`, sólo lectura): 4 flujos apagados: `DV | New Task Permitting Team` (filas nuevas o cambio de `Permitting Team`, a esa columna, 10 campos), `Alert | Permit Needs Revision` (a `Designers`), `Auto | Revision Request Date` (dos caminos: `1st Revision Req` vacía, o `Permit 1st Resubmitted` llena y `2nd Revision Req` vacía) y `Alert | Permit Expiring` (30 días antes de `Permit Expires`, 9:00, sin cerrados ni cancelados, a `Permitting Team` y a la coordinación).
 Decisiones del usuario: los avisos de QC van a una persona provisional hasta que la persona de QC tenga correo; la coordinación no entra en QC.
 Cambios: AUTOMATIZACIONES AU-15, AU-16, AU-22, AU-23 y AU-83.
+
+## 2026-11-19 18:33 -05:00 Decisiones del chat llevadas a los docs (K2-86, K2-89)
+
+Estado: hecho.
+Pedido: documentar también lo conversado (quién crea los flujos, destinatarios de MOT y facturación, alcance de las automatizaciones, alternativas de `Contact List`).
+Cambios: AUTOMATIZACIONES AU-00i (alcance: hojas sí, reportes y catálogos no), AU-32, AU-33, AU-36 y AU-50 (destinatarios por rol), AU-81b (una sola sesión crea los flujos; ésta revisa); `KMV_2.0.md` K2-89 (alternativas descartadas). Sin cambios en Smartsheet ni en código.

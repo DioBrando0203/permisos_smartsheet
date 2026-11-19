@@ -14,6 +14,7 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
 - AU-00f: no usar como disparador una columna con `TODAY()` (`QC # Days`, `Process # Days` y las demás de días): cambia sola cada día. Se usa el estado o la fecha de origen.
 - AU-00g: `Client | Status Update` escribe a los contactos reales de cada cliente (`Client Access` sale de `Customer List`). En el prototipo se deja apagada, o se prueba con un cliente cuyos contactos sean internos.
 - AU-00h: en los textos se insertan campos con `{{`: por ejemplo `{{Tracking Project}}`.
+- AU-00i: alcance: las 6 hojas de la carpeta `PROJECT KMV 2.0 - Prototype`. Los reportes de `Reports` no admiten automatizaciones (y los que no usa ninguna vista están por borrarse, K2-63); la carpeta `List` está vacía; los catálogos (`Contact List`, `Customer List`, `Project Status Catalog`) no necesitan.
 
 ## Lo que ya está armado en la maestra (revisión de la captura)
 
@@ -97,12 +98,12 @@ Reemplaza a VISTAS VK-35b. La persona de MOT y paquetes no sale de una columna d
   - Conditions: `Row Type` `is one of` `MOT`.
   - Action: `Record a date` en `Design MOT Request`.
 - AU-32 `DV | New Package` (recomendada; puede ir como segunda acción de AU-30).
-  - Action: `Alert someone` > la persona de MOT y paquetes.
+  - Action: `Alert someone` > la persona de MOT y paquetes, con la cuenta con la que entra (el historial 2026 muestra una cuenta personal, no la de la empresa: confirmar con el usuario).
   - Subject: `New Task: {{Tracking Project}} – {{Project Name}} – PACKAGE`.
   - Message: `You have a new task: "PACKAGE"`, más el enlace de la vista `MOT & PACKAGES`.
   - Fields: `Tracking Project`, `Linked Tracking`, `Row Type`, `Agency`, `Project Name`, `City`, `Permitting Team`.
 - AU-33 `DV | New MOT` (recomendada; puede ir como segunda acción de AU-31).
-  - Action: `Alert someone` > la persona de MOT y paquetes y el diseñador de MOT.
+  - Action: `Alert someone` > la persona de MOT y paquetes y el diseñador de MOT (en el historial 2026, quien llena `Design MOT QC` y pasa a `5. Design MOT Needs QC`; ya tiene correo en `Contact List`).
   - Subject: `New Task: {{Tracking Project}} – {{Project Name}} – MOT`.
   - Fields: los de AU-32.
 - AU-34 `Alert | MOT Needs QC` (recomendada; nueva). En la 1.0 el diseñador de MOT pasa a `5. Design MOT Needs QC` y la persona de MOT completa.
@@ -114,7 +115,7 @@ Reemplaza a VISTAS VK-35b. La persona de MOT y paquetes no sale de una columna d
   - Action: `Change cell value`: `MOT Status` = `3. Packages Completed`.
 - AU-36 `Alert | MOT Design Completed` (opcional; nueva).
   - Trigger: `MOT Status` changes to `5. Design MOT Completed`.
-  - Action: `Alert someone` > la coordinación, para seguir con el permiso de MOT.
+  - Action: `Alert someone` > la coordinación (la misma de AU-23), para seguir con el permiso de MOT.
 
 ## `Records Requests (Prototype)`
 
@@ -144,7 +145,7 @@ Vienen de `Invoices (Piloto)` de la 1.0, que las tenía apagadas. `Invoice Statu
 - AU-50 `Alert | Ready to send invoice` (recomendada).
   - Trigger: `When rows are added or changed` > `PM Approval Invoice Date` changes.
   - Conditions: `PM Approval Invoice Date` `is not blank`; `Invoice Sent` `is blank`.
-  - Action: `Alert someone` > la persona de facturación.
+  - Action: `Alert someone` > la persona de facturación (la define el usuario; no aparece en el historial revisado).
   - Fields: `Tracking Project`, `Customer`, `Project Name`, `Purchase Orden`, `Permit #`, `Total Footage`.
 - AU-51 `Alert | Sent without payment (weekly)` (recomendada).
   - Trigger: `When a date is reached` con repetición semanal (por ejemplo, los lunes).
@@ -167,6 +168,7 @@ Vienen de `Invoices (Piloto)` de la 1.0, que las tenía apagadas. `Invoice Statu
 - AU-80 (2026-11-18 16:06, comprobado con el conector de Smartsheet, `get_workflows`): la maestra tiene 10 flujos, todos apagados para probarlos de a uno: AU-10, AU-11, AU-12, AU-13, AU-14, AU-15 (`AUTO | QC ALERT` y `Auto | QC IN date`), AU-16 y las viejas AU-04 y AU-05.
 - AU-81: falta en la maestra: los enlaces de las vistas de la 2.0 (`DESIGN` en AU-12 y AU-13; clientes en AU-14, vista que aún no existe); a quién va QC (AU-15 y AU-16 avisan hoy a una sola persona fija) y si se suma la coordinación a AU-16; correos de los diseñadores en `Contact List` (K2-89).
 - AU-83 (2026-11-18 16:25, comprobado con `get_workflows`): `Permits (Prototype)` tiene AU-20, AU-21, AU-22 y AU-23, todos apagados. Falta el enlace de la vista `PERMITS TEAM` en AU-20.
+- AU-81b (2026-11-18, decisión del usuario): los flujos los crea una sola sesión (la que armó la maestra, con el conector de Smartsheet) para que no queden duplicados ni lleguen dos correos por aviso; esta sesión sólo los comprueba con `get_workflows` y documenta.
 - AU-82: siguiente: hojas de equipo, de a una (`Permits`, `MOT & Packages`, Records, `Billing`; `Design Tickets` si se queda). Recién cuando existan AU-20 y AU-40 se borran de la maestra AU-04 y AU-05 (borrar no tiene vuelta atrás).
 
 ## Orden sugerido
