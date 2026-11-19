@@ -1026,3 +1026,10 @@ Cambios: AUTOMATIZACIONES AU-15, AU-16, AU-22, AU-23 y AU-83.
 Estado: hecho.
 Pedido: documentar también lo conversado (quién crea los flujos, destinatarios de MOT y facturación, alcance de las automatizaciones, alternativas de `Contact List`).
 Cambios: AUTOMATIZACIONES AU-00i (alcance: hojas sí, reportes y catálogos no), AU-32, AU-33, AU-36 y AU-50 (destinatarios por rol), AU-81b (una sola sesión crea los flujos; ésta revisa); `KMV_2.0.md` K2-89 (alternativas descartadas). Sin cambios en Smartsheet ni en código.
+
+## 2026-11-19 18:39 -05:00 Quién carga y corrige el metraje (K2-85f)
+
+Estado: hallazgo; falta la decisión del usuario.
+Pedido: si la persona de facturación cambia el metraje en `Billing`, avisar a alguien con el valor anterior y el nuevo.
+Evidencia (sólo GET, cuentas sin nombre comparadas por resumen, sin correos): historial de `Total Footage`, `UG` y `Aerial` en 14 proyectos 2026 aprobados por el PM (CC y BS): 20 celdas sin historial, 14 con un cambio y 8 con dos; primeras cargas: una cuenta personal 14 y la coordinación 8; correcciones: las 8 de esa cuenta, que también llena `PM Approval Invoice Date` e `Invoice Completed (Galp)` en 4 de 4 filas revisadas.
+Cambios: `KMV_2.0.md` K2-85f.
