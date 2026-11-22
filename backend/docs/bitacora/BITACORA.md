@@ -1046,3 +1046,12 @@ Docs: SPEC-B19 FH-05c, `KMV_2.0.md` K2-85f y K2-30, VISTAS VK-43 (metraje editab
 
 Estado: hecho.
 Cambios: AUTOMATIZACIONES AU-52 (el aviso de metraje lo manda el servicio; no duplicarlo con una automatización de `Billing`); `KMV_2.0.md` K2-89 (`Footage Alerts` en `Teams`). Sin cambios en código ni en Smartsheet.
+
+## 2026-11-22 21:53 -05:00 Revisión de las vistas de la 2.0 con Playwright y correcciones (K2-82)
+
+Estado: hecho.
+Pedido: revisar con Playwright la configuración de la 2.0 (vistas, formato condicional, automatizaciones) contra las guías, sólo mirando; después, corregir lo que faltara en restricciones por usuario, `Field Logic` de Records, `Permit Status` y obligatorios. El punto de comentarios en la vista de diseño queda para después, por decisión del usuario.
+Evidencia: navegador Playwright con la sesión de la cuenta dueña; cada cambio comprobado tras recargar la configuración de la vista. Columnas por API (sólo GET): maestra 79, `Permits` 44, `MOT & Packages` 34, Records 23, `Billing` 43, `Design Tickets` 14, como en `KMV_2.0.md`. Automatizaciones: maestra 10 y `Permits` 4, todas apagadas; `MOT & Packages`, Records y `Billing`, 0. Sin formato condicional en `Permits` ni en `MOT & Packages`.
+Corrección de la revisión: las restricciones por usuario de `Permits (Prototype)`, `Records Requests (Prototype)` y `KMV 2.0 | Design Projects` ya estaban puestas; en la lectura de accesibilidad el desplegable lleva como nombre su primera opción y el valor elegido aparece aparte.
+Cambios en Smartsheet (Pruebas, vistas): Records, reglas de `Field Logic` en `Editable` y `Security Key` en la de `PRR`; `PERMITS TEAM`, `Permit Status` visible (puesto 5) y `KMV-Miscellaneous` en la regla `Permit`; `PROJECTS` y `PERMITS`, campos de creación obligatorios. Sin cambios en hojas ni en código. Maestra: 79 columnas.
+Docs: VISTAS VK-00t4 (incluye lo que falta), `KMV_2.0.md` K2-82.

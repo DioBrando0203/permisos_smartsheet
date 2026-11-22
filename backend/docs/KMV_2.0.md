@@ -80,7 +80,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 
 - K2-80: hecho (2026-11-17 15:44): backend reiniciado con el último código; vistas `PROJECTS`, `PERMITS` y `PERMITS TEAM` armadas por el usuario (VISTAS VK-00t).
 - K2-81: hecho (2026-11-17 15:48): filtros compartidos `Projects` y `Permits` en la maestra; falta elegirlos en cada vista.
-- K2-82: filtros compartidos `Projects` y `Permits` en la maestra; armar las vistas (guía `VISTAS_KMV_2.0.md`).
+- K2-82: filtros compartidos `Projects` y `Permits` en la maestra; armar las vistas (guía `VISTAS_KMV_2.0.md`). Avance 2026-11-22: vistas revisadas con Playwright; corregidos `Field Logic` de Records, `Permit Status` y `KMV-Miscellaneous` en `PERMITS TEAM` y obligatorios en `PROJECTS` y `PERMITS`; lo que falta, en VISTAS VK-00t4.
 - K2-83: formato condicional de `CANCELLED` (gris y tachado) en `Permits` y `MOT & Packages`.
 - K2-84: probar el flujo completo con las vistas: proyecto, trámite con `Parent Project` y `Agency`, estado del equipo de vuelta, cancelación.
 - K2-85: código: mover la fila a la otra hoja cuando cambia el tipo (SPEC-B20 HP-08), la única regla decidida que falta.
