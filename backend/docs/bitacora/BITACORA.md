@@ -1055,3 +1055,11 @@ Evidencia: navegador Playwright con la sesión de la cuenta dueña; cada cambio 
 Corrección de la revisión: las restricciones por usuario de `Permits (Prototype)`, `Records Requests (Prototype)` y `KMV 2.0 | Design Projects` ya estaban puestas; en la lectura de accesibilidad el desplegable lleva como nombre su primera opción y el valor elegido aparece aparte.
 Cambios en Smartsheet (Pruebas, vistas): Records, reglas de `Field Logic` en `Editable` y `Security Key` en la de `PRR`; `PERMITS TEAM`, `Permit Status` visible (puesto 5) y `KMV-Miscellaneous` en la regla `Permit`; `PROJECTS` y `PERMITS`, campos de creación obligatorios. Sin cambios en hojas ni en código. Maestra: 79 columnas.
 Docs: VISTAS VK-00t4 (incluye lo que falta), `KMV_2.0.md` K2-82.
+
+## 2026-11-22 23:00 -05:00 Colores de la maestra en las hojas de trabajo de la 2.0 (K2-83, K2-87)
+
+Estado: hecho.
+Pedido: que todas las hojas de trabajo tengan las mismas condiciones y colores que la maestra (captura de su formato condicional), y completar con eso lo que faltaba; en `Billing`, que yo tomara la mejor decisión. Decisión del usuario: `Design Tickets` se queda, con su vista por responsable (`DT Owner`).
+Evidencia: reglas de la maestra leídas en el cuadro `Conditional Formatting` con Playwright (40 reglas, texto y colores exactos; cerrado con `Cancel`, sin cambios). Reglas creadas con Playwright en el mismo orden, comparadas una por una con lo previsto (condición, valores, destino, fondo, letra, negrita y tachado) antes de aplicar, y otra vez tras guardar y recargar: todas iguales. Columnas por API: `Billing` 43 columnas y 15 filas, y `Design Tickets` 14 columnas y 0 filas, antes y después; valores de las columnas cambiadas idénticos.
+Cambios en Smartsheet (Pruebas): formato condicional en `Permits` (20 reglas), `MOT & Packages` (10), `Records Requests` (5 nuevas; la regla lila que ya existía pasó al final), `Billing` (34) y `Design Tickets` (31). Por API: en `Billing`, `Type of Project` y `Project Status` de texto a lista con las opciones de la maestra; en `Design Tickets`, `Project Status`; siguen bloqueadas. Maestra sin cambios: 79 columnas. Sin cambios en código: el servicio escribe esas celdas como texto y no mira el tipo de columna.
+Docs: VISTAS VK-60 a VK-65 y VK-00r; `KMV_2.0.md` K2-07, K2-08, K2-83, K2-87 y K2-95.
