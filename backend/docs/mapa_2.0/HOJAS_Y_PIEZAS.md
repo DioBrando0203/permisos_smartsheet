@@ -29,23 +29,23 @@ Todas llevan los datos del proyecto copiados y bloqueados, `Linked Tracking` y u
 
 ## Vistas (Dynamic Views) de la 2.0
 
-Todas sobre su hoja, salvo diseño (sobre un reporte). Hoy sólo las ve el dueño, salvo MOT y Records; con quién se comparte cada una lo decide el usuario.
+Nueve vistas, todas sobre su hoja salvo diseño (sobre un reporte). Hoy sólo las ve el dueño, salvo MOT y Records; con quién se comparte cada una lo decide el usuario.
 
 - MP-40: `PROJECT KMV 2.0 - PROJECTS` (maestra, filtro `Projects`): la coordinadora crea y edita proyectos. Sin restricción por usuario; permite agregar filas.
 - MP-41: `PROJECT KMV 2.0 - PERMITS` (maestra, filtro `Permits`): la coordinadora crea trámites con `Parent Project` y `Agency`; permite agregar filas.
-- MP-42: `PROJECT KMV 2.0 - DESIGN` (reporte `KMV 2.0 | Design Projects`): diseño ve sus proyectos (restringida por `Designers`).
+- MP-42: `PROJECT KMV 2.0 - DESIGN` (reporte `KMV 2.0 | Design Projects`): diseño ve sus proyectos (restringida por `Designers`) y, junto al estado, si ya llegaron los Records (`Records Status`), el `Design Ticket` y el `Mile Post`.
 - MP-43: `PROJECT KMV 2.0 - PERMITS TEAM` (`Permits`): el equipo de permisos ve sus trámites (restringida por `Permitting Team`); el panel muestra sólo la revisión que toca.
 - MP-44: `PROJECT KMV 2.0 - MOT & PACKAGES` (`MOT & Packages`): la persona de MOT y paquetes ve todo (sin restricción).
 - MP-45: `PROJECT KMV 2.0 - RECORDS` (`Records Requests`): el equipo de Records ve sus pedidos (restringida por `Records Owner`).
 - MP-46: `PROJECT KMV 2.0 - BILLING` (`Billing`): facturación ve todo (sin restricción).
 - MP-47: `PROJECT KMV 2.0 - DESIGN TICKETS` (`Design Tickets`): cada `DT Owner` ve los suyos.
 - MP-48: `PROJECT KMV 2.0 - CUSTOMERS` (maestra): cada cliente ve sus proyectos, también los cerrados (restringida por `Client Access`); sólo lectura.
-- MP-49: `KMV 2.0 | Records` (reporte del mismo nombre): borrador vacío; se queda por decisión del usuario (no se borra ninguna vista de la 2.0).
+- MP-49: la vista vacía `KMV 2.0 | Records` se borró el 2026-11-23 a pedido del usuario: la de Records es MP-45.
 
 ## Reportes (carpeta `PROJECT KMV 2.0 - Prototype/Reports`)
 
-- MP-50: en uso por una vista: `KMV 2.0 | Design Projects` (`3039907867217796`, vista de diseño) y `KMV 2.0 | Records` (`8810630590189444`, vista vacía MP-49).
-- MP-51: de consulta, sin vista: `KMV 2.0 | Coordinator`, `KMV 2.0 | Permits`, `KMV 2.0 | MOT & Packages`, `KMV 2.0 | Billing`, `KMV 2.0 | Design Tickets`. Las vistas van directo sobre sus hojas (K2-60), así que estos se pueden dejar o borrar.
+- MP-50: en uso por una vista: `KMV 2.0 | Design Projects` (`3039907867217796`, vista de diseño).
+- MP-51: de consulta, sin vista: `KMV 2.0 | Records`, `KMV 2.0 | Coordinator`, `KMV 2.0 | Permits`, `KMV 2.0 | MOT & Packages`, `KMV 2.0 | Billing`, `KMV 2.0 | Design Tickets`. Las vistas van directo sobre sus hojas (K2-60), así que estos se pueden dejar o borrar.
 - MP-52: los de `Producto/Reports` (`Permitting`, `Invoices`, `KMV - Customers` y otros) son de la 1.0.
 
 ## Automatizaciones (Smartsheet)

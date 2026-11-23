@@ -40,7 +40,7 @@ Nadie trabaja en las hojas: cada persona entra por su vista y ve sólo lo suyo.
 flowchart LR
     CO["Coordinadora"] --> VPR["PROJECTS<br/>crea proyectos"]
     CO --> VPE["PERMITS<br/>crea trámites"]
-    DI["Diseño"] --> VDE["DESIGN<br/>por Designers"]
+    DI["Diseño"] --> VDE["DESIGN<br/>por Designers<br/>ve Records, Design Ticket y Mile Post"]
     PT["Equipo de permisos"] --> VPT["PERMITS TEAM<br/>por Permitting Team"]
     MP["Persona de MOT y paquetes"] --> VMO["MOT #amp; PACKAGES<br/>todo"]
     RE["Records"] --> VRE["RECORDS<br/>por Records Owner"]
