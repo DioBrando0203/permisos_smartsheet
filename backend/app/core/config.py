@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     smartsheet_max_concurrency: int = 8
     smartsheet_max_retries: int = 4
     smartsheet_retry_base_seconds: float = 1.0
+    # Freno propio por debajo de los 300 por minuto de Smartsheet: evita el 429 y deja margen a
+    # otros usos del mismo token (SPEC-B21 CA-02).
+    smartsheet_max_requests_per_minute: int = 250
+    # Eventos que guarda el registro en memoria de `/api/ids/logs` (SPEC-B21 RG-01).
+    app_log_buffer_size: int = 1000
     cache_ttl_seconds: float = 120.0
     # Activo por defecto: escribir en Smartsheet exige desactivarlo a propósito (ADR-B11).
     app_read_only: bool = True
@@ -34,6 +39,10 @@ class Settings(BaseSettings):
     ids_monitor_interval_seconds: int = 60
     # Consulta liviana de cambios entre ciclos (segundos); 0 la desactiva.
     ids_monitor_poll_seconds: int = 5
+    # Sin cambios por este tiempo, la consulta pasa a ser lenta (noches y horas sin trabajo):
+    # evita gastar llamadas mirando una hoja quieta (SPEC-B21 CA-05).
+    ids_monitor_idle_after_seconds: int = 120
+    ids_monitor_idle_poll_seconds: int = 30
     ids_writes_enabled: bool = False
     ids_transition_approved: bool = False
     ids_approved_starts: str = "{}"
@@ -58,6 +67,11 @@ class Settings(BaseSettings):
     app_obs_timezone: str = "America/Lima"
     app_obs_interval_seconds: int = 30
     app_obs_max_rows: int = 20
+    # Un paso cuyas hojas no cambiaron se salta, pero corre igual cada tanto por si algo no
+    # movió la versión (SPEC-B21 CA-03, CA-04); Obs más seguido: una conversación nueva quizá
+    # no cambie la versión de la hoja.
+    app_steps_force_seconds: int = 600
+    app_obs_force_seconds: int = 120
     # Hoja hija de Records (SPEC-B18): exige las barreras de escritura del ID Manager.
     app_records_sync_enabled: bool = False
     app_records_sheet_id: str = ""

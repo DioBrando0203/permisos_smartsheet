@@ -17,6 +17,7 @@ from app.services.obs import rules
 from app.services.obs.store import ObsStore
 from app.services.smartsheet import SmartsheetClient
 from app.services.smartsheet.types import RawComment
+from app.services.step_gate import GatedStep, VersionBoard
 
 logger = logging.getLogger(__name__)
 
@@ -139,9 +140,16 @@ class ObsSync:
 
 
 def obs_hook(
-    settings: Settings, client: SmartsheetClient, dsn: str = DSN
+    settings: Settings,
+    client: SmartsheetClient,
+    dsn: str = DSN,
+    board: VersionBoard | None = None,
 ) -> Callable[[], Awaitable[dict]] | None:
-    """Paso del procesador; None si está apagado o faltan barreras de escritura (OB-10)."""
+    """Paso del procesador; None si está apagado o faltan barreras de escritura (OB-10).
+
+    Se salta si la hoja no cambió, pero corre al menos cada `app_obs_force_seconds`: una
+    conversación nueva quizá no cambie la versión de la hoja (SPEC-B21 CA-04).
+    """
     if not settings.app_obs_sync_enabled or not writes_allowed(settings):
         return None
     sync = ObsSync(
@@ -152,4 +160,6 @@ def obs_hook(
         interval=settings.app_obs_interval_seconds,
         max_rows=settings.app_obs_max_rows,
     )
-    return sync.run
+    sheets = tuple(item[0] for item in pilot.SHEETS)
+    board = board or VersionBoard(client)
+    return GatedStep(sync.run, sheets, board, settings.app_obs_force_seconds).run

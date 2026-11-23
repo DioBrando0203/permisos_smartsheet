@@ -11,6 +11,7 @@ import httpx
 from app.core.config import Settings
 from app.services.smartsheet import mappers
 from app.services.smartsheet.emails import EmailWrites
+from app.services.smartsheet.rows import RowReads
 from app.services.smartsheet.structure import StructureWrites
 from app.services.smartsheet.transport import Transport
 from app.services.smartsheet.types import (
@@ -28,20 +29,23 @@ from app.services.smartsheet.types import (
     RawUser,
     ShareMessage,
 )
+from app.services.smartsheet.usage import UsageSnapshot
 
 SHARES_PATH = "/shares"
 _SHARING_INCLUDE = "ITEM,WORKSPACE"
-# Máximo de filas por página que admite Smartsheet al leer una hoja.
-_ROWS_PAGE = 500
 
 
-class SmartsheetClient(StructureWrites, EmailWrites):
+class SmartsheetClient(RowReads, StructureWrites, EmailWrites):
     def __init__(self, settings: Settings, http: httpx.AsyncClient | None = None) -> None:
         self._settings = settings
         self._transport = Transport(settings, http)
 
     async def aclose(self) -> None:
         await self._transport.aclose()
+
+    def api_usage(self) -> UsageSnapshot:
+        """Llamadas a Smartsheet de este token desde que arrancó el servicio (SPEC-B21 RG-04)."""
+        return self._transport.usage.snapshot()
 
     # Lecturas
 
@@ -101,40 +105,6 @@ class SmartsheetClient(StructureWrites, EmailWrites):
         params = {"level": level} if level else None
         items = await self._transport.get_all(f"/sheets/{sheet_id}/columns", params)
         return [mappers.to_column(item) for item in items]
-
-    async def list_rows(
-        self,
-        sheet_id: str,
-        column_ids: list[str],
-        *,
-        with_authors: bool = False,
-        objects: bool = False,
-        level: int | None = None,
-    ) -> list[RawRow]:
-        """Todas las filas, sólo con las columnas pedidas; la primera es la etiqueta.
-
-        Pedir pocas columnas mantiene liviana una hoja de miles de filas y 100+ columnas.
-        """
-        rows: list[RawRow] = []
-        label = column_ids[0] if column_ids else None
-        page = 1
-        while True:
-            params: dict[str, Any] = {
-                "columnIds": ",".join(column_ids),
-                "pageSize": _ROWS_PAGE,
-                "page": page,
-            } | ({"level": level} if level else {})
-            options = (("writerInfo", with_authors), ("objectValue", objects))
-            include = [name for name, on in options if on]
-            if include:
-                params["include"] = ",".join(include)
-            data = await self._transport.request("GET", f"/sheets/{sheet_id}", params=params)
-            batch = data.get("rows", [])
-            rows.extend(mappers.to_row(item, label) for item in batch)
-            # Smartsheet repite la última página si se pide una mayor: cortar por total.
-            if len(batch) < _ROWS_PAGE or len(rows) >= int(data.get("totalRowCount") or 0):
-                return rows
-            page += 1
 
     async def list_automation_rules(self, sheet_id: str) -> list[RawAutomation]:
         items = await self._transport.get_all(f"/sheets/{sheet_id}/automationrules")

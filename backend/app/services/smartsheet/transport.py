@@ -14,6 +14,7 @@ import httpx
 
 from app.core.config import Settings
 from app.services.smartsheet.errors import token_missing, translate_error, unavailable
+from app.services.smartsheet.usage import ApiUsage
 
 logger = logging.getLogger("app.smartsheet")
 
@@ -35,6 +36,8 @@ class Transport:
             timeout=settings.smartsheet_timeout_seconds,
         )
         self._semaphore = asyncio.Semaphore(settings.smartsheet_max_concurrency)
+        # Freno y conteo por token (SPEC-B21 CA-02); la espera no ocupa un lugar del semáforo.
+        self.usage = ApiUsage(settings.smartsheet_max_requests_per_minute)
 
     async def aclose(self) -> None:
         await self._http.aclose()
@@ -112,6 +115,7 @@ class Transport:
         can_retry: bool,
     ) -> httpx.Response | None:
         """Envía una vez. `None` significa error de red reintentable (sólo en lecturas)."""
+        await self.usage.acquire()
         started = time.perf_counter()
         try:
             async with self._semaphore:
@@ -124,6 +128,7 @@ class Transport:
                 return None
             raise unavailable() from None
         elapsed_ms = (time.perf_counter() - started) * 1000
+        self.usage.record_status(response.status_code)
         # Sólo método, ruta sin query, estado y duración: nunca token, cuerpos ni correos.
         logger.info(
             "smartsheet %s %s -> %s (%.0f ms)", method, path, response.status_code, elapsed_ms

@@ -27,6 +27,7 @@ from app.services.ids import pilot
 from app.services.ids.runtime import writes_allowed
 from app.services.smartsheet import SmartsheetClient
 from app.services.smartsheet.types import RawColumn
+from app.services.step_gate import GatedStep, VersionBoard
 
 
 class ChildSheetSync:
@@ -170,18 +171,33 @@ def billing_spec(settings: Settings) -> ChildSpec:
 
 
 def child_hooks(
-    settings: Settings, client: SmartsheetClient
+    settings: Settings, client: SmartsheetClient, board: VersionBoard | None = None
 ) -> dict[str, Callable[[], Awaitable[dict]]]:
     """Pasos del procesador activados, en orden; vacío sin barreras de escritura.
 
-    Primero las hijas toman los datos de su proyecto; al final, las listas de proyectos.
+    Primero las hijas toman los datos de su proyecto; al final, las listas de proyectos. Cada
+    paso se salta si sus hojas no cambiaron (SPEC-B21 CA-03).
     """
     if not writes_allowed(settings):
         return {}
+    steps = _child_steps(settings, client)
+    board = board or VersionBoard(client)
+    force = settings.app_steps_force_seconds
+    return {
+        name: GatedStep(step, (pilot.PRESENTABLE, *sheets), board, force).run
+        for name, (step, sheets) in steps.items()
+    }
+
+
+def _child_steps(
+    settings: Settings, client: SmartsheetClient
+) -> dict[str, tuple[Callable[[], Awaitable[dict]], tuple[str, ...]]]:
+    """Cada paso activado con las hojas que lee además de la maestra."""
     interval, max_rows = settings.app_records_interval_seconds, settings.app_records_max_rows
-    hooks: dict[str, Callable[[], Awaitable[dict]]] = {}
+    hooks: dict[str, tuple[Callable[[], Awaitable[dict]], tuple[str, ...]]] = {}
     if settings.app_inherit_enabled:
-        hooks["inherit"] = InheritSync(settings, client, interval=interval, max_rows=max_rows).run
+        inherit = InheritSync(settings, client, interval=interval, max_rows=max_rows)
+        hooks["inherit"] = (inherit.run, ())
     configured = [
         (RECORDS, settings.app_records_sync_enabled, settings.app_records_sheet_id),
         (billing_spec(settings), settings.app_billing_sync_enabled, settings.app_billing_sheet_id),
@@ -195,13 +211,15 @@ def child_hooks(
     ]
     for spec, enabled, sheet in configured:
         if enabled and sheet:
-            hooks[spec.name] = ChildSheetSync(
+            sync = ChildSheetSync(
                 settings, client, spec, sheet, interval=interval, max_rows=max_rows
-            ).run
+            )
+            hooks[spec.name] = (sync.run, (sheet,))
         if spec.name == BILLING.name and settings.app_footage_sync_enabled and enabled and sheet:
-            hooks["footage"] = FootageSync(settings, client, interval=interval).run
+            hooks["footage"] = (FootageSync(settings, client, interval=interval).run, (sheet,))
     if settings.ids_project_options_enabled:
-        hooks["options"] = ProjectOptions(settings, client, interval=interval).run
+        hooks["options"] = (ProjectOptions(settings, client, interval=interval).run, ())
     if settings.app_contact_options_enabled and settings.app_contacts_sheet_id:
-        hooks["contacts"] = ContactOptions(settings, client, interval=interval).run
+        contacts = ContactOptions(settings, client, interval=interval)
+        hooks["contacts"] = (contacts.run, (settings.app_contacts_sheet_id,))
     return hooks

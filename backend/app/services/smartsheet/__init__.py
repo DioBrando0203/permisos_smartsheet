@@ -16,6 +16,7 @@ from app.services.smartsheet.types import (
     RawUser,
     ShareMessage,
 )
+from app.services.smartsheet.usage import UsageSnapshot
 
 __all__ = [
     "NewShare",
@@ -32,4 +33,5 @@ __all__ = [
     "RawUser",
     "ShareMessage",
     "SmartsheetClient",
+    "UsageSnapshot",
 ]

@@ -48,6 +48,7 @@ app/
   core/config.py                 Settings (pydantic-settings) con token SecretStr, read_only, Host y Origin
   core/errors.py                 AppError(code, message, status) y manejador único
   core/middleware.py             OriginMiddleware: Origin permitido en escrituras
+  core/logbook.py                registro en memoria de los últimos eventos (oculta tokens y correos), para GET /api/ids/logs (SPEC-B21)
   models/sheets.py               SheetSummary, SheetList
   models/shares.py               Share, ShareList, Recipient, ShareCreate, ShareUpdate, ShareCreateResult
   models/people.py               Me, Person, PeopleResponse, PersonDetail, PersonSheetAccess, Group, Contact
@@ -57,6 +58,8 @@ app/
     __init__.py                  API: SmartsheetClient y dataclasses
     client.py                    recursos de Smartsheet (hojas, permisos, filas, columnas, automatizaciones)
     transport.py                 auth, semáforo, reintentos, paginación (lastKey y page)
+    rows.py                      lectura de filas de una hoja en un solo pedido, con páginas sólo de respaldo (SPEC-B21 CA-01)
+    usage.py                     freno propio (250 por minuto) y conteo de llamadas, 429 y esperas (SPEC-B21 CA-02, RG-04)
     errors.py                    respuesta de error de Smartsheet a AppError
     mappers.py                   JSON de Smartsheet a Raw*
     types.py                     RawSheet, RawShare, RawUser, RawGroup, RawContact, RawMe, NewShare, ShareMessage
@@ -89,6 +92,8 @@ app/
   services/ids/family.py        decisiones puras de madre e hijas: cambio de cliente, hija ajena o copiada (ID-44 a ID-47), permiso suelto a adoptar (ID-51)
   services/ids/customer_change.py  retiro e ID nuevo de la madre, salida de hijas ajenas, hijas que siguen a su madre y permiso suelto indentado bajo su proyecto (ID-51, inactiva sin `Parent Project`)
   api/routes/idsmart.py         ID Manager con token independiente: consultas, simulación, recuperación y escrituras con barreras
+  api/routes/logs.py            GET /api/ids/logs: eventos recientes y consumo de API, con el token del ID Manager (SPEC-B21)
+  services/step_gate.py         saltar un paso del procesador si sus hojas no cambiaron de versión; versión leída una vez por pasada (SPEC-B21 CA-03, CA-04)
   services/catalog_plan.py      comparación pura de catálogos; no ejecuta sincronización
   services/catalog_rules.py     reglas puras del catálogo de proyectos y de Linked Tracking (SPEC-B16)
   services/project_catalog.py   lectura del catálogo desde Proyectos y la hoja catálogo, validación y plan

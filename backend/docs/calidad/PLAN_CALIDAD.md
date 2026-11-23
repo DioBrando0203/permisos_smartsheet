@@ -7,6 +7,12 @@ Reglas en `reglas_calidad/REGLAS.md`. Última ejecución en `RESULTADOS.md`.
 - `tests/conftest.py`: `make_settings` (token ficticio, sin esperas entre reintentos, escritura habilitada), `smartsheet` (respx con rutas por defecto; una solicitud no simulada falla), `make_client` y `client` (`httpx.AsyncClient` con `ASGITransport`), `writes` (escrituras que llegaron a Smartsheet simulado).
 - `tests/factories.py`: JSON sintético de Smartsheet con correos `@example.com`.
 - `test_client.py`: cabecera con token y logs sin token, 429 con reintentos, 500 reintentado en lectura y no en escritura, `lastKey`, 401 traducido, token ausente.
+- `test_client.py` (SPEC-B21): `list_rows` en un solo pedido y respaldo por páginas si faltan filas.
+- `test_logbook.py`: capacidad, orden, filtros, tokens y correos ocultos, líneas de cada llamada fuera del registro (SPEC-B21 RG-01).
+- `test_usage.py`: freno al llenarse el minuto y conteo de llamadas, 429 y esperas (SPEC-B21 CA-02, RG-04).
+- `test_step_gate.py`: paso saltado sin cambios; corre con cambio, error, excepción, sin versión o forzado; versión leída una vez por pasada (SPEC-B21 CA-03, CA-04).
+- `test_logs_route.py`: `GET /api/ids/logs` con autenticación, filtros y validación (SPEC-B21 RG-02).
+- `test_ids_monitor.py`: paso fallido en el registro y consulta lenta sin cambios (SPEC-B21 RG-03, CA-05).
 - `test_shares.py`: SPEC-B02 completa: bloqueos, solo lectura, propietario, heredado, duplicados, omitidos, sin correo por defecto, cuerpos y query enviados, no-op, invalidación de caché, ids inválidos.
 - `test_people.py`: SPEC-B03 y búsqueda de SPEC-B01.
 - `test_permissions.py`: reglas para todos los niveles y scopes, orden, duplicados, caché (vencimiento, single flight, invalidación).

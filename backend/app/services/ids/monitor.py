@@ -1,7 +1,10 @@
 """Procesador periódico opcional: simula por defecto; asigna sólo con coordinador autorizado."""
 
 import asyncio
+import logging
+import time
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
 from datetime import UTC, datetime
 
 import psycopg
@@ -14,11 +17,20 @@ from app.services.ids.preview import build_dry_run_report
 from app.services.ids.processor import process_report
 from app.services.smartsheet import SmartsheetClient
 
+logger = logging.getLogger(__name__)
 _LOCK = 714382002
 # Resultados con escritura: pueden habilitar hijas, así que el siguiente ciclo va enseguida.
 _WROTE = frozenset(
     {"confirmed", "registered", "inherited", "rescoped", "detached", "followed", "adopted"}
 )
+
+
+@dataclass(frozen=True)
+class IdlePolling:
+    """Consulta lenta tras `after` segundos sin cambios (SPEC-B21 CA-05)."""
+
+    after: float
+    poll_seconds: float
 
 
 class IdMonitor:
@@ -36,6 +48,8 @@ class IdMonitor:
         obs_sync: Callable[[], Awaitable[dict]] | None = None,
         customer_change: bool = False,
         child_syncs: dict[str, Callable[[], Awaitable[dict]]] | None = None,
+        idle: IdlePolling | None = None,
+        clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self.client = client
         self.enabled = enabled
@@ -56,6 +70,9 @@ class IdMonitor:
         # Hojas hijas (SPEC-B18, SPEC-B19); cada una aislada como Obs.
         self.child_syncs = dict(child_syncs or {})
         self.last_children: dict[str, dict] = {}
+        self.idle = idle
+        self.clock = clock
+        self._changed_at = clock()
         self.active = False
         self.last_run: str | None = None
         self.last_error: str | None = None
@@ -93,16 +110,19 @@ class IdMonitor:
                 try:
                     self.last_catalog = await self.after_cycle()
                 except Exception:
+                    logger.exception("ciclo: falló el paso catalog")
                     self.last_catalog = {"error": "catalog_sync_failed"}
             if self.obs_sync is not None:
                 try:
                     self.last_obs = await self.obs_sync()
                 except Exception as error:
+                    logger.exception("ciclo: falló el paso obs")
                     self.last_obs = {"error": "obs_sync_failed", "type": type(error).__name__}
             for name, step in self.child_syncs.items():
                 try:
                     self.last_children[name] = await step()
                 except Exception as error:
+                    logger.exception("ciclo: falló el paso %s", name)
                     failed = {"error": f"{name}_failed", "type": type(error).__name__}
                     self.last_children[name] = failed
         self.last_counts = report["counts"]
@@ -138,18 +158,28 @@ class IdMonitor:
             await asyncio.sleep(self.interval)
             return
         if quick:
+            self._changed_at = self.clock()
             await asyncio.sleep(self.poll_seconds)
             return
         baseline = await self._versions()
         waited = 0.0
         while waited < self.interval:
-            await asyncio.sleep(self.poll_seconds)
-            waited += self.poll_seconds
+            step = self._poll_step()
+            await asyncio.sleep(step)
+            waited += step
             current = await self._versions()
             if baseline is None:
                 baseline = current
             elif current is not None and current != baseline:
+                self._changed_at = self.clock()
                 return
+
+    def _poll_step(self) -> float:
+        """Rápida mientras hay cambios; lenta tras `idle.after` segundos quietos (CA-05)."""
+        fast = self.poll_seconds or 1.0
+        if self.idle is None or self.clock() - self._changed_at < self.idle.after:
+            return fast
+        return max(fast, self.idle.poll_seconds)
 
     async def _versions(self) -> tuple[int, ...] | None:
         """Versión de cada hoja configurada; None si Smartsheet no responde (se espera más)."""
@@ -178,10 +208,12 @@ class IdMonitor:
                 except psycopg.Error:
                     raise
                 except Exception:
+                    logger.exception("ciclo: falló el procesador (%s)", self.mode)
                     self.last_error = f"{self.mode}_failed"
                     self.last_run = datetime.now(UTC).isoformat()
                 await self._wait(quick=bool(_WROTE & self.last_outcomes.keys()))
         except psycopg.Error:
+            logger.error("procesador detenido: sin conexión a PostgreSQL")
             self.last_error = "database_unavailable"
         finally:
             self.active = False

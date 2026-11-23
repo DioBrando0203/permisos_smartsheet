@@ -1118,3 +1118,11 @@ Estado: hecho.
 Pedido: la persona que pidió el usuario no es la coordinadora sino otra; si no aparece su correo, documentarlo.
 Evidencia (lecturas y escritura en `Contact List`, releída): la persona estaba en `Contact List` sin correo; su correo de empresa está en los contactos de la cuenta. Ahora tiene correo, `Footage Alerts` y `Active`. La coordinadora volvió a como estaba antes de la entrada de las 23:25 (sin `Footage Alerts`, `Active` sin marcar). El código no cambia: el aviso va a los diseñadores del proyecto y a `Footage Alerts` (el ingeniero y esa persona).
 Docs: SPEC-B19 FH-05d, AUTOMATIZACIONES AU-52, `AUTOMATIZACIONES_2.0_RESUMEN.md` AR-85 y `KMV_2.0.md` K2-97 corregidos.
+
+## 2026-11-23 00:13 -05:00 Registro de eventos y menos llamadas a Smartsheet (SPEC-B21, K2-96d)
+
+Estado: hecho en código; falta que el usuario traiga el código al equipo Linux (o al alojamiento) y reinicie el backend.
+Pedido: un endpoint o servicio de registro para saber qué pasa y si hay errores, y mejorar el servicio para muchas filas, escalable y respetando las reglas de desarrollo. Antes preguntó si las automatizaciones estaban completas: sí, las 29 de la guía, apagadas.
+Cambios (SDD: spec, código, pruebas, docs): `core/logbook.py` (registro en memoria, oculta tokens y correos); `GET /api/ids/logs` (`api/routes/logs.py`, `models/logs.py`) con el token del ID Manager; el monitor registra con traza el paso que falla y consulta lento tras 2 min sin cambios (`IdlePolling`); `smartsheet/rows.py` lee las filas en un pedido (páginas sólo de respaldo) y saca `list_rows` de `client.py` (296 a 266 líneas); `smartsheet/usage.py` frena a 250 por minuto y cuenta llamadas, 429 y esperas; `services/step_gate.py` salta cada paso de hojas de equipo y `Obs` si sus hojas no cambiaron de versión (forzados cada 600 y 120 s). Configuración nueva en `config.py` y `.env.example`. Ningún archivo pasa de 300 líneas ni función de 60.
+Evidencia: 155 pruebas aprobadas y 59 omitidas, ruff limpio; lectura real sólo GET (calidad/RESULTADOS.md). Nada escrito en Smartsheet.
+Docs: SPEC-B21 (nuevo, en el índice), ARQUITECTURA, estilos/API, PLAN_CALIDAD, RESULTADOS, `KMV_2.0.md` K2-96d.

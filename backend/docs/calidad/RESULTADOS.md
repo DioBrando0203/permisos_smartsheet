@@ -460,3 +460,10 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 Entorno: Windows, Python 3.14.7 en `backend/.venv`.
 - `pytest`: 138 pruebas aprobadas y 59 omitidas en 1,57 s (antes de formatear); `tests/test_footage_sync.py` después de formatear: 7 aprobadas.
 - `ruff check app tests`: sin errores. `ruff format --check app tests`: 103 archivos formateados.
+
+## 2026-11-23 00:13 -05:00 Registro de eventos y consumo de API (SPEC-B21)
+
+Entorno: Windows, Python 3.14.7 en `backend/.venv`.
+- `pytest`: 155 pruebas aprobadas y 59 omitidas (necesitan PostgreSQL local, B-16) en 1,76 s.
+- `ruff check app tests`: sin errores. `ruff format --check app tests`: 114 archivos formateados.
+- Lectura real con el cliente nuevo (sólo GET): `8. Crown Castle Fiber - Engineering Plan 2026`, 2 287 filas en un pedido (1,0 s); `PROJECT KMV 2.0 (Prototype)`, 15 filas (0,3 s); conteo de llamadas: 5.

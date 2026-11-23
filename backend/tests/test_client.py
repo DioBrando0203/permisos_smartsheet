@@ -134,3 +134,31 @@ async def test_repeated_last_page_is_not_duplicated(ss_client) -> None:
         )
         groups = await ss_client.list_groups()
     assert len(groups) == 100 and route.call_count == 2
+
+
+def _rows(ids: range, total: int) -> httpx.Response:
+    rows = [{"id": n, "cells": []} for n in ids]
+    return httpx.Response(200, json={"id": 9, "totalRowCount": total, "rows": rows})
+
+
+async def test_list_rows_reads_the_whole_sheet_in_one_request(ss_client) -> None:
+    with respx.mock(base_url=BASE) as router:
+        route = router.get("/sheets/9").mock(side_effect=[_rows(range(3), 3)])
+        found = await ss_client.list_rows("9", ["11", "12"], objects=True, level=2)
+    assert len(found) == 3 and route.call_count == 1
+    params = route.calls.last.request.url.params
+    assert "page" not in params and "pageSize" not in params
+    assert (params["columnIds"], params["include"], params["level"]) == (
+        "11,12",
+        "objectValue",
+        "2",
+    )
+
+
+async def test_list_rows_falls_back_to_pages_when_rows_are_missing(ss_client) -> None:
+    pages = [_rows(range(100), 600), _rows(range(500), 600), _rows(range(500, 600), 600)]
+    with respx.mock(base_url=BASE) as router:
+        route = router.get("/sheets/9").mock(side_effect=pages)
+        found = await ss_client.list_rows("9", ["11"])
+    assert len(found) == 600 and route.call_count == 3
+    assert [c.request.url.params.get("page") for c in route.calls] == [None, "1", "2"]
