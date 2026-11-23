@@ -46,3 +46,8 @@ Frontend (desde frontend, cuando exista): `npm run format:check`, `npm run build
 Un servidor ya iniciado sin `--reload` no carga cambios: reiniciarlo antes de probar el flujo HTTP.
 Al terminar cada tarea: commit en la rama actual con los archivos tocados (nunca `backend/.env`); el push lo hace el usuario.
 No escribir código con escapes (`\n`, `\d`, `\u…`) desde heredocs de shell: usar el editor o un archivo de script.
+
+## Mapa y herramientas
+
+- Mapa de la 2.0 (hojas, vistas, reportes, automatizaciones, qué hace el servicio, flujo y diagramas): `backend/docs/mapa_2.0/`.
+- Herramienta opcional de navegador (Playwright) para lo que la API de Smartsheet no permite (Dynamic Views, formato condicional, Admin Center): `herramientas/smartsheet_ui/` y `backend/docs/PLAYWRIGHT_SMARTSHEET.md`. Sólo con autorización expresa del usuario para cada tarea; el usuario inicia sesión a mano; escrituras sólo en Pruebas.

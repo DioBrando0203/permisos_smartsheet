@@ -1,0 +1,11 @@
+{
+  "name": "smartsheet-ui",
+  "private": true,
+  "description": "Navegador de Smartsheet manejado por HTTP local (Playwright), sólo con autorización del usuario",
+  "scripts": {
+    "start": "node pwserver.js"
+  },
+  "dependencies": {
+    "playwright": "1.63.0"
+  }
+}

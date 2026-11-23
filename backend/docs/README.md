@@ -18,10 +18,12 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `ARQUITECTURA.md`: estructura y límites entre módulos.
 - `REQUERIMIENTOS.md`: requisitos verificables (RQ-xx), límites honestos y backlog priorizado (PEN-xx) con su estado.
 - `KMV_2.0.md`: estado actual de la versión vigente 2.0 (hojas, IDs, qué hace cada quien, qué hace el servicio, columnas, reportes, configuración, pendientes y opinión) (K2-xx). Leer primero.
+- `mapa_2.0/`: la 2.0 de un vistazo para personas: hojas, vistas, reportes, automatizaciones, qué hace el servicio, flujo de un proyecto y diagramas (MP-xx).
 - `VISTAS_KMV_2.0.md`: cómo armar cada Dynamic View de la 2.0 (VK-xx).
 - `AUTOMATIZACIONES_KMV_2.0.md`: automatizaciones de cada hoja de la 2.0 (AU-xx).
 - `AUTOMATIZACIONES_2.0_RESUMEN.md`: lista de las automatizaciones que existen en la 2.0, para qué sirve cada una, cuáles son ideas y a quién avisan (AR-xx).
 - `vistas_anteriores/`: Dynamic Views de prueba anteriores a la 2.0, qué tenía cada una y cómo funcionaba, documentadas antes de borrarlas (VA-xx).
+- `PLAYWRIGHT_SMARTSHEET.md`: cómo revisar y configurar con navegador lo que la API no permite (Dynamic Views, formato condicional, Admin Center), sólo con autorización del usuario (PW-xx); herramienta en `herramientas/smartsheet_ui/`.
 - `HOJA_PROJECT_KMV.md`: la hoja PROJECT KMV 1.0.0 (versión anterior) y sus catálogos, columnas, fórmulas, automatizaciones, vistas, reportes y lo que el servicio hace sobre ella (HK-xx).
 - `ANALISIS_COLUMNAS_KMV.md`: uso medido de cada columna en las hojas originales 2025 y 2026, capacidad de la maestra anual, columnas a quitar y hojas hijas (AC-xx, PEN-45).
 - `specs/SPEC-B01-hojas.md`: listado y detalle de hojas.

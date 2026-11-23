@@ -36,3 +36,6 @@ exports/
 Thumbs.db
 .idea/
 .vscode/
+
+# Herramienta de navegador (Playwright): dependencias locales
+herramientas/smartsheet_ui/node_modules/
