@@ -1088,3 +1088,10 @@ Evidencia: avisos de las 36 hojas de Pruebas leídos por API (18 activos, ningun
 Cambios en Smartsheet (Pruebas): 18 avisos apagados (AU-85). 15 flujos nuevos apagados: 7 en `MOT & Packages`, 5 en Records, 2 en `Billing` y 1 en `Design Tickets`; 7 flujos actualizados con el enlace correcto (AU-12, AU-13, AU-14, AU-20, AU-50, AU-51, AU-60) (AU-84). Vistas: 4 renombradas, paneles y tablas de `PROJECTS`, `PERMITS`, `PERMITS TEAM` y `RECORDS` como la guía, y 3 vistas nuevas `BILLING`, `DESIGN TICKETS` y `CUSTOMERS` (VK-00t5). Ninguna hoja ni columna modificada: maestra 2.0 con 79 columnas. `8. Others` sin tocar.
 Pendiente del usuario: a quién se comparte cada vista; quién recibe los avisos de MOT y paquetes, diseño de MOT y facturación (hoy la cuenta dueña, provisional); revisar `Automation permissions` en las hojas nuevas antes de encender; si se borran `KMV 2.0 | Records`, `KMV - Designers`, `KMV - CUSTOMERS` y las de `8. Others`.
 Docs: AUTOMATIZACIONES AU-84 y AU-85; VISTAS VK-00t5; `KMV_2.0.md` K2-82, K2-86 y K2-87b; `vistas_anteriores/README.md` VA-09.
+
+## 2026-11-22 22:30 -05:00 Destinatario de los avisos de MOT y paquetes (AU-86)
+
+Estado: hecho.
+Pedido: los avisos de MOT y paquetes, por ahora sólo a la persona de MOT y paquetes; `Unrestricted` ya lo revisó el usuario; no borrar ninguna vista de la 2.0.
+Evidencia: correo de empresa tomado de `Contact List` (sólo GET). Cuatro flujos de `MOT & Packages` actualizados con el conector de Smartsheet (`DV | New Package`, `DV | New MOT`, `Alert | MOT Needs QC`, `Alert | MOT Design Completed`) y releídos por API: un destinatario en cada uno, todos apagados. Sin vistas borradas. Maestra 2.0 sin cambios: 79 columnas.
+Docs: AUTOMATIZACIONES AU-00j y AU-86; VISTAS VK-00t5; `vistas_anteriores/README.md` VA-09.
