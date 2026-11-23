@@ -1095,3 +1095,11 @@ Estado: hecho.
 Pedido: los avisos de MOT y paquetes, por ahora sólo a la persona de MOT y paquetes; `Unrestricted` ya lo revisó el usuario; no borrar ninguna vista de la 2.0.
 Evidencia: correo de empresa tomado de `Contact List` (sólo GET). Cuatro flujos de `MOT & Packages` actualizados con el conector de Smartsheet (`DV | New Package`, `DV | New MOT`, `Alert | MOT Needs QC`, `Alert | MOT Design Completed`) y releídos por API: un destinatario en cada uno, todos apagados. Sin vistas borradas. Maestra 2.0 sin cambios: 79 columnas.
 Docs: AUTOMATIZACIONES AU-00j y AU-86; VISTAS VK-00t5; `vistas_anteriores/README.md` VA-09.
+
+## 2026-11-22 23:05 -05:00 Lista de automatizaciones de la 2.0 y consumo de API (AU-87, K2-96)
+
+Estado: hecho.
+Pedido: un MD con todas las automatizaciones creadas y para qué sirven; las alertas son para el ingeniero (más de 1 día en QC y otras); en MOT y paquetes sólo los avisos de asignación; lo demás creado, como ideas; evaluar en API Insights si el consumo de API funciona para la simulación.
+Evidencia: flujos leídos con `get_workflows`; `Alert | QC overdue` actualizado de 2 días a 1 y releído (apagado, al ingeniero). API Insights del Admin Center leído con el navegador de la cuenta dueña (sólo lectura; se cerró sin cambios un aviso sobre miembros provisionales): 32 344 llamadas en 30 días, un solo usuario de API; tabla de los 30 endpoints más usados. Límite confirmado en la documentación de Smartsheet: 300 por minuto por token.
+Cambios en Smartsheet: sólo `Alert | QC overdue` (1 día). Ninguna vista ni columna; maestra 2.0 con 79 columnas.
+Docs: `AUTOMATIZACIONES_2.0_RESUMEN.md` (AR-xx, nuevo, en el índice); AUTOMATIZACIONES AU-87; `KMV_2.0.md` K2-96.
