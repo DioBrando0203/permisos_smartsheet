@@ -1047,7 +1047,7 @@ Docs: SPEC-B19 FH-05c, `KMV_2.0.md` K2-85f y K2-30, VISTAS VK-43 (metraje editab
 Estado: hecho.
 Cambios: AUTOMATIZACIONES AU-52 (el aviso de metraje lo manda el servicio; no duplicarlo con una automatización de `Billing`); `KMV_2.0.md` K2-89 (`Footage Alerts` en `Teams`). Sin cambios en código ni en Smartsheet.
 
-## 2026-11-22 21:53 -05:00 Revisión de las vistas de la 2.0 con Playwright y correcciones (K2-82)
+## 2026-11-22 16:53 -05:00 Revisión de las vistas de la 2.0 con Playwright y correcciones (K2-82)
 
 Estado: hecho.
 Pedido: revisar con Playwright la configuración de la 2.0 (vistas, formato condicional, automatizaciones) contra las guías, sólo mirando; después, corregir lo que faltara en restricciones por usuario, `Field Logic` de Records, `Permit Status` y obligatorios. El punto de comentarios en la vista de diseño queda para después, por decisión del usuario.
@@ -1056,10 +1056,18 @@ Corrección de la revisión: las restricciones por usuario de `Permits (Prototyp
 Cambios en Smartsheet (Pruebas, vistas): Records, reglas de `Field Logic` en `Editable` y `Security Key` en la de `PRR`; `PERMITS TEAM`, `Permit Status` visible (puesto 5) y `KMV-Miscellaneous` en la regla `Permit`; `PROJECTS` y `PERMITS`, campos de creación obligatorios. Sin cambios en hojas ni en código. Maestra: 79 columnas.
 Docs: VISTAS VK-00t4 (incluye lo que falta), `KMV_2.0.md` K2-82.
 
-## 2026-11-22 23:00 -05:00 Colores de la maestra en las hojas de trabajo de la 2.0 (K2-83, K2-87)
+## 2026-11-22 18:00 -05:00 Colores de la maestra en las hojas de trabajo de la 2.0 (K2-83, K2-87)
 
 Estado: hecho.
 Pedido: que todas las hojas de trabajo tengan las mismas condiciones y colores que la maestra (captura de su formato condicional), y completar con eso lo que faltaba; en `Billing`, que yo tomara la mejor decisión. Decisión del usuario: `Design Tickets` se queda, con su vista por responsable (`DT Owner`).
 Evidencia: reglas de la maestra leídas en el cuadro `Conditional Formatting` con Playwright (40 reglas, texto y colores exactos; cerrado con `Cancel`, sin cambios). Reglas creadas con Playwright en el mismo orden, comparadas una por una con lo previsto (condición, valores, destino, fondo, letra, negrita y tachado) antes de aplicar, y otra vez tras guardar y recargar: todas iguales. Columnas por API: `Billing` 43 columnas y 15 filas, y `Design Tickets` 14 columnas y 0 filas, antes y después; valores de las columnas cambiadas idénticos.
 Cambios en Smartsheet (Pruebas): formato condicional en `Permits` (20 reglas), `MOT & Packages` (10), `Records Requests` (5 nuevas; la regla lila que ya existía pasó al final), `Billing` (34) y `Design Tickets` (31). Por API: en `Billing`, `Type of Project` y `Project Status` de texto a lista con las opciones de la maestra; en `Design Tickets`, `Project Status`; siguen bloqueadas. Maestra sin cambios: 79 columnas. Sin cambios en código: el servicio escribe esas celdas como texto y no mira el tipo de columna.
 Docs: VISTAS VK-60 a VK-65 y VK-00r; `KMV_2.0.md` K2-07, K2-08, K2-83, K2-87 y K2-95.
+
+## 2026-11-22 19:41 -05:00 Avisos de asignación a correos personales (AU-00j)
+
+Estado: hecho (consulta y nota en la guía).
+Pedido: si la asignación por columna funciona con personas que tienen hotmail. El usuario aclara que sus automatizaciones ya están en `Unrestricted` y que en la 1.0 cada equipo usaba dos columnas para los avisos.
+Evidencia (sólo GET, sin mostrar correos): `Contact List` tiene 8 correos hotmail, 9 de empresa y 13 sin correo; los 4 usuarios de la organización son de empresa. Columnas de asignación de tipo contacto en la maestra (`Designers` de varios contactos, `Permitting Team`, `Records Owner`, `DT Owner`) y en sus copias bloqueadas de `Permits`, `MOT & Packages`, Records, `Billing` y `Design Tickets`. El código del directorio no filtra por dominio. Ayuda de Smartsheet: `Restricted` (por defecto) sólo avisa a quien ve la hoja; `Unrestricted`, a cualquiera si el plan lo permite; no dice si compartir sólo la vista cuenta como compartir la hoja. Maestra sin cambios: 79 columnas.
+Corrección: las horas de las dos entradas anteriores del 2026-11-22 estaban adelantadas cinco horas; son 16:53 y 18:00, según sus commits.
+Docs: AUTOMATIZACIONES AU-00j; VISTAS VK-00v.
