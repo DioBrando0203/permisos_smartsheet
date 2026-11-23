@@ -154,7 +154,7 @@ Vienen de `Invoices (Piloto)` de la 1.0, que las tenía apagadas. `Invoice Statu
   - Action: `Alert someone` > la persona de facturación (una lista con todas las filas pendientes).
   - Fields: `Tracking Project`, `Customer`, `Invoice Sent`, `Invoice # Days`.
 
-- AU-52 (aviso del servicio, no automatización; 2026-11-19 18:59): cuando facturación corrige el metraje en `Billing`, el servicio lo lleva a la maestra y manda la fila por correo con el valor anterior y el nuevo a quienes tengan `Footage Alerts` en `Contact List` (SPEC-B19 FH-05c). No crear en Smartsheet otra automatización para lo mismo: llegarían dos correos. Las columnas de metraje de `Billing` ya no están bloqueadas. Desde el 2026-11-22 (SPEC-B19 FH-05d) el correo va también a los diseñadores del proyecto, además de `Footage Alerts` (la coordinadora y el ingeniero).
+- AU-52 (aviso del servicio, no automatización; 2026-11-19 18:59): cuando facturación corrige el metraje en `Billing`, el servicio lo lleva a la maestra y manda la fila por correo con el valor anterior y el nuevo a quienes tengan `Footage Alerts` en `Contact List` (SPEC-B19 FH-05c). No crear en Smartsheet otra automatización para lo mismo: llegarían dos correos. Las columnas de metraje de `Billing` ya no están bloqueadas. Desde el 2026-11-22 (SPEC-B19 FH-05d) el correo va también a los diseñadores del proyecto, además de `Footage Alerts` (el ingeniero y la persona de avisos de metraje que indicó el usuario (distinta de la coordinadora; su correo se tomó de los contactos de la cuenta y se completó en `Contact List`)).
 
 ## `Design Tickets (Prototype)` (sólo si la hoja se queda, `KMV_2.0.md` K2-87)
 

@@ -58,7 +58,7 @@ Estado 2026-11-22. Las 29 automatizaciones que existen hoy en las 6 hojas de la 
 
 ## Aviso del servicio (no es automatización de Smartsheet)
 
-- AR-85 aviso de cambio de metraje (SPEC-B19 FH-05c, FH-05d): cuando facturación corrige `Total Footage`, `UG`, `UG + Profile`, `ISP` o `Aerial` en `Billing`, el servicio lleva el valor a la maestra y manda la fila con el valor anterior y el nuevo al diseñador del proyecto (`Designers`), a la coordinadora y al ingeniero. Lo manda el servicio, así que no hay que crear una automatización para lo mismo (llegarían dos correos).
+- AR-85 aviso de cambio de metraje (SPEC-B19 FH-05c, FH-05d): cuando facturación corrige `Total Footage`, `UG`, `UG + Profile`, `ISP` o `Aerial` en `Billing`, el servicio lleva el valor a la maestra y manda la fila con el valor anterior y el nuevo al diseñador del proyecto (`Designers`), al ingeniero y a la persona de avisos de metraje que indicó el usuario (`Footage Alerts` en `Contact List`). Lo manda el servicio, así que no hay que crear una automatización para lo mismo (llegarían dos correos).
 
 ## Para encender
 

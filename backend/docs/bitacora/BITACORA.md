@@ -1111,3 +1111,10 @@ Pedido: cuando facturación edite el metraje, el aviso debe llegar directamente 
 Cambios: `services/childsheets/footage.py` suma a los destinatarios los diseñadores de la fila de la maestra (`Designers`), sin repetir correos y aunque no haya directorio, y muestra `Designers` en la fila del correo; pruebas nuevas en `tests/test_footage_sync.py`. En `Contact List` (Pruebas): la coordinadora con `Footage Alerts` y la coordinadora y el ingeniero con `Active`, releído (la lista de contactos del servicio sigue apagada, así que no cambia nada más).
 Evidencia: `pytest` 138 aprobadas y 59 omitidas; `ruff check` y `ruff format --check` limpios (calidad/RESULTADOS.md).
 Docs: SPEC-B19 FH-05d; AUTOMATIZACIONES AU-52; `AUTOMATIZACIONES_2.0_RESUMEN.md` AR-85; `KMV_2.0.md` K2-97.
+
+## 2026-11-22 23:32 -05:00 Corrección: destinataria del aviso de metraje (K2-97, FH-05d)
+
+Estado: hecho.
+Pedido: la persona que pidió el usuario no es la coordinadora sino otra; si no aparece su correo, documentarlo.
+Evidencia (lecturas y escritura en `Contact List`, releída): la persona estaba en `Contact List` sin correo; su correo de empresa está en los contactos de la cuenta. Ahora tiene correo, `Footage Alerts` y `Active`. La coordinadora volvió a como estaba antes de la entrada de las 23:25 (sin `Footage Alerts`, `Active` sin marcar). El código no cambia: el aviso va a los diseñadores del proyecto y a `Footage Alerts` (el ingeniero y esa persona).
+Docs: SPEC-B19 FH-05d, AUTOMATIZACIONES AU-52, `AUTOMATIZACIONES_2.0_RESUMEN.md` AR-85 y `KMV_2.0.md` K2-97 corregidos.
