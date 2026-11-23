@@ -13,6 +13,7 @@ Fuente: lectura con el navegador de la cuenta dueña (la API pública no lee Dyn
 - `kmv_presentable.md`: cinco vistas sobre `PROJECT KMV` (la maestra anterior a la 1.0.0, en Pruebas) (VA-40 a VA-49).
 - `kmv_1_0_0.md`: la vista sobre `PROJECT KMV 1.0.0` y los avisos de esa hoja (VA-50 a VA-59).
 - `piloto_tareas.md`: la primera vista piloto, sobre `Tareas (Piloto)` (VA-60 a VA-69).
+- `kmv_2_0.md`: vistas de la 2.0 borradas a pedido del usuario, con lo que tenían (VA-70 a VA-79).
 
 ## Cómo funcionaban (común)
 
@@ -27,6 +28,9 @@ Fuente: lectura con el navegador de la cuenta dueña (la API pública no lee Dyn
 - VA-08: avisos: automatizaciones `DV | ...` con `Alert someone` a la columna de correo y el enlace a la vista en el mensaje (`https://app.smartsheet.com/dynamicview/views/<id>`). Si la vista se borra, el enlace del aviso queda roto: antes de borrar se buscaron enlaces en las automatizaciones de las 140 hojas y en los 50 dashboards de la cuenta.
 
 ## Qué se borró y qué quedó (2026-11-22)
+
+- VA-08b (2026-11-23, pedido del usuario): todo lo que se borre se documenta antes en esta carpeta, con lo que tenía, como historial.
+- VA-08c (2026-11-23): además se borraron, a pedido del usuario, `KMV - CUSTOMERS` (VA-45, reemplazada por `PROJECT KMV 2.0 - CUSTOMERS`) y la vista vacía de la 2.0 `KMV 2.0 | Records` (VA-70). Sigue `KMV - Designers` (VA-41), que ya no enlaza ningún aviso de la 2.0.
 
 - VA-09: decisión del usuario: documentar y borrar las vistas de prueba anteriores a la 2.0, y dejar por ahora todo lo que tenga que ver con la 2.0. Regla del usuario (2026-11-22): no se borra ninguna vista que pertenezca a la 2.0; excepción pedida por el usuario el 2026-11-23: la vista vacía `KMV 2.0 | Records` (`../VISTAS_KMV_2.0.md` VK-00t6).
   - Borradas el 2026-11-22 a las 20:47 (comprobado: quedan 17 vistas de 26): `PROJECT KMV 1.0.0` (VA-50), `Permisos (piloto pruebas)` (VA-60), `KMV - PERMITS` (VA-42), `KMV - RECORDS DV` (VA-43), `KMV - MP/DT DV` (VA-44), `Blue Stream - Designers` (VA-20), `Blue Stream Permit` (VA-21), `8. Crown Castle Fiber - Engineering Plan 2026` (VA-30) y `8. Crown Castle Fiber - Engineering Plan 2026 V` (VA-31).

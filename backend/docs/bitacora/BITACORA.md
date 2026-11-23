@@ -1141,3 +1141,11 @@ Pedido: había dos vistas de Records; dejar una. En la vista de diseño, que los
 Evidencia: `KMV 2.0 | Records` vacía (sin columnas ni panel, sin compartir) y sin enlaces en las automatizaciones de las 36 hojas de Pruebas; nombre comprobado en pantalla antes de `Delete View`; lista releída. Vista de diseño releída tras guardar.
 Cambios en Smartsheet (Pruebas): borrada la vista `KMV 2.0 | Records` (el reporte del mismo nombre se queda). `PROJECT KMV 2.0 - DESIGN`: tabla con `Type of Project`, `Records Status`, `Design Ticket` y `Mile Post` junto al estado; panel con el bloque de sólo lectura de VK-23 (`Tracking Project`, `Project Name`, `Customer`, `Type of Project`, `Date Received`, `Records Status`, `Design Ticket`, `Mile Post`). Maestra sin cambios: 79 columnas.
 Docs: VISTAS VK-00t6 y VK-22; `mapa_2.0` MP-42, MP-49 a MP-51 y diagrama MP-D2; `vistas_anteriores/README.md` VA-09.
+
+## 2026-11-23 01:20 -05:00 Una sola vista de clientes e historial de lo borrado (VA-45, VA-70)
+
+Estado: hecho.
+Pedido: había dos vistas de clientes; borrar una. Documentar antes todo lo borrado, con lo que tenía, como historial.
+Evidencia: `KMV - CUSTOMERS` (1.0, sobre `PROJECT KMV`) ya estaba documentada completa (VA-45); sólo la enlazaban dos avisos `Client | Status Update` apagados de `PROJECT KMV` y `PROJECT KMV 1.0.0` (revisadas las 36 hojas de Pruebas); nombre y origen comprobados en pantalla antes de `Delete View`; lista releída: queda sólo `PROJECT KMV 2.0 - CUSTOMERS`. La configuración de `KMV 2.0 | Records`, leída antes de borrarla, quedó como VA-70.
+Cambios en Smartsheet (Pruebas): borrada la vista `KMV - CUSTOMERS`. Maestra 2.0 sin cambios: 79 columnas.
+Docs: `vistas_anteriores/kmv_2_0.md` (nuevo, VA-70), VA-08b, VA-08c y VA-45; VISTAS VK-00t6.

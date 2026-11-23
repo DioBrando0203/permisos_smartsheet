@@ -40,7 +40,7 @@ Hoja `PROJECT KMV` (`5254686035890052`, Pruebas): la maestra con la que se armó
 
 ## VA-45 `KMV - CUSTOMERS`
 
-- Id `70132910-6338-4f25-a814-d15aff143bbe`; último uso 2026-11-12. Estado: se queda hasta armar la vista de clientes de la 2.0 (README VA-09).
+- Id `70132910-6338-4f25-a814-d15aff143bbe`; último uso 2026-11-12. Estado: borrada el 2026-11-23 a pedido del usuario, con su configuración ya documentada aquí; la reemplaza `PROJECT KMV 2.0 - CUSTOMERS` (`../VISTAS_KMV_2.0.md` VK-00t5). Sólo la enlazaban los avisos `Client | Status Update` de `PROJECT KMV` y `PROJECT KMV 1.0.0`, apagados desde el 2026-11-22 (quedan con el enlace roto).
 - Restricción por usuario: `Client Access` (cada cliente ve sus filas, también las cerradas: sin filtro `Open`, `../HOJA_PROJECT_KMV.md` HK-32).
 - Tabla (10): `Tracking Project`, `Project Name`, `Date Received`, `Submitted Date`, `Permit Approved`, `Permit Expires`, `Project Status`, `Agency`, `Permit #`, `Obs`.
 - Sin panel de edición (sólo lectura); comentarios visibles sin poder agregar; sin adjuntos; exportar permitido.
