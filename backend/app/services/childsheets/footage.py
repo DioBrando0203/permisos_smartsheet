@@ -3,8 +3,9 @@
 Diseño lo llena en la maestra y facturación lo puede corregir en `Billing`. Si una celda difiere,
 gana la hoja que la cambió más tarde (historial de celdas); con `Billing` vacío gana la maestra
 sin consultar. Si gana `Billing`, el valor pasa a la maestra y Smartsheet manda por correo la fila
-con el valor anterior y el nuevo a las personas activas de `Contact List` del equipo
-`Footage Alerts`. Nada se escribe como nota en las hojas; cada cambio queda en el log.
+con el valor anterior y el nuevo a los diseñadores del proyecto (`Designers` de la maestra) y a
+las personas activas de `Contact List` del equipo `Footage Alerts` (FH-05d). Nada se escribe como
+nota en las hojas; cada cambio queda en el log.
 """
 
 import logging
@@ -18,11 +19,13 @@ from app.services.childsheets.rules import KEY, Value
 from app.services.childsheets.specs import FOOTAGE
 from app.services.ids import pilot
 from app.services.smartsheet import SmartsheetClient
+from app.services.smartsheet.mappers import EMAIL_SEPARATOR
 from app.services.smartsheet.types import RawColumn
 
 logger = logging.getLogger(__name__)
 ALERT_TEAM = "Footage Alerts"
 CONTEXT = ("Tracking Project", "Project Name")
+DESIGNERS = "Designers"
 
 
 @dataclass(frozen=True)
@@ -56,6 +59,15 @@ def notice(tracking: Value, name: Value, changes: list[Change]) -> tuple[str, st
     return subject, message
 
 
+def recipients_for(designers: Value, team: list[str]) -> list[str]:
+    """Diseñadores del proyecto y equipo `Footage Alerts`, cada correo una sola vez."""
+    found = [e.strip() for e in str(designers or "").split(EMAIL_SEPARATOR) if e.strip()]
+    unique: dict[str, str] = {}
+    for email in [*found, *team]:
+        unique.setdefault(email.casefold(), email)
+    return list(unique.values())
+
+
 class FootageSync(Paced):
     def __init__(
         self,
@@ -77,7 +89,8 @@ class FootageSync(Paced):
         await check_barriers(self.settings, self.client, pilot.PRESENTABLE, billing)
         mcols = await columns(self.client, pilot.PRESENTABLE, (*CONTEXT, *FOOTAGE))
         bcols = await columns(self.client, billing, (KEY, *FOOTAGE))
-        masters = await self._read(pilot.PRESENTABLE, mcols, (*CONTEXT, *FOOTAGE))
+        mtitles = (*CONTEXT, *FOOTAGE, *((DESIGNERS,) if DESIGNERS in mcols else ()))
+        masters = await self._read(pilot.PRESENTABLE, mcols, mtitles)
         rows = await self._read(billing, bcols, (KEY, *FOOTAGE))
         to_master, to_billing, notices = [], [], []
         checked = deferred = 0
@@ -141,21 +154,26 @@ class FootageSync(Paced):
                     change.before,
                     change.after,
                 )
+        if not notices:
+            return 0
         directory = self.settings.app_contacts_sheet_id
-        if not notices or not directory:
-            return 0
-        people = await read_people(self.client, directory)
-        recipients = [email for _, email in team_options(people, ALERT_TEAM)]
-        if not recipients:
-            logger.warning("footage: nadie activo en %s; cambios sin correo", ALERT_TEAM)
-            return 0
-        shown = [bcols[t].id for t in (*CONTEXT, *FOOTAGE) if t in bcols]
+        team = []
+        if directory:
+            people = await read_people(self.client, directory)
+            team = [email for _, email in team_options(people, ALERT_TEAM)]
+        shown = [bcols[t].id for t in (*CONTEXT, DESIGNERS, *FOOTAGE) if t in bcols]
+        sent = 0
         for brow, mvals, changes in notices:
+            recipients = recipients_for(mvals.get(DESIGNERS), team)
+            if not recipients:
+                logger.warning("footage: %s sin destinatarios", mvals.get("Tracking Project"))
+                continue
             subject, message = notice(
                 mvals.get("Tracking Project"), mvals.get("Project Name"), changes
             )
             await self.client.send_rows_email(billing, [brow], recipients, subject, message, shown)
-        return len(notices)
+            sent += 1
+        return sent
 
 
 def _row(row_id: str, values: dict[str, Value], cols: dict[str, RawColumn]) -> dict:

@@ -454,3 +454,9 @@ Servidor `uvicorn app.main:app --env-file .env --port 8710 --reload`, `APP_READ_
 - Equipo Linux: 194 pruebas backend aprobadas (nuevas en `tests/test_footage_sync.py`: gana la hoja que cambió más tarde; asunto y mensaje con antes y después; corrección de `Billing` a la maestra con un correo sólo a la persona activa de `Footage Alerts`, cambio de la maestra a `Billing` sin correo, `Billing` vacío sin consultar historial; sin directorio el cambio igual pasa; `Billing` deja de copiar el metraje sólo con el paso encendido y el paso va justo después de `billing`). Ruff y formato correctos.
 - En vivo (Pruebas): lectura previa, 15 filas de `Billing` y 0 celdas de metraje distintas de la maestra; después, columnas de metraje desbloqueadas y `Footage Alerts` en `Teams` (opción y fila del ingeniero), releído.
 - No probado en vivo: el envío del correo (`POST /sheets/{id}/rows/emails`) ni una corrección real; se prueba al reiniciar el backend, activando en `Contact List` a quien deba recibirlo y cambiando un metraje en `Billing`.
+
+## 2026-11-22 23:25 -05:00 Aviso de metraje a los diseñadores (SPEC-B19 FH-05d)
+
+Entorno: Windows, Python 3.14.7 en `backend/.venv`.
+- `pytest`: 138 pruebas aprobadas y 59 omitidas en 1,57 s (antes de formatear); `tests/test_footage_sync.py` después de formatear: 7 aprobadas.
+- `ruff check app tests`: sin errores. `ruff format --check app tests`: 103 archivos formateados.

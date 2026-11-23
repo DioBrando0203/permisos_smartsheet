@@ -1,4 +1,4 @@
-"""Metraje en la maestra y en `Billing`, con aviso por correo (SPEC-B19 FH-05c).
+"""Metraje en la maestra y en `Billing`, con aviso por correo (SPEC-B19 FH-05c, FH-05d).
 
 Smartsheet simulado y datos sintéticos; ninguna solicitud sale a Smartsheet.
 """
@@ -10,7 +10,13 @@ from datetime import UTC, datetime
 import httpx
 import respx
 
-from app.services.childsheets.footage import Change, FootageSync, billing_wins, notice
+from app.services.childsheets.footage import (
+    Change,
+    FootageSync,
+    billing_wins,
+    notice,
+    recipients_for,
+)
 from app.services.childsheets.specs import FOOTAGE
 from app.services.childsheets.sync import billing_spec, child_hooks
 from app.services.ids import pilot
@@ -26,7 +32,7 @@ ON = WRITES | {
     "app_footage_sync_enabled": True,
     "app_contacts_sheet_id": DIRECTORY,
 }
-MASTER_COLS = ("Tracking Project", "Project Name", *FOOTAGE)  # ids 1 a 7
+MASTER_COLS = ("Tracking Project", "Project Name", *FOOTAGE, "Designers")  # ids 1 a 8
 BILLING_COLS = ("Master Row", "Tracking Project", "Project Name", *FOOTAGE)  # ids 11 a 18
 DIRECTORY_COLS = (("Name", "TEXT_NUMBER"), ("Email", "CONTACT_LIST"))
 DIRECTORY_COLS += (("Teams", "MULTI_PICKLIST"), ("Active", "CHECKBOX"))  # ids 21 a 24
@@ -86,7 +92,8 @@ class Sheets:
             start = 21
         else:
             pairs = [
-                (t, "TEXT_NUMBER") for t in (BILLING_COLS if sheet == BILLING else MASTER_COLS)
+                (t, "MULTI_CONTACT_LIST" if t == "Designers" else "TEXT_NUMBER")
+                for t in (BILLING_COLS if sheet == BILLING else MASTER_COLS)
             ]
             start = 11 if sheet == BILLING else 1
         return [
@@ -103,9 +110,7 @@ class Sheets:
             {
                 "id": int(row_id),
                 "cells": [
-                    {"columnId": start + i, "value": values[t], "displayValue": values[t]}
-                    for i, t in enumerate(titles)
-                    if values.get(t)
+                    _cell(start + i, values[t]) for i, t in enumerate(titles) if values.get(t)
                 ],
             }
             for row_id, values in rows.items()
@@ -123,6 +128,15 @@ class Sheets:
             {"columnId": 24, "value": active},
         ]
         return {"id": 900 + i, "cells": cells}
+
+
+def _cell(column: int, found) -> dict:
+    """Texto, o varios contactos con sus correos cuando el valor es una lista."""
+    if isinstance(found, list):
+        contacts = [{"objectType": "CONTACT", "email": email} for email in found]
+        obj = {"objectType": "MULTI_CONTACT", "values": contacts}
+        return {"columnId": column, "objectValue": obj}
+    return {"columnId": column, "value": found, "displayValue": found}
 
 
 def _sheets() -> Sheets:
@@ -167,6 +181,31 @@ async def test_without_directory_the_change_still_reaches_the_master() -> None:
     fake = _sheets()
     result = await _run(fake, make_settings(**ON | {"app_contacts_sheet_id": ""}))
     assert result["to_master"] == 1 and result["notified"] == 0 and not fake.emails
+
+
+async def test_the_project_designers_get_the_email_with_the_footage_team() -> None:
+    fake = _sheets()
+    fake.master["1"]["Designers"] = ["persona3@example.com", "Persona1@example.com"]
+    result = await _run(fake, make_settings(**ON))
+    assert result["notified"] == 1
+    (email,) = fake.emails
+    # El diseñador que ya está en el equipo recibe un solo correo.
+    assert email["sendTo"] == [{"email": "Persona1@example.com"}, {"email": "persona3@example.com"}]
+
+
+async def test_without_directory_the_designers_still_get_the_email() -> None:
+    fake = _sheets()
+    fake.master["1"]["Designers"] = ["persona3@example.com"]
+    result = await _run(fake, make_settings(**ON | {"app_contacts_sheet_id": ""}))
+    assert result["notified"] == 1
+    assert fake.emails[0]["sendTo"] == [{"email": "persona3@example.com"}]
+
+
+def test_recipients_are_the_designers_then_the_team_without_repeats() -> None:
+    team = ["persona1@example.com", "persona2@example.com"]
+    found = recipients_for("persona3@example.com, PERSONA1@example.com", team)
+    assert found == ["persona3@example.com", "PERSONA1@example.com", "persona2@example.com"]
+    assert recipients_for(None, []) == []
 
 
 def test_billing_stops_copying_footage_only_with_the_footage_step() -> None:

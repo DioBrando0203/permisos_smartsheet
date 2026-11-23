@@ -56,6 +56,10 @@ Estado 2026-11-22. Las 29 automatizaciones que existen hoy en las 6 hojas de la 
 
 - AR-80 `DV | New Design Ticket` (AU-60): cuando se asigna o cambia `DT Owner`, avisa a esa persona con el enlace a `PROJECT KMV 2.0 - DESIGN TICKETS`.
 
+## Aviso del servicio (no es automatización de Smartsheet)
+
+- AR-85 aviso de cambio de metraje (SPEC-B19 FH-05c, FH-05d): cuando facturación corrige `Total Footage`, `UG`, `UG + Profile`, `ISP` o `Aerial` en `Billing`, el servicio lleva el valor a la maestra y manda la fila con el valor anterior y el nuevo al diseñador del proyecto (`Designers`), a la coordinadora y al ingeniero. Lo manda el servicio, así que no hay que crear una automatización para lo mismo (llegarían dos correos).
+
 ## Para encender
 
 - AR-90: primero los avisos de asignación (AR-10, AR-11, AR-30, AR-40, AR-41, AR-60, AR-80) y las alertas del ingeniero (AR-12, AR-13, AR-70, AR-71), con las automáticas que las acompañan (AR-14, AR-15, AR-16, AR-42, AR-43, AR-61, AR-62), de a una y con el backend encendido.

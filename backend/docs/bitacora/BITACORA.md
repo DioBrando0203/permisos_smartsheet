@@ -1103,3 +1103,11 @@ Pedido: un MD con todas las automatizaciones creadas y para qué sirven; las ale
 Evidencia: flujos leídos con `get_workflows`; `Alert | QC overdue` actualizado de 2 días a 1 y releído (apagado, al ingeniero). API Insights del Admin Center leído con el navegador de la cuenta dueña (sólo lectura; se cerró sin cambios un aviso sobre miembros provisionales): 32 344 llamadas en 30 días, un solo usuario de API; tabla de los 30 endpoints más usados. Límite confirmado en la documentación de Smartsheet: 300 por minuto por token.
 Cambios en Smartsheet: sólo `Alert | QC overdue` (1 día). Ninguna vista ni columna; maestra 2.0 con 79 columnas.
 Docs: `AUTOMATIZACIONES_2.0_RESUMEN.md` (AR-xx, nuevo, en el índice); AUTOMATIZACIONES AU-87; `KMV_2.0.md` K2-96.
+
+## 2026-11-22 23:25 -05:00 Aviso de metraje al diseñador, la coordinadora y el ingeniero (K2-97, FH-05d)
+
+Estado: hecho en código y en `Contact List`; falta que el usuario reinicie el backend en el equipo Linux para que rija.
+Pedido: cuando facturación edite el metraje, el aviso debe llegar directamente al diseñador que lo hizo o al que le tocaba, a la coordinadora y al ingeniero.
+Cambios: `services/childsheets/footage.py` suma a los destinatarios los diseñadores de la fila de la maestra (`Designers`), sin repetir correos y aunque no haya directorio, y muestra `Designers` en la fila del correo; pruebas nuevas en `tests/test_footage_sync.py`. En `Contact List` (Pruebas): la coordinadora con `Footage Alerts` y la coordinadora y el ingeniero con `Active`, releído (la lista de contactos del servicio sigue apagada, así que no cambia nada más).
+Evidencia: `pytest` 138 aprobadas y 59 omitidas; `ruff check` y `ruff format --check` limpios (calidad/RESULTADOS.md).
+Docs: SPEC-B19 FH-05d; AUTOMATIZACIONES AU-52; `AUTOMATIZACIONES_2.0_RESUMEN.md` AR-85; `KMV_2.0.md` K2-97.
