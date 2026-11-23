@@ -13,7 +13,7 @@ Hoja `PROJECT KMV` (`5254686035890052`, Pruebas): la maestra con la que se armó
 
 ## VA-42 `KMV - PERMITS`
 
-- Id `fef91195-cab5-4495-8987-359d946483cc`; último uso 2026-11-12. Estado: se borra.
+- Id `fef91195-cab5-4495-8987-359d946483cc`; último uso 2026-11-12. Estado: borrada el 2026-11-22.
 - Restricción por usuario: `Email Permitting`. Filtro de hoja `Open`: la fila cerrada desaparecía de la vista (comprobado por el usuario el 2026-11-11, PEN-27).
 - Tabla (15): `Tracking Project`, `Linked Tracking`, `Project Name`, `Project Address`, `City`, `County`, `Permit #`, `LT`, `Project Status`, `Construction Manager`, `Customer Code`, `Submitted Date`, `Permit Approved`, `Permit Expires`, `PM Approval Date`.
 - Panel (5): `Permit #`, `LT`, `Submitted Date`, `App Sent to Contractor`, `Project Status`.
@@ -22,7 +22,7 @@ Hoja `PROJECT KMV` (`5254686035890052`, Pruebas): la maestra con la que se armó
 
 ## VA-43 `KMV - RECORDS DV`
 
-- Id `b21c185f-b7d4-4b25-91b7-f117a9238de5`; último uso 2026-11-13. Estado: se borra.
+- Id `b21c185f-b7d4-4b25-91b7-f117a9238de5`; último uso 2026-11-13. Estado: borrada el 2026-11-22.
 - Restricción por usuario: `Email Designer2`. Permitía agregar filas (`New Item Submission`, a `PROJECT KMV`).
 - Tabla (16): `Tracking Project`, `Agency`, `Project Name`, `Project Address`, `City`, `County`, `Send Method`, `Record Request`, `LT Records`, `Future Project #`, `PRR #`, `Security Key`, `Record Received`, `Records Status`, `Record Box`, `Record # Days`.
 - Panel (10): `Send Method`, `Record Request`, `Request Type`, `PRR #`, `Security Key`, `Future Project #`, `LT Records`, `Record Received`, `Records Status`, `Record Box`.
@@ -31,7 +31,7 @@ Hoja `PROJECT KMV` (`5254686035890052`, Pruebas): la maestra con la que se armó
 
 ## VA-44 `KMV - MP/DT DV`
 
-- Id `eb2d1293-2c62-450f-9ab5-03cee9cf3a66`; último uso 2026-11-11. Estado: se borra.
+- Id `eb2d1293-2c62-450f-9ab5-03cee9cf3a66`; último uso 2026-11-11. Estado: borrada el 2026-11-22.
 - Restricción por usuario: `DT Owner`. Permitía agregar filas (a `PROJECT KMV`).
 - Tabla (8): `Tracking Project`, `Linked Tracking`, `Project Name`, `Project Address`, `City`, `County`, `Design Ticket`, `Mile Post`.
 - Panel (2): `Design Ticket`, `Mile Post`.
@@ -51,4 +51,4 @@ Hoja `PROJECT KMV` (`5254686035890052`, Pruebas): la maestra con la que se armó
 - VA-46: `DV | New Task Designer1` (activo): a `Email Designer1`, asunto `New Task: <Tracking Project> – <Project Name>`, mensaje `New Task: "NEW PROJECT"` con proyecto, nombre y enlace a VA-41.
 - VA-47: `DV | New Task Permitting Team` (activo): a `Email Permitting`, asunto `New Task`, mensaje `You have a new Task: "PERMITS"` con enlace a VA-42.
 - VA-48: `DV | New Task Designer2` (activo): a `Email Designer2`, asunto con proyecto, nombre y agencia, mensaje `You have a new task: "RECORDS REQUEST"` con enlace a VA-43; y `Client | Status Update` (activo): a `Client Access`, aviso al cliente con proyecto, número y estado, y enlace a VA-45.
-- VA-49: al borrar VA-42 y VA-43, `DV | New Task Permitting Team` y `DV | New Task Designer2` de esta hoja quedan con el enlace roto. Es una hoja de Pruebas que el servicio ya no procesa; si se vuelve a usar, apagar o cambiar esos avisos.
+- VA-49: con VA-42 y VA-43 borradas, `DV | New Task Permitting Team` y `DV | New Task Designer2` de esta hoja quedan con el enlace roto. Es una hoja de Pruebas que el servicio ya no procesa; si se vuelve a usar, apagar o cambiar esos avisos.

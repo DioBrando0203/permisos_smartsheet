@@ -1,6 +1,6 @@
 # Vistas sobre 8. Crown Castle Fiber - Engineering Plan 2026 (VA-30 a VA-39)
 
-Hoja de producción `8. Crown Castle Fiber - Engineering Plan 2026` (`1842596423880580`, workspace `Workspace`, fuera de Pruebas: sólo lectura para nosotros). Fueron las primeras pruebas de Dynamic View sobre la hoja real (2026-10-20 y 2026-10-21). Sin compartir y sin automatizaciones que enlacen a ellas. Estado: se borran con el OK expreso del usuario (README VA-09); borrar la vista no toca la hoja.
+Hoja de producción `8. Crown Castle Fiber - Engineering Plan 2026` (`1842596423880580`, workspace `Workspace`, fuera de Pruebas: sólo lectura para nosotros). Fueron las primeras pruebas de Dynamic View sobre la hoja real (2026-10-20 y 2026-10-21). Sin compartir y sin automatizaciones que enlacen a ellas. Estado: borradas el 2026-11-22 con el OK expreso del usuario (README VA-09); borrar la vista no tocó la hoja.
 
 ## VA-30 `8. Crown Castle Fiber - Engineering Plan 2026`
 

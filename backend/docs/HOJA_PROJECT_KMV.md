@@ -29,7 +29,7 @@ Foto del 2026-11-12 18:45 -05:00, leída por API (sólo GET) y cruzada con las s
   - Customer List `8537217871073156`: `Customer`, `Code`, `Client Contacts` (contactos múltiples), `Active`, `Notes`, `Check`; 11 clientes.
   - Project Status List `6541648290074500` (antes "Project Status Catalog"): `Status`, `Phase`, `Closed`; origen del desplegable `Project Status` (PEN-27).
 - HK-03: `Producto/Reports`: All Records Request, Invoices, MOT y Paquetes, Permitting y KMV - Customers (`4804688689188740`, fuente sólo PROJECT KMV, 14 columnas del tracker de cliente).
-- HK-04: Dynamic Views (la API pública no las lee; lo que se sabe viene del usuario y de las automatizaciones): vista de clientes "KMV - CUSTOMERS" `70132910-6338-4f25-a814-d15aff143bbe`; vistas del equipo enlazadas en los avisos: Designer1 `482e8b5d-cf2f-4330-9d41-faba46552fdb`, Designer2 `b21c185f-b7d4-4b25-91b7-f117a9238de5`, Permitting `fef91195-cab5-4495-8987-359d946483cc`.
+- HK-04: Dynamic Views (la API pública no las lee; lo que se sabe viene del usuario y de las automatizaciones): vista de clientes "KMV - CUSTOMERS" `70132910-6338-4f25-a814-d15aff143bbe`; vistas del equipo enlazadas en los avisos: Designer1 `482e8b5d-cf2f-4330-9d41-faba46552fdb`, Designer2 `b21c185f-b7d4-4b25-91b7-f117a9238de5`, Permitting `fef91195-cab5-4495-8987-359d946483cc`. Borradas el 2026-11-22 las de Designer2 y Permitting; `KMV - CUSTOMERS` y Designer1 siguen (detalle de todas en `vistas_anteriores/`, VA-09).
 - HK-05: Otras carpetas de Pruebas: `Normalizacion de Datos - Piloto` (piloto anterior, reportes PILOTO y hoja Forms) y `Testing` (copias de hojas y reportes reales). Fuera de Pruebas todo es sólo lectura (por ejemplo, el reporte original "Tracker 2026 - KMV").
 
 ## Estructura: madres e hijas

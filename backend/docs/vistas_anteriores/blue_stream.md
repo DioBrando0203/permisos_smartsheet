@@ -1,6 +1,6 @@
 # Vistas sobre la copia de Blue Stream 2026 (VA-20 a VA-29)
 
-Hoja `Copy of 8. Blue Stream - Engineering Plan 2026` (`7379849166671748`, Pruebas): copia de la hoja de producción de Blue Stream para probar vistas sin tocar la real. Según el usuario funcionaban bien. Ninguna automatización de la cuenta enlaza a estas vistas. Estado: se borran (README VA-09); la hoja copia se queda.
+Hoja `Copy of 8. Blue Stream - Engineering Plan 2026` (`7379849166671748`, Pruebas): copia de la hoja de producción de Blue Stream para probar vistas sin tocar la real. Según el usuario funcionaban bien. Ninguna automatización de la cuenta enlaza a estas vistas. Estado: borradas el 2026-11-22 (README VA-09); la hoja copia se queda.
 
 ## VA-20 `Blue Stream - Designers`
 
