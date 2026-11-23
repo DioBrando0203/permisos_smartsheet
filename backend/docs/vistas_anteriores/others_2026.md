@@ -1,6 +1,6 @@
 # Vistas sobre 8. Others - Engineering Plan 2026 (VA-10 a VA-19)
 
-Hoja de producción `8. Others - Engineering Plan 2026` (`8569789430583172`, workspace `Workspace`, fuera de Pruebas: sólo lectura para nosotros). Las tres vistas y sus avisos los creó la cuenta dueña el 2026-11-10 (avisos retocados el 2026-11-11). Según el usuario funcionaban bien: fue la prueba sobre una hoja real con el modelo de la 1.0 (una vista por equipo, restringida por la columna de correo, y un aviso con el enlace). Estado: el usuario pidió borrarlas el 2026-11-23. Verificado antes de borrar (sólo lectura): tabla, panel, restricción y accesos iguales a lo documentado abajo; los tres avisos de la hoja siguen encendidos y quedarán con el enlace roto (VA-15).
+Hoja de producción `8. Others - Engineering Plan 2026` (`8569789430583172`, workspace `Workspace`, fuera de Pruebas: sólo lectura para nosotros). Las tres vistas y sus avisos los creó la cuenta dueña el 2026-11-10 (avisos retocados el 2026-11-11). Según el usuario funcionaban bien: fue la prueba sobre una hoja real con el modelo de la 1.0 (una vista por equipo, restringida por la columna de correo, y un aviso con el enlace). Estado: borradas el 2026-11-23 a pedido del usuario. Verificado antes de borrar (sólo lectura): tabla, panel, restricción y accesos iguales a lo documentado abajo; los tres avisos de la hoja siguen encendidos y quedarán con el enlace roto (VA-15).
 
 ## VA-10 `8. Others - Engineering Plan 2026 DESIGNERS`
 

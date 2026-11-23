@@ -4,7 +4,7 @@ Hoja `PROJECT KMV` (`5254686035890052`, Pruebas): la maestra con la que se armó
 
 ## VA-41 `KMV - Designers`
 
-- Id `482e8b5d-cf2f-4330-9d41-faba46552fdb`; último uso de la cuenta dueña 2026-11-12. Estado: el usuario pidió borrarla el 2026-11-23; verificada antes (igual a lo documentado); ya no la enlaza ningún aviso de la 2.0, sólo `DV | New Task Designer1` de `PROJECT KMV` y `DV | New Project` de `PROJECT KMV 1.0.0`, apagados.
+- Id `482e8b5d-cf2f-4330-9d41-faba46552fdb`; último uso de la cuenta dueña 2026-11-12. Estado: borrada el 2026-11-23 a pedido del usuario; verificada antes (igual a lo documentado); ya no la enlaza ningún aviso de la 2.0, sólo `DV | New Task Designer1` de `PROJECT KMV` y `DV | New Project` de `PROJECT KMV 1.0.0`, apagados.
 - Restricción por usuario: `Email Designer1`. Sin filtro de hoja.
 - Tabla (21): `Task`, `Tracking Project`, `Linked Tracking`, `Project Name`, `Project Address`, `City`, `County`, `Drawing Due Date`, `Project # Days`, `QC IN`, `QC OUT`, `QC # Days`, `Record Box`, `LT Records`, `Design Ticket`, `Project Status`, `Total Footage`, `UG`, `UG + Profile`, `ISP`, `Aerial`.
 - Panel (7): `Project Status` visible; `QC IN`, `Total Footage`, `UG`, `UG + Profile`, `ISP` y `Aerial` ocultos.

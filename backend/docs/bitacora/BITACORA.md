@@ -1149,3 +1149,11 @@ Pedido: había dos vistas de clientes; borrar una. Documentar antes todo lo borr
 Evidencia: `KMV - CUSTOMERS` (1.0, sobre `PROJECT KMV`) ya estaba documentada completa (VA-45); sólo la enlazaban dos avisos `Client | Status Update` apagados de `PROJECT KMV` y `PROJECT KMV 1.0.0` (revisadas las 36 hojas de Pruebas); nombre y origen comprobados en pantalla antes de `Delete View`; lista releída: queda sólo `PROJECT KMV 2.0 - CUSTOMERS`. La configuración de `KMV 2.0 | Records`, leída antes de borrarla, quedó como VA-70.
 Cambios en Smartsheet (Pruebas): borrada la vista `KMV - CUSTOMERS`. Maestra 2.0 sin cambios: 79 columnas.
 Docs: `vistas_anteriores/kmv_2_0.md` (nuevo, VA-70), VA-08b, VA-08c y VA-45; VISTAS VK-00t6.
+
+## 2026-11-23 01:23 -05:00 Vistas de Others y KMV - Designers borradas (VA-10 a VA-12, VA-41)
+
+Estado: hecho; queda que el usuario apague los tres avisos de `8. Others - Engineering Plan 2026` (hoja de producción, sólo lectura para la IA).
+Pedido: borrar las vistas de Others y `KMV - Designers`, documentando antes lo que tenían, y hacer push al final.
+Evidencia: configuración releída antes de borrar e igual a la del historial (commit 398cab8); enlaces revisados en las 36 hojas de Pruebas y en la hoja de Others: los tres avisos `DV | Aviso asignacion ...` de Others siguen encendidos; `KMV - Designers` sólo la enlazaban dos avisos apagados de las hojas viejas. Nombre comprobado en pantalla antes de cada `Delete View`; lista releída: quedan las 9 vistas de la 2.0 y 5 de ejemplo.
+Cambios en Smartsheet: borradas 4 vistas (`8. Others - Engineering Plan 2026 DESIGNERS`, `... PERMITTING TEAM`, `... RECORDS`, `KMV - Designers`); las personas y grupos que las tenían compartidas pierden el acceso. Ninguna hoja ni automatización modificada; maestra 2.0 con 79 columnas.
+Docs: `vistas_anteriores/` VA-09, VA-10 a VA-12 y VA-41; VISTAS VK-00t6.
