@@ -1096,7 +1096,7 @@ Pedido: los avisos de MOT y paquetes, por ahora sólo a la persona de MOT y paqu
 Evidencia: correo de empresa tomado de `Contact List` (sólo GET). Cuatro flujos de `MOT & Packages` actualizados con el conector de Smartsheet (`DV | New Package`, `DV | New MOT`, `Alert | MOT Needs QC`, `Alert | MOT Design Completed`) y releídos por API: un destinatario en cada uno, todos apagados. Sin vistas borradas. Maestra 2.0 sin cambios: 79 columnas.
 Docs: AUTOMATIZACIONES AU-00j y AU-86; VISTAS VK-00t5; `vistas_anteriores/README.md` VA-09.
 
-## 2026-11-22 23:05 -05:00 Lista de automatizaciones de la 2.0 y consumo de API (AU-87, K2-96)
+## 2026-11-22 23:12 -05:00 Lista de automatizaciones de la 2.0 y consumo de API (AU-87, K2-96)
 
 Estado: hecho.
 Pedido: un MD con todas las automatizaciones creadas y para qué sirven; las alertas son para el ingeniero (más de 1 día en QC y otras); en MOT y paquetes sólo los avisos de asignación; lo demás creado, como ideas; evaluar en API Insights si el consumo de API funciona para la simulación.
