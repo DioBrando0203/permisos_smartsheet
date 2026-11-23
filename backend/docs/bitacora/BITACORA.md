@@ -1158,6 +1158,16 @@ Evidencia: configuración releída antes de borrar e igual a la del historial (c
 Cambios en Smartsheet: borradas 4 vistas (`8. Others - Engineering Plan 2026 DESIGNERS`, `... PERMITTING TEAM`, `... RECORDS`, `KMV - Designers`); las personas y grupos que las tenían compartidas pierden el acceso. Ninguna hoja ni automatización modificada; maestra 2.0 con 79 columnas.
 Docs: `vistas_anteriores/` VA-09, VA-10 a VA-12 y VA-41; VISTAS VK-00t6.
 
+## 2026-11-23 09:12 -05:00 Revisión del trabajo traído de la otra máquina (21 commits, 1f2e760 a 59305a2)
+
+Estado: revisado; dos observaciones para el usuario.
+Pedido: traer los cambios y revisar lo que se hizo en la otra máquina.
+Evidencia (equipo Linux): `git pull --ff-only` sin conflictos; 214 pruebas backend aprobadas, ruff y formato correctos; sin correos ni nombres reales en lo agregado; sin IDs repetidos en `KMV_2.0.md`, AUTOMATIZACIONES, VISTAS, SPEC-B19 y SPEC-B20. Código revisado: SPEC-B21 (registro `/api/ids/logs` con tokens y correos ocultos, freno de 250 llamadas por minuto, pasos que se saltan si sus hojas no cambiaron, lectura de la hoja en un solo pedido, consulta lenta en horas quietas) y FH-05d (el aviso de metraje también a los diseñadores de la fila).
+Observaciones:
+- Los avisos `DV | Aviso asignacion Designer1`, `Designer2` y `Permitting Team` de la hoja de producción `8. Others - Engineering Plan 2026` siguen activos (lectura por API) y enlazan a vistas borradas el 2026-11-23 (VA-15): mandan un enlace roto. Apagarlos o cambiarlos es una escritura en producción que sólo hace el usuario.
+- El freno de SPEC-B21 cuenta cada llamada como una; Smartsheet cuenta 10 por cada consulta de historial de celdas (la usa el paso de metraje, hasta 20 por pasada). Con muchos cambios de metraje seguidos se podría llegar al 429; el transporte lo reintenta y lo cuenta.
+Sin cambios en código ni en Smartsheet.
+
 ## 2026-11-23 23:09 -05:00 Avisos de Others apagados por el usuario (VA-15)
 
 Estado: hecho.
