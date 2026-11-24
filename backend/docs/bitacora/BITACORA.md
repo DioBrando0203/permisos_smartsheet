@@ -1162,3 +1162,10 @@ Docs: `vistas_anteriores/` VA-09, VA-10 a VA-12 y VA-41; VISTAS VK-00t6.
 
 Estado: hecho.
 El usuario apagó en `8. Others - Engineering Plan 2026` (producción) los tres avisos `DV | Aviso asignacion ...` que enlazaban a las vistas borradas. Comprobado por API, sólo lectura: 0 avisos encendidos de 5 en esa hoja. Docs: `vistas_anteriores/` VA-09 y VA-15.
+
+## 2026-11-24 00:02 -05:00 Decisiones del usuario: Obs desde Permits y dos personas con el mismo nombre (K2-85b, K2-89)
+
+Estado: anotado; K2-85b pendiente de código.
+Decisiones: (1) sólo las conversaciones de `Permits` pasan al `Obs` de la maestra, que es lo que ve el cliente; las de las otras hojas de equipo se quedan en su hoja. (2) En `Contact List`, el mismo nombre con y sin "Jr." son dos personas distintas, no un duplicado.
+Consulta sobre `Record Box` (sólo GET): en `8. Crown Castle Fiber - Engineering Plan 2026` la casilla se marca casi siempre cuando el Records ya está resuelto (303 de 1 360 filas con Records: `Received` con `Box`; también `No records` con `Box`) y nunca en `Not Appy`; en `8. Others`, las 11 `Received` tienen `Box`.
+Docs: `KMV_2.0.md` K2-85b y K2-89.
