@@ -1157,3 +1157,8 @@ Pedido: borrar las vistas de Others y `KMV - Designers`, documentando antes lo q
 Evidencia: configuración releída antes de borrar e igual a la del historial (commit 398cab8); enlaces revisados en las 36 hojas de Pruebas y en la hoja de Others: los tres avisos `DV | Aviso asignacion ...` de Others siguen encendidos; `KMV - Designers` sólo la enlazaban dos avisos apagados de las hojas viejas. Nombre comprobado en pantalla antes de cada `Delete View`; lista releída: quedan las 9 vistas de la 2.0 y 5 de ejemplo.
 Cambios en Smartsheet: borradas 4 vistas (`8. Others - Engineering Plan 2026 DESIGNERS`, `... PERMITTING TEAM`, `... RECORDS`, `KMV - Designers`); las personas y grupos que las tenían compartidas pierden el acceso. Ninguna hoja ni automatización modificada; maestra 2.0 con 79 columnas.
 Docs: `vistas_anteriores/` VA-09, VA-10 a VA-12 y VA-41; VISTAS VK-00t6.
+
+## 2026-11-23 23:09 -05:00 Avisos de Others apagados por el usuario (VA-15)
+
+Estado: hecho.
+El usuario apagó en `8. Others - Engineering Plan 2026` (producción) los tres avisos `DV | Aviso asignacion ...` que enlazaban a las vistas borradas. Comprobado por API, sólo lectura: 0 avisos encendidos de 5 en esa hoja. Docs: `vistas_anteriores/` VA-09 y VA-15.

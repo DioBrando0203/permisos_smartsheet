@@ -36,4 +36,4 @@ Hoja de producción `8. Others - Engineering Plan 2026` (`8569789430583172`, wor
 
 - VA-13: el circuito completo funcionaba: la coordinadora asigna, el aviso llega con el enlace y la persona ve sólo sus filas. En la 2.0 se mantiene, con una sola columna de contacto por equipo y el aviso saliendo de la hoja del equipo (`../AUTOMATIZACIONES_KMV_2.0.md` AU-00c, AU-00j).
 - VA-14: la tabla de permisos con 49 columnas era la hoja entera: la 2.0 usa tablas cortas y paneles por tipo (`../KMV_2.0.md` K2-94, `../VISTAS_KMV_2.0.md` VK-27 a VK-29).
-- VA-15: si se borran estas vistas, los tres avisos activos de la hoja de producción siguen enviando el enlace roto; apagarlos o cambiarlos es una escritura en producción que sólo puede hacer el usuario.
+- VA-15: si se borran estas vistas, los tres avisos activos de la hoja de producción siguen enviando el enlace roto; apagarlos o cambiarlos es una escritura en producción que sólo puede hacer el usuario. Resuelto el 2026-11-23: el usuario apagó los tres avisos; comprobado por API (sólo lectura), la hoja quedó con 0 avisos encendidos de 5.
