@@ -1319,3 +1319,13 @@ Nuevo:
 - `DESPLIEGUE_RAILWAY.md`: RW-07 (pendientes), RW-12 (redesplegar tras cambiar variables), RW-15 (CLI de Railway) y "Preguntas del usuario", RW-50 a RW-58.
 - Índice de docs: SPEC-B22 y la guía.
 Copias en `/mnt/hgfs/Share`: mapa, VISTAS y AUTOMATIZACIONES. La maestra sigue con 79 columnas.
+
+## 2026-11-24 18:43 -05:00 Consulta: qué pasa si se borran filas (K2-101, MP-92b)
+
+Estado: respondido. Se encontró un defecto; el arreglo propuesto espera la decisión del usuario. Sin cambios de código ni en Smartsheet.
+Pregunta del usuario: qué pasa si elimina o borra filas.
+Revisado en el código (`childsheets/rules.py` `plan`, `options.py`, `ids/recovery.py`):
+- Una fila borrada en la maestra deja sueltas sus filas de equipo, y su ID no se reutiliza.
+- Una fila borrada en una hoja de equipo se vuelve a crear vacía, y en la pasada siguiente su resumen vacío borra en la maestra el estado, `Permit #`, las fechas y el costo, `Custom MOT` y `TYPICAL MOT`, `Design Ticket` y `Mile Post`; `Invoice Status` vuelve a `NOT INVOICED`.
+Recomendado: cancelar en vez de borrar. Propuesto: al recrear, llenar el resumen desde la maestra y avisar de las filas sueltas.
+Docs: `KMV_2.0.md` K2-101; mapa MP-92b (copiado a Share).

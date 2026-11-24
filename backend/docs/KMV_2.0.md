@@ -102,6 +102,23 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 - K2-98 (2026-11-22, el usuario: probablemente se aloje en Railway o AWS; por planificar, sin cambios todavía): resuelve K2-91 (el servicio deja de depender de prender una máquina), pero no cambia el límite de API, que es por token (K2-96 sigue antes de producción). Hace falta: PostgreSQL en el mismo proveedor (hoy la dirección de la base está fija en `127.0.0.1` con un `pgpass` local en `services/ids/cli.py`: pasarla a una variable de entorno); el token como variable secreta del proveedor, nunca en el repositorio; sin URL pública (el servicio sólo llama a Smartsheet; las rutas del panel no se exponen sin login, PEN-08); una sola instancia, nunca dos réplicas ni la nube y el equipo Linux a la vez, porque cada base numera por su cuenta (B-16); mudar la base con respaldo y restauración, apagando antes el de Linux. Recomendación: Railway para este tamaño (servicio y PostgreSQL en un proyecto, variables secretas, despliegue desde GitHub); AWS si la empresa ya lo usa o lo exige (más piezas: App Runner, ECS o Lightsail, más RDS). Hecho el 2026-11-24 (PEN-56, SPEC-B22, `DESPLIEGUE_RAILWAY.md`): Railway, proyecto `KMV`, con el servicio `permisos_smartsheet` y su `Postgres`. La base va por variable de entorno (`IDS_DATABASE_URL`) y el token como variable del servicio; sin URL pública, una sola instancia, y el equipo Linux con su procesador apagado. Registro de IDs copiado y verificado; primer despliegue a las 17:53; prueba completa en vivo a las 18:28 (`KMV-26-0008`).
 - K2-99 (2026-11-24 18:21, observación en la prueba del usuario; decisión pendiente): un `DT Owner` puesto en un permiso crea su propia fila en `Design Tickets`, porque el servicio la crea para cualquier fila con `DT Owner` (HP-14). K2-08 y K2-23 dicen una fila por proyecto, con `DT Owner` en el proyecto. Recomendado: limitar `Design Tickets` a proyectos. La fila ya creada no se borra (el servicio nunca borra); el usuario puede eliminarla a mano.
 - K2-100 (2026-11-24 18:26): proyectos de prueba en la maestra.
+- K2-101 (2026-11-24, pregunta del usuario: qué pasa si se borran filas; revisado en el código, `childsheets/rules.py` `plan`):
+  - Fila de la maestra (proyecto o trámite):
+    - Sus filas en las hojas de equipo no se borran (el servicio nunca borra): quedan sueltas, sin datos al día ni resumen de vuelta, y el equipo las sigue viendo en su vista.
+    - Su ID no se reutiliza nunca: si se vuelve a cargar, recibe uno nuevo y queda un salto.
+    - Desaparece de `Parent Project`; `Linked Tracking` lo conserva.
+    - Se pierden su `Obs` y sus conversaciones.
+    - En Smartsheet, borrar un proyecto borra también los trámites que tiene debajo.
+  - Fila de una hoja de equipo (`Permits`, MOT, Records, `Billing`, `Design Tickets`) cuya fila de la maestra sigue pidiéndola:
+    - El servicio la vuelve a crear en el ciclo siguiente, sólo con el contexto y los datos iniciales de la maestra.
+    - Defecto encontrado: en la pasada siguiente, sus columnas de resumen vacías vuelven a la maestra y borran lo que había. En `Permits`: el estado del trámite (`Project Status`), `Permit #`, `Permit Approved`, `Permit Expires` y `Permit Fee`. En MOT: el estado, `Custom MOT` y `TYPICAL MOT`. En `Design Tickets`: `Design Ticket` y `Mile Post`. En `Billing`: `Invoice Status` vuelve a `NOT INVOICED`.
+    - Lo que sólo vivía en esa fila (datos de factura, del pedido de Records, conversaciones y adjuntos) se pierde.
+    - La fila de paquetes (`Package`) no devuelve nada.
+  - Recomendado: nunca borrar; cancelar (`CANCELLED` en la maestra se impone en la hoja del equipo, MP-92). Para quitar una prueba entera, borrar primero sus filas de la maestra y después las de las hojas de equipo, que ya no se recrean.
+  - Arreglo propuesto, pendiente de decisión del usuario:
+    - Al volver a crear una fila de equipo, llenar sus columnas de resumen con lo que tiene la maestra, para que no se borre nada allí.
+    - Avisar en el registro de las filas de equipo sueltas, para revisarlas.
+    - En `Billing`, `Invoice Status` es fórmula: lo único que protege los datos de factura es no borrar esas filas.
   - `Client Access` toma los contactos del cliente desde `Customer List` según `Customer`; hoy tienen contactos `BS-Blue Stream` (2), `CC-Crown Castle` (1) y `HC-Hotwire Communications` (1).
   - Una prueba con esos clientes queda visible para ellos en `PROJECT KMV 2.0 - CUSTOMERS` en cuanto la vista se les comparta, y sus avisos les escribirían si estuvieran encendidos.
   - Las pruebas van con `OT-Others`, que no tiene contactos.

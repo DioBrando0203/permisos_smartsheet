@@ -50,3 +50,7 @@ Estado 2026-11-23. Qué hace el servicio con la API de Smartsheet, cómo corre, 
 - MP-90: notas. Personas: siempre como comentario de la fila; el servicio copia a `Obs` las de la maestra y las de `Permits` (MP-71b); las de las otras hojas de equipo se quedan en su hoja.
 - MP-91: el cliente. Smartsheet: cada cliente ve sus proyectos en la vista `CUSTOMERS`; en producción recibe un correo cuando su estado cambia.
 - MP-92: cancelar o cerrar. Persona: `CANCELLED` en la fila (nunca se borra) o el estado de cierre; `Closed` lo calcula la maestra y el servicio deja de repartir lo cerrado.
+- MP-92b: si alguien borra una fila (`../KMV_2.0.md` K2-101).
+  - En la maestra: sus filas de las hojas de equipo quedan sueltas, sin borrarse, y su ID no vuelve a usarse.
+  - En una hoja de equipo: el servicio la vuelve a crear vacía, y hoy eso borra en la maestra lo que esa fila había devuelto (estado, `Permit #`, fechas, `Design Ticket`, `Invoice Status`); arreglo pendiente.
+  - Por eso se cancela, nunca se borra.
