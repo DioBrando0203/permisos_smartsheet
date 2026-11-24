@@ -1330,6 +1330,13 @@ Revisado en el código (`childsheets/rules.py` `plan`, `options.py`, `ids/recove
 Recomendado: cancelar en vez de borrar. Propuesto: al recrear, llenar el resumen desde la maestra y avisar de las filas sueltas.
 Docs: `KMV_2.0.md` K2-101; mapa MP-92b (copiado a Share).
 
+## 2026-11-24 18:56 -05:00 Decisión: dejar todo como está mientras se prueba (K2-102, RW-60)
+
+Estado: anotado; sin cambios de código ni en Smartsheet.
+Decisión del usuario: el servicio ya funciona, así que mientras se prueba queda como está (K2-99 y el arreglo de K2-101 esperan). Al pasar a producción se borra toda la base.
+Respuesta: de acuerdo, con una condición. La base se borra junto con el cambio a la maestra de producción, nunca sola: con la misma maestra, el registro vacío no numera hasta inicializarse y `Obs` volvería a copiar los comentarios viejos. Orden y lista previa en K2-102.
+Docs: `KMV_2.0.md` K2-102; `DESPLIEGUE_RAILWAY.md` RW-59 y RW-60.
+
 ## 2026-11-24 23:55 -05:00 Design Tickets sólo para la fila del proyecto (K2-99)
 
 Estado: hecho en código; rige en Railway con el despliegue (push).

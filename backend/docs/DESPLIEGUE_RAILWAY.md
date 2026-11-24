@@ -94,6 +94,10 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
 - RW-42: la configuración en archivo de Railway (`railway.json`) se retira el 2026-12-01; por eso los ajustes viven en el servicio (RW-02) y en el `Dockerfile`.
 
 
+## Paso a producción
+
+- RW-60: decidido por el usuario (2026-11-24): mientras se prueba, todo queda como está. Al pasar a producción se borra toda la base y se empieza limpio con la maestra de producción. Orden y lista previa: `KMV_2.0.md` K2-102.
+
 ## Preguntas del usuario (2026-11-24)
 
 - RW-50: "Pagué $5 de Railway, ¿qué me recomiendas hacer?"
@@ -108,3 +112,4 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
 - RW-56: "`gis_permisos`, la gestión de usuarios y lo demás quedarán obsoletos: ¿no recomiendas webhooks para nada?": queda PEN-57. Hoy ninguna función necesita webhooks, ni los de Smartsheet ni unos propios; cuándo revisarlo, en DP-13.
 - RW-57: prueba del usuario y "no salió el pedido de Records; revisa qué más faltó, crea tú un proyecto con subfilas y mantenlas": RW-06, RW-06b y RW-08. Queda la decisión K2-99.
 - RW-58: "Documenta todo lo que se hizo y se preguntó desde un poco antes del despliegue": esta sección, la bitácora del día, y los estados al día en KMV_2.0 (K2-72, K2-85b, K2-91, K2-96d, K2-97 a K2-100), SPEC-B17, SPEC-B19, SPEC-B21, el mapa, `servicios/ids/README.md`, B-16, AUTOMATIZACIONES AU-07, VISTAS, ARQUITECTURA y el índice de docs.
+- RW-59: "¿Qué pasa si borro filas?": K2-101 y mapa MP-92b. "Dejémoslo como está; al pasar a producción borramos toda la base": de acuerdo, con el orden de K2-102 (RW-60).

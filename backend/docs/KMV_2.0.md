@@ -124,6 +124,22 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
   - Las pruebas van con `OT-Others`, que no tiene contactos.
   - Proyecto de prueba permanente: `KMV-26-0008` (filas 19 a 22, `DESPLIEGUE_RAILWAY.md` RW-08).
   - La prueba del usuario `KMV-26-0007` (filas 16 y 17) usa `HC-Hotwire Communications`: conviene pasarla a `OT-Others` o borrarla antes de compartir la vista de clientes.
+- K2-102 (2026-11-24, decisión del usuario): mientras se prueba, todo queda como está: el servicio ya funciona. K2-99 y el arreglo de K2-101 esperan. Al pasar a producción se borra toda la base (registro de IDs y comentarios ya copiados), en línea con empezar limpio (K2-93).
+  - Borrar la base se hace junto con el cambio de maestra, nunca solo: con la misma maestra y sus IDs, el registro vacío no numera hasta inicializarse, y `Obs` volvería a copiar todos los comentarios viejos.
+  - Orden:
+    1. Respaldo de la base de Railway (`transfer.py` hacia una base local vacía).
+    2. Procesador apagado en Railway (`IDS_MONITOR_ENABLED=false` y redespliegue).
+    3. Base vacía: se borran las tablas o se recrea `Postgres`; al arrancar, las migraciones crean todo de nuevo (SPEC-B22 DP-04).
+    4. Maestra de producción limpia y `IDS_MASTER_SHEET_ID` apuntando a ella.
+    5. Registro inicializado (importar lo que ya tenga ID, o aprobar el número de inicio del año en `IDS_APPROVED_STARTS`).
+    6. Procesador encendido.
+  - Antes de producción también:
+    - Arreglo de K2-101 (al recrear una fila de equipo no se borra nada en la maestra) y decisión de K2-99.
+    - Token propio del servidor (DP-13).
+    - "Wait for CI" y comprobar GitHub Actions (RW-07).
+    - Avisos encendidos con sus destinatarios.
+    - Vista de clientes compartida sólo con proyectos reales (K2-100).
+    - Quitar las filas de prueba en el orden de K2-101.
 
 ## Mi opinión (Claude)
 
