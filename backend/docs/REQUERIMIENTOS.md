@@ -57,6 +57,13 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 
 ## Pendientes (backlog priorizado)
 
+### PEN-57 Quedarse sólo con las hojas y sus Dynamic Views
+
+Prioridad: baja, sin fecha (decisión del usuario, 2026-11-24). Estado: sin empezar.
+- Lo que no sea las hojas y sus Dynamic Views queda obsoleto: `gis_permisos`, la gestión de usuarios y permisos, y lo demás.
+- Se pasa a otra rama de GitHub; esta rama se queda con el procesador (IDs, hojas de equipo, `Obs`, metraje), que corre en Railway (PEN-56).
+- Hasta entonces, nada nuevo para esas partes; las decisiones de diseño se miden sólo por el procesador.
+
 ### PEN-56 Procesador en Railway
 
 Prioridad: alta (pedido del usuario, 2026-11-24, tras contratar Railway). Estado: preparado y configurado. Base copiada y verificada en Railway, procesador del equipo Linux apagado, token y procesador encendidos en el servidor (decisiones del usuario, 2026-11-24). Desplegado el 2026-11-24 17:53 (commit `74efda8`), sin errores, unos $2 al mes. Falta ver una fila nueva numerada desde Railway. Spec: SPEC-B22. Guía: `DESPLIEGUE_RAILWAY.md`. Decisión: ADR-B19.

@@ -44,6 +44,12 @@ Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más e
     - Si el receptor falla, reintentan hasta 14 veces y después apagan el webhook (`DISABLED_CALLBACK_FAILED`): hay que vigilarlo, reactivarlo y mantener igual una consulta lenta de respaldo.
   - Separar la consulta en otro servicio no ahorra llamadas: serían las mismas, con el mismo token. Ya corre aparte, como tarea en segundo plano que no bloquea al resto del servicio.
   - Si algún día se usan webhooks (más hojas o compañías, o el cupo justo), irían en un receptor aparte: un servicio chico y público, sin el token de Smartsheet, que sólo responde la verificación, valida la firma y despierta al procesador por la red privada de Railway. El procesador sigue sin dirección pública y su consulta pasa a cada 5 o 10 minutos, de respaldo.
+  - Webhooks propios (que el servicio reciba o mande avisos a otros sistemas): no hacen falta. Ninguna herramienta externa necesita enterarse ni avisarnos (ADR-B15), y los correos salen por Smartsheet.
+  - Cuándo revisarlo:
+    - Si las llamadas pasan de unas 150 por minuto (la mitad del cupo; hoy 14 a 20, con seis hojas vigiladas).
+    - Si hay que vigilar decenas de hojas que no se conocen de antemano.
+    - Si se integra otro sistema que deba avisar o recibir avisos.
+    - Si el historial de celdas del metraje (10 llamadas cada uno) aprieta el cupo.
   - Recomendado: un token de API propio para el servidor (el mismo usuario administrador puede generar otro). El cupo de 300 por minuto es por token: así el procesador no comparte cupo con otras herramientas que usen el token actual, y se puede revocar sin tocar lo demás. Pendiente de que el usuario lo genere.
 
 ## Costo y carga

@@ -1261,3 +1261,9 @@ Pregunta del usuario: si el procesador siempre tiene que preguntar, si Smartshee
 Respuesta: se mantiene la consulta periódica, que es barata, más rápida que los webhooks con su espera de un minuto y no pierde nada si algo falla. Separarla no ahorra llamadas. Los webhooks irían en un receptor público aparte, sin token, si el volumen crece. Recomendado ya: un token propio para el servidor (cupo propio de 300 por minuto, revocable aparte).
 Evidencia: documentación oficial de webhooks de Smartsheet (developers.smartsheet.com, leída hoy) y las métricas de Railway (RW-05, RW-13b).
 Docs: SPEC-B22 DP-13.
+
+## 2026-11-24 18:13 -05:00 Alcance del repo y webhooks para el servicio (PEN-57, SPEC-B22 DP-13)
+
+Estado: anotado; sin cambios de código ni en Smartsheet.
+Decisión del usuario: `gis_permisos`, la gestión de usuarios y todo lo que no sea las hojas y sus Dynamic Views queda obsoleto; se pasará a otra rama de GitHub y esta se queda con el procesador (PEN-57, sin fecha).
+Pregunta: si conviene usar webhooks de Smartsheet o crear los nuestros. Respuesta: hoy ninguna función los necesita (detalle en SPEC-B22 DP-13, con cuándo revisarlo).
