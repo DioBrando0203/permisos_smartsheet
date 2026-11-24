@@ -68,7 +68,7 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 - VK-07: quitar `Primary` de `Visible fields` (siempre dice `KMV-P`) y poner primero `Tracking Project`.
 - VK-08: en el panel, primero lo que se escribe al crear, luego lo que se va llenando con el trabajo y al final lo de sólo lectura. Lo que copia el servicio va de sólo lectura: si alguien lo cambia, el servicio lo vuelve a escribir.
 - VK-09: nunca agregar columnas técnicas: `Master Row`, `Stable Tracking Project`, `Row Level`, `Row Order`, `Customer Code`, `Year`, `Control Linked Tracking`.
-- VK-09b: `Obs` nunca se edita (decisión del usuario): las notas se escriben como conversación de la fila (pestaña `Comments` del panel) y el servicio las copia a `Obs` (SPEC-B17). En toda vista `Obs` va de sólo lectura (`Read-Only`) y en `View Display` quedan marcados `Display comments` y `Users can add comments`.
+- VK-09b: `Obs` nunca se edita (decisión del usuario): las notas se escriben como conversación de la fila (pestaña `Comments` del panel) y el servicio las copia a `Obs` (SPEC-B17). En toda vista `Obs` va de sólo lectura (`Read-Only`) y en `View Display` quedan marcados `Display comments` y `Users can add comments`. Llegan a `Obs` los comentarios de las vistas sobre la maestra y también los de `PERMITS TEAM` (hoja `Permits`, al `Obs` de su fila de la maestra, SPEC-B17 OB-17, desde el 2026-11-24); los de las otras vistas de equipo se quedan en su hoja.
 - VK-10: ordenar la tabla por `Tracking Project` de mayor a menor (lo nuevo arriba) y, ya en la vista, guardar un filtro `Open` con lo pendiente.
 
 ## 1. Coordinación (Zaira): dos vistas sobre la maestra

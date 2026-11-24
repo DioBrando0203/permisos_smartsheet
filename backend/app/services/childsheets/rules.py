@@ -42,6 +42,8 @@ class ChildSpec:
     mother_summary: tuple[str, ...] = ()
     # (columna de estado de la hija, valor) que la maestra impone (HP-06): la cancelación.
     cancel: tuple[str, str] | None = None
+    # Las conversaciones de sus filas pasan al `Obs` de su fila en la maestra (SPEC-B17 OB-17).
+    obs: bool = False
 
     @property
     def mirrored(self) -> tuple[str, ...]:

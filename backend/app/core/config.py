@@ -67,6 +67,9 @@ class Settings(BaseSettings):
     app_obs_timezone: str = "America/Lima"
     app_obs_interval_seconds: int = 30
     app_obs_max_rows: int = 20
+    # También las conversaciones de las hojas de equipo marcadas en su spec (hoy `Permits`), en
+    # el `Obs` de su fila de la maestra (SPEC-B17 OB-17); exige esa hoja activada.
+    app_obs_mirrors_enabled: bool = False
     # Un paso cuyas hojas no cambiaron se salta, pero corre igual cada tanto por si algo no
     # movió la versión (SPEC-B21 CA-03, CA-04); Obs más seguido: una conversación nueva quizá
     # no cambie la versión de la hoja.

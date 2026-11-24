@@ -189,15 +189,8 @@ def child_hooks(
     }
 
 
-def _child_steps(
-    settings: Settings, client: SmartsheetClient
-) -> dict[str, tuple[Callable[[], Awaitable[dict]], tuple[str, ...]]]:
-    """Cada paso activado con las hojas que lee además de la maestra."""
-    interval, max_rows = settings.app_records_interval_seconds, settings.app_records_max_rows
-    hooks: dict[str, tuple[Callable[[], Awaitable[dict]], tuple[str, ...]]] = {}
-    if settings.app_inherit_enabled:
-        inherit = InheritSync(settings, client, interval=interval, max_rows=max_rows)
-        hooks["inherit"] = (inherit.run, ())
+def team_sheets(settings: Settings) -> list[tuple[ChildSpec, str]]:
+    """Hojas de equipo activadas, cada una con su spec, en el orden de los pasos."""
     configured = [
         (RECORDS, settings.app_records_sync_enabled, settings.app_records_sheet_id),
         (billing_spec(settings), settings.app_billing_sync_enabled, settings.app_billing_sheet_id),
@@ -209,13 +202,22 @@ def _child_steps(
             settings.app_design_tickets_sheet_id,
         ),
     ]
-    for spec, enabled, sheet in configured:
-        if enabled and sheet:
-            sync = ChildSheetSync(
-                settings, client, spec, sheet, interval=interval, max_rows=max_rows
-            )
-            hooks[spec.name] = (sync.run, (sheet,))
-        if spec.name == BILLING.name and settings.app_footage_sync_enabled and enabled and sheet:
+    return [(spec, sheet) for spec, enabled, sheet in configured if enabled and sheet]
+
+
+def _child_steps(
+    settings: Settings, client: SmartsheetClient
+) -> dict[str, tuple[Callable[[], Awaitable[dict]], tuple[str, ...]]]:
+    """Cada paso activado con las hojas que lee además de la maestra."""
+    interval, max_rows = settings.app_records_interval_seconds, settings.app_records_max_rows
+    hooks: dict[str, tuple[Callable[[], Awaitable[dict]], tuple[str, ...]]] = {}
+    if settings.app_inherit_enabled:
+        inherit = InheritSync(settings, client, interval=interval, max_rows=max_rows)
+        hooks["inherit"] = (inherit.run, ())
+    for spec, sheet in team_sheets(settings):
+        sync = ChildSheetSync(settings, client, spec, sheet, interval=interval, max_rows=max_rows)
+        hooks[spec.name] = (sync.run, (sheet,))
+        if spec.name == BILLING.name and settings.app_footage_sync_enabled:
             hooks["footage"] = (FootageSync(settings, client, interval=interval).run, (sheet,))
     if settings.ids_project_options_enabled:
         hooks["options"] = (ProjectOptions(settings, client, interval=interval).run, ())

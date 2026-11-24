@@ -51,13 +51,20 @@ Regla: SM-04 (escrituras sólo ante 429 y 503).
 
 ## Tolerancia por elemento (Bulkhead)
 
-Dónde: `users.py` al recorrer hojas.
-Qué: una hoja que falla se anota en `failed_sheets` y no detiene el resto.
+Dónde: `users.py` al recorrer hojas; `services/obs/sync.py` con las hojas de equipo (OB-17).
+Qué: una hoja que falla se anota en `failed_sheets` (en Obs, como un error del paso) y no detiene el resto.
 
 ## Releer después de escribir
 
 Dónde: `shares.py`.
 Qué: la respuesta de una escritura se arma releyendo de Smartsheet, no suponiendo el resultado.
+
+## Fuentes de comentarios: reflejo de la maestra (Strategy + Adapter)
+
+Dónde: `services/obs/sources.py`, usado por `services/obs/sync.py` (SPEC-B17 OB-17).
+Qué: las hojas de equipo son un reflejo de la maestra: cada fila apunta a la suya por `Master Row`. El compilador de `Obs` recorre fuentes con la misma forma (`sheet` y `owners`) y no sabe de qué hoja viene cada comentario (Strategy). `MasterRows` es la maestra, dueña de sus comentarios; `MirrorRows` traduce cada fila de una hoja de equipo a su fila de la maestra (Adapter). Desde allí, una sola lógica compone, archiva y escribe, y cada comentario se registra donde está.
+Cuándo: algo que se escribe en una hoja de equipo tiene que llegar a su fila de la maestra. Sumar otra hoja al `Obs` es marcar `obs=True` en su `ChildSpec`, sin código nuevo.
+Cuándo no: lo que vuelve como columna (estado, `Permit #`) ya lo hace el resumen de `ChildSheetSync` (SPEC-B20); no duplicarlo con fuentes.
 
 ## Antipatrones prohibidos
 

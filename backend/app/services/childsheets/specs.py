@@ -169,6 +169,8 @@ PERMITS = ChildSpec(
     # Un proyecto `Miscellaneous` recibe lo del permiso, no el estado (lo lleva la coordinación).
     mother_summary=("Permit #", "Permit Approved", "Permit Expires", "Permit Fee"),
     cancel=("Permit Status", "CANCELLED"),
+    # Decisión del usuario (K2-85b): sólo el chat de cada permiso llega a `Obs`, que ve el cliente.
+    obs=True,
 )
 
 # Filas `MOT` (hijas `KMV-MOT`) y `Package` (madres con `Prepare Packages`).

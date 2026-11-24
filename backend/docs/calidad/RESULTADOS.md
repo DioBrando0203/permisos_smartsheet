@@ -474,3 +474,10 @@ Entorno: Windows, Python 3.14.7 en `backend/.venv`.
 - Prueba nueva `test_childsheets.py::test_records_status_summary_is_not_copied_to_a_new_request`: falló antes del cambio y pasa después.
 - `pytest`: 156 aprobadas y 59 omitidas. `ruff check` y `ruff format --check`: sin errores.
 - Smartsheet (Pruebas): fórmula guardada sin error; valores iguales antes y después; con `Record Box` marcado en los dos pedidos de `KMV-26-0003` (datos sintéticos) la maestra mostró `Complete` a los 20 s (en el primer intento, con la referencia recién creada, a los 30 s aún no); casillas devueltas a sin marcar y maestra de vuelta a `Pending (0/2 received)`.
+
+## 2026-11-24 17:05 -05:00 Chat de Permits en el Obs de la maestra (SPEC-B17 OB-17)
+
+Entorno: Linux, `backend/.venv`, PostgreSQL local para las pruebas de Obs.
+- Pruebas nuevas en `tests/test_obs_mirrors.py` (3; no podían pasar antes del cambio: no existían las fuentes ni el parámetro `mirrors`): el chat de `Permits` llega al `Obs` de su `Master Row` en la misma línea que un comentario de la maestra del mismo día; `#internal`, filas sin `Master Row` y filas cuya fila de la maestra se borró no pasan; cada comentario queda registrado con su hoja y su fila; la segunda pasada no escribe. Una hoja de equipo sin `Master Row` o fuera de Pruebas cuenta un error y la maestra sigue; al corregirse, el comentario pasa. Sólo `Permits` y sólo con `APP_OBS_MIRRORS_ENABLED`.
+- `pytest`: 218 aprobadas. `ruff check app tests` y `ruff format --check app tests`: sin errores.
+- No probado en vivo: al reiniciar el backend, comentar en una fila de `Permits (Prototype)` y ver el texto en el `Obs` de su fila de la maestra en un par de minutos.

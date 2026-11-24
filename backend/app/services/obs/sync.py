@@ -1,4 +1,8 @@
-"""Copia los comentarios nuevos de cada fila a la columna Obs (SPEC-B17): agrega, nunca borra."""
+"""Copia los comentarios nuevos de cada fila a la columna Obs (SPEC-B17): agrega, nunca borra.
+
+Lee los de la maestra y los de las hojas de equipo que son su reflejo (OB-17, `sources.py`);
+todos se componen juntos en el `Obs` de su fila de la maestra.
+"""
 
 import asyncio
 import logging
@@ -14,6 +18,7 @@ from app.services.ids.cli import DSN
 from app.services.ids.dry_run import PILOT_WORKSPACE
 from app.services.ids.runtime import writes_allowed
 from app.services.obs import rules
+from app.services.obs.sources import Entry, MasterRows, MirrorRows, Source, mirror_sheets
 from app.services.obs.store import ObsStore
 from app.services.smartsheet import SmartsheetClient
 from app.services.smartsheet.types import RawComment
@@ -33,6 +38,15 @@ def pending_by_row(comments: list[RawComment], done: set[str]) -> dict[str, list
     return {row: rows[row] for row in sorted(rows, key=lambda row: oldest[row])}  # type: ignore[arg-type,return-value]
 
 
+def by_target(entries: list[Entry]) -> dict[str, list[Entry]]:
+    """Comentarios por fila de la maestra; primero la fila con el comentario más antiguo."""
+    rows: dict[str, list[Entry]] = {}
+    for entry in entries:
+        rows.setdefault(entry.target, []).append(entry)
+    oldest = {row: min(e.comment.created_at for e in items) for row, items in rows.items()}  # type: ignore[type-var]
+    return {row: rows[row] for row in sorted(rows, key=lambda row: oldest[row])}
+
+
 class ObsSync:
     def __init__(
         self,
@@ -43,11 +57,13 @@ class ObsSync:
         zone: tzinfo,
         interval: float = 30.0,
         max_rows: int = 20,
+        mirrors: tuple[str, ...] = (),
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self.settings = settings
         self.client = client
         self.store = store
+        self.mirrors = mirrors
         self.zone = zone
         self.interval = max(0.0, interval)
         self.max_rows = max(1, max_rows)
@@ -74,16 +90,46 @@ class ObsSync:
         if await self.client.sheet_workspace_id(sheet) != PILOT_WORKSPACE:
             raise ValueError("La hoja no pertenece al workspace Pruebas")
         column = await self._column(sheet)
-        comments = await self.client.list_row_comments(sheet)
-        done = await asyncio.to_thread(self.store.processed, sheet)
-        pending = pending_by_row(comments, done)
-        if pending:
+        entries = await self._entries(MasterRows(sheet))
+        for source in self._mirrors(sheet):
+            try:
+                entries += await self._mirror_entries(source)
+            except (AppError, ValueError) as error:
+                # Bulkhead: una hoja de equipo con problemas no frena el Obs de la maestra.
+                logger.warning("obs: hoja %s sin leer (%s)", source.sheet, type(error).__name__)
+                counts["errors"] += 1
+        if entries:
             # La API sigue listando conversaciones de filas borradas: sólo filas vigentes (OB-14).
             existing = {row.id for row in await self.client.list_rows(sheet, [column])}
-            pending = {row: items for row, items in pending.items() if row in existing}
+            entries = [entry for entry in entries if entry.target in existing]
+        pending = by_target(entries)
         counts["waiting_rows"] += max(0, len(pending) - self.max_rows)
         for row_id, items in list(pending.items())[: self.max_rows]:
             await self._row(sheet, column, row_id, items, counts)
+
+    def _mirrors(self, sheet: str) -> list[MirrorRows]:
+        """Las hojas de equipo son reflejo de la maestra principal, no de otras hojas."""
+        return [MirrorRows(mirror) for mirror in self.mirrors] if sheet == pilot.PRESENTABLE else []
+
+    async def _mirror_entries(self, source: MirrorRows) -> list[Entry]:
+        if await self.client.sheet_workspace_id(source.sheet) != PILOT_WORKSPACE:
+            raise ValueError("La hoja no pertenece al workspace Pruebas")
+        return await self._entries(source)
+
+    async def _entries(self, source: Source) -> list[Entry]:
+        """Comentarios nuevos de la hoja, cada uno con la fila de la maestra que lo recibe."""
+        comments = await self.client.list_row_comments(source.sheet)
+        done = await asyncio.to_thread(self.store.processed, source.sheet)
+        pending = pending_by_row(comments, done)
+        if not pending:
+            return []
+        owners = await source.owners(self.client, set(pending))
+        return [
+            Entry(source.sheet, owners[row], item)
+            for row, items in pending.items()
+            if row in owners
+            for item in items
+        ]
 
     async def _column(self, sheet: str) -> str:
         title = self.settings.app_obs_column
@@ -93,15 +139,18 @@ class ObsSync:
         return matches[0]
 
     async def _row(
-        self, sheet: str, column: str, row_id: str, items: list[RawComment], counts: dict[str, int]
+        self, sheet: str, column: str, row_id: str, items: list[Entry], counts: dict[str, int]
     ) -> None:
         try:
             current = (await self.client.get_row(sheet, row_id)).cells.get(column)
-            value, archived = rules.fit(rules.compose(current, items, self.zone))
-            ids = [item.id for item in items]
+            comments = [entry.comment for entry in items]
+            value, archived = rules.fit(rules.compose(current, comments, self.zone))
+            # Cada comentario queda registrado en la hoja y la fila donde está (OB-05).
+            done = [(entry.sheet, entry.comment.row_id, entry.comment.id) for entry in items]
             if archived:
                 # Primero el archivo: si después falla Obs, el texto ya está a salvo (OB-07).
-                ids.extend(await self._archive(sheet, row_id, archived))
+                created = await self._archive(sheet, row_id, archived)
+                done.extend((sheet, row_id, comment) for comment in created)
                 counts["archived"] += 1
         except AppError as error:
             logger.warning("obs: fila %s sin procesar (%s)", row_id, error.code)
@@ -110,7 +159,7 @@ class ObsSync:
         if not await self._write(sheet, column, row_id, value):
             counts["errors"] += 1
             return
-        await asyncio.to_thread(self.store.record, sheet, row_id, ids)
+        await asyncio.to_thread(self.store.record, done)
         counts["rows"] += 1
         counts["comments"] += len(items)
 
@@ -152,6 +201,7 @@ def obs_hook(
     """
     if not settings.app_obs_sync_enabled or not writes_allowed(settings):
         return None
+    mirrors = mirror_sheets(settings)
     sync = ObsSync(
         settings,
         client,
@@ -159,7 +209,8 @@ def obs_hook(
         zone=ZoneInfo(settings.app_obs_timezone),
         interval=settings.app_obs_interval_seconds,
         max_rows=settings.app_obs_max_rows,
+        mirrors=mirrors,
     )
-    sheets = tuple(item[0] for item in pilot.SHEETS)
+    sheets = (*(item[0] for item in pilot.SHEETS), *mirrors)
     board = board or VersionBoard(client)
     return GatedStep(sync.run, sheets, board, settings.app_obs_force_seconds).run

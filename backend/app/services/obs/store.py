@@ -14,13 +14,17 @@ class ObsStore:
             ).fetchall()
         return {str(row[0]) for row in rows}
 
-    def record(self, sheet_id: str, row_id: str, comment_ids: list[str]) -> None:
-        """Idempotente: un comentario ya registrado se ignora."""
-        if not comment_ids:
+    def record(self, comments: list[tuple[str, str, str]]) -> None:
+        """(hoja, fila, comentario) de cada comentario incorporado, en una sola transacción.
+
+        La hoja y la fila son donde está el comentario: la maestra o una hoja de equipo
+        (SPEC-B17 OB-17). Idempotente: un comentario ya registrado se ignora.
+        """
+        if not comments:
             return
         with psycopg.connect(self.dsn, connect_timeout=5) as conn:
             conn.cursor().executemany(
                 "INSERT INTO obs_comentario (comentario_id, hoja_id, fila_id) "
                 "VALUES (%s, %s, %s) ON CONFLICT (comentario_id) DO NOTHING",
-                [(int(item), int(sheet_id), int(row_id)) for item in comment_ids],
+                [(int(comment), int(sheet), int(row)) for sheet, row, comment in comments],
             )

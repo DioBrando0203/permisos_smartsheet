@@ -110,7 +110,8 @@ app/
   services/smartsheet/emails.py envío de filas por correo desde Smartsheet, mezcla del cliente (FH-05c)
   services/smartsheet/structure.py escrituras de estructura (opciones de un desplegable y de una columna de contacto), mezcla del cliente
   services/obs/rules.py         reglas puras de Obs: formato MM.DD, unión del mismo día, límite y archivo (SPEC-B17)
-  services/obs/store.py         comentarios ya copiados a Obs en PostgreSQL (migración 004)
+  services/obs/sources.py       de qué hoja sale cada comentario y a qué fila de la maestra va: la maestra o el reflejo de `Permits` por `Master Row` (OB-17)
+  services/obs/store.py         comentarios ya copiados a Obs en PostgreSQL (migración 004), con la hoja y la fila donde están
   services/obs/sync.py          paso del procesador que copia comentarios nuevos a Obs con barreras; nunca borra texto
   models/associations.py         contrato de la revisión de asociaciones
   services/export.py             CSV para Excel de permisos por hoja (sin guardar en el servidor)

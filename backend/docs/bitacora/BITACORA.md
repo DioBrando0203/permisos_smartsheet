@@ -1199,3 +1199,11 @@ Sin cambios en código ni en Smartsheet.
 Estado: hecho.
 Pedido: llevar al mapa la explicación de `Row Type` (para qué sirve y por qué hizo falta) y lo conversado sobre `Obs`, y copiar el mapa a la carpeta compartida.
 Cambios: `mapa_2.0/HOJAS_Y_PIEZAS.md` MP-21b; `mapa_2.0/SERVICIO_Y_FLUJO.md` MP-71 (corregido: `Obs` va sin autor, como dice SPEC-B17 OB-03; antes decía "con fecha y autor") y MP-71b; fecha del `README.md` del mapa. Copia de `mapa_2.0/` en `/mnt/hgfs/Share/mapa_2.0`.
+
+## 2026-11-24 17:05 -05:00 Chat de Permits en el Obs de la maestra (SPEC-B17 OB-17, K2-85b)
+
+Estado: hecho en código; rige al reiniciar el backend; sin probar en vivo.
+Pedido: programar K2-85b, recordando que las hojas de equipo sólo son un reflejo de la maestra y aplicando un patrón de diseño.
+Cambios: `services/obs/sources.py` nuevo con las fuentes de comentarios (`MasterRows`, la maestra; `MirrorRows`, una hoja de equipo traducida a la maestra por `Master Row`: Strategy + Adapter). `obs/sync.py` junta los comentarios de la maestra y de `Permits`, los agrupa por fila de la maestra y escribe `Obs` una sola vez por fila; una hoja de equipo que falla cuenta un error y no frena la maestra (Bulkhead). `obs/store.py` registra cada comentario con la hoja y la fila donde está, en una sola transacción. `ChildSpec.obs` marca qué hoja pasa a `Obs` (sólo `PERMITS`); `team_sheets()` sale de `childsheets/sync.py` y lo usan los pasos y `Obs`. Interruptor `APP_OBS_MIRRORS_ENABLED` (por defecto apagado; encendido en `backend/.env`). Sin migración ni cambios en Smartsheet; la maestra sigue con 79 columnas.
+Evidencia: calidad/RESULTADOS.md.
+Docs: SPEC-B17 (estado, OB-10, OB-11, OB-13, OB-17, CA-09 a CA-11); `KMV_2.0.md` K2-85b; `patrones/PATRONES.md`; ARQUITECTURA; VISTAS VK-09b; `mapa_2.0` MP-71b y MP-90; copia del mapa y de VISTAS en `/mnt/hgfs/Share`.
