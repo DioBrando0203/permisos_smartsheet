@@ -1,6 +1,6 @@
 # Mapa de la KMV 2.0 (MP-xx)
 
-Estado 2026-11-23. Guía corta para entender la 2.0 de un vistazo: qué hojas hay, cuál es la principal, qué vistas, reportes y automatizaciones se usan, qué hace el servicio (la API) y cómo fluye un proyecto de punta a punta. Todo está en el workspace `Pruebas`, carpeta `Producto/PROJECT KMV 2.0 - Prototype`. El detalle de cada regla sigue en `../KMV_2.0.md` (K2-xx), que es la fuente del estado.
+Estado 2026-11-24. Guía corta para entender la 2.0 de un vistazo: qué hojas hay, cuál es la principal, qué vistas, reportes y automatizaciones se usan, qué hace el servicio (la API) y cómo fluye un proyecto de punta a punta. Todo está en el workspace `Pruebas`, carpeta `Producto/PROJECT KMV 2.0 - Prototype`. El detalle de cada regla sigue en `../KMV_2.0.md` (K2-xx), que es la fuente del estado.
 
 ## La 2.0 en una página
 

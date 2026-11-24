@@ -18,7 +18,8 @@ Estado 2026-11-23. Qué hace el servicio con la API de Smartsheet, cómo corre, 
 - MP-68: devuelve: lo que cada equipo resuelve vuelve a la maestra: estado del trámite, `Permit #`, aprobación, vencimiento y costo, `Custom MOT` y `TYPICAL MOT`, `Design Ticket` y `Mile Post`, `Invoice Status`. `CANCELLED` en la maestra se impone en la hoja del equipo.
 - MP-69: mantiene las listas: `Parent Project` (proyectos actuales, los nuevos primero) y `Linked Tracking` (suma los nuevos y conserva los de años anteriores).
 - MP-70: metraje: diseño lo llena en la maestra; si facturación lo corrige en `Billing`, el servicio lo pasa a la maestra y manda la fila con el valor anterior y el nuevo al diseñador del proyecto, a la persona de avisos de metraje y al ingeniero.
-- MP-71: `Obs`: copia las conversaciones de cada fila de la maestra a su columna `Obs`, con fecha y autor; nadie escribe en `Obs` a mano.
+- MP-71: `Obs`: copia las conversaciones de cada fila de la maestra a su columna `Obs` (SPEC-B17): `MM.DD - texto`, sin autor, lo más reciente arriba; los del mismo día en una línea separados por ` // `; un comentario que empieza con `**` queda como título y los que empiezan con `#internal` no se copian. Nadie escribe en `Obs` a mano (en las vistas es de sólo lectura).
+- MP-71b: dónde funciona: en cualquier comentario sobre una fila de la maestra, se escriba en la hoja, en una vista sobre la maestra (`PROJECTS`, `PERMITS`, diseño; pestaña `Comments` del panel) o en un reporte cuyas filas vienen de la maestra, porque el comentario se guarda en la fila de origen. Llega en un par de minutos (MP-74). Dónde todavía no: lo que se comenta en las hojas de equipo y sus vistas queda en esa fila y no se pierde, pero no llega al `Obs` de la maestra; el usuario decidió que sólo las conversaciones de `Permits` pasen (al `Obs` de su permiso, o del proyecto si es `KMV-Miscellaneous`), pendiente de programar (`../KMV_2.0.md` K2-85b).
 
 ## Cómo corre
 

@@ -1193,3 +1193,9 @@ Docs: SPEC-B18 RH-03d y RH-06; `KMV_2.0.md` K2-41; VISTAS VK-22; `mapa_2.0` MP-1
 Estado: revisado, sin observaciones.
 Evidencia (equipo Linux): la rama local se había separado del remoto; se rebasó sobre `origin/main`. El commit local de los avisos de `Others` (VA-15b) se descartó porque `ae0c261` ya registra lo mismo en VA-15; la revisión anterior quedó en la bitácora en su orden de hora. 215 pruebas backend aprobadas, ruff y formato correctos; sin correos, nombres ni IDs repetidos en lo nuevo. En Smartsheet (sólo GET): `Records Status` de la maestra con la regla de `Complete` y la referencia `Records Requests Box` (RH-03d), sin errores de fórmula; la maestra sigue con 79 columnas.
 Sin cambios en código ni en Smartsheet.
+
+## 2026-11-24 12:37 -05:00 Mapa de la 2.0: Row Type de MOT y paquetes, y alcance de Obs (MP-21b, MP-71b)
+
+Estado: hecho.
+Pedido: llevar al mapa la explicación de `Row Type` (para qué sirve y por qué hizo falta) y lo conversado sobre `Obs`, y copiar el mapa a la carpeta compartida.
+Cambios: `mapa_2.0/HOJAS_Y_PIEZAS.md` MP-21b; `mapa_2.0/SERVICIO_Y_FLUJO.md` MP-71 (corregido: `Obs` va sin autor, como dice SPEC-B17 OB-03; antes decía "con fecha y autor") y MP-71b; fecha del `README.md` del mapa. Copia de `mapa_2.0/` en `/mnt/hgfs/Share/mapa_2.0`.
