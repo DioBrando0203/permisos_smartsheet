@@ -42,6 +42,8 @@ RECORDS = ChildSpec(
         "Records Owner",
     ),
     fallback=("Linked Tracking",),
+    # Sin `Records Status`: en la maestra 2.0 es el resumen del proyecto (RH-03c, RH-03d), y
+    # copiarlo hacía nacer un pedido nuevo con el estado de los anteriores (RH-06).
     initial=(
         "Request Type",
         "Send Method",
@@ -52,7 +54,6 @@ RECORDS = ChildSpec(
         "PRR #",
         "Security Key",
         "Record Received",
-        "Records Status",
         "Record Box",
     ),
 )

@@ -50,7 +50,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 ## Qué calcula Smartsheet solo
 
 - K2-40: `Tracking Project`, `Phase`, `Closed`, `Client Access`, los días (`... # Days`) y `Control Linked Tracking` (oculta) en la maestra.
-- K2-41: `Records Status` en la maestra: por proyecto, `Received`, `No records` o `Pending (n/m received)`, leyendo la hoja de Records (tarda 15 a 30 segundos).
+- K2-41: `Records Status` en la maestra: por proyecto, `Received`, `No records` o `Pending (n/m received)`, leyendo la hoja de Records (tarda 15 a 30 segundos). Desde el 2026-11-24 muestra `Complete` cuando todos los pedidos del proyecto tienen `Record Box` marcado (todo hecho), para que diseño lo vea en su vista (SPEC-B18 RH-03d).
 - K2-42: `Revision Stage` en `Permits`: `No revision`, `1st Revision` o `2nd Revision`, para mostrar cada revisión sólo cuando hace falta.
 
 ## Columnas de la maestra 2.0 (79)

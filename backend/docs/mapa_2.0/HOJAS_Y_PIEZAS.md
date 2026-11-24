@@ -8,7 +8,7 @@ Estado 2026-11-23, comprobado con lecturas por API y en la aplicación de Dynami
 - MP-11: qué guarda: el proyecto (cliente, nombre, dirección, fechas), el diseño (QC, metraje, as-built), las asignaciones (`Designers`, `Permitting Team`, `Records Owner`, `DT Owner`) y los resúmenes que vuelven de las hojas de equipo.
 - MP-12: filas madre: proyectos `KMV-P` (diseño) y `KMV-Miscellaneous` (permisos). Filas hija: trámites `KMV-Permit`, `KMV-Line` y `KMV-MOT`, siempre debajo de su proyecto.
 - MP-13: quién escribe: la coordinadora crea proyectos y trámites (desde vistas); diseño llena lo suyo desde su vista; el servicio pone el ID, mueve los trámites bajo su proyecto y escribe los resúmenes (bloqueados).
-- MP-14: lo que calcula sola con fórmulas: `Tracking Project` (el ID visible), los días (`... # Days`), `Phase` y `Closed` (desde `Project Status List`), `Client Access` (desde `Customer List`) y `Records Status` (desde la hoja de Records).
+- MP-14: lo que calcula sola con fórmulas: `Tracking Project` (el ID visible), los días (`... # Days`), `Phase` y `Closed` (desde `Project Status List`), `Client Access` (desde `Customer List`) y `Records Status` (desde la hoja de Records: `Complete` cuando todos los pedidos del proyecto tienen `Record Box`, si no `Received`, `No records` o `Pending (n/m received)`).
 
 ## Hojas de equipo (hijas)
 
@@ -33,7 +33,7 @@ Nueve vistas, todas sobre su hoja salvo diseño (sobre un reporte). Hoy sólo la
 
 - MP-40: `PROJECT KMV 2.0 - PROJECTS` (maestra, filtro `Projects`): la coordinadora crea y edita proyectos. Sin restricción por usuario; permite agregar filas.
 - MP-41: `PROJECT KMV 2.0 - PERMITS` (maestra, filtro `Permits`): la coordinadora crea trámites con `Parent Project` y `Agency`; permite agregar filas.
-- MP-42: `PROJECT KMV 2.0 - DESIGN` (reporte `KMV 2.0 | Design Projects`): diseño ve sus proyectos (restringida por `Designers`) y, junto al estado, si ya llegaron los Records (`Records Status`), el `Design Ticket` y el `Mile Post`.
+- MP-42: `PROJECT KMV 2.0 - DESIGN` (reporte `KMV 2.0 | Design Projects`): diseño ve sus proyectos (restringida por `Designers`) y, junto al estado, si ya llegaron los Records o ya está todo hecho (`Records Status`, `Complete` con todo en `Record Box`), el `Design Ticket` y el `Mile Post`.
 - MP-43: `PROJECT KMV 2.0 - PERMITS TEAM` (`Permits`): el equipo de permisos ve sus trámites (restringida por `Permitting Team`); el panel muestra sólo la revisión que toca.
 - MP-44: `PROJECT KMV 2.0 - MOT & PACKAGES` (`MOT & Packages`): la persona de MOT y paquetes ve todo (sin restricción).
 - MP-45: `PROJECT KMV 2.0 - RECORDS` (`Records Requests`): el equipo de Records ve sus pedidos (restringida por `Records Owner`).

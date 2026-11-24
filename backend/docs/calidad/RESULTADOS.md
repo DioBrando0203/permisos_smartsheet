@@ -467,3 +467,10 @@ Entorno: Windows, Python 3.14.7 en `backend/.venv`.
 - `pytest`: 155 pruebas aprobadas y 59 omitidas (necesitan PostgreSQL local, B-16) en 1,76 s.
 - `ruff check app tests`: sin errores. `ruff format --check app tests`: 114 archivos formateados.
 - Lectura real con el cliente nuevo (sólo GET): `8. Crown Castle Fiber - Engineering Plan 2026`, 2 287 filas en un pedido (1,0 s); `PROJECT KMV 2.0 (Prototype)`, 15 filas (0,3 s); conteo de llamadas: 5.
+
+## 2026-11-24 00:13 -05:00 Records Status con Complete y sin copia al pedido nuevo (SPEC-B18 RH-03d, RH-06)
+
+Entorno: Windows, Python 3.14.7 en `backend/.venv`.
+- Prueba nueva `test_childsheets.py::test_records_status_summary_is_not_copied_to_a_new_request`: falló antes del cambio y pasa después.
+- `pytest`: 156 aprobadas y 59 omitidas. `ruff check` y `ruff format --check`: sin errores.
+- Smartsheet (Pruebas): fórmula guardada sin error; valores iguales antes y después; con `Record Box` marcado en los dos pedidos de `KMV-26-0003` (datos sintéticos) la maestra mostró `Complete` a los 20 s (en el primer intento, con la referencia recién creada, a los 30 s aún no); casillas devueltas a sin marcar y maestra de vuelta a `Pending (0/2 received)`.

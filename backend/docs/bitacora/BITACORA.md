@@ -1169,3 +1169,11 @@ Estado: anotado; K2-85b pendiente de código.
 Decisiones: (1) sólo las conversaciones de `Permits` pasan al `Obs` de la maestra, que es lo que ve el cliente; las de las otras hojas de equipo se quedan en su hoja. (2) En `Contact List`, el mismo nombre con y sin "Jr." son dos personas distintas, no un duplicado.
 Consulta sobre `Record Box` (sólo GET): en `8. Crown Castle Fiber - Engineering Plan 2026` la casilla se marca casi siempre cuando el Records ya está resuelto (303 de 1 360 filas con Records: `Received` con `Box`; también `No records` con `Box`) y nunca en `Not Appy`; en `8. Others`, las 11 `Received` tienen `Box`.
 Docs: `KMV_2.0.md` K2-85b y K2-89.
+
+## 2026-11-24 00:13 -05:00 Records Status muestra Complete con todo en Box (SPEC-B18 RH-03d, RH-06)
+
+Estado: hecho en Smartsheet; la corrección del servicio rige al reiniciar el backend.
+Pedido: que diseño vea cuando el Records ya está todo hecho (casilla `Record Box` de la hoja de Records), con el texto `Complete`, sin columna nueva.
+Cambios: en la maestra 2.0, referencia nueva `Records Requests Box` y fórmula de `Records Status` con `Complete` cuando todos los pedidos del proyecto tienen `Record Box` (fórmula anterior guardada en RH-03d); maestra con 79 columnas. En el servicio, `Records Status` deja de copiarse a un pedido nuevo de Records (nacía con el resumen de los pedidos anteriores).
+Evidencia: calidad/RESULTADOS.md (prueba que falla y pasa, suite completa y prueba en Pruebas con datos sintéticos, revertida).
+Docs: SPEC-B18 RH-03d y RH-06; `KMV_2.0.md` K2-41; VISTAS VK-22; `mapa_2.0` MP-14 y MP-42.

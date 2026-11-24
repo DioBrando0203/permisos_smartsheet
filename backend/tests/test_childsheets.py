@@ -195,6 +195,30 @@ async def test_records_creates_once_and_follows_context(router) -> None:
     assert row["Record Request"] == "2026-11-01" and row["City"] == ""
 
 
+async def test_records_status_summary_is_not_copied_to_a_new_request(router) -> None:
+    """En la maestra 2.0 `Records Status` es el resumen del proyecto, no el del pedido (RH-06)."""
+    sheets = _sheets(
+        router, [*RECORDS_MASTER, "Records Status"], [*RECORDS_CHILD, "Records Status"]
+    )
+    sheets.rows[pilot.PRESENTABLE] = {
+        "1": {
+            "Tracking Project": "KMV-26-0001",
+            "Agency": "Doral",
+            "Records Needed": True,
+            "Records Status": "Received",
+        },
+    }
+    settings = make_settings(**WRITES)
+    client = SmartsheetClient(settings)
+    try:
+        result = await ChildSheetSync(settings, client, RECORDS, CHILD, interval=0).run()
+    finally:
+        await client.aclose()
+    assert result["created"] == 1
+    (row,) = sheets.rows[CHILD].values()
+    assert not row.get("Records Status")
+
+
 BILLING_MASTER = [*BILLING.context, "Invoice? GALP", "Invoice Sent", "Invoice Status"]
 BILLING_CHILD = [
     *BILLING.context,
