@@ -66,7 +66,7 @@ Prioridad: baja, sin fecha (decisión del usuario, 2026-11-24). Estado: sin empe
 
 ### PEN-56 Procesador en Railway
 
-Prioridad: alta (pedido del usuario, 2026-11-24, tras contratar Railway). Estado: preparado y configurado. Base copiada y verificada en Railway, procesador del equipo Linux apagado, token y procesador encendidos en el servidor (decisiones del usuario, 2026-11-24). Desplegado el 2026-11-24 17:53 (commit `74efda8`), sin errores, unos $2 al mes. Falta ver una fila nueva numerada desde Railway. Spec: SPEC-B22. Guía: `DESPLIEGUE_RAILWAY.md`. Decisión: ADR-B19.
+Prioridad: alta (pedido del usuario, 2026-11-24, tras contratar Railway). Estado: preparado y configurado. Base copiada y verificada en Railway, procesador del equipo Linux apagado, token y procesador encendidos en el servidor (decisiones del usuario, 2026-11-24). Desplegado el 2026-11-24 17:53 (commit `74efda8`), sin errores, unos $2 al mes. Fila nueva numerada desde Railway el 2026-11-24 18:16 (`KMV-26-0007`, RW-06): en operación. Spec: SPEC-B22. Guía: `DESPLIEGUE_RAILWAY.md`. Decisión: ADR-B19.
 
 ### PEN-55 Separar GIS y permisos viales del servicio de Smartsheet
 

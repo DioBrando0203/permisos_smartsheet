@@ -1267,3 +1267,17 @@ Docs: SPEC-B22 DP-13.
 Estado: anotado; sin cambios de código ni en Smartsheet.
 Decisión del usuario: `gis_permisos`, la gestión de usuarios y todo lo que no sea las hojas y sus Dynamic Views queda obsoleto; se pasará a otra rama de GitHub y esta se queda con el procesador (PEN-57, sin fecha).
 Pregunta: si conviene usar webhooks de Smartsheet o crear los nuestros. Respuesta: hoy ninguna función los necesita (detalle en SPEC-B22 DP-13, con cuándo revisarlo).
+
+## 2026-11-24 18:21 -05:00 Prueba en vivo del procesador en Railway (PEN-56, RW-06)
+
+Estado: funciona; con una observación sobre `DT Owner` en un permiso.
+Prueba del usuario: proyecto `KMV-P` (fila 16) y permiso `KMV-Permit` (fila 17) en la maestra 2.0 de Pruebas.
+Evidencia (logs de Railway y lectura por API, sólo GET, correos tapados):
+- Escrituras de 18:16 a 18:19: ID `KMV-26-0007`, el siguiente al registro copiado.
+- Listas `Parent Project` y `Linked Tracking` actualizadas.
+- Dos filas en `Billing` con `Invoice Status` devuelto.
+- Una fila en `Design Tickets`.
+- 0 en `Permits` y Records, porque el permiso no tiene `Agency` (regla SPEC-B20 y RH-03).
+- Sin avisos ni errores.
+Observación: `DT Owner` se llenó en el permiso; el servicio crea la fila de `Design Tickets` para cualquier fila con `DT Owner`, aunque K2-23 lo pone en el proyecto. Se consulta al usuario.
+Docs: `DESPLIEGUE_RAILWAY.md` RW-06 y RW-07, SPEC-B22, PEN-56.

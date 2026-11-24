@@ -24,9 +24,15 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
   - El procesador ya lee la maestra, las hojas de equipo y las conversaciones (modo asignación). Sin avisos ni errores, y sin escrituras porque no había nada pendiente.
   - A los 3 minutos pasó a la consulta lenta, cada 30 s.
 - RW-05: consumo medido (15 min, sin trabajo): servicio 66 MB y base 110 MB de memoria, menos de 0,01 vCPU cada uno. Da unos $2 al mes, dentro de los $5 incluidos.
-- RW-06: falta:
-  1. Comprobar en Smartsheet (Pruebas) que una fila nueva recibe su ID desde Railway (RW-31).
-  2. Opcional: "Wait for CI" en el panel (RW-41).
+- RW-06: prueba del usuario (2026-11-24, 18:15): un proyecto `KMV-P` (fila 16) y un permiso `KMV-Permit` debajo (fila 17). Entre las 18:16 y las 18:19, el procesador de Railway:
+  - Numeró el proyecto `KMV-26-0007`, el siguiente a los copiados, sin repetir. El permiso quedó debajo con el mismo ID.
+  - Sumó el ID a las listas `Parent Project` y `Linked Tracking`.
+  - Creó las dos filas en `Billing` y devolvió `Invoice Status` (`NOT INVOICED`).
+  - Creó la fila de `Design Tickets`.
+  - Sin avisos ni errores.
+  - Sin filas en `Permits` ni en Records, como manda la regla: el permiso no tiene `Agency`. Una hija pasa a `Permits` con su tipo y su agencia (SPEC-B20), y un pedido de Records necesita la agencia, que es a quién se pide (RH-03). Con `Agency` llena, aparecen en el ciclo siguiente.
+  - Observación: `DT Owner` quedó en el permiso, no en el proyecto (K2-23 lo pone en el proyecto). Por eso la fila de `Design Tickets` es del permiso. El servicio hoy crea esa fila para cualquier fila con `DT Owner`.
+- RW-07: falta, opcional: "Wait for CI" en el panel (RW-41).
 
 ## Cambios del día a día
 

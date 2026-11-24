@@ -499,3 +499,9 @@ Entorno: Linux, `backend/.venv` (Python 3.14.4), PostgreSQL 18.6 local.
 - Primer ciclo del procesador sin avisos ni errores; sin escrituras porque no había trabajo pendiente.
 - Consumo: 66 MB (servicio) y 110 MB (base), menos de 0,01 vCPU.
 - No probado aún: una fila nueva numerada desde Railway, ni el workflow de GitHub Actions (su resultado se ve en la pestaña Actions del repo).
+
+## 2026-11-24 18:21 -05:00 Prueba en vivo en Railway (SPEC-B22, RW-06)
+
+- Proyecto y permiso nuevos en la maestra 2.0 de Pruebas (prueba del usuario): ID `KMV-26-0007` asignado desde Railway, el permiso debajo con el mismo ID, filas en `Billing` (2) y `Design Tickets` (1), listas actualizadas.
+- `Permits` y Records sin filas por falta de `Agency`, como manda la regla.
+- Logs sin avisos ni errores.

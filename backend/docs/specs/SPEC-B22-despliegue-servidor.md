@@ -1,6 +1,6 @@
 # SPEC-B22 Procesador en un servidor (Railway u otro)
 
-Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más escalable considerando que igual haremos cambios"), con pruebas simuladas y un ensayo de la mudanza con los datos reales en una base local descartable. Base copiada y verificada en Railway el 2026-11-24 17:48 (acceso público temporal, cerrado después) y procesador del equipo Linux apagado; token y procesador encendidos en las variables del servidor. En Railway desde el 2026-11-24 17:53: despliegue del commit `74efda8` correcto, sin errores (`../DESPLIEGUE_RAILWAY.md` RW-04). Falta ver una fila nueva numerada desde allí. Guía paso a paso: `../DESPLIEGUE_RAILWAY.md`.
+Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más escalable considerando que igual haremos cambios"), con pruebas simuladas y un ensayo de la mudanza con los datos reales en una base local descartable. Base copiada y verificada en Railway el 2026-11-24 17:48 (acceso público temporal, cerrado después) y procesador del equipo Linux apagado; token y procesador encendidos en las variables del servidor. En Railway desde el 2026-11-24 17:53: despliegue del commit `74efda8` correcto, sin errores (`../DESPLIEGUE_RAILWAY.md` RW-04). Fila nueva numerada desde Railway el 2026-11-24 18:16 (`KMV-26-0007`, `../DESPLIEGUE_RAILWAY.md` RW-06). Guía paso a paso: `../DESPLIEGUE_RAILWAY.md`.
 
 ## Contexto
 
