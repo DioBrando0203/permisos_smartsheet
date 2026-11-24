@@ -1,6 +1,6 @@
 # SPEC-B22 Procesador en un servidor (Railway u otro)
 
-Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más escalable considerando que igual haremos cambios"), con pruebas simuladas y un ensayo de la mudanza con los datos reales en una base local descartable. Sin desplegar. Antes de subir el token, el usuario debe decidir qué cuenta de Smartsheet usa el servidor (DP-11). Guía paso a paso: `../DESPLIEGUE_RAILWAY.md`.
+Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más escalable considerando que igual haremos cambios"), con pruebas simuladas y un ensayo de la mudanza con los datos reales en una base local descartable. Base copiada y verificada en Railway el 2026-11-24 17:48 (acceso público temporal, cerrado después) y procesador del equipo Linux apagado; token y procesador encendidos en las variables del servidor. Falta el primer despliegue del código, que llega con el push. Guía paso a paso: `../DESPLIEGUE_RAILWAY.md`.
 
 ## Contexto
 
@@ -29,7 +29,8 @@ Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más e
   - Una tabla nueva del origen que no esté en la lista detiene la copia.
 - DP-09: cada push a `main` y cada pull request corren en GitHub Actions `ruff check`, `ruff format --check` y `pytest` con PostgreSQL 18 (`.github/workflows/backend.yml`). Con "Wait for CI" en Railway, un commit sólo se despliega si eso pasa.
 - DP-10: después de mudar, el equipo Linux no vuelve a numerar con su base local. Su `.env` lleva también `IDS_DATABASE_URL` del servidor: si alguien lo enciende, espera el bloqueo (DP-05) y sirve de respaldo si el servidor se cae. La otra opción es `IDS_MONITOR_ENABLED=false`. La base local queda como copia, sin usar.
-- DP-11 (decisión pendiente del usuario): el token del servidor. Hoy es el de un administrador de la cuenta y sólo vive en `backend/.env`. Subirlo a Railway lo deja en la nube de un tercero; lo más seguro es el token de una cuenta que sólo vea el workspace `Pruebas` (el servicio sólo escribe allí). Hasta decidirlo no se sube ningún token.
+- DP-11 (decidido por el usuario, 2026-11-24): el servidor usa el token de administrador de `backend/.env`. Se le ofreció una cuenta que sólo vea `Pruebas` como opción más segura. Se sube con `variables_railway.py --con-token`, por la entrada estándar, sin pasar por la línea de comandos ni la pantalla. Las barreras de escritura y la comprobación del workspace siguen igual (sólo `Pruebas`).
+- DP-12 (decidido por el usuario, 2026-11-24): la base de Railway sólo acepta conexiones de su red privada. Para la copia se abrió un acceso público temporal (TCP proxy), que se cerró al terminar; el equipo Linux no usa la base de Railway.
 
 ## Costo y carga
 

@@ -1229,3 +1229,16 @@ Railway (CLI instalada para el usuario; el usuario inició la sesión en su nave
 Evidencia: calidad/RESULTADOS.md (pruebas, corrida sin `.env` y ensayo de la mudanza con los datos reales en una base local descartable, ya borrada).
 Pendiente del usuario: push; acceso público de la base para la copia (temporal o permanente, RW-21); cuenta del token (DP-11); límite de gasto. La maestra no cambió (79 columnas).
 Docs: SPEC-B22, `DESPLIEGUE_RAILWAY.md`, ADR-B19, PEN-56, B-16, ARQUITECTURA, `servicios/ids/README.md`, AGENTS, mapa MP-77.
+
+## 2026-11-24 17:51 -05:00 Base de IDs en Railway y procesador listo para arrancar allí (PEN-56)
+
+Estado: hecho; el procesador arranca en Railway con el primer despliegue del código (push del usuario), sin comprobar todavía.
+Decisiones del usuario (preguntadas con opciones): acceso público a la base sólo para copiar; token de administrador en el servidor (se le ofreció una cuenta sólo de `Pruebas` como opción más segura); aviso de gasto a $8.
+Hecho:
+- TCP proxy temporal en `Postgres`.
+- Copia con `transfer.py`, desde la base del equipo Linux (sólo lectura, backend apagado), con la URL armada en memoria sin imprimirla: `secuencia_id` 6, `estado_inicializacion_id` 1, `asignacion_id` 24, `auditoria_id` 57, `obs_comentario` 142, `id_retirado` 2, huellas iguales.
+- `IDS_MONITOR_ENABLED=false` en `backend/.env` del equipo Linux.
+- Proxy borrado (0 abiertos).
+- Token subido por la entrada estándar y `IDS_MONITOR_ENABLED=true` en el servidor, sin redespliegue.
+- Aviso de gasto en $8; consumo hasta ahora $0,0003.
+Docs: AGENTS (token y dónde corre el procesador), SPEC-B22 (estado, DP-11, DP-12), `DESPLIEGUE_RAILWAY.md` RW-03 y RW-04, ADR-B19, PEN-56.

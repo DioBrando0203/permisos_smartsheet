@@ -2,7 +2,7 @@
 
 Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y su PostgreSQL del equipo Linux a Railway, y para mantenerlo allí. Reglas y criterios: `specs/SPEC-B22-despliegue-servidor.md` (DP-xx). Decisión: `decisiones/ADR.md` ADR-B19. Pendiente: `REQUERIMIENTOS.md` PEN-56.
 
-## Estado (2026-11-24 17:45)
+## Estado (2026-11-24 17:51)
 
 - RW-01: proyecto `KMV` en Railway, entorno `production`, con dos servicios:
   - `permisos_smartsheet`: conectado al repo de GitHub, rama `main`. Su primer despliegue (commit `c237c26`, sin `Dockerfile`) falló sin llegar a correr.
@@ -13,11 +13,15 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
   - `APP_ALLOWED_HOSTS` incluye `healthcheck.railway.app` y el dominio privado.
   - `IDS_ADMIN_TOKEN` nuevo, generado para el servidor.
   - Ajustes del servicio por la API de Railway: `Dockerfile`, chequeo de salud `/api/health` (120 s), reinicio siempre, una réplica, sin dormir, y redespliegue sólo si cambian `Dockerfile`, `.dockerignore`, `backend/app/**`, `backend/requirements.lock` o `servicios/ids/sql/**` (los commits de docs no redespliegan).
-- RW-03: falta, en orden:
-  1. Push del commit con el `Dockerfile`. Railway lo despliega solo: migra la base vacía y queda en línea con el procesador apagado. Se comprueba con sus logs.
-  2. Copiar el registro de IDs del equipo Linux a la base de Railway (RW-20). Necesita que la base acepte conexiones desde fuera: decisión del usuario (RW-21).
-  3. Decidir la cuenta del token (DP-11) y encender el procesador (RW-30).
-  4. Opcional: límite de gasto y "Wait for CI" en el panel (RW-40, RW-41).
+- RW-03: hecho después, con las decisiones del usuario (2026-11-24):
+  - Registro de IDs copiado y verificado en Railway (17:48): `secuencia_id` 6, `estado_inicializacion_id` 1, `asignacion_id` 24, `auditoria_id` 57, `obs_comentario` 142, `id_retirado` 2. Se usó un acceso público temporal (RW-21), cerrado al terminar.
+  - En el equipo Linux, `IDS_MONITOR_ENABLED=false` en `backend/.env`: su base local queda como copia y no vuelve a numerar (RW-22).
+  - Token de administrador (DP-11) y `IDS_MONITOR_ENABLED=true` en las variables del servidor.
+  - Aviso de gasto a $8 por correo (soft); sin tope.
+- RW-04: falta:
+  1. Push. Railway despliega solo el commit con el `Dockerfile`: construye la imagen, migra (nada pendiente), pasa el chequeo de salud y arranca el procesador.
+  2. Comprobar en sus logs el primer ciclo, y en Smartsheet (Pruebas) que una fila nueva recibe su ID (RW-31).
+  3. Opcional: "Wait for CI" en el panel (RW-41).
 
 ## Cambios del día a día
 

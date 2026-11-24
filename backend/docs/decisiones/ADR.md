@@ -154,7 +154,7 @@ Ampliaciones (2026-10-30), con las mismas reglas (GET público, sin clave, plazo
 
 ## ADR-B19 Procesador en un servidor administrado (Railway)
 
-Fecha: 2026-11-24. Estado: en curso. El usuario contrató Railway y pidió avanzar "de la forma más escalable, considerando que igual haremos cambios". La cuenta del token sigue por decidir (SPEC-B22 DP-11).
+Fecha: 2026-11-24. Estado: en curso. El usuario contrató Railway y pidió avanzar "de la forma más escalable, considerando que igual haremos cambios". Después decidió: token de administrador en el servidor (SPEC-B22 DP-11), acceso público a la base sólo para la copia (DP-12) y aviso de gasto a $8.
 Contexto: el procesador y su PostgreSQL sólo corren con el equipo Linux encendido (B-16); apagado, se atrasan los IDs, las hojas de equipo y `Obs`.
 Decisión:
 - Una imagen Docker, que sirve en Railway o en cualquier servidor, con migraciones automáticas al arrancar y los mismos archivos SQL de siempre.
