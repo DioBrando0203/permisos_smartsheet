@@ -505,3 +505,10 @@ Entorno: Linux, `backend/.venv` (Python 3.14.4), PostgreSQL 18.6 local.
 - Proyecto y permiso nuevos en la maestra 2.0 de Pruebas (prueba del usuario): ID `KMV-26-0007` asignado desde Railway, el permiso debajo con el mismo ID, filas en `Billing` (2) y `Design Tickets` (1), listas actualizadas.
 - `Permits` y Records sin filas por falta de `Agency`, como manda la regla.
 - Logs sin avisos ni errores.
+
+## 2026-11-24 18:32 -05:00 Prueba completa en vivo desde Railway (RW-08)
+
+- Proyecto `KMV-26-0008` y tres trámites (Permit, Line, MOT) creados como lo haría la coordinación.
+- Procesado por Railway en unos 2 minutos: ID, jerarquía, herencia y filas en `Permits` (2), Records (1), `Billing` (4), `MOT & Packages` (2) y `Design Tickets` (1).
+- Chat de `Permits` en el `Obs` de la maestra en unos 3 minutos (SPEC-B17 OB-17, primera prueba en vivo).
+- Logs sin avisos ni errores.

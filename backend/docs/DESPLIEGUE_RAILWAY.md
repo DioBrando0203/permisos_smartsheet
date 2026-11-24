@@ -32,6 +32,19 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
   - Sin avisos ni errores.
   - Sin filas en `Permits` ni en Records, como manda la regla: el permiso no tiene `Agency`. Una hija pasa a `Permits` con su tipo y su agencia (SPEC-B20), y un pedido de Records necesita la agencia, que es a quién se pide (RH-03). Con `Agency` llena, aparecen en el ciclo siguiente.
   - Observación: `DT Owner` quedó en el permiso, no en el proyecto (K2-23 lo pone en el proyecto). Por eso la fila de `Design Tickets` es del permiso. El servicio hoy crea esa fila para cualquier fila con `DT Owner`.
+- RW-06b: lo que le faltó a la prueba del usuario:
+  - `Agency` en el permiso (fila 17): sin ella no hay fila en `Permits` ni pedido de Records, aunque tenga `Records Needed` y `Records Owner`. La vista `PERMITS` la exige al crear (VK-18); la fila se llenó directo en la hoja.
+  - `DT Owner` va en el proyecto (K2-23), no en el permiso.
+- RW-08: proyecto de prueba permanente, pedido por el usuario para mantenerlo (2026-11-24, 18:26):
+  - `KMV-26-0008`, `OT - SERVICE TEST - 100 TEST AVE`, cliente `OT-Others` (sin contactos en `Customer List`: la vista de clientes no lo muestra a nadie).
+  - Filas 19 (proyecto, con `Prepare Packages` y `DT Owner`), 20 (`KMV-Permit`, `FDOT`, con Records pedido), 21 (`KMV-Line`, `Miami`) y 22 (`KMV-MOT`, `FDOT (MOT Permit)`).
+  - Se crearon como lo haría la coordinación: el proyecto solo, y los trámites sueltos con `Parent Project`.
+  - Resultado, todo desde Railway:
+    - ID en 1 minuto, y los tres trámites debajo de su proyecto con sus datos heredados en menos de 1 minuto.
+    - `Permits` 2, Records 1, `Billing` 4, `MOT & Packages` 2 (`MOT` y `Package`), `Design Tickets` 1.
+    - Un comentario en la fila del permiso en `Permits` llegó al `Obs` de la fila 20 en unos 3 minutos: `11.24 - Application submitted to FDOT (service test).` (OB-17).
+    - Logs sin avisos ni errores.
+  - Avisos de las seis hojas apagados al momento de la prueba: no salieron correos.
 - RW-07: falta, opcional: "Wait for CI" en el panel (RW-41).
 
 ## Cambios del día a día

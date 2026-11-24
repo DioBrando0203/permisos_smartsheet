@@ -1281,3 +1281,18 @@ Evidencia (logs de Railway y lectura por API, sólo GET, correos tapados):
 - Sin avisos ni errores.
 Observación: `DT Owner` se llenó en el permiso; el servicio crea la fila de `Design Tickets` para cualquier fila con `DT Owner`, aunque K2-23 lo pone en el proyecto. Se consulta al usuario.
 Docs: `DESPLIEGUE_RAILWAY.md` RW-06 y RW-07, SPEC-B22, PEN-56.
+
+## 2026-11-24 18:32 -05:00 Prueba completa en vivo desde Railway, con proyecto de prueba permanente (PEN-56, RW-06b, RW-08)
+
+Estado: hecho; todo funcionó.
+Pedido del usuario: revisar por qué no salió el pedido de Records de su prueba, decir qué más faltó y crear un proyecto con subfilas para probar, y mantenerlas.
+Diagnóstico de su prueba (sólo lectura): el enlace era la hoja de Records. El permiso (fila 17) no tiene `Agency`, que exigen `Permits` y Records; además, `DT Owner` quedó en el permiso en vez del proyecto.
+Prueba propia (escrituras en la maestra 2.0 de Pruebas, autorizadas por el usuario; datos de prueba en inglés):
+- Antes de escribir: avisos de las seis hojas apagados (0 encendidos) y cliente `OT-Others`, sin contactos en `Customer List`, para que no lo vea ningún cliente.
+- Proyecto creado a las 18:26 (fila 19) y `KMV-26-0008` asignado por Railway a las 18:27.
+- Tres trámites sueltos con `Parent Project` (filas 20 a 22): quedaron debajo del proyecto con sus datos heredados a las 18:28.
+- Filas creadas: `Permits` 2, Records 1, `Billing` 4, `MOT & Packages` 2, `Design Tickets` 1.
+- Comentario en la fila del permiso en `Permits` a las 18:28: llegó al `Obs` de la fila 20 a las 18:31 (OB-17 en vivo).
+- Logs de Railway sin avisos ni errores.
+Las filas se mantienen como proyecto de prueba permanente.
+Docs: `DESPLIEGUE_RAILWAY.md` RW-06b y RW-08.
