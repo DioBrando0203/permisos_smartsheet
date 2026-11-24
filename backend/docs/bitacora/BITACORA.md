@@ -1242,3 +1242,14 @@ Hecho:
 - Token subido por la entrada estándar y `IDS_MONITOR_ENABLED=true` en el servidor, sin redespliegue.
 - Aviso de gasto en $8; consumo hasta ahora $0,0003.
 Docs: AGENTS (token y dónde corre el procesador), SPEC-B22 (estado, DP-11, DP-12), `DESPLIEGUE_RAILWAY.md` RW-03 y RW-04, ADR-B19, PEN-56.
+
+## 2026-11-24 18:01 -05:00 Procesador corriendo en Railway (PEN-56)
+
+Estado: en marcha; falta ver una fila nueva numerada desde allí.
+Evidencia:
+- Push del usuario, despliegue automático del commit `74efda8` en `SUCCESS` (17:53).
+- Logs del despliegue (correos tapados al leerlos): "Migraciones aplicadas: ninguna pendiente", Uvicorn arriba y `GET /api/health` 200. Luego lecturas de la maestra, de `Permits`, Records, `Design Tickets` y conversaciones, todas con 200 (modo asignación).
+- Sin avisos ni errores, y ninguna escritura: no había filas sin ID ni comentarios nuevos.
+- A los 3 minutos, consulta lenta cada 30 s.
+- Métricas de 15 minutos: servicio 66 MB, base 110 MB, menos de 0,01 vCPU; unos $2 al mes.
+Docs: `DESPLIEGUE_RAILWAY.md` RW-04 a RW-06, SPEC-B22 (estado, DP-20), PEN-56.

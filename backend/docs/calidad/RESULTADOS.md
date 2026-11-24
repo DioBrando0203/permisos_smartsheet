@@ -492,3 +492,10 @@ Entorno: Linux, `backend/.venv` (Python 3.14.4), PostgreSQL 18.6 local.
 - Corrida como en GitHub Actions, en otra carpeta y sin `backend/.env`: 226 aprobadas, antes de sumar las dos pruebas de la mudanza.
 - Ensayo de la mudanza con los datos reales (origen sólo lectura, backend apagado) hacia un PostgreSQL local descartable: `secuencia_id` 6, `estado_inicializacion_id` 1, `asignacion_id` 24, `auditoria_id` 57, `obs_comentario` 142, `id_retirado` 2, huellas iguales y migraciones 001 a 005 registradas; la base del ensayo se borró.
 - No probado: la construcción de la imagen (no hay Docker en este equipo; la prueba es el primer despliegue en Railway tras el push) ni el workflow de GitHub Actions.
+
+## 2026-11-24 18:01 -05:00 Primer despliegue en Railway (SPEC-B22)
+
+- Railway construyó la imagen del `Dockerfile` y desplegó el commit `74efda8`: `SUCCESS`, chequeo de salud con 200 y migraciones sin nada pendiente sobre la base copiada.
+- Primer ciclo del procesador sin avisos ni errores; sin escrituras porque no había trabajo pendiente.
+- Consumo: 66 MB (servicio) y 110 MB (base), menos de 0,01 vCPU.
+- No probado aún: una fila nueva numerada desde Railway, ni el workflow de GitHub Actions (su resultado se ve en la pestaña Actions del repo).

@@ -1,6 +1,6 @@
 # SPEC-B22 Procesador en un servidor (Railway u otro)
 
-Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más escalable considerando que igual haremos cambios"), con pruebas simuladas y un ensayo de la mudanza con los datos reales en una base local descartable. Base copiada y verificada en Railway el 2026-11-24 17:48 (acceso público temporal, cerrado después) y procesador del equipo Linux apagado; token y procesador encendidos en las variables del servidor. Falta el primer despliegue del código, que llega con el push. Guía paso a paso: `../DESPLIEGUE_RAILWAY.md`.
+Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más escalable considerando que igual haremos cambios"), con pruebas simuladas y un ensayo de la mudanza con los datos reales en una base local descartable. Base copiada y verificada en Railway el 2026-11-24 17:48 (acceso público temporal, cerrado después) y procesador del equipo Linux apagado; token y procesador encendidos en las variables del servidor. En Railway desde el 2026-11-24 17:53: despliegue del commit `74efda8` correcto, sin errores (`../DESPLIEGUE_RAILWAY.md` RW-04). Falta ver una fila nueva numerada desde allí. Guía paso a paso: `../DESPLIEGUE_RAILWAY.md`.
 
 ## Contexto
 
@@ -34,7 +34,7 @@ Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más e
 
 ## Costo y carga
 
-- DP-20: un proceso de Python y PostgreSQL chicos, siempre encendidos. Estimado (no medido): $3 a $6 al mes de memoria y CPU, cerca de los $5 incluidos. La guía pide un límite de gasto en Railway.
+- DP-20: un proceso de Python y PostgreSQL chicos, siempre encendidos. Medido el 2026-11-24, sin trabajo: 66 MB y 110 MB de memoria y menos de 0,01 vCPU, unos $2 al mes, dentro de los $5 incluidos; las horas de trabajo suben algo la CPU. Aviso de gasto a $8.
 - DP-21: el consumo de la API de Smartsheet no cambia: es el mismo servicio (SPEC-B21).
 
 ## Criterios de aceptación

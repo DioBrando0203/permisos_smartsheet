@@ -59,7 +59,7 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 
 ### PEN-56 Procesador en Railway
 
-Prioridad: alta (pedido del usuario, 2026-11-24, tras contratar Railway). Estado: preparado y configurado. Base copiada y verificada en Railway, procesador del equipo Linux apagado, token y procesador encendidos en el servidor (decisiones del usuario, 2026-11-24). Falta el push con el `Dockerfile`, que hace el primer despliegue, y comprobarlo. Spec: SPEC-B22. Guía: `DESPLIEGUE_RAILWAY.md`. Decisión: ADR-B19.
+Prioridad: alta (pedido del usuario, 2026-11-24, tras contratar Railway). Estado: preparado y configurado. Base copiada y verificada en Railway, procesador del equipo Linux apagado, token y procesador encendidos en el servidor (decisiones del usuario, 2026-11-24). Desplegado el 2026-11-24 17:53 (commit `74efda8`), sin errores, unos $2 al mes. Falta ver una fila nueva numerada desde Railway. Spec: SPEC-B22. Guía: `DESPLIEGUE_RAILWAY.md`. Decisión: ADR-B19.
 
 ### PEN-55 Separar GIS y permisos viales del servicio de Smartsheet
 

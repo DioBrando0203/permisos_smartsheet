@@ -2,7 +2,7 @@
 
 Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y su PostgreSQL del equipo Linux a Railway, y para mantenerlo allí. Reglas y criterios: `specs/SPEC-B22-despliegue-servidor.md` (DP-xx). Decisión: `decisiones/ADR.md` ADR-B19. Pendiente: `REQUERIMIENTOS.md` PEN-56.
 
-## Estado (2026-11-24 17:51)
+## Estado (2026-11-24 18:01)
 
 - RW-01: proyecto `KMV` en Railway, entorno `production`, con dos servicios:
   - `permisos_smartsheet`: conectado al repo de GitHub, rama `main`. Su primer despliegue (commit `c237c26`, sin `Dockerfile`) falló sin llegar a correr.
@@ -18,10 +18,15 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
   - En el equipo Linux, `IDS_MONITOR_ENABLED=false` en `backend/.env`: su base local queda como copia y no vuelve a numerar (RW-22).
   - Token de administrador (DP-11) y `IDS_MONITOR_ENABLED=true` en las variables del servidor.
   - Aviso de gasto a $8 por correo (soft); sin tope.
-- RW-04: falta:
-  1. Push. Railway despliega solo el commit con el `Dockerfile`: construye la imagen, migra (nada pendiente), pasa el chequeo de salud y arranca el procesador.
-  2. Comprobar en sus logs el primer ciclo, y en Smartsheet (Pruebas) que una fila nueva recibe su ID (RW-31).
-  3. Opcional: "Wait for CI" en el panel (RW-41).
+- RW-04: en marcha desde el push del usuario (2026-11-24 17:53):
+  - Despliegue del commit `74efda8` en `SUCCESS`.
+  - Logs: "Migraciones aplicadas: ninguna pendiente", Uvicorn en el puerto de Railway y chequeo de salud con 200.
+  - El procesador ya lee la maestra, las hojas de equipo y las conversaciones (modo asignación). Sin avisos ni errores, y sin escrituras porque no había nada pendiente.
+  - A los 3 minutos pasó a la consulta lenta, cada 30 s.
+- RW-05: consumo medido (15 min, sin trabajo): servicio 66 MB y base 110 MB de memoria, menos de 0,01 vCPU cada uno. Da unos $2 al mes, dentro de los $5 incluidos.
+- RW-06: falta:
+  1. Comprobar en Smartsheet (Pruebas) que una fila nueva recibe su ID desde Railway (RW-31).
+  2. Opcional: "Wait for CI" en el panel (RW-41).
 
 ## Cambios del día a día
 
