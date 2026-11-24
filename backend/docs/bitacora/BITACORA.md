@@ -1253,3 +1253,11 @@ Evidencia:
 - A los 3 minutos, consulta lenta cada 30 s.
 - Métricas de 15 minutos: servicio 66 MB, base 110 MB, menos de 0,01 vCPU; unos $2 al mes.
 Docs: `DESPLIEGUE_RAILWAY.md` RW-04 a RW-06, SPEC-B22 (estado, DP-20), PEN-56.
+
+## 2026-11-24 18:09 -05:00 Consulta: webhooks de Smartsheet y separar las llamadas (SPEC-B22 DP-13)
+
+Estado: respondido; sin cambios de código ni en Smartsheet.
+Pregunta del usuario: si el procesador siempre tiene que preguntar, si Smartsheet puede avisar, si eso daría problemas y si conviene separar las llamadas en un worker o un servicio aparte.
+Respuesta: se mantiene la consulta periódica, que es barata, más rápida que los webhooks con su espera de un minuto y no pierde nada si algo falla. Separarla no ahorra llamadas. Los webhooks irían en un receptor público aparte, sin token, si el volumen crece. Recomendado ya: un token propio para el servidor (cupo propio de 300 por minuto, revocable aparte).
+Evidencia: documentación oficial de webhooks de Smartsheet (developers.smartsheet.com, leída hoy) y las métricas de Railway (RW-05, RW-13b).
+Docs: SPEC-B22 DP-13.

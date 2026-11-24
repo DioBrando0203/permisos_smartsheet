@@ -32,6 +32,20 @@ Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más e
 - DP-11 (decidido por el usuario, 2026-11-24): el servidor usa el token de administrador de `backend/.env`. Se le ofreció una cuenta que sólo vea `Pruebas` como opción más segura. Se sube con `variables_railway.py --con-token`, por la entrada estándar, sin pasar por la línea de comandos ni la pantalla. Las barreras de escritura y la comprobación del workspace siguen igual (sólo `Pruebas`).
 - DP-12 (decidido por el usuario, 2026-11-24): la base de Railway sólo acepta conexiones de su red privada. Para la copia se abrió un acceso público temporal (TCP proxy), que se cerró al terminar; el equipo Linux no usa la base de Railway.
 
+## Alternativas evaluadas
+
+- DP-13 (pregunta del usuario, 2026-11-24: si Smartsheet puede avisar en vez de preguntar cada tanto, y si conviene separar las llamadas en otro servicio). Se mantiene la consulta periódica, por ahora.
+  - Consulta actual: 14 a 20 llamadas por minuto sin trabajo, sobre 300 por token (5 a 7 %). Smartsheet no cobra por llamada, y en Railway casi no usa CPU. Reacciona en 5 s con trabajo y en 30 s en reposo, y no depende de que nadie avise: si algo falla, igual se entera.
+  - Webhooks de Smartsheet (documentación oficial, leída el 2026-11-24):
+    - Necesitan una dirección pública HTTPS (puertos 443, 8000, 8008, 8080 u 8443) y responder la verificación `Smartsheet-Hook-Challenge`, que se repite cada 100 avisos.
+    - Firman cada aviso con `Smartsheet-Hmac-SHA256` y el `sharedSecret` del webhook.
+    - El aviso es "skinny": dice qué objeto cambió (fila, celda, columna, comentario, conversación, adjunto) pero no trae datos, así que igual hay que leer.
+    - En el plan comercial agrupan los cambios con una espera de un minuto: reaccionarían más lento que la consulta actual.
+    - Si el receptor falla, reintentan hasta 14 veces y después apagan el webhook (`DISABLED_CALLBACK_FAILED`): hay que vigilarlo, reactivarlo y mantener igual una consulta lenta de respaldo.
+  - Separar la consulta en otro servicio no ahorra llamadas: serían las mismas, con el mismo token. Ya corre aparte, como tarea en segundo plano que no bloquea al resto del servicio.
+  - Si algún día se usan webhooks (más hojas o compañías, o el cupo justo), irían en un receptor aparte: un servicio chico y público, sin el token de Smartsheet, que sólo responde la verificación, valida la firma y despierta al procesador por la red privada de Railway. El procesador sigue sin dirección pública y su consulta pasa a cada 5 o 10 minutos, de respaldo.
+  - Recomendado: un token de API propio para el servidor (el mismo usuario administrador puede generar otro). El cupo de 300 por minuto es por token: así el procesador no comparte cupo con otras herramientas que usen el token actual, y se puede revocar sin tocar lo demás. Pendiente de que el usuario lo genere.
+
 ## Costo y carga
 
 - DP-20: un proceso de Python y PostgreSQL chicos, siempre encendidos. Medido el 2026-11-24, sin trabajo: 66 MB y 110 MB de memoria y menos de 0,01 vCPU, unos $2 al mes, dentro de los $5 incluidos; las horas de trabajo suben algo la CPU. Aviso de gasto a $8.
