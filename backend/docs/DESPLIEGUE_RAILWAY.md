@@ -34,6 +34,16 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
 - RW-11: una migración nueva es un archivo `servicios/ids/sql/NNN_nombre.sql` con el número siguiente. En Railway se aplica sola al desplegar (DP-04); en el equipo Linux, a mano con su script y respaldo, como siempre.
 - RW-12: un interruptor nuevo en `backend/.env` (por ejemplo `APP_..._ENABLED`) se pasa a Railway con `backend/.venv/bin/python servicios/despliegue/variables_railway.py --monitor`. No toca el token ni el `IDS_ADMIN_TOKEN` del servidor.
 - RW-13: ver qué pasa: `railway logs` (o el panel de Railway) muestra la consola del servicio. `GET /api/ids/status` y `/api/ids/logs` (SPEC-B21) se consultan desde la red privada o con `railway ssh`.
+- RW-13b: cómo leer los logs (pregunta del usuario, 2026-11-24):
+  - Cada línea `GET /sheets/<id>... -> 200` es una lectura correcta de Smartsheet.
+  - Ids de las hojas: maestra `1979884168761220`, `Permits` `3435959686483844`, Records `3471473697312644`, `Billing` `4630718656499588`, `MOT & Packages` `2866571577085828`, `Design Tickets` `263146012102532`.
+  - Sin trabajo se repite este patrón:
+    - `/version` de la maestra cada 30 s: si cambió.
+    - Cada minuto, un ciclo: lee la maestra (filas sin ID) y pregunta la versión de cada hoja de equipo; la que no cambió no se relee.
+    - Cada 2 minutos, `/discussions` de la maestra y de `Permits`: comentarios nuevos para `Obs`.
+  - Con trabajo aparecen `PUT` o `POST` (escrituras) y la consulta pasa a cada 5 s.
+  - Avisos y errores salen como `WARNING` o `ERROR`.
+  - Medido sin trabajo: 14 a 20 llamadas por minuto. El límite de Smartsheet es 300 y el freno propio, 250.
 - RW-14: nunca más de una réplica ni más de un worker. Si en un despliegue conviven dos versiones, la nueva espera el bloqueo (DP-05).
 
 ## Mudanza de la base (RW-20)
