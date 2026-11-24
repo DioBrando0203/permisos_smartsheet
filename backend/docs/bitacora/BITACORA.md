@@ -1187,3 +1187,9 @@ Pedido: que diseño vea cuando el Records ya está todo hecho (casilla `Record B
 Cambios: en la maestra 2.0, referencia nueva `Records Requests Box` y fórmula de `Records Status` con `Complete` cuando todos los pedidos del proyecto tienen `Record Box` (fórmula anterior guardada en RH-03d); maestra con 79 columnas. En el servicio, `Records Status` deja de copiarse a un pedido nuevo de Records (nacía con el resumen de los pedidos anteriores).
 Evidencia: calidad/RESULTADOS.md (prueba que falla y pasa, suite completa y prueba en Pruebas con datos sintéticos, revertida).
 Docs: SPEC-B18 RH-03d y RH-06; `KMV_2.0.md` K2-41; VISTAS VK-22; `mapa_2.0` MP-14 y MP-42.
+
+## 2026-11-24 09:27 -05:00 Revisión de lo último de la otra máquina (ae0c261, cf6b4c8, e8659ed)
+
+Estado: revisado, sin observaciones.
+Evidencia (equipo Linux): la rama local se había separado del remoto; se rebasó sobre `origin/main`. El commit local de los avisos de `Others` (VA-15b) se descartó porque `ae0c261` ya registra lo mismo en VA-15; la revisión anterior quedó en la bitácora en su orden de hora. 215 pruebas backend aprobadas, ruff y formato correctos; sin correos, nombres ni IDs repetidos en lo nuevo. En Smartsheet (sólo GET): `Records Status` de la maestra con la regla de `Complete` y la referencia `Records Requests Box` (RH-03d), sin errores de fórmula; la maestra sigue con 79 columnas.
+Sin cambios en código ni en Smartsheet.
