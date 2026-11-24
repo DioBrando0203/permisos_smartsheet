@@ -45,13 +45,16 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
     - Un comentario en la fila del permiso en `Permits` llegó al `Obs` de la fila 20 en unos 3 minutos: `11.24 - Application submitted to FDOT (service test).` (OB-17).
     - Logs sin avisos ni errores.
   - Avisos de las seis hojas apagados al momento de la prueba: no salieron correos.
-- RW-07: falta, opcional: "Wait for CI" en el panel (RW-41).
+- RW-07: falta, opcional:
+  - "Wait for CI" en el panel (RW-41).
+  - Ver el resultado de GitHub Actions en la pestaña Actions del repo. En el equipo Linux no está la CLI `gh`, así que no se comprobó desde aquí.
+  - Decidir K2-99 (`Design Tickets` sólo para proyectos).
 
 ## Cambios del día a día
 
 - RW-10: un cambio de código llega a Railway con el push a `main`: GitHub Actions corre ruff y pytest (DP-09) y Railway construye la imagen y la despliega. Con "Wait for CI" encendido, espera a que las pruebas pasen.
 - RW-11: una migración nueva es un archivo `servicios/ids/sql/NNN_nombre.sql` con el número siguiente. En Railway se aplica sola al desplegar (DP-04); en el equipo Linux, a mano con su script y respaldo, como siempre.
-- RW-12: un interruptor nuevo en `backend/.env` (por ejemplo `APP_..._ENABLED`) se pasa a Railway con `backend/.venv/bin/python servicios/despliegue/variables_railway.py --monitor`. No toca el token ni el `IDS_ADMIN_TOKEN` del servidor.
+- RW-12: un interruptor nuevo en `backend/.env` (por ejemplo `APP_..._ENABLED`) se pasa a Railway con `backend/.venv/bin/python servicios/despliegue/variables_railway.py --monitor`. No toca el token ni el `IDS_ADMIN_TOKEN` del servidor. El script no redespliega: después, `railway service redeploy --service permisos_smartsheet` o el botón Deploy del panel, para que el servicio tome las variables.
 - RW-13: ver qué pasa: `railway logs` (o el panel de Railway) muestra la consola del servicio. `GET /api/ids/status` y `/api/ids/logs` (SPEC-B21) se consultan desde la red privada o con `railway ssh`.
 - RW-13b: cómo leer los logs (pregunta del usuario, 2026-11-24):
   - Cada línea `GET /sheets/<id>... -> 200` es una lectura correcta de Smartsheet.
@@ -64,6 +67,11 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
   - Avisos y errores salen como `WARNING` o `ERROR`.
   - Medido sin trabajo: 14 a 20 llamadas por minuto. El límite de Smartsheet es 300 y el freno propio, 250.
 - RW-14: nunca más de una réplica ni más de un worker. Si en un despliegue conviven dos versiones, la nueva espera el bloqueo (DP-05).
+- RW-15: la CLI de Railway en el equipo Linux (instalada el 2026-11-24, versión 5.75.0):
+  - Se instala con `npm install -g @railway/cli@5.75.0`, sin `sudo`.
+  - `railway login`: el usuario confirma en su navegador. La sesión queda guardada en el equipo; `railway logout` la cierra.
+  - Desde la raíz del repo, `railway link --project KMV --environment production --service permisos_smartsheet`. Sólo guarda la asociación en la configuración de la CLI, nada en el repo.
+  - Crear recursos que cuestan dinero (una base, un servicio) pide el visto bueno del usuario: el control de permisos bloqueó un segundo intento de crear la base, que además habría quedado duplicada.
 
 ## Mudanza de la base (RW-20)
 
@@ -83,3 +91,19 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
 - RW-40: plan Hobby: $5 al mes con $5 de consumo incluido; lo que pase de eso se cobra aparte. Estimado del servicio y la base: $3 a $6 al mes (DP-20). Conviene un límite en `Workspace > Usage`: el aviso (soft) no apaga nada; el tope (hard) apaga los servicios al llegar, y con ellos el procesador.
 - RW-41: "Wait for CI" se enciende en el panel: en los `Settings` del servicio `permisos_smartsheet`, junto a la fuente de GitHub. Exige el workflow `.github/workflows/backend.yml`, que ya está en el repo.
 - RW-42: la configuración en archivo de Railway (`railway.json`) se retira el 2026-12-01; por eso los ajustes viven en el servicio (RW-02) y en el `Dockerfile`.
+
+
+## Preguntas del usuario (2026-11-24)
+
+- RW-50: "Pagué $5 de Railway, ¿qué me recomiendas hacer?"
+  - Llevar allí el procesador y su base, para que corra sin depender del equipo Linux (el punto débil, K2-91).
+  - Antes, dos decisiones suyas: qué token usa y dejar de correr sólo en el equipo Linux.
+  - Fases: preparar el repo, montar Railway, mudar la base y plan de vuelta.
+- RW-51: "Ve avanzando lo que falta, de la forma más escalable, considerando que igual haremos cambios" (el backend llevaba dos o tres días apagado): SPEC-B22 y ADR-B19.
+- RW-52: "¿Podemos acceder a Railway, o lo puedes hacer desde la terminal?" (el usuario ya tenía el proyecto creado): sí, con la CLI (RW-15). Allí estaba el proyecto `KMV`, con el servicio conectado al repo (RW-01).
+- RW-53: decisiones, con opciones: acceso público a la base sólo para copiar (DP-12), token de administrador (DP-11) y aviso de gasto a $8 (RW-03).
+- RW-54: "¿Y estos?" (logs pegados): es el procesador en reposo, sin errores (RW-13b).
+- RW-55: "¿Siempre tiene que repetirlo? ¿No hay forma de que Smartsheet nos avise?" y "¿No dará problemas? ¿Separamos las llamadas en un worker o un servicio aparte?": DP-13.
+- RW-56: "`gis_permisos`, la gestión de usuarios y lo demás quedarán obsoletos: ¿no recomiendas webhooks para nada?": queda PEN-57. Hoy ninguna función necesita webhooks, ni los de Smartsheet ni unos propios; cuándo revisarlo, en DP-13.
+- RW-57: prueba del usuario y "no salió el pedido de Records; revisa qué más faltó, crea tú un proyecto con subfilas y mantenlas": RW-06, RW-06b y RW-08. Queda la decisión K2-99.
+- RW-58: "Documenta todo lo que se hizo y se preguntó desde un poco antes del despliegue": esta sección, la bitácora del día, y los estados al día en KMV_2.0 (K2-72, K2-85b, K2-91, K2-96d, K2-97 a K2-100), SPEC-B17, SPEC-B19, SPEC-B21, el mapa, `servicios/ids/README.md`, B-16, AUTOMATIZACIONES AU-07, VISTAS, ARQUITECTURA y el índice de docs.

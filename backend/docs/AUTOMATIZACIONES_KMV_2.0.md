@@ -25,6 +25,7 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
 - AU-04: `DV | New Records Request`: hoy se dispara con cualquier cambio de la fila. Pasa a la hoja de Records (AU-40); en la maestra se borra.
 - AU-05: `DV | New Task Permitting Team`: pasa a la hoja `Permits` (AU-20); en la maestra se borra.
 - AU-06: falta `Client | Status Update` (AU-14).
+- AU-07 (2026-11-24 18:25, lectura por API antes de la prueba en vivo): 0 avisos encendidos de 19 en las seis hojas de la 2.0 (maestra 7, `Permits` 3, Records 2, `Billing` 2, `MOT & Packages` 4, `Design Tickets` 1). Por eso la prueba no mandó correos. La API de avisos no muestra los flujos con otras acciones.
 
 ## Maestra `PROJECT KMV 2.0 (Prototype)`
 

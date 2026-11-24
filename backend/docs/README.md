@@ -22,6 +22,7 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `VISTAS_KMV_2.0.md`: cómo armar cada Dynamic View de la 2.0 (VK-xx).
 - `AUTOMATIZACIONES_KMV_2.0.md`: automatizaciones de cada hoja de la 2.0 (AU-xx).
 - `AUTOMATIZACIONES_2.0_RESUMEN.md`: lista de las automatizaciones que existen en la 2.0, para qué sirve cada una, cuáles son ideas y a quién avisan (AR-xx).
+- `DESPLIEGUE_RAILWAY.md`: estado del procesador en Railway, cambios del día a día, cómo leer los logs, pruebas en vivo y preguntas del usuario (RW-xx).
 - `vistas_anteriores/`: Dynamic Views de prueba anteriores a la 2.0, qué tenía cada una y cómo funcionaba, documentadas antes de borrarlas (VA-xx).
 - `PLAYWRIGHT_SMARTSHEET.md`: cómo revisar y configurar con navegador lo que la API no permite (Dynamic Views, formato condicional, Admin Center), sólo con autorización del usuario (PW-xx); herramienta en `herramientas/smartsheet_ui/`.
 - `HOJA_PROJECT_KMV.md`: la hoja PROJECT KMV 1.0.0 (versión anterior) y sus catálogos, columnas, fórmulas, automatizaciones, vistas, reportes y lo que el servicio hace sobre ella (HK-xx).
@@ -41,6 +42,7 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `specs/SPEC-B15-asociaciones.md`: validación de asociaciones entre proyecto y cliente contra un catálogo configurable, sólo lectura (PEN-24).
 - `specs/SPEC-B19-hoja-hija-facturacion.md`: hoja hija de Facturación con el contexto y las cantidades de la maestra y `Invoice Status` de vuelta (PEN-49).
 - `specs/SPEC-B21-registro-y-consumo.md`: registro de eventos (`GET /api/ids/logs`) y consumo de API del servicio: lectura en un pedido, freno, pasos que se saltan sin cambios y consulta lenta de noche.
+- `specs/SPEC-B22-despliegue-servidor.md`: el procesador en un servidor (Railway u otro): imagen Docker, migraciones automáticas, base por URL, un solo procesador, mudanza verificada de la base y alternativas evaluadas (DP-xx).
 - `specs/SPEC-B18-hoja-hija-records.md`: hoja hija de Records creada y mantenida por el procesador desde la casilla `Records Needed` (PEN-49).
 - `specs/SPEC-B17-obs-conversaciones.md`: conversaciones de cada fila copiadas a la columna Obs por el procesador (PEN-46).
 - `specs/SPEC-B16-catalogo-linked-tracking.md`: capacidades nativas verificadas, catálogo de proyectos, validación de Linked Tracking y sincronización de la hoja catálogo (PEN-24).

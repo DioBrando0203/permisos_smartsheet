@@ -1,6 +1,6 @@
 # Base PostgreSQL para el servicio futuro de IDs
 
-- Estado: base `galp_servicios` con migraciones 001, 002 y 003 aplicadas (003 el 2026-11-04, con respaldo y restauración de prueba). Motor, coordinador, adaptador, procesador y endpoints integrados en FastAPI y probados con Smartsheet simulado y PostgreSQL temporal. En operación automática en Pruebas desde 2026-11-04 (SPEC ID-36), sólo en el equipo Linux (B-16 del backend).
+- Estado: base `galp_servicios` con migraciones 001, 002 y 003 aplicadas (003 el 2026-11-04, con respaldo y restauración de prueba). Motor, coordinador, adaptador, procesador y endpoints integrados en FastAPI y probados con Smartsheet simulado y PostgreSQL temporal. En operación automática en Pruebas desde 2026-11-04 (SPEC ID-36), sólo en el equipo Linux (B-16 del backend). Desde el 2026-11-24 el procesador y su base corren en Railway (PEN-56, `backend/docs/DESPLIEGUE_RAILWAY.md`). Esta base local queda como copia del 2026-11-24 17:48 y el procesador del equipo Linux, apagado.
 - Alcance: sólo estado operativo de reservas de IDs; Smartsheet conserva los datos de negocio. El panel actual no usa esta base (ADR-B02 y ADR-B18).
 - Especificación: `SPEC.md`. El esquema asume IDs generados globalmente únicos y formatos canónicos. Los anchos son mínimos; confirmar el ámbito de proyectos, reglas de años y tratamiento de IDs eliminados antes de operar.
 - Motor: `backend/app/services/ids/`; requiere `pip install -e '.[ids]'` desde `backend/`. `runtime.py` ensambla el coordinador sólo con todas las barreras (SPEC ID-26).
@@ -42,7 +42,7 @@
 - Ciclo puntual sin tocar `.env`, desde `backend`: `APP_READ_ONLY=false IDS_WRITES_ENABLED=true IDS_TRANSITION_APPROVED=true IDS_PROCESSOR_WRITES_ENABLED=true` antepuesto a un script que llame `IdMonitor.run_once` con `runtime.assign_factory`, o `POST /api/ids/processor/run` con esas variables en `.env`.
 - Automático: en `backend/.env` poner esas cuatro variables y `IDS_MONITOR_ENABLED=true`, y reiniciar. Mientras `APP_READ_ONLY=false` el panel también puede cambiar permisos de hojas fuera de Pruebas; no usarlo para eso.
 - Verificar con `/api/ids/status` (`processor_mode` `assign`, `last_outcomes`), `/dry-run`, `/conflicts` y `/audit`.
-- Un solo procesador y una sola base. El bloqueo `pg_try_advisory_lock` vale dentro de una base: dos equipos con su propia `galp_servicios` numerarían con secuencias distintas. No crear otra base en Windows mientras opere la de Linux; mover el servicio exige respaldo, restauración y apagar antes el de Linux (B-16 del backend).
+- Un solo procesador y una sola base. El bloqueo `pg_try_advisory_lock` vale dentro de una base: dos equipos con su propia `galp_servicios` numerarían con secuencias distintas. No crear otra base en Windows mientras opere la de Linux; mover el servicio exige respaldo, restauración y apagar antes el de Linux (B-16 del backend). Desde el 2026-11-24 la base vigente es la de Railway: el procesador del equipo Linux no se enciende con esta base local.
 
 ## Servidor (Railway u otro, SPEC-B22)
 

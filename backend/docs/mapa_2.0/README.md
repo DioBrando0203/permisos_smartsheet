@@ -8,7 +8,7 @@ Estado 2026-11-24. Guía corta para entender la 2.0 de un vistazo: qué hojas ha
 - MP-02: el trabajo de cada equipo vive en su propia hoja (permisos, MOT y paquetes, Records, facturación, Design Tickets). Esas hojas las llena el servicio; nadie crea filas a mano en ellas.
 - MP-03: la gente no trabaja en las hojas sino en vistas (Dynamic Views): la coordinadora crea proyectos y trámites en la maestra; cada equipo ve sólo lo suyo en la vista de su hoja.
 - MP-04: Smartsheet hace solo lo que puede: fórmulas (IDs visibles, días, fase, cerrado, acceso del cliente), formato de colores y automatizaciones de aviso.
-- MP-05: el servicio (backend, usa la API de Smartsheet) hace lo que Smartsheet no puede: numerar proyectos, poner cada trámite bajo su proyecto, crear y mantener las filas en las hojas de equipo, devolver los resultados a la maestra, copiar las conversaciones a `Obs` y avisar cambios de metraje.
+- MP-05: el servicio (backend, usa la API de Smartsheet) hace lo que Smartsheet no puede: numerar proyectos, poner cada trámite bajo su proyecto, crear y mantener las filas en las hojas de equipo, devolver los resultados a la maestra, copiar las conversaciones a `Obs` y avisar cambios de metraje. Corre en Railway desde el 2026-11-24 (`../DESPLIEGUE_RAILWAY.md`).
 - MP-06: Smartsheet es la fuente de verdad. El servicio sólo guarda en su base (PostgreSQL) los contadores de IDs y lo técnico; nada técnico se escribe en las hojas.
 
 ## Archivos

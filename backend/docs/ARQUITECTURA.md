@@ -166,6 +166,13 @@ app/
 - Identificadores de Smartsheet: hojas con `int` de 64 bits, que en JSON viajan como texto (`"122469189898116"`) para que JavaScript no los redondee (ADR-B07). Shares con texto (`"AAACsZ4KFOeE"`).
 - Niveles: `VIEWER`, `COMMENTER`, `EDITOR`, `EDITOR_SHARE`, `ADMIN`, `OWNER` (orden ascendente).
 
+## Despliegue (2026-11-24, SPEC-B22)
+
+- Railway, proyecto `KMV`, entorno `production`: servicio `permisos_smartsheet` (imagen del `Dockerfile` de la raíz, `python -m app.serve`, una réplica, sin dominio público) y `Postgres` (sólo red privada).
+- Variables del servicio: ajustes de `backend/.env` sin lo propio del equipo Linux, token de Smartsheet, `IDS_ADMIN_TOKEN` propio y `IDS_DATABASE_URL=${{Postgres.DATABASE_URL}}`.
+- Push a `main`: GitHub Actions verifica y Railway redespliega si cambió código. Al arrancar, migraciones; después Uvicorn y el procesador, que espera el bloqueo si otra instancia lo tiene.
+- Equipo Linux: desarrollo y pruebas (`python run.py`), con el procesador apagado y su base local como copia.
+
 ## Seguridad y recursos
 
 - Host y Origin de la lista permitida: loopback por defecto, ampliable con `APP_ALLOWED_HOSTS` y `APP_ALLOWED_ORIGINS` (ADR-B08).

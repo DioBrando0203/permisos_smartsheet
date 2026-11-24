@@ -1,6 +1,6 @@
 # SPEC-B21 Registro de eventos y consumo de API del servicio
 
-Estado: implementada el 2026-11-23 (pedido del usuario: saber qué pasa y si hay errores, y que el servicio aguante la maestra 2.0 con todas las compañías; `KMV_2.0.md` K2-96 a K2-96c). Falta reiniciar el backend para que rija.
+Estado: implementada el 2026-11-23 (pedido del usuario: saber qué pasa y si hay errores, y que el servicio aguante la maestra 2.0 con todas las compañías; `KMV_2.0.md` K2-96 a K2-96c). En Railway desde el 2026-11-24 17:53 (despliegue de `74efda8`, PEN-56); sus logs se leen como explica `../DESPLIEGUE_RAILWAY.md` RW-13b.
 
 ## Contexto
 

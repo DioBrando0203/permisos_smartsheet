@@ -1296,3 +1296,26 @@ Prueba propia (escrituras en la maestra 2.0 de Pruebas, autorizadas por el usuar
 - Logs de Railway sin avisos ni errores.
 Las filas se mantienen como proyecto de prueba permanente.
 Docs: `DESPLIEGUE_RAILWAY.md` RW-06b y RW-08.
+
+## 2026-11-24 18:40 -05:00 Documentación de todo lo hecho y preguntado desde antes del despliegue (pedido del usuario)
+
+Estado: hecho; sólo documentación.
+Pedido: "documentar todo lo que se hizo y se preguntó desde un poco antes de empezar el despliegue".
+Repaso, en orden, con las entradas que ya lo registraban:
+- Después de K2-85b (entrada de las 17:05), el usuario hizo push; se comprobó `origin/main` en `c237c26`.
+- Entre las 17:05 y las 17:25, sin entrada propia hasta ahora: el usuario contó que pagó Railway (, plan Hobby) y preguntó qué hacer. Se recomendó llevar allí el procesador y su base (K2-91), con dos decisiones previas suyas (token y dónde corre) y un plan por fases. Su servicio de Railway intentó desplegar `c237c26` a las 17:22 y falló, sin correr nada, porque aún no había `Dockerfile`.
+- Preparación (17:45), base copiada, token y aviso de gasto (17:51), despliegue (18:01), consulta de webhooks (18:09), alcance PEN-57, prueba del usuario (18:21) y prueba completa propia (18:32): entradas de esas horas.
+Puesto al día ahora: lo que decía "falta reiniciar el backend" ya corre en Railway.
+- KMV_2.0: K2-72, K2-85b (probado en vivo), K2-91 y K2-98 (resueltos), K2-96d y K2-97.
+- SPEC-B17 (OB-17 en vivo), SPEC-B19 y SPEC-B21.
+- Mapa: MP-71b, MP-76, MP-77 y MP-05.
+- `servicios/ids/README.md` y B-16 (resuelto).
+Nuevo:
+- K2-99: `DT Owner` en un permiso, decisión pendiente.
+- K2-100: pruebas con `OT-Others`, y aviso sobre `KMV-26-0007`, que usa un cliente con contactos.
+- AUTOMATIZACIONES AU-07: 0 avisos encendidos de 19.
+- VISTAS: antes de compartir la vista de clientes.
+- ARQUITECTURA: sección de despliegue.
+- `DESPLIEGUE_RAILWAY.md`: RW-07 (pendientes), RW-12 (redesplegar tras cambiar variables), RW-15 (CLI de Railway) y "Preguntas del usuario", RW-50 a RW-58.
+- Índice de docs: SPEC-B22 y la guía.
+Copias en `/mnt/hgfs/Share`: mapa, VISTAS y AUTOMATIZACIONES. La maestra sigue con 79 columnas.

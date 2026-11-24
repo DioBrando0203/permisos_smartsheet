@@ -1,6 +1,6 @@
 # SPEC-B17 Conversaciones de cada fila compiladas en Obs
 
-Estado: en uso en Pruebas (2026-11-12, PEN-46); migración 004 aplicada y prueba real correcta en PROJECT KMV (CA-03 y CA-07 comprobados también en real). OB-17 (chat de `Permits` en el `Obs` de su fila de la maestra) programado el 2026-11-24 con pruebas simuladas; sin probar en vivo hasta reiniciar el backend.
+Estado: en uso en Pruebas (2026-11-12, PEN-46); migración 004 aplicada y prueba real correcta en PROJECT KMV (CA-03 y CA-07 comprobados también en real). OB-17 (chat de `Permits` en el `Obs` de su fila de la maestra) programado el 2026-11-24 y probado en vivo desde Railway a las 18:31: un comentario en `Permits` llegó al `Obs` de su fila de la maestra en unos 3 minutos (`../DESPLIEGUE_RAILWAY.md` RW-08).
 
 ## Objetivo
 
