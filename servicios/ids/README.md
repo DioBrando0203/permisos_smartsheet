@@ -43,3 +43,8 @@
 - Automático: en `backend/.env` poner esas cuatro variables y `IDS_MONITOR_ENABLED=true`, y reiniciar. Mientras `APP_READ_ONLY=false` el panel también puede cambiar permisos de hojas fuera de Pruebas; no usarlo para eso.
 - Verificar con `/api/ids/status` (`processor_mode` `assign`, `last_outcomes`), `/dry-run`, `/conflicts` y `/audit`.
 - Un solo procesador y una sola base. El bloqueo `pg_try_advisory_lock` vale dentro de una base: dos equipos con su propia `galp_servicios` numerarían con secuencias distintas. No crear otra base en Windows mientras opere la de Linux; mover el servicio exige respaldo, restauración y apagar antes el de Linux (B-16 del backend).
+
+## Servidor (Railway u otro, SPEC-B22)
+
+- En un servidor la base se elige con `IDS_DATABASE_URL` y las migraciones de `sql/` se aplican solas al arrancar (`backend/app/services/ids/migrations.py`). Aquí siguen a mano con sus scripts y respaldo.
+- La mudanza del registro a la base del servidor es `backend/app/services/ids/transfer.py`: copia verificada, sin `sudo`. Guía: `backend/docs/DESPLIEGUE_RAILWAY.md`.

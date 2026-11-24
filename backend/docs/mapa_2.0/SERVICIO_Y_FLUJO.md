@@ -28,7 +28,7 @@ Estado 2026-11-23. Qué hace el servicio con la API de Smartsheet, cómo corre, 
 - MP-74: cada paso corre como mucho cada 30 segundos y sólo si alguna de sus hojas cambió; igual corre cada 10 minutos por seguridad (`Obs`, cada 2). Si un paso falla, los demás siguen y el fallo queda en el registro.
 - MP-75: consumo de la API: Smartsheet admite 300 llamadas por minuto por token; el servicio se frena solo en 250. Lee cada hoja en un solo pedido. Estimado con la maestra de fin de año: unas 15 por minuto sin trabajo y 30 a 60 en los picos (SPEC-B21).
 - MP-76: cómo ver qué pasa: `GET /api/ids/status` (estado de cada paso y del último ciclo) y `GET /api/ids/logs` (eventos recientes, errores con su detalle y consumo de la API), los dos con el token del ID Manager; también por la consola del servidor.
-- MP-77: reglas de operación: después de un cambio de código o de configuración hay que reiniciar el servicio; nunca correr una pasada manual con el servicio encendido; mudarlo de máquina exige llevar la base con respaldo y apagar antes el anterior.
+- MP-77: reglas de operación: después de un cambio de código o de configuración hay que reiniciar el servicio; nunca correr una pasada manual con el servicio encendido; mudarlo de máquina exige llevar la base con respaldo y apagar antes el anterior. En curso: llevarlo a Railway para que corra sin depender del equipo Linux (`../DESPLIEGUE_RAILWAY.md`, PEN-56).
 
 ## Si el servicio está apagado
 

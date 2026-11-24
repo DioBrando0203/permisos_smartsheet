@@ -1,0 +1,47 @@
+# Procesador en Railway: guía y estado
+
+Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y su PostgreSQL del equipo Linux a Railway, y para mantenerlo allí. Reglas y criterios: `specs/SPEC-B22-despliegue-servidor.md` (DP-xx). Decisión: `decisiones/ADR.md` ADR-B19. Pendiente: `REQUERIMIENTOS.md` PEN-56.
+
+## Estado (2026-11-24 17:45)
+
+- RW-01: proyecto `KMV` en Railway, entorno `production`, con dos servicios:
+  - `permisos_smartsheet`: conectado al repo de GitHub, rama `main`. Su primer despliegue (commit `c237c26`, sin `Dockerfile`) falló sin llegar a correr.
+  - `Postgres`: base nueva, sólo en la red privada de Railway.
+- RW-02: hecho con la CLI de Railway, desde el equipo Linux:
+  - Variables de `permisos_smartsheet` (`servicios/despliegue/variables_railway.py`), 36 en total: los 34 ajustes de `backend/.env` que no son secretos ni propios del equipo Linux, sin el token de Smartsheet y con el procesador apagado (`IDS_MONITOR_ENABLED=false`).
+  - La base va por referencia: `IDS_DATABASE_URL=${{Postgres.DATABASE_URL}}`.
+  - `APP_ALLOWED_HOSTS` incluye `healthcheck.railway.app` y el dominio privado.
+  - `IDS_ADMIN_TOKEN` nuevo, generado para el servidor.
+  - Ajustes del servicio por la API de Railway: `Dockerfile`, chequeo de salud `/api/health` (120 s), reinicio siempre, una réplica, sin dormir, y redespliegue sólo si cambian `Dockerfile`, `.dockerignore`, `backend/app/**`, `backend/requirements.lock` o `servicios/ids/sql/**` (los commits de docs no redespliegan).
+- RW-03: falta, en orden:
+  1. Push del commit con el `Dockerfile`. Railway lo despliega solo: migra la base vacía y queda en línea con el procesador apagado. Se comprueba con sus logs.
+  2. Copiar el registro de IDs del equipo Linux a la base de Railway (RW-20). Necesita que la base acepte conexiones desde fuera: decisión del usuario (RW-21).
+  3. Decidir la cuenta del token (DP-11) y encender el procesador (RW-30).
+  4. Opcional: límite de gasto y "Wait for CI" en el panel (RW-40, RW-41).
+
+## Cambios del día a día
+
+- RW-10: un cambio de código llega a Railway con el push a `main`: GitHub Actions corre ruff y pytest (DP-09) y Railway construye la imagen y la despliega. Con "Wait for CI" encendido, espera a que las pruebas pasen.
+- RW-11: una migración nueva es un archivo `servicios/ids/sql/NNN_nombre.sql` con el número siguiente. En Railway se aplica sola al desplegar (DP-04); en el equipo Linux, a mano con su script y respaldo, como siempre.
+- RW-12: un interruptor nuevo en `backend/.env` (por ejemplo `APP_..._ENABLED`) se pasa a Railway con `backend/.venv/bin/python servicios/despliegue/variables_railway.py --monitor`. No toca el token ni el `IDS_ADMIN_TOKEN` del servidor.
+- RW-13: ver qué pasa: `railway logs` (o el panel de Railway) muestra la consola del servicio. `GET /api/ids/status` y `/api/ids/logs` (SPEC-B21) se consultan desde la red privada o con `railway ssh`.
+- RW-14: nunca más de una réplica ni más de un worker. Si en un despliegue conviven dos versiones, la nueva espera el bloqueo (DP-05).
+
+## Mudanza de la base (RW-20)
+
+- RW-20: desde `backend/` en el equipo Linux, con el backend apagado: `DESTINO_URL='<URL pública de la base de Railway>' .venv/bin/python -m app.services.ids.transfer`. Copia las seis tablas en una transacción y compara su contenido; si algo no coincide, el destino queda vacío (DP-08). Ensayado con los datos reales en una base local descartable (SPEC-B22).
+- RW-21 (decisión del usuario): la base de Railway hoy sólo acepta conexiones de su red privada. Para la copia necesita una dirección pública (TCP proxy de Railway, con usuario y clave larga). Dos opciones:
+  - Temporal: abrirla para la copia y cerrarla después. El equipo Linux queda con `IDS_MONITOR_ENABLED=false`.
+  - Permanente: el `.env` del equipo Linux apunta a la misma base (DP-10). Si alguien enciende el backend allí, espera el bloqueo, y sirve de respaldo si Railway se cae.
+- RW-22: justo después de la copia, el equipo Linux deja de usar su base local (DP-10): o apunta a la de Railway, o apaga su procesador. Si numerara con la local, se repetirían IDs.
+
+## Encender el procesador (RW-30)
+
+- RW-30: con el token decidido (DP-11): `backend/.venv/bin/python servicios/despliegue/variables_railway.py --monitor --con-token` y un redespliegue. El script manda el token por la entrada estándar, nunca en la línea de comandos ni en pantalla.
+- RW-31: comprobar en los logs el primer ciclo sin errores, y en Smartsheet (Pruebas) que una fila nueva recibe su ID. Desde entonces el equipo Linux no procesa (DP-10).
+
+## Costo y panel
+
+- RW-40: plan Hobby: $5 al mes con $5 de consumo incluido; lo que pase de eso se cobra aparte. Estimado del servicio y la base: $3 a $6 al mes (DP-20). Conviene un límite en `Workspace > Usage`: el aviso (soft) no apaga nada; el tope (hard) apaga los servicios al llegar, y con ellos el procesador.
+- RW-41: "Wait for CI" se enciende en el panel: en los `Settings` del servicio `permisos_smartsheet`, junto a la fuente de GitHub. Exige el workflow `.github/workflows/backend.yml`, que ya está en el repo.
+- RW-42: la configuración en archivo de Railway (`railway.json`) se retira el 2026-12-01; por eso los ajustes viven en el servicio (RW-02) y en el `Dockerfile`.

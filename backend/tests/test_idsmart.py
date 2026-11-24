@@ -99,18 +99,44 @@ async def test_monitor_runs_without_overlap_and_stops(monkeypatch) -> None:
     conn.close.assert_called_once()
 
 
-async def test_monitor_refuses_second_instance(monkeypatch) -> None:
+async def test_monitor_waits_while_another_instance_holds_the_lock(monkeypatch) -> None:
+    """SPEC-B22 DP-05: nunca dos a la vez, y la instancia nueva toma el relevo sin reiniciarse."""
     import app.services.ids.monitor as module
 
     conn = Mock()
-    conn.execute.return_value.fetchone.return_value = (False,)
+    conn.execute.return_value.fetchone.side_effect = [(False,), (False,), (True,)]
     monkeypatch.setattr(module.psycopg, "connect", Mock(return_value=conn))
-    monitor = module.IdMonitor(AsyncMock(), True, 60)
+    preview = AsyncMock(return_value={"counts": {}})
+    monkeypatch.setattr(module, "build_dry_run_report", preview)
+    monitor = module.IdMonitor(AsyncMock(), True, 60, retry_seconds=0)
     monitor.start()
-    await monitor.task
+    for _ in range(100):
+        if monitor.last_run:
+            break
+        await asyncio.sleep(0.01)
+    # Dos intentos con el bloqueo ajeno, cada uno con su conexión cerrada; al tercero procesa.
+    assert monitor.active is True and preview.await_count == 1
+    assert conn.close.call_count == 2 and monitor.last_error is None
+    await monitor.stop()
     assert monitor.active is False
-    assert monitor.last_error == "processor_already_active"
-    conn.close.assert_called_once()
+
+
+async def test_monitor_reconnects_when_postgresql_comes_back(monkeypatch) -> None:
+    import app.services.ids.monitor as module
+
+    conn = Mock()
+    conn.execute.return_value.fetchone.return_value = (True,)
+    connect = Mock(side_effect=[module.psycopg.OperationalError("caída simulada"), conn])
+    monkeypatch.setattr(module.psycopg, "connect", connect)
+    monkeypatch.setattr(module, "build_dry_run_report", AsyncMock(return_value={"counts": {}}))
+    monitor = module.IdMonitor(AsyncMock(), True, 60, retry_seconds=0)
+    monitor.start()
+    for _ in range(100):
+        if monitor.last_run:
+            break
+        await asyncio.sleep(0.01)
+    assert monitor.active is True and connect.call_count == 2
+    await monitor.stop()
 
 
 async def test_preview_reports_conflicting_stable_cell(database_fixture, monkeypatch) -> None:

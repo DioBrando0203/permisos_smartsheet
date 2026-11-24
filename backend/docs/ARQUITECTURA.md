@@ -84,7 +84,10 @@ app/
   services/associations.py       AssociationService: consulta configurable de proyecto y cliente entre hojas
   services/association_rules.py reglas puras de asociaciones y ambigüedad del catálogo
   services/ids/                 formatos, reservas, simulación y procesador de IDs; hoja configurada en `pilot.py` (Presentable, madres e hijas)
-  services/ids/monitor.py       procesador periódico y ciclo a demanda: simula por defecto; asigna sólo con coordinador de runtime.py
+  services/ids/monitor.py       procesador periódico y ciclo a demanda: simula por defecto; asigna sólo con coordinador de runtime.py; si otra instancia tiene el bloqueo o PostgreSQL no responde, reintenta (SPEC-B22 DP-05)
+  services/ids/migrations.py    migraciones de `servicios/ids/sql` aplicadas al arrancar en un servidor, una vez cada una y registradas (SPEC-B22 DP-04)
+  services/ids/transfer.py      copia verificada del registro de IDs a la base vacía de un servidor (SPEC-B22 DP-08)
+  serve.py                      arranque en un servidor: migraciones y Uvicorn en `PORT`, un worker (SPEC-B22); en el equipo Linux sigue `run.py`
   services/ids/runtime.py       barreras de escritura y ensamblaje del coordinador real
   services/ids/recovery.py      plan de recuperación de reservas sin confirmar (puro)
   services/ids/gateway.py       adaptador de Stable IDs con comprobaciones y riesgo residual de edición externa

@@ -481,3 +481,14 @@ Entorno: Linux, `backend/.venv`, PostgreSQL local para las pruebas de Obs.
 - Pruebas nuevas en `tests/test_obs_mirrors.py` (3; no podían pasar antes del cambio: no existían las fuentes ni el parámetro `mirrors`): el chat de `Permits` llega al `Obs` de su `Master Row` en la misma línea que un comentario de la maestra del mismo día; `#internal`, filas sin `Master Row` y filas cuya fila de la maestra se borró no pasan; cada comentario queda registrado con su hoja y su fila; la segunda pasada no escribe. Una hoja de equipo sin `Master Row` o fuera de Pruebas cuenta un error y la maestra sigue; al corregirse, el comentario pasa. Sólo `Permits` y sólo con `APP_OBS_MIRRORS_ENABLED`.
 - `pytest`: 218 aprobadas. `ruff check app tests` y `ruff format --check app tests`: sin errores.
 - No probado en vivo: al reiniciar el backend, comentar en una fila de `Permits (Prototype)` y ver el texto en el `Obs` de su fila de la maestra en un par de minutos.
+
+## 2026-11-24 17:45 -05:00 Procesador preparado para un servidor (SPEC-B22)
+
+Entorno: Linux, `backend/.venv` (Python 3.14.4), PostgreSQL 18.6 local.
+- Pruebas nuevas:
+  - `tests/test_deploy.py` (9): base por URL secreta; puerto del servidor; sin URL no arranca ni migra; migraciones en orden y una vez; base de B-16 con `--baseline`; migración rota sin nada a medias; mudanza completa, con la auditoría numerando después y sin escribir sobre datos ni con un procesador activo.
+  - `tests/test_idsmart.py` (2, reemplazan a la que esperaba que el monitor se rindiera): espera el bloqueo y toma el relevo; se reconecta cuando vuelve PostgreSQL.
+- `pytest`: 228 aprobadas. `ruff check` y `ruff format --check`: sin errores (también el script de variables).
+- Corrida como en GitHub Actions, en otra carpeta y sin `backend/.env`: 226 aprobadas, antes de sumar las dos pruebas de la mudanza.
+- Ensayo de la mudanza con los datos reales (origen sólo lectura, backend apagado) hacia un PostgreSQL local descartable: `secuencia_id` 6, `estado_inicializacion_id` 1, `asignacion_id` 24, `auditoria_id` 57, `obs_comentario` 142, `id_retirado` 2, huellas iguales y migraciones 001 a 005 registradas; la base del ensayo se borró.
+- No probado: la construcción de la imagen (no hay Docker en este equipo; la prueba es el primer despliegue en Railway tras el push) ni el workflow de GitHub Actions.

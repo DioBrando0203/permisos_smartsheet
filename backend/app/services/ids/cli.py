@@ -7,7 +7,7 @@ from pathlib import Path
 
 import psycopg
 
-from app.core.config import Settings
+from app.core.config import Settings, get_settings
 from app.services.ids import pilot
 from app.services.ids.dry_run import Candidate, plan
 from app.services.ids.formats import EntityKind, formula_number, parse_id, project_scope
@@ -17,12 +17,19 @@ from app.services.ids.simulation import Projector
 from app.services.ids.store import IdStore
 from app.services.smartsheet import SmartsheetClient
 
-DSN = psycopg.conninfo.make_conninfo(
-    host="127.0.0.1",
-    dbname="galp_servicios",
-    user="galp_ids",
-    passfile=str(Path.home() / ".config" / "galp_servicios" / "pgpass"),
-)
+
+def database_dsn(settings: Settings) -> str:
+    """`IDS_DATABASE_URL` en un servidor (SPEC-B22 DP-03); si no, la base local del equipo Linux
+    (B-16) con el usuario `galp_ids` y su pgpass."""
+    return settings.database_url or psycopg.conninfo.make_conninfo(
+        host="127.0.0.1",
+        dbname="galp_servicios",
+        user="galp_ids",
+        passfile=str(Path.home() / ".config" / "galp_servicios" / "pgpass"),
+    )
+
+
+DSN = database_dsn(get_settings())
 
 
 async def run(action: str) -> None:

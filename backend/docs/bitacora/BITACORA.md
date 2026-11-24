@@ -1207,3 +1207,25 @@ Pedido: programar K2-85b, recordando que las hojas de equipo sólo son un reflej
 Cambios: `services/obs/sources.py` nuevo con las fuentes de comentarios (`MasterRows`, la maestra; `MirrorRows`, una hoja de equipo traducida a la maestra por `Master Row`: Strategy + Adapter). `obs/sync.py` junta los comentarios de la maestra y de `Permits`, los agrupa por fila de la maestra y escribe `Obs` una sola vez por fila; una hoja de equipo que falla cuenta un error y no frena la maestra (Bulkhead). `obs/store.py` registra cada comentario con la hoja y la fila donde está, en una sola transacción. `ChildSpec.obs` marca qué hoja pasa a `Obs` (sólo `PERMITS`); `team_sheets()` sale de `childsheets/sync.py` y lo usan los pasos y `Obs`. Interruptor `APP_OBS_MIRRORS_ENABLED` (por defecto apagado; encendido en `backend/.env`). Sin migración ni cambios en Smartsheet; la maestra sigue con 79 columnas.
 Evidencia: calidad/RESULTADOS.md.
 Docs: SPEC-B17 (estado, OB-10, OB-11, OB-13, OB-17, CA-09 a CA-11); `KMV_2.0.md` K2-85b; `patrones/PATRONES.md`; ARQUITECTURA; VISTAS VK-09b; `mapa_2.0` MP-71b y MP-90; copia del mapa y de VISTAS en `/mnt/hgfs/Share`.
+
+## 2026-11-24 17:45 -05:00 Procesador preparado para Railway (PEN-56, SPEC-B22, ADR-B19)
+
+Estado: preparado y configurado en Railway; sin desplegar el código nuevo, sin copiar la base y con el procesador apagado allí.
+Pedido: el usuario contrató Railway (plan Hobby) y pidió avanzar "de la forma más escalable considerando que igual haremos cambios", y que se hiciera desde la terminal.
+Código:
+- Imagen Docker en la raíz del repo, sin secretos (`.dockerignore`).
+- Arranque de servidor `app/serve.py`.
+- Base por `IDS_DATABASE_URL` (secreta).
+- Migraciones automáticas `services/ids/migrations.py`, con registro en la misma transacción.
+- Mudanza verificada `services/ids/transfer.py`.
+- El monitor ya no se rinde: espera el bloqueo y se reconecta con PostgreSQL (antes una segunda instancia o una caída de la base lo dejaban detenido hasta reiniciar, lo que en un despliegue lo habría apagado).
+- Verificación en GitHub Actions.
+- Script `servicios/despliegue/variables_railway.py`.
+Railway (CLI instalada para el usuario; el usuario inició la sesión en su navegador):
+- En el proyecto `KMV`, el servicio `permisos_smartsheet` ya estaba conectado al repo; su despliegue de `c237c26` falló por no tener `Dockerfile`, sin correr nada.
+- Se agregó `Postgres`. Un segundo intento de crearla lo bloqueó el control de permisos; no hacía falta, porque el primero la había creado.
+- Variables sin el token de Smartsheet y con `IDS_MONITOR_ENABLED=false`.
+- Ajustes del servicio: chequeo de salud, reinicio siempre, una réplica, redespliegue sólo con cambios de código.
+Evidencia: calidad/RESULTADOS.md (pruebas, corrida sin `.env` y ensayo de la mudanza con los datos reales en una base local descartable, ya borrada).
+Pendiente del usuario: push; acceso público de la base para la copia (temporal o permanente, RW-21); cuenta del token (DP-11); límite de gasto. La maestra no cambió (79 columnas).
+Docs: SPEC-B22, `DESPLIEGUE_RAILWAY.md`, ADR-B19, PEN-56, B-16, ARQUITECTURA, `servicios/ids/README.md`, AGENTS, mapa MP-77.

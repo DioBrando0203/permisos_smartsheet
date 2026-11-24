@@ -124,4 +124,5 @@ Síntoma: en el equipo Windows, tras el pull, el entorno no tenía `psycopg` (ah
 Causa: la base `galp_servicios` y el usuario `galp_ids` existen sólo en Linux; el DSN de `services/ids/cli.py` apunta a `127.0.0.1`.
 Efecto: según `monitor.py`, con las barreras activas en el `.env` de Windows el procesador falla al conectar y queda en `database_unavailable` antes de leer o escribir en Smartsheet; la sincronización del catálogo sólo corre dentro de un ciclo. No comprobado arrancando con esas barreras. Con `APP_READ_ONLY=false` el panel de Windows sí puede escribir permisos.
 Prevención: un solo procesador y una sola base. No crear otra `galp_servicios` en Windows mientras opere la de Linux: el bloqueo asesor es por base y no evitaría dos numeraciones. Mover el servicio exige respaldo, restauración y apagar antes el de Linux (`servicios/ids/README.md`).
+Salida (2026-11-24, en curso): PEN-56, el procesador en Railway (SPEC-B22, `DESPLIEGUE_RAILWAY.md`), con la base copiada por `transfer.py` y el bloqueo compartido si el equipo Linux apunta a la misma base (DP-10).
 

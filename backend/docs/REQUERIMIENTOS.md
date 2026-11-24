@@ -57,6 +57,10 @@ Pensado para el equipo que administra las hojas de Smartsheet de la cuenta. Debe
 
 ## Pendientes (backlog priorizado)
 
+### PEN-56 Procesador en Railway
+
+Prioridad: alta (pedido del usuario, 2026-11-24, tras contratar Railway). Estado: preparado y configurado. Faltan el push con el `Dockerfile`, la copia de la base (necesita que el usuario decida el acceso público temporal o permanente, RW-21) y la cuenta del token (DP-11) para encender el procesador. Spec: SPEC-B22. Guía: `DESPLIEGUE_RAILWAY.md`. Decisión: ADR-B19.
+
 ### PEN-55 Separar GIS y permisos viales del servicio de Smartsheet
 
 Prioridad: solicitada por el usuario el 2026-11-16. Estado: separación de código en curso; `../gis_permisos` contiene mapa y panel con backends separados, sin copia del procesador de IDs ni segunda implementación GIS en el backend del panel. En este proyecto se retiraron frontend, GIS, rutas exclusivas del panel y validación de asociaciones usada sólo por el panel; se conservan el procesador, catálogo y sus dependencias compartidas. Falta adaptar los E2E y el despliegue del frontend compilado en el proyecto vecino. No se ejecutaron pruebas ni se arrancaron servicios por decisión del usuario; el funcionamiento tras los cambios no está verificado.

@@ -1,0 +1,20 @@
+# Sólo entra lo que copia el Dockerfile; nunca secretos ni entornos locales (SPEC-B22 DP-02).
+**/.env
+**/.env.*
+!**/.env.example
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.ruff_cache
+**/*.egg-info
+**/*.log
+**/*.dump
+**/.port
+.git
+capturas
+future_docs
+herramientas
+backend/docs
+backend/tests
+servicios/gis

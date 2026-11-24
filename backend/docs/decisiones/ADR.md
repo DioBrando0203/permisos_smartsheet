@@ -151,3 +151,20 @@ Ampliaciones (2026-10-30), con las mismas reglas (GET público, sin clave, plazo
 - Buscador: geocodificador del Censo de EE. UU. (SPEC-B14 punto 9); agregado en el commit "mapa mejorado", pendiente de confirmación explícita del usuario.
 - Respaldo de parcelas de Broward (capa pública del condado, sólo `FOLIO`) cuando FDACS falla, a pedido del usuario tras quedar FDACS inaccesible (PEN-30, B-13). Condiciones de uso por revisar (MJ-PEN-06).
 - Contornos de parcelas para dibujar (PEN-33, a pedido del usuario): Broward (la misma capa) y Miami-Dade (`MD_LandInformation` capa 26, pública); sólo el ID y la geometría simplificada, nunca el propietario aunque la capa lo tenga. Condiciones de uso por revisar (MJ-PEN-06).
+
+## ADR-B19 Procesador en un servidor administrado (Railway)
+
+Fecha: 2026-11-24. Estado: en curso. El usuario contrató Railway y pidió avanzar "de la forma más escalable, considerando que igual haremos cambios". La cuenta del token sigue por decidir (SPEC-B22 DP-11).
+Contexto: el procesador y su PostgreSQL sólo corren con el equipo Linux encendido (B-16); apagado, se atrasan los IDs, las hojas de equipo y `Obs`.
+Decisión:
+- Una imagen Docker, que sirve en Railway o en cualquier servidor, con migraciones automáticas al arrancar y los mismos archivos SQL de siempre.
+- Verificación en GitHub Actions; Railway despliega cada push a `main`.
+- Secretos sólo como variables del servidor; la base por referencia.
+- Un solo procesador gracias al bloqueo de PostgreSQL, ahora con reintento.
+- Mudanza de la base con copia verificada (`transfer.py`), sin `sudo`.
+- Nada depende de `railway.json`, que Railway retira el 2026-12-01.
+Consecuencias:
+- Costo mensual cercano a los $5 incluidos del plan Hobby.
+- El equipo Linux deja de ser necesario para que el servicio corra; su base local queda como copia.
+- Cambia el requisito de que el token viva sólo en `backend/.env`, cuando el usuario decida la cuenta del servidor.
+- Guía y estado: `DESPLIEGUE_RAILWAY.md`.

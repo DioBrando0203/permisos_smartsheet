@@ -49,5 +49,6 @@ No escribir código con escapes (`\n`, `\d`, `\u…`) desde heredocs de shell: u
 
 ## Mapa y herramientas
 
+- Procesador en Railway (PEN-56, en curso): `backend/docs/DESPLIEGUE_RAILWAY.md` (estado, pasos y cambios del día a día) y SPEC-B22. Mientras no esté encendido allí, sigue valiendo que el procesador corre en el equipo Linux. Nunca dos procesadores con bases distintas: se repetirían IDs.
 - Mapa de la 2.0 (hojas, vistas, reportes, automatizaciones, qué hace el servicio, flujo y diagramas): `backend/docs/mapa_2.0/`.
 - Herramienta opcional de navegador (Playwright) para lo que la API de Smartsheet no permite (Dynamic Views, formato condicional, Admin Center): `herramientas/smartsheet_ui/` y `backend/docs/PLAYWRIGHT_SMARTSHEET.md`. Sólo con autorización expresa del usuario para cada tarea; el usuario inicia sesión a mano; escrituras sólo en Pruebas.

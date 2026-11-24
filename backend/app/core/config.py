@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     # Activo por defecto: escribir en Smartsheet exige desactivarlo a propósito (ADR-B11).
     app_read_only: bool = True
     ids_admin_token: SecretStr | None = None
+    # Base del servicio en un servidor (Railway u otro, SPEC-B22 DP-03), como URL con su clave;
+    # vacía: la local del equipo Linux (B-16). Secreta como el token: nunca en logs ni errores.
+    ids_database_url: SecretStr | None = None
     ids_monitor_enabled: bool = False
     ids_monitor_interval_seconds: int = 60
     # Consulta liviana de cambios entre ciclos (segundos); 0 la desactiva.
@@ -119,6 +122,12 @@ class Settings(BaseSettings):
     def has_token(self) -> bool:
         token = self.smartsheet_access_token
         return token is not None and bool(token.get_secret_value().strip())
+
+    @property
+    def database_url(self) -> str | None:
+        if self.ids_database_url is None:
+            return None
+        return self.ids_database_url.get_secret_value().strip() or None
 
     @property
     def allowed_hosts(self) -> tuple[str, ...]:

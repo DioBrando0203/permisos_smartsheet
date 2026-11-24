@@ -49,6 +49,7 @@ class IdMonitor:
         customer_change: bool = False,
         child_syncs: dict[str, Callable[[], Awaitable[dict]]] | None = None,
         idle: IdlePolling | None = None,
+        retry_seconds: float = 30.0,
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self.client = client
@@ -71,6 +72,8 @@ class IdMonitor:
         self.child_syncs = dict(child_syncs or {})
         self.last_children: dict[str, dict] = {}
         self.idle = idle
+        # Espera entre intentos de tomar el bloqueo o de reconectar con PostgreSQL (DP-05).
+        self.retry_seconds = max(0.0, retry_seconds)
         self.clock = clock
         self._changed_at = clock()
         self.active = False
@@ -189,6 +192,17 @@ class IdMonitor:
             return None
 
     async def _run(self) -> None:
+        """Procesa mientras tenga el bloqueo global; si no lo consigue, reintenta (SPEC-B22 DP-05).
+
+        Otra instancia con el bloqueo (en un despliegue, la versión nueva arranca antes de que se
+        apague la anterior) o PostgreSQL caído no detienen el procesador para siempre: espera
+        `retry_seconds` y vuelve a intentar. Nunca procesan dos a la vez.
+        """
+        while True:
+            await self._hold()
+            await asyncio.sleep(self.retry_seconds)
+
+    async def _hold(self) -> None:
         conn = None
         try:
             conn = await asyncio.to_thread(
@@ -198,9 +212,12 @@ class IdMonitor:
                 conn.execute, "SELECT pg_try_advisory_lock(%s)", (_LOCK,)
             )
             if not lock.fetchone()[0]:
+                if self.last_error != "processor_already_active":
+                    logger.info("procesador en espera: otra instancia tiene el bloqueo")
                 self.last_error = "processor_already_active"
                 return
             self.active = True
+            self.last_error = None
             while True:
                 try:
                     await asyncio.to_thread(conn.execute, "SELECT 1")
@@ -213,7 +230,7 @@ class IdMonitor:
                     self.last_run = datetime.now(UTC).isoformat()
                 await self._wait(quick=bool(_WROTE & self.last_outcomes.keys()))
         except psycopg.Error:
-            logger.error("procesador detenido: sin conexión a PostgreSQL")
+            logger.error("procesador en pausa: sin conexión a PostgreSQL; se reintenta")
             self.last_error = "database_unavailable"
         finally:
             self.active = False
