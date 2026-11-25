@@ -1351,3 +1351,18 @@ Estado: token cambiado por el usuario en el panel de Railway; código de K2-99 s
 Pedido: usar en el servidor un token propio de la misma cuenta (buena práctica: su propio cupo de 300 por minuto y revocable aparte), y subir el arreglo de `Design Tickets` y documentarlo.
 Evidencia: el token nuevo se comprobó antes de usarlo, por la entrada estándar y sin mostrarlo ni guardarlo: `GET /users/me` responde 200, misma cuenta que el de `backend/.env`, administrador, valor distinto. La CLI de Railway de esta PC tiene sesión en otra cuenta, sin el proyecto `KMV`: no se tocó nada en Railway desde aquí. El usuario cambió la variable en el panel. El usuario pegó el token en el chat; se le advirtió que queda en el historial de la conversación y que lo más seguro sería generar otro y cargarlo directo en el panel.
 Docs: SPEC-B22 DP-11, `DESPLIEGUE_RAILWAY.md` RW-32, AGENTS (dónde vive el token). Ningún valor de token en el repo.
+
+## 2026-11-25 11:52 -05:00 Revisión de lo último de la otra máquina (b779d44, 3763eaa)
+
+Estado: revisado; una precisión en la documentación, sin cambios de código.
+Evidencia (equipo Linux):
+- Las ramas se habían separado: el commit local de K2-102 se rebasó sobre `origin/main`. La bitácora se resolvió en orden de hora (18:56 antes de 23:55 y 00:32).
+- `pytest`: 230 aprobadas; ruff y formato correctos.
+- Código de K2-99 (`DESIGN_TICKETS` con regla propia: sólo filas de proyecto con `DT Owner`), con dos pruebas: correcto.
+- Railway, lectura con la CLI:
+  - Despliegue de `3763eaa` en `SUCCESS` (2026-11-25 00:33), que incluye K2-99.
+  - Los pushes de sólo docs quedaron `SKIPPED`, como manda RW-02.
+  - Logs de las 11:23 a las 11:51: 600 llamadas, todas 200 (el token propio funciona), sin avisos, errores ni escrituras pendientes.
+Precisión: la fila de `Design Tickets` que creó la prueba de `KMV-26-0007` no queda suelta. Su fila de la maestra existe, así que se sigue sincronizando; sólo dejan de crearse filas para trámites.
+Al día: K2-102 (K2-99 y el token propio ya hechos), SPEC-B22 DP-13, `DESPLIEGUE_RAILWAY.md` RW-07 y RW-32.
+Aviso para la otra máquina: `variables_railway.py --con-token` manda el token de `backend/.env` y pisaría el token propio del servidor; sin esa opción no lo toca (RW-32).

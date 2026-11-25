@@ -518,3 +518,8 @@ Entorno: Linux, `backend/.venv` (Python 3.14.4), PostgreSQL 18.6 local.
 Entorno: Windows, Python 3.14.7 en `backend/.venv`.
 - Pruebas nuevas `test_process_sheets.py::test_design_tickets_are_only_for_projects` y `::test_a_dt_owner_on_a_permit_does_not_create_its_own_ticket`: fallaron antes del cambio y pasan después.
 - `pytest`: 164 aprobadas y 66 omitidas. `ruff check` y `ruff format --check`: sin errores.
+
+## 2026-11-25 11:52 -05:00 Revisión tras el pull (K2-99 y token propio)
+
+- `pytest`: 230 aprobadas (con las dos pruebas nuevas de K2-99). `ruff check` y `ruff format --check`: sin errores.
+- Railway: despliegue de `3763eaa` en `SUCCESS`. Últimas 600 llamadas a Smartsheet con 200 (token propio), sin avisos ni errores.

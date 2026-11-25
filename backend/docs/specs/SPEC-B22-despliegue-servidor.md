@@ -50,7 +50,7 @@ Estado: preparado el 2026-11-24 (PEN-56, pedido del usuario: "de la forma más e
     - Si hay que vigilar decenas de hojas que no se conocen de antemano.
     - Si se integra otro sistema que deba avisar o recibir avisos.
     - Si el historial de celdas del metraje (10 llamadas cada uno) aprieta el cupo.
-  - Recomendado: un token de API propio para el servidor (el mismo usuario administrador puede generar otro). El cupo de 300 por minuto es por token: así el procesador no comparte cupo con otras herramientas que usen el token actual, y se puede revocar sin tocar lo demás. Pendiente de que el usuario lo genere.
+  - Recomendado: un token de API propio para el servidor (el mismo usuario administrador puede generar otro). El cupo de 300 por minuto es por token: así el procesador no comparte cupo con otras herramientas que usen el token actual, y se puede revocar sin tocar lo demás. Hecho el 2026-11-25 (DP-11, `../DESPLIEGUE_RAILWAY.md` RW-32).
 
 ## Costo y carga
 

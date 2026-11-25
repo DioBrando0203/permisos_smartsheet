@@ -48,7 +48,7 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
 - RW-07: falta, opcional:
   - "Wait for CI" en el panel (RW-41).
   - Ver el resultado de GitHub Actions en la pestaña Actions del repo. En el equipo Linux no está la CLI `gh`, así que no se comprobó desde aquí.
-  - K2-99 decidido y hecho el 2026-11-24 (`Design Tickets` sólo para proyectos); rige con el despliegue de ese código.
+  - K2-99 decidido y hecho el 2026-11-24 (`Design Tickets` sólo para proyectos); en Railway desde el despliegue de `3763eaa` del 2026-11-25 00:33.
 
 ## Cambios del día a día
 
@@ -85,7 +85,7 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
 
 - RW-30: con el token decidido (DP-11): `backend/.venv/bin/python servicios/despliegue/variables_railway.py --monitor --con-token` y un redespliegue. El script manda el token por la entrada estándar, nunca en la línea de comandos ni en pantalla.
 - RW-31: comprobar en los logs el primer ciclo sin errores, y en Smartsheet (Pruebas) que una fila nueva recibe su ID. Desde entonces el equipo Linux no procesa (DP-10).
-- RW-32 (2026-11-25): el token del servidor es propio (DP-11). Para cambiarlo: generar uno nuevo en Smartsheet (Personal Settings, API Access), pegarlo en el panel de Railway (servicio `permisos_smartsheet`, Variables, `SMARTSHEET_ACCESS_TOKEN`) y aplicar el cambio con Deploy: el panel deja el cambio en espera ("Apply 1 change") hasta entonces. No usar `variables_railway.py --con-token`, que manda el de `backend/.env`. Después, revisar en los logs que las llamadas a Smartsheet respondan 200 y no 401.
+- RW-32 (2026-11-25): el token del servidor es propio (DP-11). Para cambiarlo: generar uno nuevo en Smartsheet (Personal Settings, API Access), pegarlo en el panel de Railway (servicio `permisos_smartsheet`, Variables, `SMARTSHEET_ACCESS_TOKEN`) y aplicar el cambio con Deploy: el panel deja el cambio en espera ("Apply 1 change") hasta entonces. No usar `variables_railway.py --con-token`, que manda el de `backend/.env`. Después, revisar en los logs que las llamadas a Smartsheet respondan 200 y no 401. Comprobado el 2026-11-25 11:51: en el despliegue de `3763eaa` (00:33), las últimas 600 llamadas a Smartsheet respondieron 200, sin 401, avisos ni errores.
 
 ## Costo y panel
 
