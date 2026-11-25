@@ -1377,3 +1377,11 @@ Respuesta (revisado en `ids/recovery.py` y `childsheets/rules.py`):
 - Opcional: quitar el ID de `Linked Tracking`.
 - Al revés se dispara el defecto de K2-101.
 Docs: `KMV_2.0.md` K2-103; mapa MP-92b (copiado a Share).
+
+## 2026-11-25 15:55 -05:00 Consulta: si las listas de asignación son dinámicas (K2-89)
+
+Estado: respondido; sin cambios de código ni en Smartsheet.
+Pregunta del usuario: si las listas de `DT Owner`, `Designers`, `Permitting Team` y `Records Owner` son dinámicas y sólo aparecen quienes deben.
+Evidencia (sólo lectura, sin mostrar nombres ni correos): `APP_CONTACT_OPTIONS_ENABLED=false` en `backend/.env` y en Railway. Listas fijas en la maestra que aceptan cualquier contacto: 18, 12, 14 y 7. `Contact List`: 30 personas, 2 activas (`Permits`).
+Respuesta: todavía no son dinámicas. Antes de encenderlo hay que completar `Contact List`; si se encendiera hoy, `Permitting Team` quedaría con 2 personas.
+Docs: `KMV_2.0.md` K2-89.
