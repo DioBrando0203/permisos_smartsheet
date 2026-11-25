@@ -190,11 +190,18 @@ MOT = ChildSpec(
     cancel=("MOT Status", "CANCELLED"),
 )
 
+
+def _design_ticket(values: dict, child: bool) -> bool:
+    """K2-99: una fila por proyecto con `DT Owner`; en un trámite no se crea otra."""
+    return not child and bool(values.get("DT Owner"))
+
+
 # HP-14: Design Ticket y Mile Post los llena el responsable (`DT Owner`) en su hoja y vuelven a
 # la fila de la maestra (el proyecto); `Permits` los toma de allí.
 DESIGN_TICKETS = ChildSpec(
     name="design_tickets",
-    triggers=("DT Owner",),
+    triggers=(),
+    when=_design_ticket,
     context=(
         "Tracking Project",
         "Linked Tracking",

@@ -331,6 +331,35 @@ async def test_design_tickets_are_filled_by_their_owner_and_go_back_to_the_proje
     assert sheets.rows[M]["1"]["Mile Post"] is True
 
 
+def test_design_tickets_are_only_for_projects() -> None:
+    """K2-99: una fila por proyecto con `DT Owner`; en un trámite no se crea."""
+    assert DESIGN_TICKETS.when({"DT Owner": "persona1@example.com"}, False)
+    assert not DESIGN_TICKETS.when({"DT Owner": "persona1@example.com"}, True)
+    assert not DESIGN_TICKETS.when({}, False)
+
+
+async def test_a_dt_owner_on_a_permit_does_not_create_its_own_ticket(router) -> None:
+    sheets = _sheets(router, DT_MASTER, DT_CHILD)
+    owner = {"DT Owner": "persona1@example.com"}
+    _family(
+        sheets,
+        {
+            "1": {"Tracking Project": "KMV-26-0001"} | owner,
+            "2": {"Tracking Project": "KMV-26-0001"} | owner,
+        },
+    )
+    settings = make_settings(
+        **WRITES | {"app_design_tickets_sync_enabled": True, "app_design_tickets_sheet_id": CHILD}
+    )
+    client = SmartsheetClient(settings)
+    try:
+        result = await ChildSheetSync(settings, client, DESIGN_TICKETS, CHILD, interval=0).run()
+    finally:
+        await client.aclose()
+    assert result["created"] == 1
+    assert [row["Master Row"] for row in sheets.rows[CHILD].values()] == ["1"]
+
+
 def test_hooks_run_inheritance_first_and_lists_last() -> None:
     everything = ON | {
         "app_inherit_enabled": True,

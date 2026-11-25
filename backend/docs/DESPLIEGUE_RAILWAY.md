@@ -48,7 +48,7 @@ Guía para llevar el procesador (ID Manager, hojas de equipo, `Obs`, metraje) y 
 - RW-07: falta, opcional:
   - "Wait for CI" en el panel (RW-41).
   - Ver el resultado de GitHub Actions en la pestaña Actions del repo. En el equipo Linux no está la CLI `gh`, así que no se comprobó desde aquí.
-  - Decidir K2-99 (`Design Tickets` sólo para proyectos).
+  - K2-99 decidido y hecho el 2026-11-24 (`Design Tickets` sólo para proyectos); rige con el despliegue de ese código.
 
 ## Cambios del día a día
 

@@ -1329,3 +1329,11 @@ Revisado en el código (`childsheets/rules.py` `plan`, `options.py`, `ids/recove
 - Una fila borrada en una hoja de equipo se vuelve a crear vacía, y en la pasada siguiente su resumen vacío borra en la maestra el estado, `Permit #`, las fechas y el costo, `Custom MOT` y `TYPICAL MOT`, `Design Ticket` y `Mile Post`; `Invoice Status` vuelve a `NOT INVOICED`.
 Recomendado: cancelar en vez de borrar. Propuesto: al recrear, llenar el resumen desde la maestra y avisar de las filas sueltas.
 Docs: `KMV_2.0.md` K2-101; mapa MP-92b (copiado a Share).
+
+## 2026-11-24 23:55 -05:00 Design Tickets sólo para la fila del proyecto (K2-99)
+
+Estado: hecho en código; rige en Railway con el despliegue (push).
+Decisión del usuario: `Design Tickets` es para la fila del proyecto, como en las hojas originales de Crown Castle; ahí el equipo de permisos registra `Design Ticket` y `Mile Post`.
+Cambio: `childsheets/specs.py`, `DESIGN_TICKETS` con regla propia: sólo filas de proyecto con `DT Owner`; un `DT Owner` en un trámite ya no crea otra fila. La fila que creó la prueba de `KMV-26-0007` queda suelta (el servicio no borra). Maestra sin cambios: 79 columnas.
+Evidencia: calidad/RESULTADOS.md.
+Docs: SPEC-B20 HP-14; `KMV_2.0.md` K2-99; `DESPLIEGUE_RAILWAY.md` RW-07.

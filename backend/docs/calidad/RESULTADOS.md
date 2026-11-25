@@ -512,3 +512,9 @@ Entorno: Linux, `backend/.venv` (Python 3.14.4), PostgreSQL 18.6 local.
 - Procesado por Railway en unos 2 minutos: ID, jerarquía, herencia y filas en `Permits` (2), Records (1), `Billing` (4), `MOT & Packages` (2) y `Design Tickets` (1).
 - Chat de `Permits` en el `Obs` de la maestra en unos 3 minutos (SPEC-B17 OB-17, primera prueba en vivo).
 - Logs sin avisos ni errores.
+
+## 2026-11-24 23:55 -05:00 Design Tickets sólo para proyectos (K2-99, SPEC-B20 HP-14)
+
+Entorno: Windows, Python 3.14.7 en `backend/.venv`.
+- Pruebas nuevas `test_process_sheets.py::test_design_tickets_are_only_for_projects` y `::test_a_dt_owner_on_a_permit_does_not_create_its_own_ticket`: fallaron antes del cambio y pasan después.
+- `pytest`: 164 aprobadas y 66 omitidas. `ruff check` y `ruff format --check`: sin errores.
