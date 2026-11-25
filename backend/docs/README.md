@@ -22,6 +22,7 @@ Fuente de verdad del servicio que lee y modifica permisos de hojas de Smartsheet
 - `VISTAS_KMV_2.0.md`: cómo armar cada Dynamic View de la 2.0 (VK-xx).
 - `AUTOMATIZACIONES_KMV_2.0.md`: automatizaciones de cada hoja de la 2.0 (AU-xx).
 - `AUTOMATIZACIONES_2.0_RESUMEN.md`: lista de las automatizaciones que existen en la 2.0, para qué sirve cada una, cuáles son ideas y a quién avisan (AR-xx).
+- `DASHBOARDS_KMV_2.0.md`: dashboards por año de la 2.0: referencia de producción, hojas de métricas, año siguiente y pendientes (DB-xx).
 - `DESPLIEGUE_RAILWAY.md`: estado del procesador en Railway, cambios del día a día, cómo leer los logs, pruebas en vivo y preguntas del usuario (RW-xx).
 - `vistas_anteriores/`: Dynamic Views de prueba anteriores a la 2.0, qué tenía cada una y cómo funcionaba, documentadas antes de borrarlas (VA-xx).
 - `PLAYWRIGHT_SMARTSHEET.md`: cómo revisar y configurar con navegador lo que la API no permite (Dynamic Views, formato condicional, Admin Center), sólo con autorización del usuario (PW-xx); herramienta en `herramientas/smartsheet_ui/`.

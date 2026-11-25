@@ -1517,3 +1517,20 @@ Docs: `KMV_2.0.md` K2-105.
 Estado: respondido; sin crear nada.
 Respuesta: sí, con la herramienta del navegador ya instalada y la sesión guardada se puede hacer lo que el conector no hace. Atajo: copiar por API a `Pruebas` el `HUB` y un dashboard anual (sólo se lee producción) y después reapuntar imágenes y gráficos con Playwright.
 Docs: `KMV_2.0.md` K2-105.
+
+## 2026-11-25 17:57 -05:00 Dashboards de producción copiados y leídos; métricas 2026 de la 2.0 (K2-106, DB-xx)
+
+Estado: datos hechos y comprobados; faltan los dashboards de la 2.0.
+Pedido del usuario: copiar los dashboards, leerlos con Playwright y armar los datos de la 2.0 por cliente, pensando en 2027, sin activar avisos.
+Hecho:
+- Carpetas `Dashboards`, `Reference - Production copies` y `2026` en `Pruebas`.
+- 13 dashboards copiados por API: producción sólo se leyó.
+- Leídos con Playwright (texto y captura).
+- Script `servicios/dashboards/metricas_anuales.py`: 5 hojas de métricas 2026 con fórmulas de columna y referencias entre hojas.
+- Dos correcciones: `AVG(COLLECT)` en vez de `AVERAGEIFS`, y reconocer a las personas por nombre.
+Evidencia (lectura por API):
+- 0 celdas con error.
+- `All customers`: 2 proyectos, 5 permisos y 1 MOT, igual que la maestra.
+- `People`: 2 diseños y 9 permisos asignados, iguales a lo esperado.
+Hallazgo: la maestra se limpió a mano a las 16:52 (quedan `KMV-26-0001` y `KMV-26-0002`); quedaron filas sueltas en las hojas de equipo.
+Docs: `DASHBOARDS_KMV_2.0.md` (nuevo), `KMV_2.0.md` K2-106, índice de docs.

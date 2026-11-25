@@ -219,6 +219,12 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
   - Con Playwright (pregunta del usuario, 2026-11-25): la herramienta `herramientas/smartsheet_ui` ya está instalada en el equipo Linux con la sesión del usuario guardada. Con ella se puede manejar el navegador para lo que el conector no hace: imágenes, enlaces de cada imagen, diseño y edición de widgets. Es más lento y más frágil que la API, pero posible.
   - Atajo propuesto: copiar por API a `Pruebas` el `HUB` y un dashboard anual de producción (copiar sólo lee el original; producción no se toca). Las copias traen imágenes y diseño. Después, con Playwright, se apunta cada imagen y cada gráfico a lo nuevo de la 2.0.
   - Pendiente del usuario: qué dashboards y qué indicadores, y el visto bueno para crear.
+- K2-106 (2026-11-25, pedido del usuario: copiar los dashboards de producción, leerlos con Playwright y armar los datos de la 2.0 por cliente, pensando en 2027; no activar avisos):
+  - Hecho: 13 dashboards copiados a `Pruebas`, leídos con Playwright. 5 hojas de métricas 2026 por cliente, mes, condado, categoría y persona, armadas con un script repetible para 2027 (`DASHBOARDS_KMV_2.0.md` DB-01 a DB-21).
+  - Sin avisos: las hojas de métricas no tienen automatizaciones y las copias no traen ninguna.
+  - Hallazgo: la maestra 2.0 fue limpiada a mano el 2026-11-25 a las 16:52. Quedan `KMV-26-0001` (Crown Castle, 4 trámites) y `KMV-26-0002` (Blue Stream, 2 permisos) y una fila vacía. Se borró también la prueba permanente `KMV-26-0008` (K2-100).
+  - Filas de equipo sueltas: `Permits` 4, MOT 4, Records 4, `Billing` 13 y `Design Tickets` 2. Cuentan en las métricas de Records y facturación (DB-31).
+  - Siguiente: los dashboards de 2026 y el `HUB 2.0` (DB-30).
 
 ## Mi opinión (Claude)
 
