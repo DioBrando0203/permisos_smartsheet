@@ -1385,3 +1385,9 @@ Pregunta del usuario: si las listas de `DT Owner`, `Designers`, `Permitting Team
 Evidencia (sólo lectura, sin mostrar nombres ni correos): `APP_CONTACT_OPTIONS_ENABLED=false` en `backend/.env` y en Railway. Listas fijas en la maestra que aceptan cualquier contacto: 18, 12, 14 y 7. `Contact List`: 30 personas, 2 activas (`Permits`).
 Respuesta: todavía no son dinámicas. Antes de encenderlo hay que completar `Contact List`; si se encendiera hoy, `Permitting Team` quedaría con 2 personas.
 Docs: `KMV_2.0.md` K2-89.
+
+## 2026-11-25 15:57 -05:00 Consulta: completar Contact List con el servicio encendido (K2-89)
+
+Estado: respondido; sin cambios.
+Respuesta: se puede. El servicio sólo lee `Contact List`, y con las listas apagadas la maestra no cambia. Hoy sólo la usa el aviso de metraje (`Footage Alerts`). Con las listas encendidas cada columna cambia al instante; por eso conviene completar todo antes de encender.
+Docs: `KMV_2.0.md` K2-89.
