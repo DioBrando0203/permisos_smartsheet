@@ -1468,3 +1468,12 @@ Docs: AUTOMATIZACIONES AU-09; VISTAS VK-00w (copiados a Share).
 Estado: anotado; sin cambios en Smartsheet.
 Decisión del usuario: las cinco vistas de ejemplo o prueba de la cuenta se dejan como están.
 Docs: VISTAS VK-00w (copiado a Share).
+
+## 2026-11-25 17:07 -05:00 Encendidas las automatizaciones que sólo llenan datos (AU-10)
+
+Estado: hecho; las que mandan correo siguen apagadas, a la espera de la decisión del usuario.
+Pedido del usuario: encender todas las que se puedan o deban prender, y recordar cuáles había que borrar.
+Hecho (conector de Smartsheet, cada respuesta `SUCCESS` con versión nueva): 8 encendidas, que llenan fechas o estados (`QC IN`, revisiones de permisos, `LT Records`, fechas de pedido de MOT y paquetes, `Packages Completed`). En total hay 10 encendidas.
+Siguen apagadas las de correo (le escribirían a personas reales; por ahora se prueba sólo con el contacto del usuario) y `Client | Status Update`.
+Por borrar: `DV | New Records Request` de la maestra; `DV | New Task Permitting Team` ya se borró.
+Docs: AUTOMATIZACIONES AU-10 (copiado a Share).

@@ -72,6 +72,18 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
   - Borrado: `DV | New Task Permitting Team` de la maestra (AU-05).
   - Sin borrar: `DV | New Records Request` de la maestra (AU-04). El control de permisos de la sesión bloqueó el borrado. Queda apagada; la borra el usuario en `Automation` > `Manage workflows`, o se reintenta con su permiso.
   - Estado: maestra 9 automatizaciones (encendidas sólo `Default Engineer` y `Default Surveyor`), `Permits` 4, Records 5, `MOT & Packages` 7, `Billing` 2 y `Design Tickets` 1.
+- AU-10 (2026-11-25, pedido del usuario: encender las que se puedan o deban prender):
+  - Encendidas las 8 que sólo llenan datos y no le escriben a nadie:
+    - `Auto | QC IN date` (maestra).
+    - `Auto | Revision Request Date` (`Permits`).
+    - `Auto | LT Records on status`, `Auto | LT Records on PRR #` y `Auto | LT Records on Future Project #` (Records).
+    - `Auto | Package Request Date`, `Auto | MOT Request Date` y `Auto | Packages Completed` (`MOT & Packages`).
+  - Ya estaban encendidas `Default Engineer` y `Default Surveyor`: 10 encendidas en total.
+  - Siguen apagadas las que mandan correo, porque el usuario pidió probar por ahora sólo con su contacto:
+    - Por celda de contacto (le escriben a quien esté asignado en la fila): `DV | New Project`, `DV | New Project (ID assigned)`, `DV | New Task Permitting Team` (`Permits`), `Alert | Permit Needs Revision`, `Alert | Permit Expiring`, `DV | New Records Request` (Records), `Alert | Records Reminder` y `DV | New Design Ticket`.
+    - A una persona fija: `AUTO | QC ALERT`, `Alert | QC overdue`, los cuatro avisos de `MOT & Packages` y los dos de `Billing`.
+  - `Client | Status Update` queda apagada hasta que la coordinación revise los estados y se haga la prueba con `OT-Others` (AU-08).
+  - Por borrar: `DV | New Records Request` de la maestra (AU-09).
 
 ## Maestra `PROJECT KMV 2.0 (Prototype)`
 
