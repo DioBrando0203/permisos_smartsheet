@@ -1462,3 +1462,9 @@ Hecho:
 Bloqueado: el borrado de `DV | New Records Request` de la maestra (control de permisos de la sesión). Queda apagada.
 Pendiente del usuario: borrar esa automatización y decidir sobre las 5 vistas de ejemplo o prueba.
 Docs: AUTOMATIZACIONES AU-09; VISTAS VK-00w (copiados a Share).
+
+## 2026-11-25 17:05 -05:00 Vistas de ejemplo y prueba: se quedan (VK-00w)
+
+Estado: anotado; sin cambios en Smartsheet.
+Decisión del usuario: las cinco vistas de ejemplo o prueba de la cuenta se dejan como están.
+Docs: VISTAS VK-00w (copiado a Share).
