@@ -17,6 +17,11 @@ Dashboards por año para la 2.0, inspirados en los de producción y armados en `
   - Por categoría (`Task`): Jumper, Relocation, Enterprise, OSP, ISP, LV.
   - MOT por estado; por `Construction Manager`; por diseñador y por persona de permisos (cantidad, metraje y días).
   - Lista de proyectos no terminados.
+- DB-04 (2026-11-25, pregunta del usuario: si hay un dashboard de metraje): ninguno de los 66 dashboards visibles está dedicado al metraje.
+  - Aparece en `Production KMV 2026` (acumulado 2019-2026 por cliente, por año y por diseñador).
+  - También en `Production Designers 2026` (por cliente y por diseñador), en `Dashboard Projects 2026` (por cliente) y en cada dashboard de cliente (su total).
+  - Y en `Enterprise`, `Relocation` y `Special Projects` (por categoría y por `Construction Manager`).
+  - Ofrecido: un dashboard de metraje 2.0, con el desglose `UG`, `UG + Profile`, `ISP` y `Aerial`, que producción no muestra.
 
 ## Datos de la 2.0 (hecho el 2026-11-25)
 

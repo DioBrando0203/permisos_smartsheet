@@ -1534,3 +1534,9 @@ Evidencia (lectura por API):
 - `People`: 2 diseños y 9 permisos asignados, iguales a lo esperado.
 Hallazgo: la maestra se limpió a mano a las 16:52 (quedan `KMV-26-0001` y `KMV-26-0002`); quedaron filas sueltas en las hojas de equipo.
 Docs: `DASHBOARDS_KMV_2.0.md` (nuevo), `KMV_2.0.md` K2-106, índice de docs.
+
+## 2026-11-25 18:04 -05:00 Consulta: dashboard de metraje en producción (DB-04)
+
+Estado: respondido; sin cambios en Smartsheet.
+Respuesta (API, sólo lectura): no hay uno dedicado entre los 66 dashboards visibles. El metraje está dentro de los de producción, proyectos, cliente y categoría. Ofrecido un dashboard de metraje 2.0, con desglose por tipo.
+Docs: `DASHBOARDS_KMV_2.0.md` DB-04 (copiado a Share).
