@@ -1511,3 +1511,9 @@ Evidencia (API, sólo lectura, sin correos):
 - Hoja `Dashboard Metrics 2026` con `COUNTIFS` entre hojas por cliente, condado y mes.
 Conector: crea dashboards con IA desde hojas, gráficos desde hojas y los agrega a un dashboard; no desde reportes.
 Docs: `KMV_2.0.md` K2-105.
+
+## 2026-11-25 17:38 -05:00 Consulta: armar los dashboards con Playwright (K2-105)
+
+Estado: respondido; sin crear nada.
+Respuesta: sí, con la herramienta del navegador ya instalada y la sesión guardada se puede hacer lo que el conector no hace. Atajo: copiar por API a `Pruebas` el `HUB` y un dashboard anual (sólo se lee producción) y después reapuntar imágenes y gráficos con Playwright.
+Docs: `KMV_2.0.md` K2-105.

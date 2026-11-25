@@ -216,6 +216,8 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
     - Los gráficos, con el conector (`create_chart_from_prompt` y `add_charts_to_dashboard` sobre hojas, o `create_dashboard_with_ai`).
     - Las imágenes, el diseño y el menú, a mano o con Playwright autorizado.
   - Limitación: el prototipo tiene pocas filas de prueba, así que los dashboards se verán casi vacíos; sirven para probar las fórmulas.
+  - Con Playwright (pregunta del usuario, 2026-11-25): la herramienta `herramientas/smartsheet_ui` ya está instalada en el equipo Linux con la sesión del usuario guardada. Con ella se puede manejar el navegador para lo que el conector no hace: imágenes, enlaces de cada imagen, diseño y edición de widgets. Es más lento y más frágil que la API, pero posible.
+  - Atajo propuesto: copiar por API a `Pruebas` el `HUB` y un dashboard anual de producción (copiar sólo lee el original; producción no se toca). Las copias traen imágenes y diseño. Después, con Playwright, se apunta cada imagen y cada gráfico a lo nuevo de la 2.0.
   - Pendiente del usuario: qué dashboards y qué indicadores, y el visto bueno para crear.
 
 ## Mi opinión (Claude)
