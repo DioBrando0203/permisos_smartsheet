@@ -1441,3 +1441,10 @@ Evidencia (`get_workflows`, sólo lectura):
 - Las demás, sin cambios.
 Observación: `{{Agency}}` en el asunto del correo al cliente queda vacío en las filas de proyecto; mejor en el mensaje.
 Docs: AUTOMATIZACIONES AU-08 (copiado a Share).
+
+## 2026-11-25 16:55 -05:00 Consulta: acceso de esta sesión a las automatizaciones (AU-00k)
+
+Estado: respondido; sin cambios.
+Pregunta del usuario: si esta sesión tiene acceso por Playwright o como la otra máquina.
+Respuesta: sí, por el conector de Smartsheet, con las mismas herramientas para crear, cambiar, encender, apagar y borrar automatizaciones (comprobado con `search_tools`). Playwright no hace falta para esto. No se tocaron las automatizaciones porque las estaba editando la otra sesión (`update_workflow` reemplaza todo) y porque borrar no se puede deshacer.
+Docs: AUTOMATIZACIONES AU-00k (copiado a Share).
