@@ -1448,3 +1448,17 @@ Estado: respondido; sin cambios.
 Pregunta del usuario: si esta sesión tiene acceso por Playwright o como la otra máquina.
 Respuesta: sí, por el conector de Smartsheet, con las mismas herramientas para crear, cambiar, encender, apagar y borrar automatizaciones (comprobado con `search_tools`). Playwright no hace falta para esto. No se tocaron las automatizaciones porque las estaba editando la otra sesión (`update_workflow` reemplaza todo) y porque borrar no se puede deshacer.
 Docs: AUTOMATIZACIONES AU-00k (copiado a Share).
+
+## 2026-11-25 17:04 -05:00 Enlaces de vistas en todos los avisos y limpieza en la maestra (AU-09, VK-00w)
+
+Estado: hecho, salvo un borrado que bloqueó el control de permisos.
+Pedido del usuario: leer todas las automatizaciones y su "Alert someone", poner la vista que corresponde a cada una y borrar lo que ya no hace falta; después, documentar y hacer push.
+Hecho:
+- Herramienta de navegador instalada en este equipo (`npm install` en `herramientas/smartsheet_ui`). El usuario inició sesión a mano; `dv_list.js` (sólo lectura) dio las 9 vistas de la 2.0 con su enlace y 5 vistas de ejemplo o prueba.
+- Con el conector de Smartsheet:
+  - Se leyeron las 25 automatizaciones de las seis hojas.
+  - Se agregaron enlaces a `AUTO | QC ALERT`, `Alert | Permit Needs Revision` y `Alert | Permit Expiring` (actualización completa, releída: referencias a columnas intactas, siguen apagadas).
+  - Se borró `DV | New Task Permitting Team` de la maestra.
+Bloqueado: el borrado de `DV | New Records Request` de la maestra (control de permisos de la sesión). Queda apagada.
+Pendiente del usuario: borrar esa automatización y decidir sobre las 5 vistas de ejemplo o prueba.
+Docs: AUTOMATIZACIONES AU-09; VISTAS VK-00w (copiados a Share).

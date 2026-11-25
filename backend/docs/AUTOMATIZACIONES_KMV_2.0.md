@@ -54,6 +54,24 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
     - Nada más cambió.
   - Precisión sobre `{{Agency}}` en el asunto de `Client | Status Update`: en las filas de proyecto `Agency` suele estar vacía, y el asunto quedaría "Project Update – KMV-26-0008 – : COMPLETE". La agencia ya va en los campos del correo; si se quiere más visible, mejor una línea `Agency: {{Agency}}` en el mensaje que en el asunto.
   - Pendiente del usuario: borrar los dos avisos viejos de la maestra (recomendado) y elegir el plazo de `Alert | QC overdue`, con un solo aviso o recordatorio diario.
+- AU-09 (2026-11-25, pedido del usuario: leer todas las automatizaciones, poner en cada aviso la vista de quien lo recibe y borrar lo que ya no hace falta; con el conector de Smartsheet):
+  - Regla: cada aviso enlaza la vista de quien lo recibe (enlaces en VISTAS VK-00w).
+    - Diseñadores y QC: `DESIGN`.
+    - Equipo de permisos: `PERMITS TEAM`.
+    - Coordinación: `PERMITS` o `PROJECTS`.
+    - `Records Owner`: `RECORDS`.
+    - `DT Owner`: `DESIGN TICKETS`.
+    - MOT y paquetes: `MOT & PACKAGES`.
+    - Facturación: `BILLING`.
+    - Cliente: `CUSTOMERS`.
+  - Comprobados correctos los 14 avisos que ya tenían enlace.
+  - Agregados, siguen apagados y se releyeron después de guardar:
+    - `AUTO | QC ALERT`: `DESIGN`, y en el mensaje `Tracking Project` y `Project Name`.
+    - `Alert | Permit Needs Revision`: `DESIGN`.
+    - `Alert | Permit Expiring`: `PERMITS TEAM` para el equipo y `PERMITS` para la coordinación.
+  - Borrado: `DV | New Task Permitting Team` de la maestra (AU-05).
+  - Sin borrar: `DV | New Records Request` de la maestra (AU-04). El control de permisos de la sesión bloqueó el borrado. Queda apagada; la borra el usuario en `Automation` > `Manage workflows`, o se reintenta con su permiso.
+  - Estado: maestra 9 automatizaciones (encendidas sólo `Default Engineer` y `Default Surveyor`), `Permits` 4, Records 5, `MOT & Packages` 7, `Billing` 2 y `Design Tickets` 1.
 
 ## Maestra `PROJECT KMV 2.0 (Prototype)`
 

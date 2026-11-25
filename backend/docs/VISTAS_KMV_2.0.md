@@ -13,6 +13,17 @@ Guía para armar las vistas de cada equipo. Los nombres de pestañas y opciones 
 - VK-00f: `PROJECT KMV 2.0 - RECORDS`: hoja `Records Requests (Prototype)`, restringida por `Records Owner`.
 - VK-00g: `PROJECT KMV 2.0 - BILLING`: hoja `Billing (Prototype)`, sin restricción.
 - VK-00h: `PROJECT KMV 2.0 - DESIGN TICKETS` (si se queda la hoja): hoja `Design Tickets (Prototype)`, restringida por `DT Owner`.
+- VK-00w (2026-11-25, leído con `herramientas/smartsheet_ui` `dv_list.js`, autorizado por el usuario): enlaces de las vistas de la 2.0, todos con la forma `https://app.smartsheet.com/dynamicview/views/<id>`.
+  - `PROJECT KMV 2.0 - PROJECTS`: `9141993d-83a6-4d81-bdb6-f1cb96d5fb49` (maestra).
+  - `PROJECT KMV 2.0 - PERMITS`: `ee083077-60d7-4c87-ad90-6efe3dd45327` (maestra).
+  - `PROJECT KMV 2.0 - DESIGN`: `3c643074-3b7d-4d97-a03a-683b7d1ccdab` (sobre el reporte `KMV 2.0 | Design Projects`).
+  - `PROJECT KMV 2.0 - PERMITS TEAM`: `1535739e-1eda-43c3-9ffa-4a2498306dd9`.
+  - `PROJECT KMV 2.0 - MOT & PACKAGES`: `59309a5c-a33f-4b68-8464-bcdfe765fe26`.
+  - `PROJECT KMV 2.0 - RECORDS`: `b53989d4-0e44-4aab-8bc3-a8e763aab856`.
+  - `PROJECT KMV 2.0 - BILLING`: `9b0a278a-354e-4094-912a-86a3bebb0c6b`.
+  - `PROJECT KMV 2.0 - DESIGN TICKETS`: `4ddedf77-4834-45af-9aef-7a7e9d45a712`.
+  - `PROJECT KMV 2.0 - CUSTOMERS`: `ea399e51-7048-4841-9721-45ae3b804769`.
+  - Otras de la cuenta, de ejemplo o de prueba: tres `Dynamic View Sample` (hoja `1361957866131332`), `Project List Report - DYNAMIC VIEW SAMPLE` (reporte `6496799574413188`) y `TEST - Report - Customer1+Customer2` (reporte `830404794732420`). Borrarlas lo decide el usuario; la herramienta no tiene script de borrado.
 - VK-00i: sobre una hoja, la vista ve al instante cualquier columna nueva; sobre un reporte habría que agregarla al reporte a mano (la API no edita reportes). Por eso ninguna vista usa reporte.
 
 ## Por qué casi todas van sobre su hoja
