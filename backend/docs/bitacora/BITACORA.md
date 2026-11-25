@@ -1337,3 +1337,10 @@ Decisión del usuario: `Design Tickets` es para la fila del proyecto, como en la
 Cambio: `childsheets/specs.py`, `DESIGN_TICKETS` con regla propia: sólo filas de proyecto con `DT Owner`; un `DT Owner` en un trámite ya no crea otra fila. La fila que creó la prueba de `KMV-26-0007` queda suelta (el servicio no borra). Maestra sin cambios: 79 columnas.
 Evidencia: calidad/RESULTADOS.md.
 Docs: SPEC-B20 HP-14; `KMV_2.0.md` K2-99; `DESPLIEGUE_RAILWAY.md` RW-07.
+
+## 2026-11-25 00:32 -05:00 Token propio del servidor y push de Design Tickets sólo para proyectos (DP-11, RW-32, K2-99)
+
+Estado: token cambiado por el usuario en el panel de Railway; código de K2-99 subido (se despliega con el push).
+Pedido: usar en el servidor un token propio de la misma cuenta (buena práctica: su propio cupo de 300 por minuto y revocable aparte), y subir el arreglo de `Design Tickets` y documentarlo.
+Evidencia: el token nuevo se comprobó antes de usarlo, por la entrada estándar y sin mostrarlo ni guardarlo: `GET /users/me` responde 200, misma cuenta que el de `backend/.env`, administrador, valor distinto. La CLI de Railway de esta PC tiene sesión en otra cuenta, sin el proyecto `KMV`: no se tocó nada en Railway desde aquí. El usuario cambió la variable en el panel. El usuario pegó el token en el chat; se le advirtió que queda en el historial de la conversación y que lo más seguro sería generar otro y cargarlo directo en el panel.
+Docs: SPEC-B22 DP-11, `DESPLIEGUE_RAILWAY.md` RW-32, AGENTS (dónde vive el token). Ningún valor de token en el repo.
