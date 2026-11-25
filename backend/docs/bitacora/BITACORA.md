@@ -1485,3 +1485,17 @@ Pedido del usuario: ordenar dentro de `Producto`, borrar lo que no se usa y qued
 Evidencia: referencias entre hojas leídas por API (la maestra 2.0 sólo usa `Customer List`, `Project Status List` y Records 2.0). `Contact List`, `Customer List` y `Project Status List` movidas a `PROJECT KMV 2.0 - Prototype/List` (releído).
 Propuesto para borrar: 1.0 (hoja, carpeta y reportes), `Project List`, `Designers List` y 6 reportes sin vista de la 2.0.
 Docs: `KMV_2.0.md` K2-104; mapa MP-30 a MP-33 y diagrama; AUTOMATIZACIONES AU-00i (copiados a Share).
+
+## 2026-11-25 17:27 -05:00 Producto limpio: sólo queda la 2.0 (K2-104)
+
+Estado: hecho, salvo una automatización que bloqueó el control de permisos.
+Pedido del usuario: borrar todos los reportes que no se necesitan y lo que no se usa; los reportes necesarios se harán después.
+Evidencia:
+- El reporte que queda (`KMV 2.0 | Design Projects`) sólo lee de la maestra 2.0.
+- Borrados por API, cada uno comprobado dentro de `Pruebas/Producto` y con su nombre:
+  - 13 reportes: 6 de la 2.0 y 7 de la 1.0.
+  - 6 hojas: `PROJECT KMV`, `PROJECT KMV 1.0.0`, `Records Requests` y `Billing` de la 1.0, `Project List` y `Designers List`.
+  - 3 carpetas, cada una vacía antes de borrarla.
+- Árbol final releído. Logs de Railway después: 359 llamadas con 200, sin avisos ni errores.
+Bloqueado otra vez: borrar `DV | New Records Request` de la maestra; la borra el usuario. La prueba `KMV-26-0007` no se tocó.
+Docs: `KMV_2.0.md` K2-63 y K2-104; mapa MP-33, MP-51 y MP-52; AUTOMATIZACIONES AU-00i (copiados a Share).

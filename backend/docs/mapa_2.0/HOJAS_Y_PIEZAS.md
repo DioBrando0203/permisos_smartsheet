@@ -26,7 +26,7 @@ Todas llevan los datos del proyecto copiados y bloqueados, `Linked Tracking` y u
 - MP-30: `Customer List` (`8537217871073156`): clientes y sus contactos; de aquí sale `Client Access` (fórmula de la maestra).
 - MP-31: `Project Status List` (`6541648290074500`): cada estado con su fase y si cierra el proyecto; de aquí salen `Phase` y `Closed` (fórmula de la maestra).
 - MP-32: `Contact List` (`8285254227021700`): directorio de personas (nombre, correo, equipos, activo). Lo usa el servicio para el aviso de metraje (`Footage Alerts`) y para las listas de asignación (`APP_CONTACT_OPTIONS_ENABLED`, encendido desde el 2026-11-25; antes apagado; K2-89).
-- MP-33: `Project List` y `Designers List` son de la 1.0: la 2.0 no las usa. Quedan en `Producto/List Tools`, para borrar (`../KMV_2.0.md` K2-104).
+- MP-33: `Project List` y `Designers List` eran de la 1.0: se borraron el 2026-11-25 con su carpeta `List Tools` (`../KMV_2.0.md` K2-104).
 
 ## Vistas (Dynamic Views) de la 2.0
 
@@ -46,8 +46,8 @@ Nueve vistas, todas sobre su hoja salvo diseño (sobre un reporte). Hoy sólo la
 ## Reportes (carpeta `PROJECT KMV 2.0 - Prototype/Reports`)
 
 - MP-50: en uso por una vista: `KMV 2.0 | Design Projects` (`3039907867217796`, vista de diseño).
-- MP-51: de consulta, sin vista: `KMV 2.0 | Records`, `KMV 2.0 | Coordinator`, `KMV 2.0 | Permits`, `KMV 2.0 | MOT & Packages`, `KMV 2.0 | Billing`, `KMV 2.0 | Design Tickets`. Las vistas van directo sobre sus hojas (K2-60), así que estos se pueden dejar o borrar.
-- MP-52: los de `Producto/Reports` (`Permitting`, `Invoices`, `KMV - Customers` y otros) son de la 1.0.
+- MP-51: los reportes de consulta sin vista de la 2.0 (`Records`, `Coordinator`, `Permits`, `MOT & Packages`, `Billing`, `Design Tickets`) se borraron el 2026-11-25 (`../KMV_2.0.md` K2-104). Los reportes que hagan falta se arman después.
+- MP-52: los de `Producto/Reports` de la 1.0 se borraron el 2026-11-25 con su carpeta (K2-104).
 
 ## Automatizaciones (Smartsheet)
 

@@ -68,7 +68,7 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
 - K2-60: regla (2026-11-17 15:27, decisión del usuario): todas las vistas van directo sobre su hoja; ninguna usa reporte. Las hojas de equipo ya traen copiados los datos del proyecto. Lista y configuración en `VISTAS_KMV_2.0.md` (VK-00a a VK-00h).
 - K2-61: el equipo de permisos tiene una sola vista, `PERMITS TEAM` sobre `Permits`: sus permisos, líneas y proyectos `KMV-Miscellaneous` (HP-16).
 - K2-62: filtros compartidos de la maestra (los crea el usuario en la hoja): `Projects` y `Permits`.
-- K2-63: los reportes de la carpeta `Reports` (`5430691564414852`) ya no se usan para las vistas; quedan de consulta o se pueden borrar. La API no edita reportes existentes.
+- K2-63: los reportes de la carpeta `Reports` (`5430691564414852`) ya no se usan para las vistas; quedan de consulta o se pueden borrar. La API no edita reportes existentes. Resuelto el 2026-11-25 (K2-104): se borraron todos menos `KMV 2.0 | Design Projects`.
 
 ## Configuración
 
@@ -187,13 +187,19 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
     - La vista `DESIGN` usa el reporte `KMV 2.0 | Design Projects`.
     - Ninguna vista ni fórmula de la 2.0 usa algo de la 1.0.
   - Hecho: `Contact List`, `Customer List` y `Project Status List` pasaron de `Producto/List Tools` a `Producto/PROJECT KMV 2.0 - Prototype/List`. Mismo ID: el servicio, `Client Access` y las demás fórmulas siguen igual.
-  - Propuesto para borrar, a la espera de la confirmación del usuario porque no se puede deshacer:
+  - Borrado el 2026-11-25, confirmado por el usuario ("borra todos los reportes que no necesitamos y cosas que no usamos; luego haremos los reportes que sí sean necesarios"). Antes de borrar, cada elemento se comprobó dentro de `Pruebas/Producto` y con su nombre:
     - la hoja `PROJECT KMV` (1.0 original);
     - la carpeta `PROJECT KMV` (`PROJECT KMV 1.0.0`, `Records Requests` y `Billing` de la 1.0);
     - la carpeta `Producto/Reports` (7 reportes de la 1.0);
     - `Project List` y `Designers List`, con su carpeta `List Tools`;
     - los 6 reportes de la 2.0 que no usa ninguna vista (K2-63): `Coordinator`, `Permits`, `MOT & Packages`, `Records`, `Billing` y `Design Tickets`.
   - Fuera de `Producto` no se toca nada: `Testing` y `Normalizacion de Datos - Piloto`.
+  - Resultado:
+    - 13 reportes, 6 hojas y 3 carpetas vacías (`PROJECT KMV`, `List Tools` y `Producto/Reports`).
+    - `Producto` queda sólo con `PROJECT KMV 2.0 - Prototype`: las 6 hojas, `List` (3 catálogos) y `Reports` (`KMV 2.0 | Design Projects`, que sólo lee de la maestra 2.0).
+    - Servicio en Railway sin errores después (359 llamadas con 200; sigue leyendo `Contact List` por su ID).
+  - Sin borrar: `DV | New Records Request` de la maestra. El control de permisos de la sesión lo volvió a bloquear; la borra el usuario.
+  - Sin borrar: la prueba del usuario `KMV-26-0007`, por si todavía la usa (K2-100).
 
 ## Mi opinión (Claude)
 
