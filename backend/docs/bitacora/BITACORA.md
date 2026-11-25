@@ -1431,3 +1431,13 @@ Evidencia (sólo lectura, sin correos):
 - En Railway, el aviso de metraje está encendido: le llega a los activos de `Footage Alerts` (2, ninguno es el usuario) y a los diseñadores del proyecto. Las automatizaciones de aviso están apagadas.
 Recomendado mientras se prueba: `Footage Alerts` sólo en la fila del usuario.
 Docs: `KMV_2.0.md` K2-89.
+
+## 2026-11-25 16:52 -05:00 Comprobación de los cambios en automatizaciones de la maestra (AU-08)
+
+Estado: comprobado; sin cambios propios.
+Evidencia (`get_workflows`, sólo lectura):
+- `Default Engineer` y `Default Surveyor` con el disparador nuevo (al agregar o al cambiar `Type of Project`), la condición "en blanco" y encendidas.
+- `DV | New Project (ID assigned)` con `Stable Tracking Project` no vacío, apagada.
+- Las demás, sin cambios.
+Observación: `{{Agency}}` en el asunto del correo al cliente queda vacío en las filas de proyecto; mejor en el mensaje.
+Docs: AUTOMATIZACIONES AU-08 (copiado a Share).

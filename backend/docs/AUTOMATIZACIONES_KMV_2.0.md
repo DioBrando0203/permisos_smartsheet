@@ -45,6 +45,12 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
     - `Stable Tracking Project` `is not blank` en `DV | New Project (ID assigned)`.
   - `Alert | QC overdue` quedó a 1 día (AU-16 decía 2): lo elige el usuario. Para un recordatorio diario hace falta un disparador recurrente con `QC IN` pasada y `QC OUT` en blanco.
   - Contactos sin correo: desde K2-89 las cuatro listas de asignación sólo ofrecen personas activas con correo, así que ya no puede quedar asignado alguien sin correo.
+  - Aplicado por la otra sesión y comprobado con `get_workflows` (2026-11-25 16:55):
+    - `Default Engineer` y `Default Surveyor` se disparan al agregar la fila o cuando `Type of Project` pasa a `KMV-P` o `KMV-Miscellaneous`; conservan "en blanco" y siguen encendidas.
+    - `DV | New Project (ID assigned)` tiene `Stable Tracking Project` `is not blank` y sigue apagada.
+    - Nada más cambió.
+  - Precisión sobre `{{Agency}}` en el asunto de `Client | Status Update`: en las filas de proyecto `Agency` suele estar vacía, y el asunto quedaría "Project Update – KMV-26-0008 – : COMPLETE". La agencia ya va en los campos del correo; si se quiere más visible, mejor una línea `Agency: {{Agency}}` en el mensaje que en el asunto.
+  - Pendiente del usuario: borrar los dos avisos viejos de la maestra (recomendado) y elegir el plazo de `Alert | QC overdue`, con un solo aviso o recordatorio diario.
 
 ## Maestra `PROJECT KMV 2.0 (Prototype)`
 
