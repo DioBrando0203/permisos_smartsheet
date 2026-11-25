@@ -1420,3 +1420,14 @@ Respuesta (AU-08):
 Listas (sólo lectura): 12 activos en `Contact List`; `Designers` 9, `Permitting Team` 7, `Records Owner` 5 y `DT Owner` 5, rehechas por el servicio.
 Corrección: los correos que faltan no están en las listas de la maestra.
 Docs: AUTOMATIZACIONES AU-08; `KMV_2.0.md` K2-89 (copiados a Share).
+
+## 2026-11-25 16:51 -05:00 Revisión de Contact List y quién recibe correos durante las pruebas (K2-89)
+
+Estado: revisado; sin cambios.
+Pedido: el usuario pasó el enlace de `Contact List` (agregó y activó contactos) y aclaró que por ahora las pruebas sólo usan su contacto.
+Evidencia (sólo lectura, sin correos):
+- 12 activas de 30, todas con correo y equipo, sin repetidos; fila 30 vacía.
+- Listas de la maestra al día (9, 7, 5 y 5).
+- En Railway, el aviso de metraje está encendido: le llega a los activos de `Footage Alerts` (2, ninguno es el usuario) y a los diseñadores del proyecto. Las automatizaciones de aviso están apagadas.
+Recomendado mientras se prueba: `Footage Alerts` sólo en la fila del usuario.
+Docs: `KMV_2.0.md` K2-89.
