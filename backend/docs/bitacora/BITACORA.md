@@ -1366,3 +1366,14 @@ Evidencia (equipo Linux):
 Precisión: la fila de `Design Tickets` que creó la prueba de `KMV-26-0007` no queda suelta. Su fila de la maestra existe, así que se sigue sincronizando; sólo dejan de crearse filas para trámites.
 Al día: K2-102 (K2-99 y el token propio ya hechos), SPEC-B22 DP-13, `DESPLIEGUE_RAILWAY.md` RW-07 y RW-32.
 Aviso para la otra máquina: `variables_railway.py --con-token` manda el token de `backend/.env` y pisaría el token propio del servidor; sin esa opción no lo toca (RW-32).
+
+## 2026-11-25 11:56 -05:00 Consulta: borrar filas a mano sin tocar la base (K2-103)
+
+Estado: respondido; sin cambios de código ni en Smartsheet.
+Pregunta del usuario: cómo hacer si se borran filas desde Smartsheet a mano, sin borrar nada de la base.
+Respuesta (revisado en `ids/recovery.py` y `childsheets/rules.py`):
+- La base no se toca. El ID de la fila borrada queda registrado y no se reutiliza.
+- Orden: primero la fila de la maestra (borra también los trámites que tiene debajo) y después sus filas de equipo, que ya no se recrean.
+- Opcional: quitar el ID de `Linked Tracking`.
+- Al revés se dispara el defecto de K2-101.
+Docs: `KMV_2.0.md` K2-103; mapa MP-92b (copiado a Share).

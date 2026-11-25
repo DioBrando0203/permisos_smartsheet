@@ -140,6 +140,16 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
     - Avisos encendidos con sus destinatarios.
     - Vista de clientes compartida sólo con proyectos reales (K2-100).
     - Quitar las filas de prueba en el orden de K2-101.
+- K2-103 (2026-11-25, pregunta del usuario: cómo borrar filas a mano en Smartsheet sin tocar la base; revisado en el código, `ids/recovery.py` y `childsheets/rules.py`):
+  - La base no se toca: el registro conserva el ID de la fila borrada y ese número no se vuelve a usar; el siguiente proyecto sigue contando y queda un salto. El procesador sólo trabaja con las filas que existen, así que el registro de una fila borrada no molesta.
+  - La única excepción: una fila borrada entre la reserva de su ID y la confirmación queda `row_missing` para revisión, y su número tampoco se reutiliza.
+  - Orden para borrar un proyecto o un trámite:
+    1. En la maestra, la fila del proyecto: Smartsheet borra con ella los trámites que tiene debajo. Para un trámite solo, su fila.
+    2. Después, sus filas en las hojas de equipo (`Billing`, `Design Tickets`, `Permits`, Records, `MOT & Packages`): ya no tienen fila en la maestra y el servicio no las vuelve a crear.
+    3. Opcional: quitar el ID de las opciones de `Linked Tracking`, que conserva los IDs viejos; el servicio no lo vuelve a sumar porque el proyecto ya no existe. `Parent Project` se limpia solo.
+  - Al revés (primero la hoja de equipo) no: el servicio recrea la fila vacía y borra en la maestra lo que esa fila había devuelto (defecto de K2-101).
+  - No hace falta apagar el procesador. Si borra justo mientras el servicio escribe en esa fila, esa pasada puede registrar un error y la siguiente sigue normal.
+  - Para un trámite que ya no va, lo indicado es cancelarlo, no borrarlo (MP-92).
 
 ## Mi opinión (Claude)
 

@@ -54,3 +54,4 @@ Estado 2026-11-23. Qué hace el servicio con la API de Smartsheet, cómo corre, 
   - En la maestra: sus filas de las hojas de equipo quedan sueltas, sin borrarse, y su ID no vuelve a usarse.
   - En una hoja de equipo: el servicio la vuelve a crear vacía, y hoy eso borra en la maestra lo que esa fila había devuelto (estado, `Permit #`, fechas, `Design Ticket`, `Invoice Status`); arreglo pendiente.
   - Por eso se cancela, nunca se borra.
+  - Si hay que borrar a mano (por ejemplo, una prueba): primero la fila de la maestra y después sus filas de equipo; la base no se toca (`../KMV_2.0.md` K2-103).
