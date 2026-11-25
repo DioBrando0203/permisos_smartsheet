@@ -200,6 +200,23 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
     - Servicio en Railway sin errores después (359 llamadas con 200; sigue leyendo `Contact List` por su ID).
   - Sin borrar: `DV | New Records Request` de la maestra. El control de permisos de la sesión lo volvió a bloquear; la borra el usuario.
   - Sin borrar: la prueba del usuario `KMV-26-0007`, por si todavía la usa (K2-100).
+- K2-105 (2026-11-25, pedido del usuario: revisar, sólo lectura, el `DASHBOARD HUB` de producción y su carpeta, y hacer algo así por año para el prototipo, dentro de `Pruebas`; propuesta, sin crear nada todavía):
+  - Cómo está hecho hoy (workspace de producción, carpeta `Main Dashboard`):
+    - `DASHBOARD HUB` es un menú: un título y 12 imágenes, cada una con enlace a un dashboard.
+    - Hay una carpeta por tema y año (`Dashboard Projects 2023` a `2026`, `Production Dashboard 2025` y `2026`, `by Worker`, `Engineering & Permitting – All Customer`, `Enterprise`). Cada una tiene el dashboard, una hoja `Metrics` y a veces un reporte.
+    - Las hojas `Metrics` cuentan con `COUNTIFS` entre hojas contra cada hoja de cliente del año (por condado, mes y tipo), con celdas fijas como `[Sep-Pr]10 + [Sep-Pr]41`: cada año hay que copiarlas y volver a apuntarlas a mano.
+    - Los widgets son números (`CELLLINK`), gráficos sobre la hoja `Metrics`, un reporte de proyectos no terminados y textos.
+  - Propuesta para la 2.0, en `Producto/PROJECT KMV 2.0 - Prototype/Dashboards/<año>`:
+    - Un `HUB 2.0` y, por año: `Projects`, `Permitting`, `Production` y `Records & Billing`.
+    - Una sola hoja `KMV 2.0 Metrics <año>`. En la 2.0 todo está en una maestra por año con todos los clientes, más las hojas de equipo, así que hacen falta pocas referencias y no una por cliente.
+    - Los reportes de lista que se necesiten (proyectos sin terminar, permisos activos, facturas pendientes).
+  - Cómo se armaría:
+    - La hoja `Metrics`, sus referencias y fórmulas, con un script por API que se corre cada año contra la maestra de ese año (repetible).
+    - Los reportes, con el conector.
+    - Los gráficos, con el conector (`create_chart_from_prompt` y `add_charts_to_dashboard` sobre hojas, o `create_dashboard_with_ai`).
+    - Las imágenes, el diseño y el menú, a mano o con Playwright autorizado.
+  - Limitación: el prototipo tiene pocas filas de prueba, así que los dashboards se verán casi vacíos; sirven para probar las fórmulas.
+  - Pendiente del usuario: qué dashboards y qué indicadores, y el visto bueno para crear.
 
 ## Mi opinión (Claude)
 

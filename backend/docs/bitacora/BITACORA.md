@@ -1499,3 +1499,15 @@ Evidencia:
 - Árbol final releído. Logs de Railway después: 359 llamadas con 200, sin avisos ni errores.
 Bloqueado otra vez: borrar `DV | New Records Request` de la maestra; la borra el usuario. La prueba `KMV-26-0007` no se tocó.
 Docs: `KMV_2.0.md` K2-63 y K2-104; mapa MP-33, MP-51 y MP-52; AUTOMATIZACIONES AU-00i (copiados a Share).
+
+## 2026-11-25 17:36 -05:00 Revisión del DASHBOARD HUB de producción y propuesta de dashboards por año para la 2.0 (K2-105)
+
+Estado: revisado (sólo lectura) y propuesto; sin crear nada.
+Pedido del usuario: revisar el dashboard y su carpeta, y hacer dashboards así por año para el prototipo, dentro de `Pruebas`.
+Evidencia (API, sólo lectura, sin correos):
+- `DASHBOARD HUB` (15 widgets: título y 12 imágenes con enlace).
+- Carpeta `Main Dashboard` con 9 subcarpetas por tema y año.
+- `Dashboard Projects 2026` y `Production KMV 2026` (números, gráficos y reporte).
+- Hoja `Dashboard Metrics 2026` con `COUNTIFS` entre hojas por cliente, condado y mes.
+Conector: crea dashboards con IA desde hojas, gráficos desde hojas y los agrega a un dashboard; no desde reportes.
+Docs: `KMV_2.0.md` K2-105.
