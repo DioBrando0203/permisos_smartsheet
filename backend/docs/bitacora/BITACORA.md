@@ -1404,3 +1404,19 @@ Evidencia:
 - Lectura a las 16:01: `Permitting Team` con 2 personas y sólo valores de su lista; `Designers` 18, `Records Owner` 14 y `DT Owner` 7, sin cambios porque su equipo no tiene activos.
 La maestra sigue con 79 columnas.
 Docs: `KMV_2.0.md` K2-89.
+
+## 2026-11-25 16:45 -05:00 Revisión de un informe sobre las automatizaciones de la maestra (AU-08) y listas en uso (K2-89)
+
+Estado: revisado y respondido; sin cambios en automatizaciones.
+Pedido del usuario: revisar y responder un informe de otra sesión, que proponía corregir avisos en la maestra.
+Evidencia (`get_workflows` en las seis hojas, sólo lectura):
+- En la maestra sólo están encendidas las dos `Auto | Default`.
+- Las versiones buenas de los avisos de Records, `Permits` y `Design Tickets` ya existen, apagadas, en sus hojas.
+Respuesta (AU-08):
+- Borrar, no corregir, los dos avisos viejos de la maestra.
+- No agregar `Row Level = 0` en `Client | Status Update`.
+- De acuerdo con los cambios de `Default Engineer` y `Default Surveyor` y con la condición que falta en `New Project (ID assigned)`.
+- Probar el aviso al cliente con `OT-Others` y `KMV-26-0008`.
+Listas (sólo lectura): 12 activos en `Contact List`; `Designers` 9, `Permitting Team` 7, `Records Owner` 5 y `DT Owner` 5, rehechas por el servicio.
+Corrección: los correos que faltan no están en las listas de la maestra.
+Docs: AUTOMATIZACIONES AU-08; `KMV_2.0.md` K2-89 (copiados a Share).

@@ -26,6 +26,25 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
 - AU-05: `DV | New Task Permitting Team`: pasa a la hoja `Permits` (AU-20); en la maestra se borra.
 - AU-06: falta `Client | Status Update` (AU-14).
 - AU-07 (2026-11-24 18:25, lectura por API antes de la prueba en vivo): 0 avisos encendidos de 19 en las seis hojas de la 2.0 (maestra 7, `Permits` 3, Records 2, `Billing` 2, `MOT & Packages` 4, `Design Tickets` 1). Por eso la prueba no mandó correos. La API de avisos no muestra los flujos con otras acciones.
+- AU-08 (2026-11-25, revisión de un informe de otra sesión sobre las automatizaciones de la maestra; verificado con `get_workflows` en las seis hojas):
+  - Encendidas sólo `Auto | Default Engineer` y `Auto | Default Surveyor`; las demás, apagadas.
+  - `DV | New Records Request` y `DV | New Task Permitting Team` de la maestra no se corrigen: se borran (AU-04, AU-05), con confirmación del usuario porque no se puede deshacer.
+    - Sus versiones buenas ya existen, apagadas, en Records (AU-40: dispara cuando cambia `Records Owner`) y en `Permits` (AU-20: asunto con `Tracking Project`, `Project Name` y `Agency`, enlace a `PERMITS TEAM`).
+    - En esas hojas la fila sólo existe cuando el pedido tiene agencia e ID.
+    - Si se encienden las dos versiones, llegan dos correos.
+  - `DT Owner` sí tiene aviso: `DV | New Design Ticket` en `Design Tickets` (AU-60), apagada. Desde K2-99 avisa una vez por proyecto.
+  - `Client | Status Update`: no se agrega `Row Level = 0`.
+    - Los estados de cada permiso viven en las filas hijas y vuelven solos desde `Permits` y `MOT & Packages` (AU-14, AU-00b): con esa condición el cliente dejaría de enterarse de sus permisos.
+    - Un correo por permiso es lo que pasaba en la 1.0.
+    - Sugerido: `{{Agency}}` en el asunto.
+    - La lista de 21 estados viene de la 1.0; la revisa la coordinación.
+    - `Client Access` ya entrega contactos con correo (la API muestra correo en 14 filas).
+    - Prueba de entrega sin escribirle a clientes: un correo interno en `Client Contacts` de `OT-Others` (hoy sin contactos), la condición temporal `Customer` = `OT-Others`, y un cambio de estado en `KMV-26-0008`. Después se quitan las dos cosas.
+  - De acuerdo:
+    - `Default Engineer` y `Default Surveyor` también cuando cambia `Type of Project`, con su condición "en blanco" (ya está) para no pisar una elección.
+    - `Stable Tracking Project` `is not blank` en `DV | New Project (ID assigned)`.
+  - `Alert | QC overdue` quedó a 1 día (AU-16 decía 2): lo elige el usuario. Para un recordatorio diario hace falta un disparador recurrente con `QC IN` pasada y `QC OUT` en blanco.
+  - Contactos sin correo: desde K2-89 las cuatro listas de asignación sólo ofrecen personas activas con correo, así que ya no puede quedar asignado alguien sin correo.
 
 ## Maestra `PROJECT KMV 2.0 (Prototype)`
 
