@@ -1540,3 +1540,10 @@ Docs: `DASHBOARDS_KMV_2.0.md` (nuevo), `KMV_2.0.md` K2-106, índice de docs.
 Estado: respondido; sin cambios en Smartsheet.
 Respuesta (API, sólo lectura): no hay uno dedicado entre los 66 dashboards visibles. El metraje está dentro de los de producción, proyectos, cliente y categoría. Ofrecido un dashboard de metraje 2.0, con desglose por tipo.
 Docs: `DASHBOARDS_KMV_2.0.md` DB-04 (copiado a Share).
+
+## 2026-11-25 18:41 -05:00 Aviso viejo de Records borrado por el usuario; diferencia entre los dos avisos de proyecto nuevo (AU-09, AU-13)
+
+Estado: anotado.
+El usuario borró `DV | New Records Request` de la maestra (la que el control de permisos no dejó borrar). Comprobado por API: ya no está.
+Pregunta: diferencia entre `DV | New Project` y `DV | New Project (ID assigned)`. Respondida y anotada en AU-13.
+Docs: AUTOMATIZACIONES AU-09 y AU-13 (copiado a Share).

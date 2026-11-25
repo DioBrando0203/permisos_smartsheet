@@ -70,7 +70,7 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
     - `Alert | Permit Needs Revision`: `DESIGN`.
     - `Alert | Permit Expiring`: `PERMITS TEAM` para el equipo y `PERMITS` para la coordinación.
   - Borrado: `DV | New Task Permitting Team` de la maestra (AU-05).
-  - Sin borrar: `DV | New Records Request` de la maestra (AU-04). El control de permisos de la sesión bloqueó el borrado. Queda apagada; la borra el usuario en `Automation` > `Manage workflows`, o se reintenta con su permiso.
+  - Sin borrar: `DV | New Records Request` de la maestra (AU-04). El control de permisos de la sesión bloqueó el borrado. Queda apagada; la borra el usuario en `Automation` > `Manage workflows`, o se reintenta con su permiso. Borrada por el usuario el 2026-11-25.
   - Estado: maestra 9 automatizaciones (encendidas sólo `Default Engineer` y `Default Surveyor`), `Permits` 4, Records 5, `MOT & Packages` 7, `Billing` 2 y `Design Tickets` 1.
 - AU-10 (2026-11-25, pedido del usuario: encender las que se puedan o deban prender):
   - Encendidas las 8 que sólo llenan datos y no le escriben a nadie:
@@ -100,6 +100,9 @@ Prioridad de cada una: obligatoria (sin ella se pierde algo que hoy existe), rec
   - Message: `You have a new task: "NEW PROJECT"`, más el enlace de la vista `DESIGN`.
   - Fields: `Tracking Project`, `Linked Tracking`, `Project Name`, `Project Address`, `City`, `County`, `Design Ticket`, `Project Status`.
 - AU-13 `DV | New Project (ID assigned)` (obligatoria; nueva). Cubre el proyecto creado con diseñador antes de tener ID: AU-12 lo salta por su condición y este avisa cuando llega el ID.
+  - Diferencia con AU-12 (pregunta del usuario, 2026-11-25): AU-12 avisa cuando se asigna o cambia el diseñador de un proyecto que ya tiene ID. AU-13 avisa cuando el servicio pone el ID a un proyecto que ya traía diseñador (lo normal al crearlo desde `PROJECTS`).
+  - Entre las dos, el diseñador recibe un solo correo y siempre con el ID, nunca con `Pending ID`.
+  - Con varios diseñadores, sumar uno vuelve a disparar AU-12 para todos.
   - Trigger: `When rows are added or changed` > `Stable Tracking Project` changes.
   - Conditions: `Designers` `is not blank`; `Type of Project` `is one of` `KMV-P`, `KMV-Miscellaneous`.
   - Action, subject, message y fields: los de AU-12.
