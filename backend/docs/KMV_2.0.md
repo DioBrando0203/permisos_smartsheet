@@ -180,6 +180,20 @@ Carpeta `Pruebas/Producto/PROJECT KMV 2.0 - Prototype` (prototipo; todo en Prueb
   - Al revés (primero la hoja de equipo) no: el servicio recrea la fila vacía y borra en la maestra lo que esa fila había devuelto (defecto de K2-101).
   - No hace falta apagar el procesador. Si borra justo mientras el servicio escribe en esa fila, esa pasada puede registrar un error y la siguiente sigue normal.
   - Para un trámite que ya no va, lo indicado es cancelarlo, no borrarlo (MP-92).
+- K2-104 (2026-11-25, pedido del usuario: ordenar `Producto` y borrar lo que no se usa, quedándose con la 2.0):
+  - Dependencias comprobadas (sólo lectura):
+    - La maestra 2.0 sólo referencia a `Customer List`, `Project Status List` y Records 2.0.
+    - El servicio usa `Contact List`.
+    - La vista `DESIGN` usa el reporte `KMV 2.0 | Design Projects`.
+    - Ninguna vista ni fórmula de la 2.0 usa algo de la 1.0.
+  - Hecho: `Contact List`, `Customer List` y `Project Status List` pasaron de `Producto/List Tools` a `Producto/PROJECT KMV 2.0 - Prototype/List`. Mismo ID: el servicio, `Client Access` y las demás fórmulas siguen igual.
+  - Propuesto para borrar, a la espera de la confirmación del usuario porque no se puede deshacer:
+    - la hoja `PROJECT KMV` (1.0 original);
+    - la carpeta `PROJECT KMV` (`PROJECT KMV 1.0.0`, `Records Requests` y `Billing` de la 1.0);
+    - la carpeta `Producto/Reports` (7 reportes de la 1.0);
+    - `Project List` y `Designers List`, con su carpeta `List Tools`;
+    - los 6 reportes de la 2.0 que no usa ninguna vista (K2-63): `Coordinator`, `Permits`, `MOT & Packages`, `Records`, `Billing` y `Design Tickets`.
+  - Fuera de `Producto` no se toca nada: `Testing` y `Normalizacion de Datos - Piloto`.
 
 ## Mi opinión (Claude)
 

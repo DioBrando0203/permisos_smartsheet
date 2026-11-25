@@ -21,12 +21,12 @@ Todas llevan los datos del proyecto copiados y bloqueados, `Linked Tracking` y u
 - MP-23: `Billing (Prototype)` (`4630718656499588`, 43): una fila por cada fila de la maestra con ID. Facturación lleva las facturas; vuelve `Invoice Status`. El metraje se ve aquí y facturación lo puede corregir (pasa a la maestra con aviso, MP-70).
 - MP-24: `Design Tickets (Prototype)` (`263146012102532`, 14): una fila por proyecto con `DT Owner`. Vuelven `Design Ticket` y `Mile Post`.
 
-## Listas de apoyo (carpeta `Producto/List Tools`)
+## Listas de apoyo (carpeta `Producto/PROJECT KMV 2.0 - Prototype/List`, desde el 2026-11-25)
 
 - MP-30: `Customer List` (`8537217871073156`): clientes y sus contactos; de aquí sale `Client Access` (fórmula de la maestra).
 - MP-31: `Project Status List` (`6541648290074500`): cada estado con su fase y si cierra el proyecto; de aquí salen `Phase` y `Closed` (fórmula de la maestra).
-- MP-32: `Contact List` (`8285254227021700`): directorio de personas (nombre, correo, equipos, activo). Lo usa el servicio para el aviso de metraje (`Footage Alerts`) y, cuando se encienda, para las listas de asignación (`APP_CONTACT_OPTIONS_ENABLED`, hoy apagado; K2-89).
-- MP-33: `Project List` y `Designers List` son de la 1.0: la 2.0 no las usa.
+- MP-32: `Contact List` (`8285254227021700`): directorio de personas (nombre, correo, equipos, activo). Lo usa el servicio para el aviso de metraje (`Footage Alerts`) y para las listas de asignación (`APP_CONTACT_OPTIONS_ENABLED`, encendido desde el 2026-11-25; antes apagado; K2-89).
+- MP-33: `Project List` y `Designers List` son de la 1.0: la 2.0 no las usa. Quedan en `Producto/List Tools`, para borrar (`../KMV_2.0.md` K2-104).
 
 ## Vistas (Dynamic Views) de la 2.0
 

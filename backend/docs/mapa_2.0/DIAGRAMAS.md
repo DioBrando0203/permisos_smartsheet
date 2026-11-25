@@ -8,7 +8,7 @@ La maestra es la única hoja donde se crean filas. Las hojas de equipo las llena
 
 ```mermaid
 flowchart TB
-    subgraph LISTAS["Listas de apoyo (List Tools)"]
+    subgraph LISTAS["Listas de apoyo (carpeta List de la 2.0)"]
         CUS["Customer List"]
         PSL["Project Status List"]
         CON["Contact List"]

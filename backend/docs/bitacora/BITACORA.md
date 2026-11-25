@@ -1477,3 +1477,11 @@ Hecho (conector de Smartsheet, cada respuesta `SUCCESS` con versión nueva): 8 e
 Siguen apagadas las de correo (le escribirían a personas reales; por ahora se prueba sólo con el contacto del usuario) y `Client | Status Update`.
 Por borrar: `DV | New Records Request` de la maestra; `DV | New Task Permitting Team` ya se borró.
 Docs: AUTOMATIZACIONES AU-10 (copiado a Share).
+
+## 2026-11-25 17:15 -05:00 Producto ordenado: catálogos de la 2.0 en su carpeta List (K2-104)
+
+Estado: movidas hechas; el borrado espera la confirmación del usuario.
+Pedido del usuario: ordenar dentro de `Producto`, borrar lo que no se usa y quedarse prácticamente con la 2.0.
+Evidencia: referencias entre hojas leídas por API (la maestra 2.0 sólo usa `Customer List`, `Project Status List` y Records 2.0). `Contact List`, `Customer List` y `Project Status List` movidas a `PROJECT KMV 2.0 - Prototype/List` (releído).
+Propuesto para borrar: 1.0 (hoja, carpeta y reportes), `Project List`, `Designers List` y 6 reportes sin vista de la 2.0.
+Docs: `KMV_2.0.md` K2-104; mapa MP-30 a MP-33 y diagrama; AUTOMATIZACIONES AU-00i (copiados a Share).
