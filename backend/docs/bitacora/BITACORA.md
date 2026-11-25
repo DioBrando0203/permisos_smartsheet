@@ -1391,3 +1391,16 @@ Docs: `KMV_2.0.md` K2-89.
 Estado: respondido; sin cambios.
 Respuesta: se puede. El servicio sólo lee `Contact List`, y con las listas apagadas la maestra no cambia. Hoy sólo la usa el aviso de metraje (`Footage Alerts`). Con las listas encendidas cada columna cambia al instante; por eso conviene completar todo antes de encender.
 Docs: `KMV_2.0.md` K2-89.
+
+## 2026-11-25 16:02 -05:00 Listas de asignación desde Contact List encendidas (K2-89, SPEC-B20 HP-19)
+
+Estado: encendido y comprobado.
+Pedido del usuario: encenderlas y completar `Contact List` con el servicio funcionando. Antes preguntó por qué se "perdería" gente: se aclaró que nada se borra, sólo cambia quién aparece en cada lista mientras se completa.
+Hecho:
+- `APP_CONTACT_OPTIONS_ENABLED=true` en Railway (`railway variable set`, sin tocar el token) y en `backend/.env`.
+- Redespliegue a las 16:00, en `SUCCESS`.
+Evidencia:
+- Logs: migraciones sin pendientes, chequeo de salud con 200, 75 llamadas con 200, sin avisos ni errores, dos cambios de columnas en la maestra.
+- Lectura a las 16:01: `Permitting Team` con 2 personas y sólo valores de su lista; `Designers` 18, `Records Owner` 14 y `DT Owner` 7, sin cambios porque su equipo no tiene activos.
+La maestra sigue con 79 columnas.
+Docs: `KMV_2.0.md` K2-89.
